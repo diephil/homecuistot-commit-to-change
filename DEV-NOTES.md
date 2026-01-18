@@ -37,3 +37,4 @@ Use cases:
 ## Supabase redirect url
 
 - must be configured per project based on [this guide](https://supabase.com/docs/guides/auth/redirect-urls)
+- check this [vercel](https://supabase.com/docs/guides/auth/redirect-urls#vercel-preview-urls) guide as well
