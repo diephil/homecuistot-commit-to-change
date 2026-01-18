@@ -19,6 +19,9 @@ export async function POST() {
     prompt: "Hello",
     experimental_telemetry: OpikExporter.getSettings({
       name: "hello-gemini",
+      metadata: {
+        isItWorking: false, // TODO: ask opik support, can't see this metadata in the trace, why?
+      },
     }),
   });
 
