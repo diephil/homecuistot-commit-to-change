@@ -2,7 +2,19 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
-First, run the development server:
+### Environment Setup
+
+```bash
+cp apps/nextjs/.env.local.example apps/nextjs/.env.local
+```
+
+Fill in the required values:
+
+- `GOOGLE_GENERATIVE_AI_API_KEY` - Get from [Google AI Studio](https://aistudio.google.com/apikey)
+- `OPIK_URL_OVERRIDE` - Local Opik API URL (default: `http://localhost:5173/api`)
+- `OPIK_PROJECT_NAME` - Opik project name for traces
+
+### Run Development Server
 
 ```bash
 npm run dev
