@@ -33,3 +33,7 @@ Use cases:
 - Group routes that share a layout
 - Separate public vs authenticated sections
 - Apply different middleware/layouts to each group
+
+## Supabase redirect url
+
+- must be configured per project based on [this guide](https://supabase.com/docs/guides/auth/redirect-urls)
