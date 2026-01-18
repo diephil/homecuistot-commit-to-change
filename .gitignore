@@ -141,6 +141,5 @@ vite.config.ts.timestamp-*
 
 # Custom
 .specify
-.claude
 .vscode
 .wip
