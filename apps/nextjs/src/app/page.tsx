@@ -1,8 +1,8 @@
 "use client";
 
 export default function Home() {
-  const handleTestClick = () => {
-    fetch("/api/test", { method: "POST" });
+  const handleHelloClick = () => {
+    fetch("/api/hello", { method: "POST" });
   };
 
   return (
@@ -12,10 +12,10 @@ export default function Home() {
           Gemini Test
         </h1>
         <button
-          onClick={handleTestClick}
+          onClick={handleHelloClick}
           className="h-12 rounded-full bg-foreground px-8 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc]"
         >
-          Test Gemini
+          Say Hello
         </button>
       </main>
     </div>
