@@ -38,3 +38,5 @@ Use cases:
 
 - must be configured per project based on [this guide](https://supabase.com/docs/guides/auth/redirect-urls)
 - check this [vercel](https://supabase.com/docs/guides/auth/redirect-urls#vercel-preview-urls) guide as well
+- Supabase handles OAuth flow, not Next.js directly. The redirect goes to Supabase Auth endpoint first, then Supabase redirects to your Next.js /auth/callback.
+- Discord → Supabase Auth (http://127.0.0.1:54321/auth/v1/callback) → Next.js (/auth/callback)
