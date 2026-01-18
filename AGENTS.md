@@ -52,5 +52,5 @@ pnpm lint                   # eslint
 
 - `GOOGLE_GENERATIVE_AI_API_KEY` - Google AI Studio
 - `NEXT_PUBLIC_SUPABASE_URL` - Supabase project URL
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Supabase anon key
+- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` - Supabase key
 - `OPIK_URL_OVERRIDE` - default: `http://localhost:5173/api`

@@ -1,9 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextRequest, NextResponse } from "next/server";
 
-type ProxyOptions =
-  | { mode: "next" }
-  | { mode: "redirect"; url: string };
+type ProxyOptions = { mode: "next" } | { mode: "redirect"; url: string };
 
 /**
  * Creates Supabase client for middleware/route handlers.
@@ -14,7 +12,7 @@ type ProxyOptions =
  */
 export function createClient(
   request: NextRequest,
-  options: ProxyOptions = { mode: "next" }
+  options: ProxyOptions = { mode: "next" },
 ) {
   // Mutable container so setAll can update the response
   const state = {
@@ -26,7 +24,7 @@ export function createClient(
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
     {
       cookies: {
         getAll() {
@@ -34,7 +32,7 @@ export function createClient(
         },
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value)
+            request.cookies.set(name, value),
           );
           // Recreate response to include updated cookies
           state.response =
@@ -42,11 +40,11 @@ export function createClient(
               ? NextResponse.redirect(options.url)
               : NextResponse.next({ request });
           cookiesToSet.forEach(({ name, value, options: cookieOptions }) =>
-            state.response.cookies.set(name, value, cookieOptions)
+            state.response.cookies.set(name, value, cookieOptions),
           );
         },
       },
-    }
+    },
   );
 
   return { supabase, getResponse: () => state.response };
