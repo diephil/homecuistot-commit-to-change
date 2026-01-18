@@ -4,6 +4,10 @@ Know what you have, know what you can cook, eat better without thinking about it
 
 # Dev notes
 
-- Start Next.js dev server: `make dev`
-- Start Opik locally: `make opik`
+- Start all services: `make dev-all` (Next.js + Opik + Supabase)
 - Stop all services: `make down`
+- Start Next.js only: `make dev`
+- Start Opik only: `make opstart`
+- Stop Opik only: `make opdown`
+- Start Supabase only: `make sbstart`
+- Stop Supabase only: `make sbstop`
