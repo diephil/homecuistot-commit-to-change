@@ -9,38 +9,44 @@ Homecuistot - meal planning app: "Know what you have, know what you can cook, ea
 ## Commands
 
 ```bash
-# Dev server (Next.js)
-make dev                    # or: cd apps/nextjs && pnpm dev
+# Development
+make dev                    # Next.js only
+make dev-all                # Next.js + Opik + Supabase (full stack)
+make down                   # stop Opik + Supabase
 
-# LLM observability (Opik)
-make opik                   # start local Opik (UI: http://localhost:5173)
-make down                   # stop Opik
+# Individual services
+make opstart / make opdown  # Opik (UI: http://localhost:5173)
+make sbstart / make sbstop  # Supabase local
 
-# Next.js scripts
-cd apps/nextjs
+# Next.js (from apps/nextjs/)
+pnpm dev                    # dev server
 pnpm build                  # build
 pnpm lint                   # eslint
-pnpm start                  # production server
 ```
 
 ## Architecture
 
-**Monorepo structure:**
-- `apps/nextjs/` - Next.js 16 app (React 19, Tailwind v4, React Compiler enabled)
-- `infra/opik/` - Opik submodule for local LLM tracing
+**Monorepo:**
+- `apps/nextjs/` - Next.js 16, React 19, Tailwind v4, React Compiler
+- `infra/opik/` - Opik submodule for LLM tracing
 
-**AI/LLM integration:**
-- Vercel AI SDK (`ai`) + Google Gemini (`@ai-sdk/google`)
-- OpenTelemetry tracing via `@vercel/otel` → Opik exporter
-- Instrumentation at `src/instrumentation.ts`
-
-**API routes pattern:**
-- `src/app/api/*/route.ts` - Next.js route handlers
+**AI/LLM:**
+- Vercel AI SDK + Google Gemini (`@ai-sdk/google`)
+- OpenTelemetry → Opik exporter (`src/instrumentation.ts`)
+- API routes: `src/app/api/*/route.ts`
 - Use `OpikExporter.getSettings()` for telemetry in AI calls
+
+**Auth:**
+- Supabase Auth with Google OAuth
+- Server client: `@/utils/supabase/server` (async `createClient()`)
+- Browser client: `@/utils/supabase/client`
+- OAuth callback: `/auth/callback` → exchanges code for session
+- Route groups: `(auth)` for login, `(protected)` for authenticated pages
 
 ## Environment
 
-Copy `apps/nextjs/.env.local.example` → `.env.local`:
-- `GOOGLE_GENERATIVE_AI_API_KEY` - from Google AI Studio
+`apps/nextjs/.env.local`:
+- `GOOGLE_GENERATIVE_AI_API_KEY` - Google AI Studio
+- `NEXT_PUBLIC_SUPABASE_URL` - Supabase project URL
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Supabase anon key
 - `OPIK_URL_OVERRIDE` - default: `http://localhost:5173/api`
-- `OPIK_PROJECT_NAME` - Opik project identifier
