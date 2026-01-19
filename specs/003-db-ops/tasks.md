@@ -161,16 +161,16 @@ Project: Next.js monorepo (`apps/nextjs/`)
 
 ### RLS Integration for User Story 4
 
-- [ ] T040 [US4] Enhance createUserDb factory in apps/nextjs/src/db/client.ts to set PostgreSQL session variables (request.jwt.claims, role) via onconnect callback
-- [ ] T041 [US4] Create apps/nextjs/tests/integration/auth-flow.test.ts to test RLS enforcement (user1 cannot see user2's inventory)
-- [ ] T042 [US4] Test authenticated query in apps/nextjs/tests/integration/auth-flow.test.ts (verify userInventory filtered by auth.uid())
-- [ ] T043 [US4] Test recipes RLS policy in apps/nextjs/tests/integration/auth-flow.test.ts (user sees seeded recipes + own custom recipes)
-- [ ] T044 [US4] Document RLS patterns in apps/nextjs/src/db/client.ts (comments explaining dual client pattern, when to use admin vs user client)
+- [X] T040 [US4] Enhance createUserDb factory in apps/nextjs/src/db/client.ts to set PostgreSQL session variables (request.jwt.claims, role) via onconnect callback
+- [X] T041 [US4] Create apps/nextjs/tests/integration/auth-flow.test.ts to test RLS enforcement (user1 cannot see user2's inventory)
+- [X] T042 [US4] Test authenticated query in apps/nextjs/tests/integration/auth-flow.test.ts (verify userInventory filtered by auth.uid())
+- [X] T043 [US4] Test recipes RLS policy in apps/nextjs/tests/integration/auth-flow.test.ts (user sees seeded recipes + own custom recipes)
+- [X] T044 [US4] Document RLS patterns in apps/nextjs/src/db/client.ts (comments explaining dual client pattern, when to use admin vs user client)
 
 ### Error Handling for User Story 4
 
-- [ ] T045 [US4] Add error handling for invalid session tokens in apps/nextjs/src/db/client.ts (throw clear error if accessToken missing/invalid)
-- [ ] T046 [US4] Test error scenarios in apps/nextjs/tests/integration/auth-flow.test.ts (expired token, missing session, unauthorized access)
+- [X] T045 [US4] Add error handling for invalid session tokens in apps/nextjs/src/db/client.ts (throw clear error if accessToken missing/invalid)
+- [X] T046 [US4] Test error scenarios in apps/nextjs/tests/integration/auth-flow.test.ts (expired token, missing session, unauthorized access)
 
 **Checkpoint**: User Story 4 complete - RLS policies enforced via Drizzle, auth context flows from Supabase session, error handling robust
 

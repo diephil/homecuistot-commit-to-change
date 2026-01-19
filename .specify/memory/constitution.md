@@ -3,34 +3,41 @@
 SYNC IMPACT REPORT - Constitution Update
 ═══════════════════════════════════════════════════════════════════════════
 
-Version Change: NEW → 1.0.0 (Initial ratification - MVP Phase)
+Version Change: 1.1.0 → 1.2.0 (New principle added - Named Parameters)
 
-Principles Established:
-- I. MVP-First Development
-- II. Pragmatic Type Safety
-- III. Essential Validation Only
-- IV. Test-Ready Infrastructure
+Principles Modified:
+- None (no title changes)
 
-Sections Added:
-- Core Principles (4 MVP-phase principles)
-- MVP Constraints (2-week timeline, speed priorities)
-- Post-MVP Migration Path
-- Governance (lightweight for MVP phase)
+Principles Added:
+- VI. Named Parameters for Clarity (NEW)
+
+Sections Modified:
+- Core Principles: Added Principle VI with rationale and examples
+
+Sections Removed:
+- None
 
 Templates Status:
-✅ plan-template.md - Constitution Check compatible with MVP constraints
-✅ spec-template.md - Requirements align with essential validation
-✅ tasks-template.md - Testing optional per constitution
-⚠ Commands templates - Directory does not exist; no updates needed
+✅ plan-template.md - No changes required (no constitution check conflicts)
+✅ spec-template.md - No changes required (requirement agnostic)
+✅ tasks-template.md - No changes required (testing optional unchanged)
+✅ agent-file-template.md - No changes required
+✅ checklist-template.md - No changes required
 
 Follow-up TODOs:
-- Post-MVP hardening phase (after 2-week deadline)
+- None (principle is self-contained)
 
 Rationale:
-- MAJOR version 1.0.0: Initial constitution ratification
-- MVP-phase constitution optimized for 2-week delivery timeline
-- Balances speed with essential safeguards for real users
-- Includes post-MVP migration path to full rigor
+- MINOR version 1.1.0 → 1.2.0: New principle added within MVP phase
+- Named parameter principle aligns with Principle II (Pragmatic Type Safety)
+- Improves readability and prevents argument order mistakes
+- Supports maintainability without blocking MVP velocity
+- No breaking changes to existing governance or workflow
+
+Version Bump Justification:
+- Not MAJOR: No backward incompatible changes, no phase transition
+- MINOR: New principle added (material expansion of guidance)
+- Not PATCH: Substantive content addition, not clarification/correction
 
 ═══════════════════════════════════════════════════════════════════════════
 -->
@@ -84,6 +91,85 @@ Setup test infrastructure but tests optional for MVP:
 - Post-MVP: expand test coverage incrementally
 
 **Rationale**: Infrastructure setup is cheap; writing tests is expensive. Be ready to test but don't let it block shipping.
+
+### V. Type Derivation Over Duplication
+
+Derive complex types from schemas/types instead of manual redefinition:
+- **MUST derive**: Complex object types, nested structures, discriminated unions
+- **PRIMITIVES EXEMPT**: Simple types (string, number, boolean) can be defined directly
+- **USE TypeScript utilities**: `typeof`, `ReturnType`, `Parameters`, `Awaited`, schema.infer
+- **SINGLE SOURCE OF TRUTH**: Schema or base type is source; derived types follow
+- Prefer Zod/validation schemas → infer types over manual type + manual validation
+
+**Rationale**: Manual type duplication causes drift between runtime validation and compile-time types. Derivation maintains consistency, reduces maintenance, prevents bugs.
+
+**Examples**:
+```typescript
+// ✅ GOOD: Derive from schema
+const userSchema = z.object({
+  id: z.string(),
+  profile: z.object({ name: z.string(), age: z.number() })
+});
+type User = z.infer<typeof userSchema>;  // Derived
+
+// ✅ GOOD: Derive from existing type
+type UserProfile = User['profile'];  // Derived from User
+
+// ✅ GOOD: Derive function return type
+const getUser = () => ({ id: '1', name: 'Alice' });
+type UserData = ReturnType<typeof getUser>;  // Derived
+
+// ❌ BAD: Manual duplication
+type User = { id: string; profile: { name: string; age: number } };  // Manual
+const userSchema = z.object({ /* duplicate structure */ });  // Duplicate
+
+// ✅ OK: Primitives can be defined directly (not complex types)
+type UserId = string;  // OK - primitive
+type Age = number;     // OK - primitive
+```
+
+### VI. Named Parameters for Clarity
+
+Use named parameters (object destructuring) for function signatures with complexity:
+- **MUST use named params**: 3+ arguments OR 2+ arguments of same type
+- **MAY use positional**: 1-2 arguments of different types
+- **CONSISTENCY REQUIRED**: Apply pattern uniformly across codebase
+- **NO EXCEPTIONS**: This rule applies to all new function signatures
+
+**Rationale**: Named parameters prevent argument order mistakes, improve readability at call sites, and make refactoring safer. The small upfront cost pays off in maintainability.
+
+**Examples**:
+```typescript
+// ✅ GOOD: Single argument
+function deleteUser(userId: string): void { }
+
+// ✅ GOOD: Two arguments, different types
+function updateUser(userId: string, isActive: boolean): void { }
+
+// ❌ BAD: Two arguments, same type (ambiguous at call site)
+function updateName(firstName: string, lastName: string): void { }
+// Call site unclear: updateName("John", "Doe") - which is which?
+
+// ✅ GOOD: Two arguments, same type → use named params
+function updateName(params: { firstName: string; lastName: string }): void { }
+// Call site clear: updateName({ firstName: "John", lastName: "Doe" })
+
+// ❌ BAD: Three arguments (too many positional)
+function createUser(name: string, email: string, age: number): void { }
+
+// ✅ GOOD: Three arguments → use named params
+function createUser(params: { name: string; email: string; age: number }): void { }
+
+// ❌ BAD: Multiple arguments with object last (inconsistent)
+function updateProfile(userId: string, updates: { name: string; bio: string }): void { }
+
+// ✅ GOOD: All params in single object (consistent)
+function updateProfile(params: {
+  userId: string;
+  name: string;
+  bio: string;
+}): void { }
+```
 
 ## MVP Constraints (2-Week Timeline)
 
@@ -179,9 +265,9 @@ After MVP ships and validates with users:
 
 ### Versioning Policy
 
-- **MAJOR**: Phase transitions (MVP → Hardening → Production)
-- **MINOR**: Principle adjustments within phase
-- **PATCH**: Clarifications and corrections
+- **MAJOR**: Phase transitions (MVP → Hardening → Production) OR backward incompatible governance changes
+- **MINOR**: New principle/section added or materially expanded guidance
+- **PATCH**: Clarifications, wording, typo fixes, non-semantic refinements
 
 ### Compliance Review
 
@@ -189,4 +275,4 @@ After MVP ships and validates with users:
 - Other principles are guidelines, not gates
 - When in doubt: ship first, fix later (unless it affects users negatively)
 
-**Version**: 1.0.0 | **Ratified**: 2026-01-19 | **Last Amended**: 2026-01-19
+**Version**: 1.2.0 | **Ratified**: 2026-01-19 | **Last Amended**: 2026-01-19
