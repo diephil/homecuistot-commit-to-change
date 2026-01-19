@@ -74,16 +74,16 @@ Project: Next.js monorepo (`apps/nextjs/`)
 
 ### Validation for User Story 1
 
-- [ ] T017 [US1] Create apps/nextjs/tests/db/schema.test.ts to test schema structure (verify tables exist, columns have correct types, enums have valid values)
-- [ ] T018 [US1] Run schema validation test with pnpm test:db and verify all tests pass
+- [X] T017 [US1] Create apps/nextjs/tests/db/schema.test.ts to test schema structure (verify tables exist, columns have correct types, enums have valid values)
+- [X] T018 [US1] Run schema validation test with pnpm test:db and verify all tests pass
 
 ### Schema Relations for User Story 1
 
-- [ ] T019 [P] [US1] Add relations to apps/nextjs/src/db/schema/ingredients.ts (ingredientsRelations, ingredientAliasesRelations) for type-safe joins
-- [ ] T020 [P] [US1] Add relations to apps/nextjs/src/db/schema/recipes.ts (recipesRelations, recipeIngredientsRelations) for type-safe joins
-- [ ] T021 [P] [US1] Add relations to apps/nextjs/src/db/schema/user-inventory.ts (userInventoryRelations) for type-safe joins
-- [ ] T022 [P] [US1] Add relations to apps/nextjs/src/db/schema/user-recipes.ts (userRecipesRelations) for type-safe joins
-- [ ] T023 [P] [US1] Add relations to apps/nextjs/src/db/schema/cooking-log.ts (cookingLogRelations) for type-safe joins
+- [X] T019 [P] [US1] Add relations to apps/nextjs/src/db/schema/ingredients.ts (ingredientsRelations, ingredientAliasesRelations) for type-safe joins
+- [X] T020 [P] [US1] Add relations to apps/nextjs/src/db/schema/recipes.ts (recipesRelations, recipeIngredientsRelations) for type-safe joins
+- [X] T021 [P] [US1] Add relations to apps/nextjs/src/db/schema/user-inventory.ts (userInventoryRelations) for type-safe joins
+- [X] T022 [P] [US1] Add relations to apps/nextjs/src/db/schema/user-recipes.ts (userRecipesRelations) for type-safe joins
+- [X] T023 [P] [US1] Add relations to apps/nextjs/src/db/schema/cooking-log.ts (cookingLogRelations) for type-safe joins
 
 **Checkpoint**: User Story 1 complete - schema definitions are type-safe, relations defined, validation tests pass
 
