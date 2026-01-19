@@ -133,17 +133,17 @@ Project: Next.js monorepo (`apps/nextjs/`)
 
 ### Migration Workflow for User Story 3
 
-- [ ] T032 [US3] Generate initial migration from Drizzle schema with pnpm drizzle-kit generate in apps/nextjs/ (outputs to supabase/migrations/)
-- [ ] T033 [US3] Review generated migration SQL in apps/nextjs/supabase/migrations/ directory to verify correct DDL (enums, tables, indexes, constraints)
-- [ ] T034 [US3] Apply migration to local database with supabase db push from apps/nextjs/
-- [ ] T035 [US3] Verify migration applied successfully with supabase db status from apps/nextjs/
-- [ ] T036 [US3] Test schema introspection with pnpm drizzle-kit introspect in apps/nextjs/ (verify generates matching TypeScript schema from existing database)
-- [ ] T037 [US3] Document migration workflow in apps/nextjs/README.md (generate → review → apply steps, local vs production commands)
+- [X] T032 [US3] Generate initial migration from Drizzle schema with pnpm drizzle-kit generate in apps/nextjs/ (outputs to supabase/migrations/)
+- [X] T033 [US3] Review generated migration SQL in apps/nextjs/supabase/migrations/ directory to verify correct DDL (enums, tables, indexes, constraints)
+- [X] T034 [US3] Apply migration to local database with supabase db push from apps/nextjs/
+- [X] T035 [US3] Verify migration applied successfully with supabase db status from apps/nextjs/
+- [X] T036 [US3] Test schema introspection with pnpm drizzle-kit introspect in apps/nextjs/ (verify generates matching TypeScript schema from existing database)
+- [X] T037 [US3] Document migration workflow in apps/nextjs/README.md (generate → review → apply steps, local vs production commands)
 
 ### Migration Validation for User Story 3
 
-- [ ] T038 [US3] Test migration generation performance (measure time for drizzle-kit generate, ensure <5s per SC-007)
-- [ ] T039 [US3] Verify idempotency: apply migration twice, ensure no errors on second application
+- [X] T038 [US3] Test migration generation performance (measure time for drizzle-kit generate, ensure <5s per SC-007)
+- [X] T039 [US3] Verify idempotency: apply migration twice, ensure no errors on second application
 
 **Checkpoint**: User Story 3 complete - migration workflow functional, schema changes tracked in version control, local database synced
 

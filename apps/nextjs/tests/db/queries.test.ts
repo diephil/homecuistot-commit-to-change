@@ -555,14 +555,14 @@ describe('Transaction Support', () => {
     // Setup: Create recipe and ONE ingredient only
     await adminDb.insert(recipes).values({
       id: TEST_RECIPE_ID,
-      name: 'Test Recipe',
+      name: 'Test Recipe ' + Date.now(),
       description: 'Test',
       isSeeded: true,
     })
 
     await adminDb.insert(ingredients).values({
       id: TEST_INGREDIENT_ID,
-      name: 'Test Ingredient',
+      name: 'Test Ingredient ' + Date.now(),
       category: 'meat',
       isAssumed: false,
     })

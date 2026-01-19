@@ -18,7 +18,7 @@ describe('TypeScript Type Safety', () => {
     const validQuery = await adminDb
       .select()
       .from(userInventory)
-      .where(eq(userInventory.userId, 'test-id'))
+      .where(eq(userInventory.userId, '00000000-0000-0000-0000-000000000001'))
 
     expect(validQuery).toBeDefined()
 
@@ -43,7 +43,7 @@ describe('TypeScript Type Safety', () => {
     const validType = await adminDb
       .update(userInventory)
       .set({ quantityLevel: 2 })
-      .where(eq(userInventory.userId, 'test-id'))
+      .where(eq(userInventory.userId, '00000000-0000-0000-0000-000000000001'))
 
     expect(validType).toBeDefined()
 
@@ -67,7 +67,7 @@ describe('TypeScript Type Safety', () => {
     const validInsert = await adminDb
       .insert(ingredients)
       .values({
-        name: 'Test Ingredient',
+        name: 'Test Ingredient ' + Date.now(),
         category: 'meat',
         isAssumed: false,
       })
@@ -101,7 +101,7 @@ describe('TypeScript Type Safety', () => {
     const validEnum = await adminDb
       .insert(ingredients)
       .values({
-        name: 'Test Ingredient',
+        name: 'Test Ingredient ' + Date.now(),
         category: 'meat',
         isAssumed: false,
       })
