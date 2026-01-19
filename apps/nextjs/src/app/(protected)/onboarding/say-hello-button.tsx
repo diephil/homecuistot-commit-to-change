@@ -1,16 +1,15 @@
 "use client";
 
+import { Button } from "@/components/retroui/Button";
+
 export default function SayHelloButton() {
   const handleHelloClick = () => {
     fetch("/api/hello", { method: "POST" });
   };
 
   return (
-    <button
-      onClick={handleHelloClick}
-      className="h-12 rounded-full bg-foreground px-8 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc]"
-    >
+    <Button onClick={handleHelloClick} size="lg" variant="default">
       Say Hello
-    </button>
+    </Button>
   );
 }
