@@ -30,11 +30,11 @@ Project: Next.js monorepo (`apps/nextjs/`)
 **Purpose**: Install dependencies and configure Drizzle tooling
 
 - [X] T001 Install Drizzle dependencies in apps/nextjs/package.json (drizzle-orm, postgres, drizzle-kit, vitest, @vitejs/plugin-react)
-- [ ] T002 [P] Create drizzle.config.ts in apps/nextjs/ with schema path, output to supabase/migrations/, PostgreSQL dialect
-- [ ] T003 [P] Create vitest.config.ts in apps/nextjs/ with node environment for database tests
-- [ ] T004 [P] Add DATABASE_URL and DATABASE_URL_DIRECT to apps/nextjs/.env.local (Transaction pooler + direct connection)
-- [ ] T005 [P] Create directory structure: apps/nextjs/src/db/schema/, apps/nextjs/drizzle/migrations/, apps/nextjs/tests/db/, apps/nextjs/tests/integration/
-- [ ] T006 [P] Add test scripts to apps/nextjs/package.json ("test": "vitest", "test:db": "vitest run tests/db")
+- [X] T002 [P] Create drizzle.config.ts in apps/nextjs/ with schema path, output to supabase/migrations/, PostgreSQL dialect
+- [X] T003 [P] Create vitest.config.ts in apps/nextjs/ with node environment for database tests
+- [X] T004 [P] Add DATABASE_URL and DATABASE_URL_DIRECT to apps/nextjs/.env.local (Transaction pooler + direct connection)
+- [X] T005 [P] Create directory structure: apps/nextjs/src/db/schema/, apps/nextjs/drizzle/migrations/, apps/nextjs/tests/db/, apps/nextjs/tests/integration/
+- [X] T006 [P] Add test scripts to apps/nextjs/package.json ("test": "vitest", "test:db": "vitest run tests/db")
 
 **Checkpoint**: Drizzle tooling configured, directories created
 
