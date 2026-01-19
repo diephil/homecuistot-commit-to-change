@@ -103,17 +103,17 @@ Project: Next.js monorepo (`apps/nextjs/`)
 
 ### Query Implementation for User Story 2
 
-- [ ] T024 [P] [US2] Create apps/nextjs/tests/db/queries.test.ts with basic CRUD tests (insert, select, update, delete on userInventory)
-- [ ] T025 [US2] Implement example CRUD functions in apps/nextjs/src/db/client.ts (getIngredients, addInventoryItem, updateInventoryQuantity, deleteInventoryItem) using adminDb
-- [ ] T026 [US2] Test join queries in apps/nextjs/tests/db/queries.test.ts (userInventory with ingredients, recipes with recipeIngredients)
-- [ ] T027 [US2] Implement Tier 1 recipe query (all anchors present) in apps/nextjs/src/db/client.ts per data-model.md example
-- [ ] T028 [US2] Test aggregation queries in apps/nextjs/tests/db/queries.test.ts (count recipes, average inventory quantity)
-- [ ] T029 [US2] Verify TypeScript catches invalid queries (wrong column names, type mismatches) by attempting to compile intentionally broken queries
+- [X] T024 [P] [US2] Create apps/nextjs/tests/db/queries.test.ts with basic CRUD tests (insert, select, update, delete on userInventory)
+- [X] T025 [US2] Implement example CRUD functions in apps/nextjs/src/db/client.ts (getIngredients, addInventoryItem, updateInventoryQuantity, deleteInventoryItem) using adminDb
+- [X] T026 [US2] Test join queries in apps/nextjs/tests/db/queries.test.ts (userInventory with ingredients, recipes with recipeIngredients)
+- [X] T027 [US2] Implement Tier 1 recipe query (all anchors present) in apps/nextjs/src/db/client.ts per data-model.md example
+- [X] T028 [US2] Test aggregation queries in apps/nextjs/tests/db/queries.test.ts (count recipes, average inventory quantity)
+- [X] T029 [US2] Verify TypeScript catches invalid queries (wrong column names, type mismatches) by attempting to compile intentionally broken queries
 
 ### Transaction Support for User Story 2
 
-- [ ] T030 [US2] Implement transaction example in apps/nextjs/src/db/client.ts (cooking flow: insert cookingLog + update userInventory in transaction)
-- [ ] T031 [US2] Test transaction rollback in apps/nextjs/tests/db/queries.test.ts (verify rollback on error)
+- [X] T030 [US2] Implement transaction example in apps/nextjs/src/db/client.ts (cooking flow: insert cookingLog + update userInventory in transaction)
+- [X] T031 [US2] Test transaction rollback in apps/nextjs/tests/db/queries.test.ts (verify rollback on error)
 
 **Checkpoint**: User Story 2 complete - type-safe queries work, CRUD operations validated, complex queries (joins, aggregations, transactions) functional
 
