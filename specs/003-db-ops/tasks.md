@@ -104,7 +104,7 @@ Project: Next.js monorepo (`apps/nextjs/`)
 ### Query Implementation for User Story 2
 
 - [X] T024 [P] [US2] Create apps/nextjs/tests/db/queries.test.ts with basic CRUD tests (insert, select, update, delete on userInventory)
-- [X] T025 [US2] Implement example CRUD functions in apps/nextjs/src/db/client.ts (getIngredients, addInventoryItem, updateInventoryQuantity, deleteInventoryItem) using adminDb
+- [X] T025 [US2] Implement example CRUD functions in apps/nextjs/src/db/client.ts (getIngredients, adminAddInventoryItem, adminUpdateInventoryQuantity, adminDeleteInventoryItem) using adminDb for admin/seed operations only
 - [X] T026 [US2] Test join queries in apps/nextjs/tests/db/queries.test.ts (userInventory with ingredients, recipes with recipeIngredients)
 - [X] T027 [US2] Implement Tier 1 recipe query (all anchors present) in apps/nextjs/src/db/client.ts per data-model.md example
 - [X] T028 [US2] Test aggregation queries in apps/nextjs/tests/db/queries.test.ts (count recipes, average inventory quantity)
@@ -190,7 +190,7 @@ Project: Next.js monorepo (`apps/nextjs/`)
 ### Server Component Integration for User Story 5
 
 - [X] T047 [P] [US5] Create example Server Component in apps/nextjs/src/app/(protected)/inventory/page.tsx using createUserDb with Supabase session
-- [X] T048 [P] [US5] Create example Server Action in apps/nextjs/src/app/actions/inventory.ts for updateInventoryQuantity using createUserDb
+- [X] T048 [P] [US5] Create example Server Action in apps/nextjs/src/app/actions/inventory.ts for updateInventoryQuantity, addInventoryItem, deleteInventoryItem using createUserDb (user-facing operations with RLS)
 - [X] T049 [P] [US5] Create example API Route in apps/nextjs/src/app/api/inventory/route.ts using createUserDb with proper error handling
 - [X] T050 [US5] Test Server Component integration: navigate to /inventory page, verify data renders, check session validation redirects
 - [X] T051 [US5] Test Server Action integration: call updateInventoryQuantity from client component, verify database update, check revalidatePath works

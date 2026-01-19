@@ -300,10 +300,20 @@ export type NewCookingLog = typeof schema.cookingLog.$inferInsert;
 export type UnrecognizedItem = typeof schema.unrecognizedItems.$inferSelect;
 export type NewUnrecognizedItem = typeof schema.unrecognizedItems.$inferInsert;
 
-// CRUD Helper Functions (using adminDb for examples)
-// In production, use createUserDb for RLS-aware operations
+/**
+ * CRUD Helper Functions
+ *
+ * ⚠️ These helpers use adminDb and bypass RLS. They are for:
+ * - Admin scripts, seed data, background jobs only
+ *
+ * For user-facing operations, use Server Actions in @/app/actions/
+ * which implement RLS-aware patterns with createUserDb
+ *
+ * Functions prefixed with `admin` bypass RLS and should NEVER be exposed
+ * to client-side code or used in API routes/Server Actions.
+ */
 
-import { eq, and, gt, desc, count, avg, sql as sqlFn } from "drizzle-orm";
+import { eq, and, gt, desc, sql as sqlFn } from "drizzle-orm";
 
 /**
  * Get all ingredients from catalog
@@ -325,9 +335,12 @@ export async function getIngredientsByCategory(params: {
 }
 
 /**
- * Add or update inventory item (upsert)
+ * Add or update inventory item (upsert) - ADMIN ONLY
+ *
+ * ⚠️ Uses adminDb - bypasses RLS. For admin/seed operations only.
+ * For user operations, use server action: @/app/actions/inventory.addInventoryItem
  */
-export async function addInventoryItem(params: {
+export async function adminAddInventoryItem(params: {
   userId: string;
   ingredientId: string;
   quantityLevel: number;
@@ -351,9 +364,12 @@ export async function addInventoryItem(params: {
 }
 
 /**
- * Update inventory quantity
+ * Update inventory quantity - ADMIN ONLY
+ *
+ * ⚠️ Uses adminDb - bypasses RLS. For admin/seed operations only.
+ * For user operations, use server action: @/app/actions/inventory.updateInventoryQuantity
  */
-export async function updateInventoryQuantity(params: {
+export async function adminUpdateInventoryQuantity(params: {
   userId: string;
   ingredientId: string;
   quantityLevel: number;
@@ -374,9 +390,12 @@ export async function updateInventoryQuantity(params: {
 }
 
 /**
- * Delete inventory item
+ * Delete inventory item - ADMIN ONLY
+ *
+ * ⚠️ Uses adminDb - bypasses RLS. For admin/seed operations only.
+ * For user operations, use server action: @/app/actions/inventory.deleteInventoryItem
  */
-export async function deleteInventoryItem(params: {
+export async function adminDeleteInventoryItem(params: {
   userId: string;
   ingredientId: string;
 }) {
