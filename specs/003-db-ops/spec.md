@@ -160,6 +160,155 @@ A developer needs to fetch data in React Server Components using Drizzle. They e
 6. Database connection string with direct PostgreSQL access
 7. Environment variables for connection configuration
 
+## Technical Implementation Learnings
+
+### Critical: Drizzle Relations
+
+**What**: Type-safe metadata defining table relationships for nested queries without manual joins.
+
+**Why Critical**:
+- Enables `db.query.tableName.findMany({ with: { relation: true } })` syntax
+- Provides TypeScript autocomplete for nested data access
+- Eliminates manual join writing and type casting
+- Required for optimal developer experience with Drizzle
+
+**Implementation**:
+```typescript
+// Define relations in schema files
+import { relations } from 'drizzle-orm'
+
+export const recipesRelations = relations(recipes, ({ many }) => ({
+  recipeIngredients: many(recipeIngredients),
+  userRecipes: many(userRecipes),
+}))
+
+export const recipeIngredientsRelations = relations(recipeIngredients, ({ one }) => ({
+  recipe: one(recipes, {
+    fields: [recipeIngredients.recipeId],
+    references: [recipes.id],
+  }),
+  ingredient: one(ingredients, {
+    fields: [recipeIngredients.ingredientId],
+    references: [ingredients.id],
+  }),
+}))
+```
+
+**Benefit**: Query transforms from verbose SQL joins to clean nested queries:
+```typescript
+// Before: Manual joins with type casting
+const data = await db.select().from(recipes)
+  .leftJoin(recipeIngredients, eq(recipes.id, recipeIngredients.recipeId))
+  .leftJoin(ingredients, eq(recipeIngredients.ingredientId, ingredients.id))
+
+// After: Type-safe nested query with autocomplete
+const data = await db.query.recipes.findMany({
+  with: {
+    recipeIngredients: {
+      with: { ingredient: true }
+    }
+  }
+})
+```
+
+### Critical: Separate Connection Pools for RLS
+
+**What**: Distinct Postgres connection pools for admin operations vs user operations.
+
+**Why Critical**:
+- Session state (role, config variables) persists on connections
+- Single pool creates race conditions where admin/user contexts mix
+- RLS policies fail when role switching isn't isolated per transaction
+- Supabase `auth.uid()` requires proper `set_config()` context per request
+
+**Implementation**:
+```typescript
+// WRONG: Single pool reused for admin and user (race conditions)
+const client = postgres(url)
+const db = drizzle({ client })
+// Both admin and user use same connections → context leakage
+
+// CORRECT: Separate pools with proper isolation
+const adminClient = postgres(url, { prepare: false })
+export const adminDb = drizzle({ client: adminClient, schema })
+
+const userClient = postgres(url, { prepare: false })
+export const userDb = drizzle({ client: userClient, schema })
+
+export function createUserDb(token: SupabaseToken) {
+  return (async (transaction, ...rest) => {
+    return await userDb.transaction(async (tx) => {
+      try {
+        await tx.execute(sql`
+          select set_config('request.jwt.claims', '${sql.raw(JSON.stringify(token))}', TRUE);
+          select set_config('request.jwt.claim.sub', '${sql.raw(token.sub ?? '')}', TRUE);
+          set local role ${sql.raw(token.role ?? 'anon')};
+        `)
+        return await transaction(tx)
+      } finally {
+        await tx.execute(sql`
+          select set_config('request.jwt.claims', NULL, TRUE);
+          select set_config('request.jwt.claim.sub', NULL, TRUE);
+          reset role;
+        `)
+      }
+    }, ...rest)
+  }) as typeof userDb.transaction
+}
+```
+
+**Usage**:
+```typescript
+// Admin operations (bypass RLS)
+import { adminDb } from '@/db/client'
+await adminDb.select().from(recipes) // All recipes
+
+// User operations (respects RLS)
+import { createUserDb } from '@/db/client'
+const userDb = createUserDb(supabaseToken)
+await userDb((tx) => tx.select().from(recipes)) // Only user's recipes
+```
+
+### Additional Best Practices
+
+**Environment Variable Validation**:
+- Add validation at module load, not runtime
+- Provide clear error messages for missing vars
+- Prevents confusing runtime crashes in production
+
+```typescript
+if (!process.env.DATABASE_URL) {
+  throw new Error('DATABASE_URL is required in environment')
+}
+```
+
+**Strategic Indexing**:
+- Index foreign keys for join performance
+- Add composite indexes for common query patterns
+- Use filtered indexes for subset queries (e.g., `where quantity > 0`)
+
+```typescript
+export const recipes = pgTable('recipes', {
+  // ... columns
+}, (table) => [
+  index('idx_recipes_user').on(table.userId),
+  index('idx_recipes_user_seeded').on(table.userId, table.isSeeded),
+])
+```
+
+**Circular Dependency Handling**:
+- Import related tables directly in relation definitions
+- Drizzle handles circular deps automatically
+- No need for string-based forward references
+
+```typescript
+// CORRECT: Direct imports
+import { recipeIngredients } from './recipes'
+export const ingredientsRelations = relations(ingredients, ({ many }) => ({
+  recipeIngredients: many(recipeIngredients), // ✅ Works
+}))
+```
+
 ## Out of Scope
 
 1. Replacing Supabase Client entirely (use both for different purposes)

@@ -46,16 +46,16 @@ Project: Next.js monorepo (`apps/nextjs/`)
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T007 [P] Create apps/nextjs/src/db/schema/enums.ts with ingredientCategoryEnum, ingredientTypeEnum, recipeSourceEnum
-- [ ] T008 [P] Create apps/nextjs/src/db/schema/ingredients.ts with ingredients table and ingredientAliases table definitions
-- [ ] T009 [P] Create apps/nextjs/src/db/schema/recipes.ts with recipes table and recipeIngredients table definitions
-- [ ] T010 [P] Create apps/nextjs/src/db/schema/user-inventory.ts with userInventory table definition
-- [ ] T011 [P] Create apps/nextjs/src/db/schema/user-recipes.ts with userRecipes table definition
-- [ ] T012 [P] Create apps/nextjs/src/db/schema/cooking-log.ts with cookingLog table definition
-- [ ] T013 [P] Create apps/nextjs/src/db/schema/unrecognized-items.ts with unrecognizedItems table definition
-- [ ] T014 Create apps/nextjs/src/db/schema/index.ts to re-export all schemas (enums, ingredients, recipes, user-inventory, user-recipes, cooking-log, unrecognized-items)
-- [ ] T015 Create apps/nextjs/src/db/client.ts with adminDb (singleton), createUserDb factory (JWT token passing), and type exports for all entities
-- [ ] T016 Verify schema compilation with TypeScript (run pnpm tsc --noEmit in apps/nextjs/)
+- [X] T007 [P] Create apps/nextjs/src/db/schema/enums.ts with ingredientCategoryEnum, ingredientTypeEnum, recipeSourceEnum
+- [X] T008 [P] Create apps/nextjs/src/db/schema/ingredients.ts with ingredients table and ingredientAliases table definitions
+- [X] T009 [P] Create apps/nextjs/src/db/schema/recipes.ts with recipes table and recipeIngredients table definitions
+- [X] T010 [P] Create apps/nextjs/src/db/schema/user-inventory.ts with userInventory table definition
+- [X] T011 [P] Create apps/nextjs/src/db/schema/user-recipes.ts with userRecipes table definition
+- [X] T012 [P] Create apps/nextjs/src/db/schema/cooking-log.ts with cookingLog table definition
+- [X] T013 [P] Create apps/nextjs/src/db/schema/unrecognized-items.ts with unrecognizedItems table definition
+- [X] T014 Create apps/nextjs/src/db/schema/index.ts to re-export all schemas (enums, ingredients, recipes, user-inventory, user-recipes, cooking-log, unrecognized-items)
+- [X] T015 Create apps/nextjs/src/db/client.ts with adminDb (singleton), createUserDb factory (JWT token passing), and type exports for all entities
+- [X] T016 Verify schema compilation with TypeScript (run pnpm tsc --noEmit in apps/nextjs/)
 
 **Checkpoint**: Foundation ready - schema definitions compile, database client created, user story implementation can begin
 
