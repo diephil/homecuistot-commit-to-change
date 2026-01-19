@@ -1,4 +1,4 @@
-.PHONY: dev dev-all down opstart opdown sbstart sbstop
+.PHONY: dev dev-all down opstart opdown sbstart sbstop sblogin
 
 dev:
 	cd apps/nextjs && pnpm dev
@@ -22,3 +22,6 @@ sbstart:
 
 sbstop:
 	cd apps/nextjs && pnpx supabase stop
+
+sblogin:
+	cd apps/nextjs && pnpx supabase login
