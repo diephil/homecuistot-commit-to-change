@@ -189,17 +189,17 @@ Project: Next.js monorepo (`apps/nextjs/`)
 
 ### Server Component Integration for User Story 5
 
-- [ ] T047 [P] [US5] Create example Server Component in apps/nextjs/src/app/(protected)/inventory/page.tsx using createUserDb with Supabase session
-- [ ] T048 [P] [US5] Create example Server Action in apps/nextjs/src/app/actions/inventory.ts for updateInventoryQuantity using createUserDb
-- [ ] T049 [P] [US5] Create example API Route in apps/nextjs/src/app/api/inventory/route.ts using createUserDb with proper error handling
-- [ ] T050 [US5] Test Server Component integration: navigate to /inventory page, verify data renders, check session validation redirects
-- [ ] T051 [US5] Test Server Action integration: call updateInventoryQuantity from client component, verify database update, check revalidatePath works
-- [ ] T052 [US5] Test API Route integration: make fetch request to /api/inventory, verify JSON response, check 401 for unauthorized
+- [X] T047 [P] [US5] Create example Server Component in apps/nextjs/src/app/(protected)/inventory/page.tsx using createUserDb with Supabase session
+- [X] T048 [P] [US5] Create example Server Action in apps/nextjs/src/app/actions/inventory.ts for updateInventoryQuantity using createUserDb
+- [X] T049 [P] [US5] Create example API Route in apps/nextjs/src/app/api/inventory/route.ts using createUserDb with proper error handling
+- [X] T050 [US5] Test Server Component integration: navigate to /inventory page, verify data renders, check session validation redirects
+- [X] T051 [US5] Test Server Action integration: call updateInventoryQuantity from client component, verify database update, check revalidatePath works
+- [X] T052 [US5] Test API Route integration: make fetch request to /api/inventory, verify JSON response, check 401 for unauthorized
 
 ### Performance Validation for User Story 5
 
-- [ ] T053 [US5] Measure query performance in apps/nextjs/tests/db/queries.test.ts (compare Drizzle vs raw SQL, verify overhead <5% per SC-003)
-- [ ] T054 [US5] Test connection pooling with concurrent requests (verify Transaction pooler handles multiple simultaneous queries without exhaustion)
+- [X] T053 [US5] Measure query performance in apps/nextjs/tests/db/queries.test.ts (compare Drizzle vs raw SQL, verify overhead <5% per SC-003)
+- [X] T054 [US5] Test connection pooling with concurrent requests (verify Transaction pooler handles multiple simultaneous queries without exhaustion)
 
 **Checkpoint**: User Story 5 complete - Drizzle integrated in Server Components, Server Actions, API Routes, performance validated, connection pooling working
 
@@ -209,15 +209,15 @@ Project: Next.js monorepo (`apps/nextjs/`)
 
 **Purpose**: Documentation, cleanup, and final validation
 
-- [ ] T055 [P] Update apps/nextjs/README.md with Drizzle setup instructions (reference quickstart.md)
-- [ ] T056 [P] Add TypeScript type exports to apps/nextjs/src/db/client.ts for all entities (Ingredient, Recipe, UserInventory, etc.)
-- [ ] T057 [P] Run full test suite with pnpm test in apps/nextjs/ and verify all tests pass
-- [ ] T058 [P] Validate against quickstart.md checklist (confirm all setup steps completed)
-- [ ] T059 [P] Run TypeScript compilation check with pnpm tsc --noEmit in apps/nextjs/ (verify no type errors)
-- [ ] T060 [P] Run linting with pnpm lint in apps/nextjs/ and fix any issues
-- [ ] T061 Document common query patterns in apps/nextjs/src/db/README.md (basic CRUD, joins, transactions, RLS usage)
-- [ ] T062 Add connection string validation in apps/nextjs/src/db/client.ts (throw clear error if DATABASE_URL missing)
-- [ ] T063 Verify Supabase Auth flow unchanged (test existing auth callback routes in apps/nextjs/src/app/auth/)
+- [X] T055 [P] Update apps/nextjs/README.md with Drizzle setup instructions (reference quickstart.md)
+- [X] T056 [P] Add TypeScript type exports to apps/nextjs/src/db/client.ts for all entities (Ingredient, Recipe, UserInventory, etc.)
+- [X] T057 [P] Run full test suite with pnpm test in apps/nextjs/ and verify all tests pass
+- [X] T058 [P] Validate against quickstart.md checklist (confirm all setup steps completed)
+- [X] T059 [P] Run TypeScript compilation check with pnpm tsc --noEmit in apps/nextjs/ (verify no type errors)
+- [X] T060 [P] Run linting with pnpm lint in apps/nextjs/ and fix any issues
+- [X] T061 Document common query patterns in apps/nextjs/src/db/README.md (basic CRUD, joins, transactions, RLS usage)
+- [X] T062 Add connection string validation in apps/nextjs/src/db/client.ts (throw clear error if DATABASE_URL missing)
+- [X] T063 Verify Supabase Auth flow unchanged (test existing auth callback routes in apps/nextjs/src/app/auth/)
 
 **Checkpoint**: All user stories complete and validated, documentation up to date, system ready for production
 

@@ -124,7 +124,8 @@ export const userDb = drizzle({ client: userClient, schema });
  * Supabase JWT Token Structure
  *
  * Standard JWT claims used for RLS context.
- * Extract from session.access_token in Supabase auth.
+ * Based on official Drizzle ORM Supabase integration pattern.
+ * @see {@link https://orm.drizzle.team/docs/rls | Drizzle RLS Documentation}
  */
 export type SupabaseToken = {
   /** Issuer - Supabase project URL */
@@ -144,6 +145,42 @@ export type SupabaseToken = {
   /** PostgreSQL role - 'authenticated', 'anon', or custom */
   role?: string;
 };
+
+/**
+ * Decode Supabase JWT Access Token
+ *
+ * Safely decodes a Supabase JWT access token into a SupabaseToken object.
+ * This is the recommended approach per Drizzle ORM docs.
+ *
+ * @param accessToken - Raw JWT access token from Supabase session
+ * @returns Decoded SupabaseToken object
+ * @throws {Error} If token is invalid or cannot be decoded
+ *
+ * @example
+ * ```typescript
+ * const supabase = await createClient()
+ * const { data: { session } } = await supabase.auth.getSession()
+ * const token = decodeSupabaseToken(session.access_token)
+ * const db = createUserDb(token)
+ * ```
+ */
+export function decodeSupabaseToken(accessToken: string): SupabaseToken {
+  try {
+    // JWT format: header.payload.signature
+    const parts = accessToken.split('.');
+    if (parts.length !== 3) {
+      throw new Error('Invalid JWT format');
+    }
+
+    // Decode the payload (second part)
+    const payload = Buffer.from(parts[1], 'base64').toString('utf-8');
+    return JSON.parse(payload) as SupabaseToken;
+  } catch (error) {
+    throw new Error(
+      `Failed to decode Supabase token: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
 
 /**
  * Create User Database Client Factory

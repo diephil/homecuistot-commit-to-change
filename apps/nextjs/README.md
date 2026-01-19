@@ -36,6 +36,36 @@ This project uses [`next/font`](https://nextjs.org/docs/app/building-your-applic
 
 This project uses Drizzle ORM with Supabase PostgreSQL for type-safe database operations.
 
+### Drizzle ORM Setup
+
+**Documentation:** See [`src/db/README.md`](./src/db/README.md) for detailed usage patterns.
+
+**Quick Start:**
+```typescript
+import { createClient } from '@/utils/supabase/server'
+import { createUserDb } from '@/db/client'
+import { userInventory } from '@/db/schema'
+
+// In Server Component, Server Action, or API Route
+const supabase = await createClient()
+const { data: { session } } = await supabase.auth.getSession()
+if (!session) redirect('/login')
+
+const db = createUserDb({ accessToken: session.access_token })
+const inventory = await db.select().from(userInventory)
+```
+
+**Key Files:**
+- **Schema Definitions:** `src/db/schema/*.ts` - TypeScript table definitions
+- **Database Client:** `src/db/client.ts` - Admin & user clients (RLS support)
+- **Migrations:** `supabase/migrations/*.sql` - Generated SQL migrations
+- **Tests:** `tests/db/` and `tests/integration/` - Schema & RLS tests
+
+**Configuration:**
+- `drizzle.config.ts` - Drizzle Kit configuration
+- `vitest.config.ts` - Test framework setup
+- `.env.local` - Database connection strings (see setup guide in `/specs/003-db-ops/quickstart.md`)
+
 ### Quick Concepts
 
 **Local vs Production:**
