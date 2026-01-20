@@ -5,6 +5,7 @@ import SayHelloButton from "./say-hello-button";
 import { Avatar } from "@/components/retroui/Avatar";
 import { Badge } from "@/components/retroui/Badge";
 import { Alert } from "@/components/retroui/Alert";
+import { PageContainer } from "@/components/PageContainer";
 
 export default async function OnboardingPage() {
   const supabase = await createClient();
@@ -21,38 +22,39 @@ export default async function OnboardingPage() {
     .slice(0, 2)
     .toUpperCase() || "??";
 
+  // Support both Google (picture) and Discord (avatar_url) avatar fields
+  const avatarUrl = user.user_metadata?.picture || user.user_metadata?.avatar_url;
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-orange-50 to-pink-50 p-4">
-      <div className="w-full max-w-md">
-        <div className="rounded-lg border-4 border-black bg-white p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-          <div className="flex flex-col items-center gap-6">
-            <Avatar className="h-20 w-20">
-              <Avatar.Image src={user.user_metadata?.avatar_url} alt={user.email || "User"} />
-              <Avatar.Fallback>{initials}</Avatar.Fallback>
-            </Avatar>
+    <PageContainer maxWidth="md" gradientFrom="from-orange-50" gradientVia="via-pink-50" gradientTo="to-pink-50">
+      <div className="rounded-lg border-4 border-black bg-white p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+        <div className="flex flex-col items-center gap-6">
+          <Avatar className="h-20 w-20">
+            <Avatar.Image src={avatarUrl} alt={user.email || "User"} />
+            <Avatar.Fallback>{initials}</Avatar.Fallback>
+          </Avatar>
 
-            <div className="flex flex-col items-center gap-2">
-              <div className="flex items-center gap-2">
-                <h1 className="text-3xl font-bold">Welcome!</h1>
-                <Badge variant="solid" size="sm">New</Badge>
-              </div>
-              <p className="text-lg text-zinc-600">{user.email}</p>
+          <div className="flex flex-col items-center gap-2">
+            <div className="flex items-center gap-2">
+              <h1 className="text-3xl font-bold">Welcome!</h1>
+              <Badge variant="solid" size="sm">New</Badge>
             </div>
+            <p className="text-lg text-zinc-600">{user.email}</p>
+          </div>
 
-            <Alert variant="default" status="success" className="w-full">
-              <Alert.Title>Successfully authenticated</Alert.Title>
-              <Alert.Description>
-                You are now logged in and ready to start using Homecuistot.
-              </Alert.Description>
-            </Alert>
+          <Alert variant="default" status="success" className="w-full">
+            <Alert.Title>Successfully authenticated</Alert.Title>
+            <Alert.Description>
+              You are now logged in and ready to start using Homecuistot.
+            </Alert.Description>
+          </Alert>
 
-            <div className="flex w-full flex-col gap-3">
-              <SayHelloButton />
-              <SignOutButton />
-            </div>
+          <div className="flex w-full flex-col gap-3">
+            <SayHelloButton />
+            <SignOutButton />
           </div>
         </div>
       </div>
-    </div>
+    </PageContainer>
   );
 }
