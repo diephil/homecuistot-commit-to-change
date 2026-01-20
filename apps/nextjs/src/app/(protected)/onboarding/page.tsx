@@ -6,6 +6,30 @@ import { Button } from "@/components/retroui/Button";
 import { PageContainer } from "@/components/PageContainer";
 import Image from "next/image";
 
+/**
+ * KEEP THIS LOGIC WE WILL ADD IT BACK LATER
+ * 
+
+const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/login");
+  }
+
+  const initials = user.email
+    ?.split("@")[0]
+    .slice(0, 2)
+    .toUpperCase() || "??";
+
+  // Support both Google (picture) and Discord (avatar_url) avatar fields
+  const avatarUrl = user.user_metadata?.picture || user.user_metadata?.avatar_url;
+
+
+ */
+
 // T020: MOCK_DISHES constant (7 items with id, name, isSelected)
 const MOCK_DISHES = [
   { id: "1", name: "Pasta Carbonara", isSelected: true },
