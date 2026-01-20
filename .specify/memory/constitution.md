@@ -3,41 +3,39 @@
 SYNC IMPACT REPORT - Constitution Update
 ═══════════════════════════════════════════════════════════════════════════
 
-Version Change: 1.1.0 → 1.2.0 (New principle added - Named Parameters)
+Version Change: 1.2.0 → 1.3.0 (New principle added - Neo-Brutalist Design System)
 
 Principles Modified:
 - None (no title changes)
 
 Principles Added:
-- VI. Named Parameters for Clarity (NEW)
+- VII. Neo-Brutalist Design System (NEW)
 
 Sections Modified:
-- Core Principles: Added Principle VI with rationale and examples
+- Core Principles: Added Principle VII with rationale and guidelines
 
 Sections Removed:
 - None
 
 Templates Status:
-✅ plan-template.md - No changes required (no constitution check conflicts)
-✅ spec-template.md - No changes required (requirement agnostic)
-✅ tasks-template.md - No changes required (testing optional unchanged)
-✅ agent-file-template.md - No changes required
-✅ checklist-template.md - No changes required
+✅ plan-template.md - No changes required (technology-agnostic)
+✅ spec-template.md - No changes required (user story focused)
+✅ tasks-template.md - No changes required (implementation-agnostic)
 
 Follow-up TODOs:
-- None (principle is self-contained)
+- None (design principle is self-contained)
 
 Rationale:
-- MINOR version 1.1.0 → 1.2.0: New principle added within MVP phase
-- Named parameter principle aligns with Principle II (Pragmatic Type Safety)
-- Improves readability and prevents argument order mistakes
-- Supports maintainability without blocking MVP velocity
+- MINOR version 1.2.0 → 1.3.0: New design principle added within MVP phase
+- Neo-brutalist design system aligns with MVP-First development (Principle I)
+- Establishes consistent UI/UX approach without blocking MVP velocity
+- Provides clear design constraints for frontend implementation
 - No breaking changes to existing governance or workflow
 
 Version Bump Justification:
 - Not MAJOR: No backward incompatible changes, no phase transition
-- MINOR: New principle added (material expansion of guidance)
-- Not PATCH: Substantive content addition, not clarification/correction
+- MINOR: New principle added (material expansion of design guidance)
+- Not PATCH: Substantive content addition establishing design system, not clarification
 
 ═══════════════════════════════════════════════════════════════════════════
 -->
@@ -171,6 +169,44 @@ function updateProfile(params: {
 }): void { }
 ```
 
+### VII. Neo-Brutalist Design System
+
+Follow neo-brutalist design principles for all web UI:
+- **Raw aesthetics**: Bold borders (2-3px black), sharp corners (no border-radius unless intentional), high contrast
+- **Honest elements**: UI elements appear exactly as they are—buttons look like buttons, no hidden interactions
+- **Monospace typography**: Favor monospace fonts for data/code displays; sans-serif for content
+- **Brutalist color**: Limited palette (black, white, 1-2 accent colors), no gradients
+- **Functional over decorative**: Every visual element serves a purpose; remove purely ornamental elements
+- **Visible structure**: Expose grid lines, boundaries, component edges where helpful for clarity
+- **Accessible first**: High contrast and clear visual hierarchy make brutalism naturally accessible
+
+**Rationale**: Neo-brutalism aligns with MVP speed—simple, bold, functional design requires less polish than refined aesthetics. Clear visual structure improves usability. Raw honesty matches startup authenticity.
+
+**Examples**:
+```typescript
+// ✅ GOOD: Neo-brutalist button component
+<button className="border-2 border-black px-4 py-2 font-mono bg-white hover:bg-black hover:text-white">
+  Submit
+</button>
+
+// ❌ BAD: Soft, rounded, gradient design
+<button className="rounded-lg bg-gradient-to-r from-blue-400 to-blue-600 shadow-lg px-6 py-3">
+  Submit
+</button>
+
+// ✅ GOOD: Brutalist card with visible boundaries
+<div className="border-3 border-black p-4 bg-white">
+  <h2 className="font-mono text-xl border-b-2 border-black pb-2">Title</h2>
+  <p className="font-sans mt-2">Content</p>
+</div>
+
+// ❌ BAD: Soft shadows and rounded corners
+<div className="rounded-xl shadow-2xl p-6 bg-gradient-to-br from-white to-gray-100">
+  <h2 className="text-xl font-light">Title</h2>
+  <p className="mt-2 text-gray-600">Content</p>
+</div>
+```
+
 ## MVP Constraints (2-Week Timeline)
 
 ### Speed Priorities
@@ -275,4 +311,4 @@ After MVP ships and validates with users:
 - Other principles are guidelines, not gates
 - When in doubt: ship first, fix later (unless it affects users negatively)
 
-**Version**: 1.2.0 | **Ratified**: 2026-01-19 | **Last Amended**: 2026-01-19
+**Version**: 1.3.0 | **Ratified**: 2026-01-19 | **Last Amended**: 2026-01-20
