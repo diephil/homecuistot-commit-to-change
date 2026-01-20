@@ -21,7 +21,8 @@ Read these files:
 2. **Composition**: Build from shadcn primitives (Button, Card, Input, etc.)
 3. **Variants**: Use class-variance-authority (cva) for component variants
 4. **Accessibility**: Include ARIA attributes, keyboard navigation
-5. **TypeScript**: Full type definitions with proper prop interfaces
+5. **Mobile-First Responsive**: Design for mobile screens, enhance for desktop (test on 375px, 768px, 1024px viewports)
+6. **TypeScript**: Full type definitions with proper prop interfaces
 
 ### Available Base Components
 Check what's installed:
@@ -53,7 +54,8 @@ I have access to the Playwright MCP server for component validation:
 - Test interactions: `mcp__playwright__browser_click`, `mcp__playwright__browser_type`
 - Validate accessibility: `mcp__playwright__browser_snapshot`
 - Fill forms: `mcp__playwright__browser_fill_form`
-- Check responsiveness: `mcp__playwright__browser_resize`
+- **Mobile responsiveness**: `mcp__playwright__browser_resize` - test at mobile (375px), tablet (768px), desktop (1024px) widths
+- **Always validate mobile rendering** - take screenshots at multiple breakpoints before completion
 
 ## User Request
 $ARGUMENTS
