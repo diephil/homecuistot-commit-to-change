@@ -51,11 +51,11 @@ importers:
         specifier: 16.1.3
         version: 16.1.3(@babel/core@7.28.6)(@opentelemetry/api@1.9.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       opik:
-        specifier: ^1.9.87
-        version: 1.9.87(zod@3.25.76)
+        specifier: ^1.9.89
+        version: 1.9.89(zod@3.25.76)
       opik-vercel:
-        specifier: ^1.9.87
-        version: 1.9.87(@opentelemetry/api@1.9.0)(@opentelemetry/core@2.4.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-node@0.210.0(@opentelemetry/api@1.9.0))(opik@1.9.87(zod@3.25.76))
+        specifier: ^1.9.89
+        version: 1.9.89(@opentelemetry/api@1.9.0)(@opentelemetry/core@2.4.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-node@0.210.0(@opentelemetry/api@1.9.0))(opik@1.9.89(zod@3.25.76))
       postgres:
         specifier: ^3.4.8
         version: 3.4.8
@@ -3726,8 +3726,8 @@ packages:
     resolution: {integrity: sha512-smsWv2LzFjP03xmvFoJ331ss6h+jixfA4UUV/Bsiyuu4YJPfN+FIQGOIiv4w9/+MoHkfkJ22UIaQWRVFRfH6Vw==}
     engines: {node: '>=20'}
 
-  opik-vercel@1.9.87:
-    resolution: {integrity: sha512-Z/gSx/CXluQI9JudFb5bWlfFam+UmNXTDm7dZ295o5ub3OEtxmzN8HXbL2wNDuhQ1Ns6gFWSbk56ufxL9EN8vg==}
+  opik-vercel@1.9.89:
+    resolution: {integrity: sha512-h9oozCvkcUgmMonRgGKDcgdcIFYdsA+kcufs4oKVZ81PbTkoH2BI/VoiXKtXp89gKWrW7z0Y4E+3FjVsM2UxOg==}
     engines: {node: '>=18'}
     peerDependencies:
       '@opentelemetry/api': ^1.0.0
@@ -3735,8 +3735,8 @@ packages:
       '@opentelemetry/sdk-node': '>=0.56.0'
       opik: ^1.8.75
 
-  opik@1.9.87:
-    resolution: {integrity: sha512-8jkpFuPD3fQU6gP78HusE1ZdL7BEA0spzh6SpUHv2FEJI9ypJ5yqL/mB3aiuQv6EkumxXbaL+8jObpZNHoZROg==}
+  opik@1.9.89:
+    resolution: {integrity: sha512-jFkHQL/TwG8avRdGjyXsg0yaRKHlUSOksot8iY+t6b3di7y8cWB2Ux2i7Tl3idY8nYJ8VqY1h6TOGLEghB5Sxg==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3.25.55 || ^4.0.0
@@ -8143,14 +8143,14 @@ snapshots:
       powershell-utils: 0.1.0
       wsl-utils: 0.3.1
 
-  opik-vercel@1.9.87(@opentelemetry/api@1.9.0)(@opentelemetry/core@2.4.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-node@0.210.0(@opentelemetry/api@1.9.0))(opik@1.9.87(zod@3.25.76)):
+  opik-vercel@1.9.89(@opentelemetry/api@1.9.0)(@opentelemetry/core@2.4.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-node@0.210.0(@opentelemetry/api@1.9.0))(opik@1.9.89(zod@3.25.76)):
     dependencies:
       '@opentelemetry/api': 1.9.0
       '@opentelemetry/core': 2.4.0(@opentelemetry/api@1.9.0)
       '@opentelemetry/sdk-node': 0.210.0(@opentelemetry/api@1.9.0)
-      opik: 1.9.87(zod@3.25.76)
+      opik: 1.9.89(zod@3.25.76)
 
-  opik@1.9.87(zod@3.25.76):
+  opik@1.9.89(zod@3.25.76):
     dependencies:
       '@ai-sdk/anthropic': 3.0.15(zod@3.25.76)
       '@ai-sdk/google': 3.0.10(zod@3.25.76)
