@@ -46,6 +46,7 @@ A newly authenticated user progresses through three onboarding steps on a single
 1. **Given** user is on /onboarding at step 1, **When** page loads, **Then** they see welcome message and single "Start Onboarding" CTA
 2. **Given** user advances to step 2, **When** viewing page, **Then** they see three sections (dishes, fridge items, pantry items) with selectable badge-style buttons and continue/clear CTAs at bottom
 3. **Given** user advances to step 3, **When** viewing page, **Then** they see summary of selected dishes and ingredients, microphone input CTA, and "Finish Onboarding" button
+4. **Given** user clicks "Finish Onboarding" button, **When** button is clicked, **Then** user is routed to /suggestions page
 
 ---
 
@@ -86,6 +87,7 @@ An onboarded user navigates between the three main app pages to understand avail
 - **FR-005**: Step 1 MUST show welcome message, voice authorization note, and "Start Onboarding" CTA
 - **FR-006**: Step 2 MUST show three sections: dishes selection, fridge items selection, pantry items selection, displayed as badge-style buttons, with continue/clear CTAs
 - **FR-007**: Step 3 MUST show summary of selected dishes, fridge items (grouped as "Ingredients"), and pantry items (grouped as "Ingredients"), microphone input CTA, and "Finish Onboarding" button
+- **FR-007a**: "Finish Onboarding" button MUST route user to /suggestions page when clicked
 - **FR-008**: All onboarding steps MUST use mock/placeholder data for selectable items (5-10 items per category: dishes, fridge items, pantry items)
 
 **Main App Pages (Protected)**:

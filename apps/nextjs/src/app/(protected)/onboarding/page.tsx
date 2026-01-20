@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Badge } from "@/components/retroui/Badge";
 import { Button } from "@/components/retroui/Button";
 import { PageContainer } from "@/components/PageContainer";
@@ -64,6 +65,7 @@ const MOCK_PANTRY_INGREDIENTS = [
 ] as const;
 
 export default function OnboardingPage() {
+  const router = useRouter();
   // T023: useState for currentStep (1-3)
   const [currentStep, setCurrentStep] = useState(1);
 
@@ -227,8 +229,7 @@ export default function OnboardingPage() {
               </Button>
               <Button
                 onClick={() => {
-                  // In real app, would save data and redirect to /suggestions
-                  alert("Onboarding complete! (This is a visual demo)");
+                  router.push("/suggestions");
                 }}
                 variant="default"
                 size="lg"
