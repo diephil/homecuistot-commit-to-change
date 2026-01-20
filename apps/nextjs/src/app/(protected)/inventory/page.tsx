@@ -1,64 +1,108 @@
-import { redirect } from 'next/navigation'
-import { createClient } from '@/utils/supabase/server'
-import { createUserDb, decodeSupabaseToken } from '@/db/client'
-import { userInventory, ingredients } from '@/db/schema'
-import { eq, gt } from 'drizzle-orm'
+import { Button } from "@/components/retroui/Button";
+import { PageContainer } from "@/components/PageContainer";
+import { Mic } from "lucide-react";
 
-export default async function InventoryPage() {
-  const supabase = await createClient()
-  const { data: { session } } = await supabase.auth.getSession()
+type QuantityLevel = 0 | 1 | 2 | 3;
 
-  if (!session) {
-    redirect('/login')
-  }
+// T037: MOCK_FRIDGE_INGREDIENTS constant (7 items)
+const MOCK_FRIDGE_INGREDIENTS = [
+  { id: "1", name: "Tomatoes", category: "fridge" as const, quantityLevel: 3 as QuantityLevel },
+  { id: "2", name: "Eggs", category: "fridge" as const, quantityLevel: 1 as QuantityLevel },
+  { id: "3", name: "Milk", category: "fridge" as const, quantityLevel: 2 as QuantityLevel },
+  { id: "4", name: "Cheese", category: "fridge" as const, quantityLevel: 3 as QuantityLevel },
+  { id: "5", name: "Lettuce", category: "fridge" as const, quantityLevel: 0 as QuantityLevel },
+  { id: "6", name: "Chicken Breast", category: "fridge" as const, quantityLevel: 2 as QuantityLevel },
+  { id: "7", name: "Bell Peppers", category: "fridge" as const, quantityLevel: 1 as QuantityLevel },
+] as const;
 
-  // Decode JWT token for Drizzle RLS
-  const token = decodeSupabaseToken(session.access_token)
-  const db = createUserDb(token)
+// T038: MOCK_PANTRY_INGREDIENTS constant (7 items)
+const MOCK_PANTRY_INGREDIENTS = [
+  { id: "8", name: "Pasta", category: "pantry" as const, quantityLevel: 3 as QuantityLevel },
+  { id: "9", name: "Rice", category: "pantry" as const, quantityLevel: 2 as QuantityLevel },
+  { id: "10", name: "Flour", category: "pantry" as const, quantityLevel: 1 as QuantityLevel },
+  { id: "11", name: "Sugar", category: "pantry" as const, quantityLevel: 3 as QuantityLevel },
+  { id: "12", name: "Salt", category: "pantry" as const, quantityLevel: 3 as QuantityLevel },
+  { id: "13", name: "Olive Oil", category: "pantry" as const, quantityLevel: 2 as QuantityLevel },
+  { id: "14", name: "Soy Sauce", category: "pantry" as const, quantityLevel: 1 as QuantityLevel },
+] as const;
 
-  // Type-safe query with RLS enforcement
-  const inventory = await db((tx) =>
-    tx.select({
-      id: userInventory.id,
-      quantity: userInventory.quantityLevel,
-      ingredientId: userInventory.ingredientId,
-      ingredientName: ingredients.name,
-      ingredientCategory: ingredients.category,
-      updatedAt: userInventory.updatedAt,
-    })
-    .from(userInventory)
-      .innerJoin(ingredients, eq(userInventory.ingredientId, ingredients.id))
-      .where(gt(userInventory.quantityLevel, 0))
-  )
-
+// Helper to render quantity indicator
+function QuantityIndicator({ level }: { level: QuantityLevel }) {
+  const dots = Array.from({ length: 3 }, (_, i) => i + 1);
   return (
-    <div className="container mx-auto p-8">
-      <h1 className="text-3xl font-bold mb-6">Your Inventory</h1>
-
-      {inventory.length === 0 ? (
-        <p className="text-gray-600">No items in inventory. Add some ingredients to get started!</p>
-      ) : (
-        <div className="grid gap-4">
-          {inventory.map((item) => (
-            <div key={item.id} className="border rounded-lg p-4 shadow-sm">
-              <div className="flex justify-between items-center">
-                <div>
-                  <h2 className="text-xl font-semibold">{item.ingredientName}</h2>
-                  <p className="text-sm text-gray-600 capitalize">{item.ingredientCategory}</p>
-                </div>
-                <div className="text-right">
-                  <div className="text-lg font-medium">
-                    Level {item.quantity}
-                  </div>
-                  <div className="text-xs text-gray-500">
-                    Updated: {new Date(item.updatedAt).toLocaleDateString()}
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+    <div className="flex gap-1">
+      {dots.map((dot) => (
+        <div
+          key={dot}
+          className={`h-2 w-2 rounded-full border border-black ${
+            dot <= level ? "bg-black" : "bg-white"
+          }`}
+        />
+      ))}
     </div>
-  )
+  );
+}
+
+export default function InventoryPage() {
+  return (
+    <PageContainer
+      maxWidth="2xl"
+      gradientFrom="from-yellow-50"
+      gradientVia="via-amber-50"
+      gradientTo="to-orange-50"
+    >
+      <div className="space-y-8">
+        <h1 className="text-3xl font-bold">My Inventory</h1>
+
+        {/* T041: Instructions for editing quantities */}
+        <p className="text-sm text-muted-foreground">
+          Tap an ingredient to edit its quantity (coming soon)
+        </p>
+
+        {/* T040: Ingredient list displaying name and quantityLevel */}
+        <section className="space-y-4">
+          <h2 className="text-2xl font-semibold">Fridge</h2>
+          <ul className="space-y-2">
+            {MOCK_FRIDGE_INGREDIENTS.map((ingredient) => (
+              <li
+                key={ingredient.id}
+                className="flex items-center justify-between border-2 border-black bg-white p-3 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+              >
+                {/* T043: Truncate ingredient names */}
+                <span className="truncate font-medium flex-1 mr-4">
+                  {ingredient.name}
+                </span>
+                <QuantityIndicator level={ingredient.quantityLevel} />
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <section className="space-y-4">
+          <h2 className="text-2xl font-semibold">Pantry</h2>
+          <ul className="space-y-2">
+            {MOCK_PANTRY_INGREDIENTS.map((ingredient) => (
+              <li
+                key={ingredient.id}
+                className="flex items-center justify-between border-2 border-black bg-white p-3 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+              >
+                <span className="truncate font-medium flex-1 mr-4">
+                  {ingredient.name}
+                </span>
+                <QuantityIndicator level={ingredient.quantityLevel} />
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        {/* T042: Microphone icon + "Tap to speak" */}
+        <div className="flex items-center justify-center gap-2 pt-4">
+          <Button variant="outline" size="lg" className="gap-2">
+            <Mic className="h-5 w-5" />
+            Tap to speak
+          </Button>
+        </div>
+      </div>
+    </PageContainer>
+  );
 }
