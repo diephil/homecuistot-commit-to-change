@@ -46,5 +46,14 @@ I have access to the shadcn MCP server. I can:
 - Get examples: `mcp__shadcn__get_item_examples_from_registries`
 - Get install commands: `mcp__shadcn__get_add_command_for_items`
 
+### Testing with Playwright MCP
+I have access to the Playwright MCP server for component validation:
+- Navigate to component pages: `mcp__playwright__browser_navigate`
+- Take screenshots: `mcp__playwright__browser_take_screenshot`
+- Test interactions: `mcp__playwright__browser_click`, `mcp__playwright__browser_type`
+- Validate accessibility: `mcp__playwright__browser_snapshot`
+- Fill forms: `mcp__playwright__browser_fill_form`
+- Check responsiveness: `mcp__playwright__browser_resize`
+
 ## User Request
 $ARGUMENTS
