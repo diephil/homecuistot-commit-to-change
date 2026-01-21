@@ -3,16 +3,17 @@
 SYNC IMPACT REPORT - Constitution Update
 ═══════════════════════════════════════════════════════════════════════════
 
-Version Change: 1.2.0 → 1.3.0 (New principle added - Neo-Brutalist Design System)
+Version Change: 1.3.0 → 1.4.0 (Expanded Neo-Brutalist Design System principle)
 
 Principles Modified:
-- None (no title changes)
+- VII. Neo-Brutalist Design System (expanded with concrete implementation patterns)
 
 Principles Added:
-- VII. Neo-Brutalist Design System (NEW)
+- None
 
 Sections Modified:
-- Core Principles: Added Principle VII with rationale and guidelines
+- Core Principles: Principle VII completely rewritten with vibrant color palette,
+  playful asymmetry, thick box shadows, and responsive mobile-first approach
 
 Sections Removed:
 - None
@@ -23,19 +24,20 @@ Templates Status:
 ✅ tasks-template.md - No changes required (implementation-agnostic)
 
 Follow-up TODOs:
-- None (design principle is self-contained)
+- None (design principle reflects implemented landing page)
 
 Rationale:
-- MINOR version 1.2.0 → 1.3.0: New design principle added within MVP phase
-- Neo-brutalist design system aligns with MVP-First development (Principle I)
-- Establishes consistent UI/UX approach without blocking MVP velocity
-- Provides clear design constraints for frontend implementation
-- No breaking changes to existing governance or workflow
+- MINOR version 1.3.0 → 1.4.0: Material expansion of existing design principle
+- Updated principle captures actual implemented design from landing page
+- Replaces theoretical brutalism with concrete vibrant neobrutalism
+- Adds specific color palette, shadow system, rotation patterns
+- Includes mobile-first responsive approach
+- No governance changes, no breaking changes
 
 Version Bump Justification:
-- Not MAJOR: No backward incompatible changes, no phase transition
-- MINOR: New principle added (material expansion of design guidance)
-- Not PATCH: Substantive content addition establishing design system, not clarification
+- Not MAJOR: No backward incompatible changes, no principle removal
+- MINOR: Material expansion of Principle VII with concrete implementation guidance
+- Not PATCH: Substantive rewrite establishing new design patterns, not clarification
 
 ═══════════════════════════════════════════════════════════════════════════
 -->
@@ -186,44 +188,95 @@ function updateProfile(params: {
 }): void {}
 ```
 
-### VII. Neo-Brutalist Design System
+### VII. Vibrant Neobrutalism Design System
 
-Follow neo-brutalist design principles for all web UI:
+Follow vibrant neobrutalism principles for playful, energetic UI:
 
-- **Raw aesthetics**: Bold borders (2-3px black), sharp corners (no border-radius unless intentional), high contrast
-- **Honest elements**: UI elements appear exactly as they are—buttons look like buttons, no hidden interactions
-- **Monospace typography**: Favor monospace fonts for data/code displays; sans-serif for content
-- **Brutalist color**: Limited palette (black, white, 1-2 accent colors), no gradients
-- **Functional over decorative**: Every visual element serves a purpose; remove purely ornamental elements
-- **Visible structure**: Expose grid lines, boundaries, component edges where helpful for clarity
-- **Accessible first**: High contrast and clear visual hierarchy make brutalism naturally accessible
+**Core Visual Language**:
+- **Thick black borders**: 4-8px borders on desktop, 3-4px on mobile
+- **Thick box shadows**: Solid offset shadows (6-12px) creating depth, no blur
+- **Vibrant color palette**: Pink (pink-200 to pink-500), yellow (yellow-200 to yellow-400), cyan (cyan-200 to cyan-400), orange (orange-200 to orange-400)
+- **Bold gradients**: Multi-color gradients for backgrounds and headers
+- **Playful asymmetry**: Intentional rotations (-rotate-2 to rotate-3) on desktop only
+- **Font weight extremes**: font-black (900) for headings, font-bold (700) for body
+- **Uppercase headings**: All major headings in uppercase for impact
+- **Emojis as design elements**: Strategic emoji use for visual personality
 
-**Rationale**: Neo-brutalism aligns with MVP speed—simple, bold, functional design requires less polish than refined aesthetics. Clear visual structure improves usability. Raw honesty matches startup authenticity.
+**Interaction Patterns**:
+- **Shadow-based hover states**: Shadows reduce on hover with translate movement
+- **Example**: `shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[4px] hover:translate-y-[4px]`
+- **Transitions**: `transition-all` for smooth interactions
+- **Transform on hover**: Remove rotations or add slight rotation changes
+
+**Mobile-First Responsive**:
+- **Remove rotations on mobile**: `md:rotate-2` instead of `rotate-2`
+- **Smaller borders on mobile**: `border-4 md:border-6`
+- **Smaller shadows on mobile**: `shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]`
+- **Prevent horizontal overflow**: `overflow-hidden` on sections with rotated elements
+- **Responsive typography**: `text-3xl md:text-7xl` scaling
+- **Adequate touch targets**: Minimum 44x44px for mobile interactive elements
+
+**Layout Patterns**:
+- **Decorative background shapes**: Absolute positioned colored squares/circles with rotation and opacity
+- **Section dividers**: Thick 4-8px black borders between sections
+- **Sticky headers**: Gradient backgrounds, bold branding
+- **Cards with depth**: Border + shadow combination, gradient backgrounds for variety
+- **Numbered badges**: Rotated colored squares with bold numbers
+
+**Rationale**: Vibrant neobrutalism creates energetic, playful brand personality that stands out. Bold visual elements are memorable and fast to implement. High contrast ensures accessibility. Mobile-first approach prevents layout breaks while preserving desktop playfulness.
 
 **Examples**:
 
 ```typescript
-// ✅ GOOD: Neo-brutalist button component
-<button className="border-2 border-black px-4 py-2 font-mono bg-white hover:bg-black hover:text-white">
-  Submit
-</button>
+// ✅ GOOD: Vibrant neobrutalist button
+<Button className="bg-pink-400 hover:bg-pink-500 border-4 border-black
+  shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]
+  hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]
+  hover:translate-x-[3px] hover:translate-y-[3px]
+  font-black uppercase text-lg md:transform md:-rotate-2 transition-all">
+  Get Started Free →
+</Button>
 
-// ❌ BAD: Soft, rounded, gradient design
-<button className="rounded-lg bg-gradient-to-r from-blue-400 to-blue-600 shadow-lg px-6 py-3">
-  Submit
-</button>
+// ❌ BAD: Soft, minimal design
+<Button className="bg-gray-100 rounded-lg shadow-sm hover:shadow-md
+  text-gray-700 px-4 py-2">
+  Get Started
+</Button>
 
-// ✅ GOOD: Brutalist card with visible boundaries
-<div className="border-3 border-black p-4 bg-white">
-  <h2 className="font-mono text-xl border-b-2 border-black pb-2">Title</h2>
-  <p className="font-sans mt-2">Content</p>
+// ✅ GOOD: Vibrant card with gradient and shadow
+<div className="border-4 md:border-6 border-black bg-gradient-to-br
+  from-pink-200 to-pink-300 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]
+  md:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-6 md:p-10
+  md:transform md:hover:-rotate-2 transition-transform">
+  <div className="bg-yellow-400 border-3 md:border-4 border-black
+    w-16 h-16 md:w-20 md:h-20 flex items-center justify-center
+    shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transform -rotate-6">
+    <div className="text-4xl md:text-5xl font-black">01</div>
+  </div>
+  <h4 className="text-xl md:text-3xl font-black uppercase">Voice Scan</h4>
+  <p className="text-base md:text-xl font-bold">Description here</p>
 </div>
 
-// ❌ BAD: Soft shadows and rounded corners
-<div className="rounded-xl shadow-2xl p-6 bg-gradient-to-br from-white to-gray-100">
-  <h2 className="text-xl font-light">Title</h2>
-  <p className="mt-2 text-gray-600">Content</p>
+// ❌ BAD: Subtle, minimal card
+<div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition">
+  <div className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center">
+    <span className="text-white">1</span>
+  </div>
+  <h4 className="text-lg font-medium mt-4">Voice Scan</h4>
+  <p className="text-gray-600 text-sm">Description here</p>
 </div>
+
+// ✅ GOOD: Mobile-first responsive heading
+<h2 className="text-3xl md:text-7xl lg:text-8xl font-black uppercase
+  leading-tight md:leading-none tracking-tight md:tracking-tighter
+  md:transform md:-rotate-1">
+  From "What's in my fridge?" to "What's for dinner?"
+</h2>
+
+// ❌ BAD: Non-responsive, rotation causes mobile overflow
+<h2 className="text-7xl font-black uppercase transform -rotate-1">
+  Heading text
+</h2>
 ```
 
 ## MVP Constraints (2-Week Timeline)
@@ -333,4 +386,4 @@ After MVP ships and validates with users:
 - Other principles are guidelines, not gates
 - When in doubt: ship first, fix later (unless it affects users negatively)
 
-**Version**: 1.3.0 | **Ratified**: 2026-01-19 | **Last Amended**: 2026-01-20
+**Version**: 1.4.0 | **Ratified**: 2026-01-19 | **Last Amended**: 2026-01-21
