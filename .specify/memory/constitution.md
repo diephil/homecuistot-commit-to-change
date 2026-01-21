@@ -49,6 +49,7 @@ Version Bump Justification:
 ### I. MVP-First Development
 
 Ship working features over perfect code:
+
 - Feature completeness > code perfection
 - Working > well-tested (for MVP only)
 - Manual validation acceptable for non-critical paths
@@ -60,6 +61,7 @@ Ship working features over perfect code:
 ### II. Pragmatic Type Safety
 
 TypeScript strict mode enabled BUT pragmatic exceptions allowed:
+
 - Use `any` when type inference blocks progress (add `// TODO: type` comment)
 - Skip complex type gymnastics; prefer `unknown` + runtime checks
 - Type safety at boundaries (API inputs/outputs) REQUIRED
@@ -71,6 +73,7 @@ TypeScript strict mode enabled BUT pragmatic exceptions allowed:
 ### III. Essential Validation Only
 
 Validate ONLY where failure impacts users or data integrity:
+
 - **MUST validate**: User inputs that touch database, authentication, payments
 - **SHOULD validate**: Form inputs, API requests
 - **CAN SKIP**: Internal function calls, development-only features, admin tools
@@ -82,6 +85,7 @@ Validate ONLY where failure impacts users or data integrity:
 ### IV. Test-Ready Infrastructure
 
 Setup test infrastructure but tests optional for MVP:
+
 - Test runner configured and working (`pnpm test` runs successfully)
 - Directory structure supports tests (`tests/` or `__tests__/`)
 - Critical paths MAY have tests (auth, payments, data loss scenarios)
@@ -93,6 +97,7 @@ Setup test infrastructure but tests optional for MVP:
 ### V. Type Derivation Over Duplication
 
 Derive complex types from schemas/types instead of manual redefinition:
+
 - **MUST derive**: Complex object types, nested structures, discriminated unions
 - **PRIMITIVES EXEMPT**: Simple types (string, number, boolean) can be defined directly
 - **USE TypeScript utilities**: `typeof`, `ReturnType`, `Parameters`, `Awaited`, schema.infer
@@ -102,33 +107,37 @@ Derive complex types from schemas/types instead of manual redefinition:
 **Rationale**: Manual type duplication causes drift between runtime validation and compile-time types. Derivation maintains consistency, reduces maintenance, prevents bugs.
 
 **Examples**:
+
 ```typescript
 // ✅ GOOD: Derive from schema
 const userSchema = z.object({
   id: z.string(),
-  profile: z.object({ name: z.string(), age: z.number() })
+  profile: z.object({ name: z.string(), age: z.number() }),
 });
-type User = z.infer<typeof userSchema>;  // Derived
+type User = z.infer<typeof userSchema>; // Derived
 
 // ✅ GOOD: Derive from existing type
-type UserProfile = User['profile'];  // Derived from User
+type UserProfile = User["profile"]; // Derived from User
 
 // ✅ GOOD: Derive function return type
-const getUser = () => ({ id: '1', name: 'Alice' });
-type UserData = ReturnType<typeof getUser>;  // Derived
+const getUser = () => ({ id: "1", name: "Alice" });
+type UserData = ReturnType<typeof getUser>; // Derived
 
 // ❌ BAD: Manual duplication
-type User = { id: string; profile: { name: string; age: number } };  // Manual
-const userSchema = z.object({ /* duplicate structure */ });  // Duplicate
+type User = { id: string; profile: { name: string; age: number } }; // Manual
+const userSchema = z.object({
+  /* duplicate structure */
+}); // Duplicate
 
 // ✅ OK: Primitives can be defined directly (not complex types)
-type UserId = string;  // OK - primitive
-type Age = number;     // OK - primitive
+type UserId = string; // OK - primitive
+type Age = number; // OK - primitive
 ```
 
 ### VI. Named Parameters for Clarity
 
 Use named parameters (object destructuring) for function signatures with complexity:
+
 - **MUST use named params**: 3+ arguments OR 2+ arguments of same type
 - **MAY use positional**: 1-2 arguments of different types
 - **CONSISTENCY REQUIRED**: Apply pattern uniformly across codebase
@@ -137,41 +146,50 @@ Use named parameters (object destructuring) for function signatures with complex
 **Rationale**: Named parameters prevent argument order mistakes, improve readability at call sites, and make refactoring safer. The small upfront cost pays off in maintainability.
 
 **Examples**:
+
 ```typescript
 // ✅ GOOD: Single argument
-function deleteUser(userId: string): void { }
+function deleteUser(userId: string): void {}
 
 // ✅ GOOD: Two arguments, different types
-function updateUser(userId: string, isActive: boolean): void { }
+function updateUser(userId: string, isActive: boolean): void {}
 
 // ❌ BAD: Two arguments, same type (ambiguous at call site)
-function updateName(firstName: string, lastName: string): void { }
+function updateName(firstName: string, lastName: string): void {}
 // Call site unclear: updateName("John", "Doe") - which is which?
 
 // ✅ GOOD: Two arguments, same type → use named params
-function updateName(params: { firstName: string; lastName: string }): void { }
+function updateName(params: { firstName: string; lastName: string }): void {}
 // Call site clear: updateName({ firstName: "John", lastName: "Doe" })
 
 // ❌ BAD: Three arguments (too many positional)
-function createUser(name: string, email: string, age: number): void { }
+function createUser(name: string, email: string, age: number): void {}
 
 // ✅ GOOD: Three arguments → use named params
-function createUser(params: { name: string; email: string; age: number }): void { }
+function createUser(params: {
+  name: string;
+  email: string;
+  age: number;
+}): void {}
 
 // ❌ BAD: Multiple arguments with object last (inconsistent)
-function updateProfile(userId: string, updates: { name: string; bio: string }): void { }
+function updateProfile(
+  userId: string,
+  updates: { name: string; bio: string },
+): void {}
 
 // ✅ GOOD: All params in single object (consistent)
 function updateProfile(params: {
   userId: string;
   name: string;
   bio: string;
-}): void { }
+}): void {}
 ```
 
 ### VII. Neo-Brutalist Design System
 
 Follow neo-brutalist design principles for all web UI:
+
 - **Raw aesthetics**: Bold borders (2-3px black), sharp corners (no border-radius unless intentional), high contrast
 - **Honest elements**: UI elements appear exactly as they are—buttons look like buttons, no hidden interactions
 - **Monospace typography**: Favor monospace fonts for data/code displays; sans-serif for content
@@ -183,6 +201,7 @@ Follow neo-brutalist design principles for all web UI:
 **Rationale**: Neo-brutalism aligns with MVP speed—simple, bold, functional design requires less polish than refined aesthetics. Clear visual structure improves usability. Raw honesty matches startup authenticity.
 
 **Examples**:
+
 ```typescript
 // ✅ GOOD: Neo-brutalist button component
 <button className="border-2 border-black px-4 py-2 font-mono bg-white hover:bg-black hover:text-white">
@@ -273,18 +292,21 @@ These are explicitly deferred until after MVP launch:
 After MVP ships and validates with users:
 
 ### Phase 1: Immediate Hardening (Week 3-4)
+
 - Add tests for critical paths
 - Fix known security issues
 - Address user-reported bugs
 - Enable strict linting
 
 ### Phase 2: Technical Debt (Month 2)
+
 - Improve type coverage (remove `any`)
 - Add comprehensive validation
 - Expand test coverage >70%
 - Refactor duplicated code
 
 ### Phase 3: Production-Ready (Month 3)
+
 - Full test coverage for business logic
 - Automated CI/CD with quality gates
 - Performance optimization
