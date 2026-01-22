@@ -158,12 +158,14 @@ Next.js monorepo structure:
 
 **Spec Reference**: spec.md Edge Cases (lines 88-114), plan.md API contract error responses
 
-- [ ] T048 [P] Add 15-second timeout for /api/onboarding/process-voice endpoint
-- [ ] T049 [P] Handle network timeout with error message "Connection issue. Try again."
-- [ ] T050 [P] Handle unparseable NLP response with "Couldn't understand. Try again."
-- [ ] T051 [P] Count network timeout as voice failure for consecutive failure logic
-- [ ] T052 [P] Add error boundary for unexpected React errors
-- [ ] T053 [P] Log errors to console (no external service for MVP)
+- [X] T048 [P] Add 15-second timeout for /api/onboarding/process-voice endpoint
+- [X] T049 [P] Handle network timeout with error message "Connection issue. Try again."
+- [X] T050 [P] Handle unparseable NLP response with "Couldn't understand. Try again."
+- [X] T051 [P] Count network timeout as voice failure for consecutive failure logic
+- [X] T052 [P] Add error boundary for unexpected React errors
+- [X] T053 [P] Log errors to console (no external service for MVP)
+
+**Checkpoint**: Error handling complete - robust error recovery with user-friendly messages
 
 ---
 

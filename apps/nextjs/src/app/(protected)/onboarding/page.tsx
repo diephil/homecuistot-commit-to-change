@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Badge } from "@/components/retroui/Badge";
 import { Button } from "@/components/retroui/Button";
 import { PageContainer } from "@/components/PageContainer";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { Mic, Loader2 } from "lucide-react";
 import { useVoiceInput } from "@/hooks/useVoiceInput";
 import { SUGGESTED_ITEMS } from "@/constants/onboarding";
@@ -17,7 +18,7 @@ import { initialOnboardingState } from "@/types/onboarding";
  * Tasks: T007-T067 (Phases 3-9)
  */
 
-export default function OnboardingPage() {
+function OnboardingPageContent() {
   const router = useRouter();
   const [state, setState] = useState<OnboardingState>(initialOnboardingState);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -110,6 +111,7 @@ export default function OnboardingPage() {
         audioBase64 = base64;
       }
 
+      // T048: 15s timeout enforced by API maxDuration
       const response = await fetch("/api/onboarding/process-voice", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -123,8 +125,21 @@ export default function OnboardingPage() {
         }),
       });
 
+      // T049-T051: Enhanced error handling with specific messages
       if (!response.ok) {
-        throw new Error("Failed to process input");
+        const errorData = await response.json().catch(() => ({ error: "Unknown error" }));
+
+        // T049: Network timeout (408 status)
+        if (response.status === 408) {
+          throw new Error("timeout:Connection issue. Try again.");
+        }
+
+        // T050: Unparseable NLP response (500 with specific message)
+        if (response.status === 500 && errorData.error?.includes("Invalid response format")) {
+          throw new Error("parse:Couldn't understand. Try again.");
+        }
+
+        throw new Error(errorData.error || "Failed to process input");
       }
 
       const result: VoiceUpdate = await response.json();
@@ -138,7 +153,12 @@ export default function OnboardingPage() {
       // Clear text input
       setTextInput("");
     } catch (error) {
-      console.error("Voice processing error:", error);
+      // T053: Log all errors
+      console.error("[onboarding] Voice processing error:", error);
+
+      // T051: Count network timeout as voice failure
+      const isTimeout = error instanceof Error && error.message.startsWith("timeout:");
+      const isParseFail = error instanceof Error && error.message.startsWith("parse:");
 
       // T040-T042: Voice failure tracking
       setState((prev) => {
@@ -152,10 +172,21 @@ export default function OnboardingPage() {
         };
       });
 
-      if (state.voiceFailureCount === 0) {
-        setErrorMessage("Couldn't understand. Try again.");
-      } else if (state.voiceFailureCount === 1) {
-        setErrorMessage("Still having trouble. Would you like to type instead?");
+      // T049-T050: Display appropriate error messages
+      if (error instanceof Error) {
+        if (isTimeout) {
+          setErrorMessage(error.message.replace("timeout:", ""));
+        } else if (isParseFail) {
+          setErrorMessage(error.message.replace("parse:", ""));
+        } else if (state.voiceFailureCount === 0) {
+          setErrorMessage("Couldn't understand. Try again.");
+        } else if (state.voiceFailureCount === 1) {
+          setErrorMessage("Still having trouble. Would you like to type instead?");
+        } else {
+          setErrorMessage("Please use text input below.");
+        }
+      } else {
+        setErrorMessage("Something went wrong. Please try again.");
       }
     } finally {
       setIsProcessing(false);
@@ -517,5 +548,16 @@ export default function OnboardingPage() {
         </div>
       </div>
     </PageContainer>
+  );
+}
+
+/**
+ * T052: Wrapped with ErrorBoundary for unexpected React errors
+ */
+export default function OnboardingPage() {
+  return (
+    <ErrorBoundary>
+      <OnboardingPageContent />
+    </ErrorBoundary>
   );
 }
