@@ -279,11 +279,11 @@ function OnboardingPageContent() {
       gradientVia="via-yellow-50"
       gradientTo="to-cyan-50"
     >
-      {/* T054-T057: Neobrutalism design system */}
+      {/* T054-T061: Neobrutalism design system */}
       <div className="border-4 md:border-6 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
         {/* T011: Progress indicator */}
-        <div className="bg-yellow-300 border-b-4 border-black px-6 py-3">
-          <p className="text-sm font-bold uppercase text-center">
+        <div className="bg-gradient-to-r from-yellow-300 via-orange-400 to-pink-400 border-b-4 md:border-b-6 border-black px-6 py-3">
+          <p className="text-sm font-black uppercase text-center">
             Step {state.currentStep} of 3
           </p>
         </div>
@@ -323,7 +323,7 @@ function OnboardingPageContent() {
           </div>
 
           {/* T012-T020: Step 2 - Badge Selection */}
-          <div className="min-w-full p-8 flex flex-col gap-6">
+          <div className="min-w-full p-8 flex flex-col gap-6 overflow-x-hidden">
             <div className="flex justify-between items-center">
               <h2 className="text-2xl md:text-3xl font-black uppercase">
                 What do you have?
@@ -335,14 +335,14 @@ function OnboardingPageContent() {
             </div>
 
             {/* T014: Dishes section */}
-            <div className="space-y-3">
-              <h3 className="text-lg font-bold uppercase">Dishes You Can Cook</h3>
+            <div className="space-y-3 md:rotate-1 md:origin-top-left">
+              <h3 className="text-lg font-black uppercase">Dishes You Can Cook</h3>
               <div className="flex flex-wrap gap-2">
                 {SUGGESTED_ITEMS.dishes.map((dish) => (
                   <Badge
                     key={dish.id}
                     variant={state.dishes.includes(dish.name) ? "solid" : "outline"}
-                    className="cursor-pointer min-h-[44px] min-w-[44px] border-2 md:border-3 hover:scale-105 transition-transform"
+                    className="cursor-pointer min-h-[44px] min-w-[44px] border-4 md:border-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
                     onClick={() => toggleItem(dish.name, "dishes")}
                   >
                     {dish.name}
@@ -352,14 +352,14 @@ function OnboardingPageContent() {
             </div>
 
             {/* T015: Fridge section */}
-            <div className="space-y-3">
-              <h3 className="text-lg font-bold uppercase">Fridge Items</h3>
+            <div className="space-y-3 md:-rotate-1">
+              <h3 className="text-lg font-black uppercase">Fridge Items</h3>
               <div className="flex flex-wrap gap-2">
                 {SUGGESTED_ITEMS.fridgeItems.map((item) => (
                   <Badge
                     key={item.id}
                     variant={state.fridge.includes(item.name) ? "solid" : "outline"}
-                    className="cursor-pointer min-h-[44px] min-w-[44px] border-2 md:border-3 hover:scale-105 transition-transform"
+                    className="cursor-pointer min-h-[44px] min-w-[44px] border-4 md:border-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
                     onClick={() => toggleItem(item.name, "fridge")}
                   >
                     {item.name}
@@ -369,14 +369,14 @@ function OnboardingPageContent() {
             </div>
 
             {/* T016: Pantry section */}
-            <div className="space-y-3">
-              <h3 className="text-lg font-bold uppercase">Pantry Items</h3>
+            <div className="space-y-3 md:rotate-1">
+              <h3 className="text-lg font-black uppercase">Pantry Items</h3>
               <div className="flex flex-wrap gap-2">
                 {SUGGESTED_ITEMS.pantryItems.map((item) => (
                   <Badge
                     key={item.id}
                     variant={state.pantry.includes(item.name) ? "solid" : "outline"}
-                    className="cursor-pointer min-h-[44px] min-w-[44px] border-2 md:border-3 hover:scale-105 transition-transform"
+                    className="cursor-pointer min-h-[44px] min-w-[44px] border-4 md:border-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
                     onClick={() => toggleItem(item.name, "pantry")}
                   >
                     {item.name}
@@ -399,21 +399,21 @@ function OnboardingPageContent() {
           </div>
 
           {/* T021-T047: Step 3 - Voice Input & Review */}
-          <div className="min-w-full p-8 flex flex-col gap-6">
+          <div className="min-w-full p-8 flex flex-col gap-6 overflow-x-hidden">
             <h2 className="text-2xl md:text-3xl font-black uppercase text-center">
               Review & Refine
             </h2>
 
             {/* T021: Display current selections */}
             <div className="space-y-4">
-              <div>
-                <h3 className="text-lg font-bold uppercase mb-2">Your Dishes</h3>
+              <div className="md:-rotate-1">
+                <h3 className="text-lg font-black uppercase mb-2">Your Dishes</h3>
                 {state.dishes.length === 0 ? (
                   <p className="text-gray-500 italic">No dishes selected</p>
                 ) : (
                   <div className="flex flex-wrap gap-2">
                     {state.dishes.map((dish, idx) => (
-                      <Badge key={idx} variant="solid" className="border-2 md:border-3">
+                      <Badge key={idx} variant="solid" className="border-4 md:border-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                         {dish}
                       </Badge>
                     ))}
@@ -421,14 +421,14 @@ function OnboardingPageContent() {
                 )}
               </div>
 
-              <div>
-                <h3 className="text-lg font-bold uppercase mb-2">Your Ingredients</h3>
+              <div className="md:rotate-1">
+                <h3 className="text-lg font-black uppercase mb-2">Your Ingredients</h3>
                 {state.ingredients.length === 0 ? (
                   <p className="text-gray-500 italic">No ingredients selected</p>
                 ) : (
                   <div className="flex flex-wrap gap-2">
                     {state.ingredients.map((ingredient, idx) => (
-                      <Badge key={idx} variant="solid" className="border-2 md:border-3">
+                      <Badge key={idx} variant="solid" className="border-4 md:border-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                         {ingredient}
                       </Badge>
                     ))}
