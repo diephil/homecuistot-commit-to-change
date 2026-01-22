@@ -8,6 +8,16 @@
 
 HomeCuistot onboarding guides new users through a 3-step single-page flow to configure their kitchen profile. Users declare cooking skills, inventory (fridge + pantry), then refine selections via voice input. The flow prepares users for AI-powered meal recommendations based on available ingredients.
 
+## Clarifications
+
+### Session 2026-01-22
+
+- Q: How should the kitchen profile data model store the three categories (cooking skills, fridge, pantry)? → A: UI maintains dishes, fridge ingredients, and pantry ingredients arrays separately. In step 3, fridge + pantry merge into single ingredients array. Dishes remain separate.
+- Q: When should "Complete Setup" button be enabled in step 3? → A: Only enabled after user makes at least one change via voice/text in step 3
+- Q: What happens if NLP service returns unparseable/error response (not network timeout)? → A: Show generic error "Couldn't understand. Try again." (no audio storage)
+- Q: What visual feedback should display during voice/text NLP processing (5-15s)? → A: Inline spinner + "Processing..." text (non-blocking, mic button disabled during processing)
+- Q: What format should NLP service return for parsed voice/text input? → A: JSON with structured arrays: `{add: {dishes: [], ingredients: []}, remove: {dishes: [], ingredients: []}}`
+
 ## User Scenarios & Testing
 
 ### Primary Flow: Complete Onboarding
@@ -82,8 +92,9 @@ HomeCuistot onboarding guides new users through a 3-step single-page flow to con
    - Show text input field with message: "Microphone access denied. Type what you want to add or remove."
    - Process text input same as voice (natural language parsing)
 
-2. **First Voice Recognition Failure**: System cannot parse voice input
+2. **First Voice Recognition Failure**: System cannot parse voice input OR NLP service returns unparseable response
    - Show error: "Couldn't understand. Please try again."
+   - No audio storage/logging for privacy
    - Keep existing selections unchanged
    - Allow immediate retry
 
@@ -149,7 +160,8 @@ HomeCuistot onboarding guides new users through a 3-step single-page flow to con
 3.1. Display progress indicator: Step 3 of 3
 3.2. Display section: "Available Ingredients"
 
-- Show all selected items from step 2 (dishes + fridge + pantry) as read-only badges
+- Merge fridge + pantry arrays from step 2 into single ingredients array
+- Show merged ingredients + dishes as read-only badges
 - If empty, show placeholder: "Your kitchen is empty. Hold the mic and tell me what you have."
 
   3.3. Voice Input (Primary Method):
@@ -163,9 +175,12 @@ HomeCuistot onboarding guides new users through a 3-step single-page flow to con
   3.4. Voice Processing:
 
 - Send audio to backend for natural language processing
-- Parse response for: items to add, items to remove, dishes to add/remove
+- NLP service returns JSON: `{add: {dishes: [], ingredients: []}, remove: {dishes: [], ingredients: []}}`
+- Apply operations: add items to dishes/ingredients arrays, remove matching items
 - Update "Available Ingredients" list in real-time
-- Show loading state during processing (max 5 seconds)
+- Show inline spinner + "Processing..." text below mic button (non-blocking UI)
+- Disable mic button during processing to prevent duplicate submissions
+- Timeout: 15 seconds max
 
   3.5. Error Handling - Microphone Permission Denied:
 
@@ -188,13 +203,16 @@ HomeCuistot onboarding guides new users through a 3-step single-page flow to con
 
 - Text field with placeholder: "Type ingredients to add or remove (e.g., 'add eggs, remove tomatoes')"
 - Submit button: "Update List"
-- Process text with natural language parsing (same as voice)
-- Show loading state during processing
+- Process text with natural language parsing (same JSON response format as voice)
+- Apply operations using same logic as voice processing
+- Show inline spinner + "Processing..." text next to submit button (non-blocking UI)
+- Disable submit button during processing to prevent duplicate submissions
+- Timeout: 15 seconds max
 
   3.8. Completion CTA:
 
 - Primary button: "Complete Setup"
-- Enabled after any changes made or if items selected
+- Disabled by default, enabled only after user makes ≥1 change via voice/text in step 3
 - On tap, save profile and navigate to main app
 
 ### FR4: Navigation & Progress
@@ -218,11 +236,19 @@ HomeCuistot onboarding guides new users through a 3-step single-page flow to con
 
 ### User Kitchen Profile
 
-- Cooking skills (array of dish names)
-- Fridge inventory (array of ingredient names)
-- Pantry inventory (array of ingredient names)
+- Dishes (array of dish names, separate throughout flow)
+- Ingredients (array of ingredient names, merged from fridge + pantry in step 3)
 - Created timestamp
 - Last updated timestamp
+
+**UI State (Steps 1-2)**:
+- Dishes array (cooking skills)
+- Fridge ingredients array
+- Pantry ingredients array
+
+**UI State (Step 3)**:
+- Dishes array (unchanged)
+- Ingredients array (fridge + pantry merged)
 
 ### Suggested Items (Static Data)
 
@@ -233,11 +259,13 @@ HomeCuistot onboarding guides new users through a 3-step single-page flow to con
 ### Input Record
 
 - Input type (voice or text)
-- Audio blob or text string
+- Text string (for text input only; audio not stored)
 - Processing timestamp
-- Parsed actions (add/remove operations)
+- Parsed response: `{add: {dishes: [], ingredients: []}, remove: {dishes: [], ingredients: []}}`
 - Success/failure status
 - Consecutive failure count
+
+**Privacy**: Audio blobs not stored/logged for failed voice attempts
 
 ## Assumptions & Dependencies
 
@@ -253,9 +281,13 @@ HomeCuistot onboarding guides new users through a 3-step single-page flow to con
 ### Dependencies
 
 1. **Natural Language Processing Service**: Backend integration for voice-to-text and text parsing
+   - Response format: `{add: {dishes: string[], ingredients: string[]}, remove: {dishes: string[], ingredients: string[]}}`
+   - Supports both audio blob (voice) and text string input
+   - Timeout: 15 seconds max
+   - No audio storage for failed attempts (privacy)
 2. **Authentication System**: User authentication required before onboarding access
 3. **Microphone Access**: Browser capability to capture audio input (with text fallback)
-4. **UI Components**: Interactive selection elements, progress tracking, smooth transitions, text input fields
+4. **UI Components**: Interactive selection elements, progress tracking, smooth transitions, text input fields, inline loading spinners
 5. **User Data Storage**: Persistent storage for kitchen profile information
 6. **Failure Tracking**: Client-side tracking of consecutive voice recognition failures
 
