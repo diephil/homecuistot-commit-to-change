@@ -1,7 +1,7 @@
 # Quickstart Guide: Voice-Enabled Onboarding
 
 **Feature**: 004-onboarding-flow
-**Date**: 2026-01-22
+**Date**: 2026-01-23
 **Estimated Setup Time**: 5-10 minutes
 
 This guide walks you through setting up and testing the voice-enabled kitchen onboarding feature locally.
@@ -226,6 +226,14 @@ return NextResponse.json(mockResult);
 3. Test on various screen sizes: iPhone SE, iPad, Desktop
 4. Verify touch targets ≥44px, no horizontal scroll
 
+**Neobrutalism Design Features** (Phase 8):
+- Thick black borders (4px mobile, 6px desktop) on all interactive elements
+- Solid box shadows with hover translation effects on badges
+- Vibrant gradient progress bar (yellow → orange → pink)
+- Playful asymmetry with section rotations on desktop (md: breakpoint)
+- All headings styled with font-black and uppercase
+- ARIA live regions for screen reader announcements
+
 ### Monitor API Usage
 
 Track Gemini API quota at [AI Studio](https://aistudio.google.com/app/apikey):
@@ -255,5 +263,16 @@ After successful local testing:
 
 ---
 
-**Last Updated**: 2026-01-22
+## Accessibility Features (Phase 10)
+
+The onboarding flow includes comprehensive accessibility support:
+- **ARIA Live Regions**: Status updates announced to screen readers
+- **Touch Targets**: All interactive elements ≥44x44px (WCAG 2.1 AA)
+- **Keyboard Navigation**: Full keyboard support for all interactions
+- **Error Messages**: Clear, actionable error messaging with role="alert"
+- **Progress Indication**: Screen reader announces current step changes
+
+---
+
+**Last Updated**: 2026-01-23
 **Support**: File issues in project GitHub repository

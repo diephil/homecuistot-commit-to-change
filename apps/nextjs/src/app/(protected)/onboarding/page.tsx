@@ -281,9 +281,9 @@ function OnboardingPageContent() {
     >
       {/* T054-T061: Neobrutalism design system */}
       <div className="border-4 md:border-6 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
-        {/* T011: Progress indicator */}
+        {/* T011: Progress indicator with T068 ARIA label */}
         <div className="bg-gradient-to-r from-yellow-300 via-orange-400 to-pink-400 border-b-4 md:border-b-6 border-black px-6 py-3">
-          <p className="text-sm font-black uppercase text-center">
+          <p className="text-sm font-black uppercase text-center" role="status" aria-live="polite" aria-label={`Step ${state.currentStep} of 3`}>
             Step {state.currentStep} of 3
           </p>
         </div>
@@ -476,18 +476,27 @@ function OnboardingPageContent() {
                   )}
                 </button>
 
+                {/* T068: ARIA live regions for status updates */}
                 {isRecording && (
-                  <p className="text-sm font-bold text-red-600">Recording...</p>
+                  <p className="text-sm font-bold text-red-600" role="status" aria-live="polite">
+                    Recording...
+                  </p>
                 )}
                 {isProcessing && (
-                  <p className="text-sm font-bold text-blue-600">Processing...</p>
+                  <p className="text-sm font-bold text-blue-600" role="status" aria-live="polite">
+                    Processing...
+                  </p>
                 )}
               </div>
             )}
 
-            {/* T039-T042: Error messages */}
+            {/* T039-T042: Error messages with T068 ARIA live region */}
             {errorMessage && (
-              <div className="bg-red-100 border-2 border-red-500 p-3 rounded text-sm text-red-700 text-center">
+              <div
+                className="bg-red-100 border-2 border-red-500 p-3 rounded text-sm text-red-700 text-center"
+                role="alert"
+                aria-live="assertive"
+              >
                 {errorMessage}
               </div>
             )}
@@ -539,8 +548,9 @@ function OnboardingPageContent() {
               </Button>
             </div>
 
+            {/* T068: ARIA live region for completion status */}
             {!state.hasVoiceChanges && (
-              <p className="text-sm text-gray-500 text-center">
+              <p className="text-sm text-gray-500 text-center" role="status" aria-live="polite">
                 Make at least one change using voice or text to continue
               </p>
             )}
