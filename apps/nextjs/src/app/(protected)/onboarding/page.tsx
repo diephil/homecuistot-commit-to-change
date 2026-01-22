@@ -1,128 +1,318 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Badge } from "@/components/retroui/Badge";
 import { Button } from "@/components/retroui/Button";
 import { PageContainer } from "@/components/PageContainer";
-import Image from "next/image";
+import { Mic, Loader2 } from "lucide-react";
+import { useVoiceInput } from "@/hooks/useVoiceInput";
+import { SUGGESTED_ITEMS } from "@/constants/onboarding";
+import type { OnboardingState, VoiceUpdate } from "@/types/onboarding";
+import { initialOnboardingState } from "@/types/onboarding";
 
 /**
- * KEEP THIS LOGIC WE WILL ADD IT BACK LATER
- * 
-
-const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    redirect("/login");
-  }
-
-  const initials = user.email
-    ?.split("@")[0]
-    .slice(0, 2)
-    .toUpperCase() || "??";
-
-  // Support both Google (picture) and Discord (avatar_url) avatar fields
-  const avatarUrl = user.user_metadata?.picture || user.user_metadata?.avatar_url;
-
-
+ * Voice-Enabled Kitchen Onboarding Flow
+ * Spec: specs/004-onboarding-flow/spec.md
+ * Tasks: T007-T067 (Phases 3-9)
  */
-
-// T020: MOCK_DISHES constant (7 items with id, name, isSelected)
-const MOCK_DISHES = [
-  { id: "1", name: "Pasta Carbonara", isSelected: true },
-  { id: "2", name: "Chicken Stir Fry", isSelected: false },
-  { id: "3", name: "Vegetable Soup", isSelected: true },
-  { id: "4", name: "Grilled Cheese Sandwich", isSelected: false },
-  { id: "5", name: "Scrambled Eggs", isSelected: true },
-  { id: "6", name: "Fried Rice", isSelected: false },
-  { id: "7", name: "Tomato Salad", isSelected: true },
-] as const;
-
-// T021: MOCK_FRIDGE_INGREDIENTS constant (7 items)
-const MOCK_FRIDGE_INGREDIENTS = [
-  { id: "1", name: "Tomatoes", category: "fridge" as const, isSelected: true },
-  { id: "2", name: "Eggs", category: "fridge" as const, isSelected: true },
-  { id: "3", name: "Milk", category: "fridge" as const, isSelected: false },
-  { id: "4", name: "Cheese", category: "fridge" as const, isSelected: true },
-  { id: "5", name: "Lettuce", category: "fridge" as const, isSelected: false },
-  { id: "6", name: "Chicken Breast", category: "fridge" as const, isSelected: true },
-  { id: "7", name: "Bell Peppers", category: "fridge" as const, isSelected: true },
-] as const;
-
-// T022: MOCK_PANTRY_INGREDIENTS constant (7 items)
-const MOCK_PANTRY_INGREDIENTS = [
-  { id: "8", name: "Pasta", category: "pantry" as const, isSelected: true },
-  { id: "9", name: "Rice", category: "pantry" as const, isSelected: true },
-  { id: "10", name: "Flour", category: "pantry" as const, isSelected: false },
-  { id: "11", name: "Sugar", category: "pantry" as const, isSelected: false },
-  { id: "12", name: "Salt", category: "pantry" as const, isSelected: true },
-  { id: "13", name: "Olive Oil", category: "pantry" as const, isSelected: true },
-  { id: "14", name: "Soy Sauce", category: "pantry" as const, isSelected: true },
-] as const;
 
 export default function OnboardingPage() {
   const router = useRouter();
-  // T023: useState for currentStep (1-3)
-  const [currentStep, setCurrentStep] = useState(1);
+  const [state, setState] = useState<OnboardingState>(initialOnboardingState);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [textInput, setTextInput] = useState("");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const selectedDishes = MOCK_DISHES.filter((d) => d.isSelected);
-  const selectedFridge = MOCK_FRIDGE_INGREDIENTS.filter((i) => i.isSelected);
-  const selectedPantry = MOCK_PANTRY_INGREDIENTS.filter((i) => i.isSelected);
-  const allSelectedIngredients = [...selectedFridge, ...selectedPantry];
+  const {
+    isRecording,
+    recordingDuration,
+    audioBlob,
+    startRecording,
+    stopRecording,
+    error: voiceError,
+    permissionDenied,
+  } = useVoiceInput();
+
+  // T037-T039: Handle microphone permission denied
+  useEffect(() => {
+    if (permissionDenied) {
+      setState((prev) => ({ ...prev, showTextFallback: true }));
+    }
+  }, [permissionDenied]);
+
+  // T028: Process audio when recording stops
+  useEffect(() => {
+    if (audioBlob && !isRecording) {
+      handleProcessVoice();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [audioBlob, isRecording]);
+
+  // T009: Advance to step 2
+  const handleGetStarted = () => {
+    setState((prev) => ({ ...prev, currentStep: 2 }));
+  };
+
+  // T010: Skip to suggestions
+  const handleSkipSetup = () => {
+    router.push("/suggestions");
+  };
+
+  // T017: Toggle badge selection
+  const toggleItem = (item: string, category: "dishes" | "fridge" | "pantry") => {
+    setState((prev) => {
+      const currentList = prev[category];
+      const isSelected = currentList.includes(item);
+
+      return {
+        ...prev,
+        [category]: isSelected
+          ? currentList.filter((i) => i !== item)
+          : [...currentList, item],
+      };
+    });
+  };
+
+  // T018: Clear all selections
+  const handleClearAll = () => {
+    setState((prev) => ({
+      ...prev,
+      dishes: [],
+      fridge: [],
+      pantry: [],
+    }));
+  };
+
+  // T019-T020: Continue to step 3, merge fridge+pantry
+  const handleContinueToStep3 = () => {
+    setState((prev) => ({
+      ...prev,
+      currentStep: 3,
+      ingredients: [...prev.fridge, ...prev.pantry],
+    }));
+  };
+
+  // T028: Process voice or text input
+  const handleProcessVoice = async () => {
+    if (!audioBlob && !textInput.trim()) return;
+
+    setIsProcessing(true);
+    setErrorMessage(null);
+
+    try {
+      let audioBase64: string | undefined;
+
+      if (audioBlob) {
+        // Convert blob to base64
+        const arrayBuffer = await audioBlob.arrayBuffer();
+        const base64 = Buffer.from(arrayBuffer).toString("base64");
+        audioBase64 = base64;
+      }
+
+      const response = await fetch("/api/onboarding/process-voice", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          audioBase64,
+          text: textInput.trim() || undefined,
+          currentContext: {
+            dishes: state.dishes,
+            ingredients: state.ingredients,
+          },
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to process input");
+      }
+
+      const result: VoiceUpdate = await response.json();
+
+      // T030: Apply voice update
+      applyVoiceUpdate(result);
+
+      // T035: Reset failure count on success
+      setState((prev) => ({ ...prev, voiceFailureCount: 0 }));
+
+      // Clear text input
+      setTextInput("");
+    } catch (error) {
+      console.error("Voice processing error:", error);
+
+      // T040-T042: Voice failure tracking
+      setState((prev) => {
+        const newCount = prev.voiceFailureCount + 1;
+        const showFallback = newCount >= 2;
+
+        return {
+          ...prev,
+          voiceFailureCount: newCount,
+          showTextFallback: showFallback,
+        };
+      });
+
+      if (state.voiceFailureCount === 0) {
+        setErrorMessage("Couldn't understand. Try again.");
+      } else if (state.voiceFailureCount === 1) {
+        setErrorMessage("Still having trouble. Would you like to type instead?");
+      }
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  // T030-T032: Apply voice update with duplicate detection
+  const applyVoiceUpdate = (update: VoiceUpdate) => {
+    setState((prev) => {
+      // T031: Duplicate detection (case-insensitive)
+      const newDishes = update.add.dishes.filter(
+        (dish) =>
+          !prev.dishes.some((existing) => existing.toLowerCase() === dish.toLowerCase())
+      );
+      const newIngredients = update.add.ingredients.filter(
+        (ingredient) =>
+          !prev.ingredients.some(
+            (existing) => existing.toLowerCase() === ingredient.toLowerCase()
+          )
+      );
+
+      // T032: Show toast for duplicates (simplified - using alert for MVP)
+      const duplicates = [
+        ...update.add.dishes.filter((dish) =>
+          prev.dishes.some((existing) => existing.toLowerCase() === dish.toLowerCase())
+        ),
+        ...update.add.ingredients.filter((ingredient) =>
+          prev.ingredients.some(
+            (existing) => existing.toLowerCase() === ingredient.toLowerCase()
+          )
+        ),
+      ];
+
+      if (duplicates.length > 0) {
+        console.log(`Duplicates detected: ${duplicates.join(", ")}`);
+      }
+
+      // Remove items (case-insensitive)
+      const updatedDishes = prev.dishes.filter(
+        (dish) =>
+          !update.remove.dishes.some(
+            (remove) => remove.toLowerCase() === dish.toLowerCase()
+          )
+      );
+      const updatedIngredients = prev.ingredients.filter(
+        (ingredient) =>
+          !update.remove.ingredients.some(
+            (remove) => remove.toLowerCase() === ingredient.toLowerCase()
+          )
+      );
+
+      // T033: Mark has voice changes
+      const hasChanges =
+        newDishes.length > 0 ||
+        newIngredients.length > 0 ||
+        update.remove.dishes.length > 0 ||
+        update.remove.ingredients.length > 0;
+
+      return {
+        ...prev,
+        dishes: [...updatedDishes, ...newDishes],
+        ingredients: [...updatedIngredients, ...newIngredients],
+        hasVoiceChanges: hasChanges || prev.hasVoiceChanges,
+      };
+    });
+  };
+
+  // T044: Process text input
+  const handleTextSubmit = () => {
+    if (!textInput.trim()) return;
+    handleProcessVoice();
+  };
+
+  // T062-T064: Complete setup (enabled only after voice changes)
+  const handleCompleteSetup = () => {
+    router.push("/suggestions");
+  };
+
+  // T065: Format recording duration
+  const formatDuration = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
+  };
 
   return (
     <PageContainer
       maxWidth="2xl"
-      gradientFrom="from-blue-50"
-      gradientVia="via-purple-50"
-      gradientTo="to-pink-50"
+      gradientFrom="from-pink-50"
+      gradientVia="via-yellow-50"
+      gradientTo="to-cyan-50"
     >
-      <div className="border-4 border-black bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
-        {/* T028: Sliding transition with CSS transform translateX based on currentStep */}
+      {/* T054-T057: Neobrutalism design system */}
+      <div className="border-4 md:border-6 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
+        {/* T011: Progress indicator */}
+        <div className="bg-yellow-300 border-b-4 border-black px-6 py-3">
+          <p className="text-sm font-bold uppercase text-center">
+            Step {state.currentStep} of 3
+          </p>
+        </div>
+
+        {/* T065: Sliding transition */}
         <div
           className="flex transition-transform duration-300 ease-in-out"
-          style={{ transform: `translateX(-${(currentStep - 1) * 100}%)` }}
+          style={{ transform: `translateX(-${(state.currentStep - 1) * 100}%)` }}
         >
-          {/* T024: Step 1 - Welcome message, voice auth note, Start Onboarding CTA */}
+          {/* T007-T011: Step 1 - Welcome Screen */}
           <div className="min-w-full p-8 flex flex-col items-center gap-6 text-center">
-            <h1 className="text-3xl font-bold">Welcome to HomeCuistot!</h1>
-            <p className="text-lg text-muted-foreground max-w-md">
-              Let&apos;s set up your profile. This will help us suggest recipes based
-              on what you have and what you like to cook.
+            <h1 className="text-3xl md:text-4xl font-black uppercase">
+              Welcome to HomeCuistot!
+            </h1>
+            <p className="text-lg text-gray-700 max-w-md">
+              Let&apos;s set up your kitchen profile. This helps us suggest recipes
+              based on what you have and what you like to cook.
             </p>
-            <p className="text-sm text-muted-foreground italic">
-              Note: Voice authorization will be available in a future update
-            </p>
+
+            {/* T009: Get Started button */}
             <Button
-              onClick={() => setCurrentStep(2)}
+              onClick={handleGetStarted}
               variant="default"
               size="lg"
-              className="mt-4"
+              className="mt-4 min-h-[44px] min-w-[44px]"
             >
-              Start Onboarding
+              Get Started
             </Button>
+
+            {/* T010: Skip Setup link */}
+            <button
+              onClick={handleSkipSetup}
+              className="text-sm text-gray-600 hover:text-gray-900 underline"
+            >
+              Skip Setup
+            </button>
           </div>
 
-          {/* T025: Step 2 - Three sections with badge buttons (dishes, fridge, pantry) */}
+          {/* T012-T020: Step 2 - Badge Selection */}
           <div className="min-w-full p-8 flex flex-col gap-6">
-            <h2 className="text-2xl font-bold text-center">
-              Tell us what you like and what you have
-            </h2>
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl md:text-3xl font-black uppercase">
+                What do you have?
+              </h2>
+              {/* T018: Clear All button */}
+              <Button onClick={handleClearAll} variant="outline" size="sm">
+                Clear All
+              </Button>
+            </div>
 
-            {/* Dishes section */}
+            {/* T014: Dishes section */}
             <div className="space-y-3">
-              <h3 className="text-lg font-semibold">Favorite Dishes</h3>
-              {/* T029: flex-wrap layout for badge wrapping */}
+              <h3 className="text-lg font-bold uppercase">Dishes You Can Cook</h3>
               <div className="flex flex-wrap gap-2">
-                {MOCK_DISHES.map((dish) => (
+                {SUGGESTED_ITEMS.dishes.map((dish) => (
                   <Badge
                     key={dish.id}
-                    variant={dish.isSelected ? "solid" : "outline"}
-                    className="truncate"
+                    variant={state.dishes.includes(dish.name) ? "solid" : "outline"}
+                    className="cursor-pointer min-h-[44px] min-w-[44px] border-2 md:border-3 hover:scale-105 transition-transform"
+                    onClick={() => toggleItem(dish.name, "dishes")}
                   >
                     {dish.name}
                   </Badge>
@@ -130,113 +320,199 @@ export default function OnboardingPage() {
               </div>
             </div>
 
-            {/* Fridge ingredients section */}
+            {/* T015: Fridge section */}
             <div className="space-y-3">
-              <h3 className="text-lg font-semibold">Fridge Ingredients</h3>
+              <h3 className="text-lg font-bold uppercase">Fridge Items</h3>
               <div className="flex flex-wrap gap-2">
-                {MOCK_FRIDGE_INGREDIENTS.map((ingredient) => (
+                {SUGGESTED_ITEMS.fridgeItems.map((item) => (
                   <Badge
-                    key={ingredient.id}
-                    variant={ingredient.isSelected ? "solid" : "outline"}
-                    className="truncate"
+                    key={item.id}
+                    variant={state.fridge.includes(item.name) ? "solid" : "outline"}
+                    className="cursor-pointer min-h-[44px] min-w-[44px] border-2 md:border-3 hover:scale-105 transition-transform"
+                    onClick={() => toggleItem(item.name, "fridge")}
                   >
-                    {ingredient.name}
+                    {item.name}
                   </Badge>
                 ))}
               </div>
             </div>
 
-            {/* Pantry ingredients section */}
+            {/* T016: Pantry section */}
             <div className="space-y-3">
-              <h3 className="text-lg font-semibold">Pantry Ingredients</h3>
+              <h3 className="text-lg font-bold uppercase">Pantry Items</h3>
               <div className="flex flex-wrap gap-2">
-                {MOCK_PANTRY_INGREDIENTS.map((ingredient) => (
+                {SUGGESTED_ITEMS.pantryItems.map((item) => (
                   <Badge
-                    key={ingredient.id}
-                    variant={ingredient.isSelected ? "solid" : "outline"}
-                    className="truncate"
+                    key={item.id}
+                    variant={state.pantry.includes(item.name) ? "solid" : "outline"}
+                    className="cursor-pointer min-h-[44px] min-w-[44px] border-2 md:border-3 hover:scale-105 transition-transform"
+                    onClick={() => toggleItem(item.name, "pantry")}
                   >
-                    {ingredient.name}
+                    {item.name}
                   </Badge>
                 ))}
               </div>
             </div>
 
-            {/* T026: Continue/clear CTAs at bottom */}
-            <div className="flex gap-4 justify-center mt-4">
-              <Button onClick={() => setCurrentStep(1)} variant="outline">
-                Back
-              </Button>
-              <Button onClick={() => setCurrentStep(3)} variant="default">
+            {/* T019: Continue button (no back button - forward-only) */}
+            <div className="flex justify-end mt-4">
+              <Button
+                onClick={handleContinueToStep3}
+                variant="default"
+                size="lg"
+                className="min-h-[44px]"
+              >
                 Continue
               </Button>
             </div>
           </div>
 
-          {/* T027: Step 3 - Summary, microphone icon, Finish Onboarding button */}
-          <div className="min-w-full p-8 flex flex-col items-center gap-6">
-            <h2 className="text-2xl font-bold text-center">
-              Your Selections Summary
+          {/* T021-T047: Step 3 - Voice Input & Review */}
+          <div className="min-w-full p-8 flex flex-col gap-6">
+            <h2 className="text-2xl md:text-3xl font-black uppercase text-center">
+              Review & Refine
             </h2>
 
-            {/* Summary of selected items */}
-            <div className="w-full max-w-md space-y-4">
-              <div className="space-y-2">
-                <h3 className="text-lg font-semibold">Selected Dishes</h3>
-                <div className="flex flex-wrap gap-2">
-                  {selectedDishes.map((dish) => (
-                    <Badge key={dish.id} variant="solid" className="truncate">
-                      {dish.name}
-                    </Badge>
-                  ))}
-                </div>
+            {/* T021: Display current selections */}
+            <div className="space-y-4">
+              <div>
+                <h3 className="text-lg font-bold uppercase mb-2">Your Dishes</h3>
+                {state.dishes.length === 0 ? (
+                  <p className="text-gray-500 italic">No dishes selected</p>
+                ) : (
+                  <div className="flex flex-wrap gap-2">
+                    {state.dishes.map((dish, idx) => (
+                      <Badge key={idx} variant="solid" className="border-2 md:border-3">
+                        {dish}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
               </div>
 
-              <div className="space-y-2">
-                <h3 className="text-lg font-semibold">Ingredients</h3>
-                <div className="flex flex-wrap gap-2">
-                  {allSelectedIngredients.map((ingredient) => (
-                    <Badge
-                      key={ingredient.id}
-                      variant="solid"
-                      className="truncate"
-                    >
-                      {ingredient.name}
-                    </Badge>
-                  ))}
-                </div>
+              <div>
+                <h3 className="text-lg font-bold uppercase mb-2">Your Ingredients</h3>
+                {state.ingredients.length === 0 ? (
+                  <p className="text-gray-500 italic">No ingredients selected</p>
+                ) : (
+                  <div className="flex flex-wrap gap-2">
+                    {state.ingredients.map((ingredient, idx) => (
+                      <Badge key={idx} variant="solid" className="border-2 md:border-3">
+                        {ingredient}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
 
-            {/* Microphone icon + "Tap to speak" text */}
-            <div className="flex flex-col items-center gap-2 mt-4">
-              <Image
-                src="/icons/microphone.svg"
-                alt="Microphone"
-                width={48}
-                height={48}
-                className="text-foreground"
-              />
-              <p className="text-sm text-muted-foreground">
-                Tap to speak (coming soon)
-              </p>
-            </div>
+            {/* T022-T029: Voice input button (if permission not denied) */}
+            {!permissionDenied && !state.showTextFallback && (
+              <div className="flex flex-col items-center gap-4 mt-6">
+                <p className="text-sm text-gray-600 text-center">
+                  Hold the button and tell us what to add or remove
+                </p>
 
-            {/* Finish Onboarding button */}
-            <div className="flex gap-4 mt-4">
-              <Button onClick={() => setCurrentStep(2)} variant="outline">
-                Back
-              </Button>
+                {/* T022-T024: Hold-to-speak button */}
+                <button
+                  onMouseDown={startRecording}
+                  onMouseUp={stopRecording}
+                  onTouchStart={startRecording}
+                  onTouchEnd={stopRecording}
+                  disabled={isProcessing}
+                  className={`
+                    relative rounded-full p-6 min-h-[80px] min-w-[80px]
+                    border-4 md:border-6 border-black bg-pink-400
+                    shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]
+                    hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px]
+                    active:shadow-none active:translate-x-[4px] active:translate-y-[4px]
+                    transition-all
+                    ${isRecording ? "animate-pulse ring-4 ring-red-500" : ""}
+                    ${isProcessing ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
+                  `}
+                >
+                  {isProcessing ? (
+                    <Loader2 className="h-8 w-8 animate-spin" />
+                  ) : (
+                    <Mic className="h-8 w-8" />
+                  )}
+
+                  {/* T024: Recording duration display */}
+                  {isRecording && (
+                    <span className="absolute -top-8 left-1/2 -translate-x-1/2 text-sm font-bold bg-red-500 text-white px-2 py-1 rounded">
+                      {formatDuration(recordingDuration)}
+                    </span>
+                  )}
+                </button>
+
+                {isRecording && (
+                  <p className="text-sm font-bold text-red-600">Recording...</p>
+                )}
+                {isProcessing && (
+                  <p className="text-sm font-bold text-blue-600">Processing...</p>
+                )}
+              </div>
+            )}
+
+            {/* T039-T042: Error messages */}
+            {errorMessage && (
+              <div className="bg-red-100 border-2 border-red-500 p-3 rounded text-sm text-red-700 text-center">
+                {errorMessage}
+              </div>
+            )}
+
+            {/* T036-T047: Text fallback */}
+            {(permissionDenied || state.showTextFallback) && (
+              <div className="space-y-3">
+                {permissionDenied && (
+                  <p className="text-sm text-gray-600 text-center">
+                    Microphone access denied. Please use text input below.
+                  </p>
+                )}
+
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={textInput}
+                    onChange={(e) => setTextInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && !isProcessing) {
+                        handleTextSubmit();
+                      }
+                    }}
+                    placeholder="Type what to add or remove (e.g., 'add eggs, remove milk')"
+                    className="flex-1 px-4 py-3 border-4 border-black rounded focus:outline-none focus:ring-2 focus:ring-pink-500 min-h-[44px]"
+                    disabled={isProcessing}
+                  />
+                  <Button
+                    onClick={handleTextSubmit}
+                    disabled={isProcessing || !textInput.trim()}
+                    className="min-h-[44px]"
+                  >
+                    {isProcessing ? <Loader2 className="h-4 w-4 animate-spin" /> : "Send"}
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* T062-T064: Complete Setup button */}
+            <div className="flex justify-end mt-6">
               <Button
-                onClick={() => {
-                  router.push("/suggestions");
-                }}
+                onClick={handleCompleteSetup}
+                disabled={!state.hasVoiceChanges}
                 variant="default"
                 size="lg"
+                className="min-h-[44px]"
               >
-                Finish Onboarding
+                Complete Setup
               </Button>
             </div>
+
+            {!state.hasVoiceChanges && (
+              <p className="text-sm text-gray-500 text-center">
+                Make at least one change using voice or text to continue
+              </p>
+            )}
           </div>
         </div>
       </div>

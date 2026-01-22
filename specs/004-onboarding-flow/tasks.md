@@ -29,9 +29,9 @@ Next.js monorepo structure:
 
 **Purpose**: Project initialization, type definitions, shared utilities
 
-- [ ] T001 Create types for onboarding flow in apps/nextjs/src/types/onboarding.ts
-- [ ] T002 [P] Create Gemini service wrapper in apps/nextjs/src/lib/gemini.ts
-- [ ] T003 [P] Add suggested items constants in apps/nextjs/src/constants/onboarding.ts
+- [X] T001 Create types for onboarding flow in apps/nextjs/src/types/onboarding.ts
+- [X] T002 [P] Create Gemini service wrapper in apps/nextjs/src/lib/gemini.ts
+- [X] T003 [P] Add suggested items constants in apps/nextjs/src/constants/onboarding.ts
 
 ---
 
@@ -41,9 +41,9 @@ Next.js monorepo structure:
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T004 Create useVoiceInput hook in apps/nextjs/src/hooks/useVoiceInput.ts
-- [ ] T005 Create API route for voice processing in apps/nextjs/src/app/api/onboarding/process-voice/route.ts
-- [ ] T006 [P] Create PageContainer component (if not exists) in apps/nextjs/src/components/PageContainer.tsx
+- [X] T004 Create useVoiceInput hook in apps/nextjs/src/hooks/useVoiceInput.ts
+- [X] T005 Create API route for voice processing in apps/nextjs/src/app/api/onboarding/process-voice/route.ts
+- [X] T006 [P] Create PageContainer component (if not exists) in apps/nextjs/src/components/PageContainer.tsx
 
 **Checkpoint**: Voice infrastructure ready - user story implementation can now begin in parallel
 
@@ -59,11 +59,11 @@ Next.js monorepo structure:
 
 ### Implementation for User Story 1
 
-- [ ] T007 [US1] Create onboarding page component in apps/nextjs/src/app/(protected)/onboarding/page.tsx
-- [ ] T008 [US1] Implement step 1 welcome screen UI with microphone banner
-- [ ] T009 [US1] Add "Get Started" button with transition to step 2
-- [ ] T010 [US1] Add "Skip Setup" link with navigation to suggestions
-- [ ] T011 [US1] Add progress indicator component showing step 1/3
+- [X] T007 [US1] Create onboarding page component in apps/nextjs/src/app/(protected)/onboarding/page.tsx
+- [X] T008 [US1] Implement step 1 welcome screen UI with microphone banner
+- [X] T009 [US1] Add "Get Started" button with transition to step 2
+- [X] T010 [US1] Add "Skip Setup" link with navigation to suggestions
+- [X] T011 [US1] Add progress indicator component showing step 1/3
 
 **Checkpoint**: User Story 1 complete - welcome screen functional and testable
 
@@ -79,15 +79,15 @@ Next.js monorepo structure:
 
 ### Implementation for User Story 2
 
-- [ ] T012 [P] [US2] Create Badge component for selectable items in apps/nextjs/src/components/retroui/Badge.tsx (if not exists)
-- [ ] T013 [US2] Implement step 2 badge selection layout with three sections
-- [ ] T014 [US2] Add dishes section with 10-15 suggested dishes from constants
-- [ ] T015 [US2] Add fridge section with 15-20 suggested items from constants
-- [ ] T016 [US2] Add pantry section with 15-20 suggested items from constants
-- [ ] T017 [US2] Implement multi-select logic with active state styling
-- [ ] T018 [US2] Add "Clear All" button to deselect all badges
-- [ ] T019 [US2] Add "Continue" button with transition to step 3
-- [ ] T020 [US2] Merge fridge and pantry arrays into ingredients on step transition
+- [X] T012 [P] [US2] Create Badge component for selectable items in apps/nextjs/src/components/retroui/Badge.tsx (if not exists)
+- [X] T013 [US2] Implement step 2 badge selection layout with three sections
+- [X] T014 [US2] Add dishes section with 10-15 suggested dishes from constants
+- [X] T015 [US2] Add fridge section with 15-20 suggested items from constants
+- [X] T016 [US2] Add pantry section with 15-20 suggested items from constants
+- [X] T017 [US2] Implement multi-select logic with active state styling
+- [X] T018 [US2] Add "Clear All" button to deselect all badges
+- [X] T019 [US2] Add "Continue" button with transition to step 3
+- [X] T020 [US2] Merge fridge and pantry arrays into ingredients on step transition
 
 **Checkpoint**: User Story 2 complete - badge selection functional with smooth transitions
 
@@ -103,21 +103,21 @@ Next.js monorepo structure:
 
 ### Implementation for User Story 3
 
-- [ ] T021 [US3] Implement step 3 review screen with merged ingredients display
-- [ ] T022 [P] [US3] Create VoiceInputButton component in apps/nextjs/src/components/onboarding/VoiceInputButton.tsx
-- [ ] T023 [US3] Implement hold-to-speak recording with pulsing indicator
-- [ ] T024 [US3] Add recording duration timer display
-- [ ] T025 [US3] Implement 60-second auto-stop recording timeout
-- [ ] T026 [US3] Add microphone permission request flow
-- [ ] T027 [US3] Integrate useVoiceInput hook with MediaRecorder API
-- [ ] T028 [US3] Send base64 audio to /api/onboarding/process-voice endpoint
-- [ ] T029 [US3] Display inline processing spinner during API call
-- [ ] T030 [US3] Apply VoiceUpdate response to state (add/remove operations)
-- [ ] T031 [US3] Implement duplicate detection with case-insensitive comparison
-- [ ] T032 [US3] Show toast notification for duplicate items
-- [ ] T033 [US3] Enable "Complete Setup" button after ≥1 voice change
-- [ ] T034 [US3] Add empty state placeholder for no items
-- [ ] T035 [US3] Reset voiceFailureCount to 0 on successful processing
+- [X] T021 [US3] Implement step 3 review screen with merged ingredients display
+- [X] T022 [P] [US3] Create VoiceInputButton component in apps/nextjs/src/components/onboarding/VoiceInputButton.tsx
+- [X] T023 [US3] Implement hold-to-speak recording with pulsing indicator
+- [X] T024 [US3] Add recording duration timer display
+- [X] T025 [US3] Implement 60-second auto-stop recording timeout
+- [X] T026 [US3] Add microphone permission request flow
+- [X] T027 [US3] Integrate useVoiceInput hook with MediaRecorder API
+- [X] T028 [US3] Send base64 audio to /api/onboarding/process-voice endpoint
+- [X] T029 [US3] Display inline processing spinner during API call
+- [X] T030 [US3] Apply VoiceUpdate response to state (add/remove operations)
+- [X] T031 [US3] Implement duplicate detection with case-insensitive comparison
+- [X] T032 [US3] Show toast notification for duplicate items
+- [X] T033 [US3] Enable "Complete Setup" button after ≥1 voice change
+- [X] T034 [US3] Add empty state placeholder for no items
+- [X] T035 [US3] Reset voiceFailureCount to 0 on successful processing
 
 **Checkpoint**: User Story 3 complete - voice input functional with real-time updates
 
@@ -133,18 +133,18 @@ Next.js monorepo structure:
 
 ### Implementation for User Story 4
 
-- [ ] T036 [P] [US4] Create TextInputFallback component in apps/nextjs/src/components/onboarding/TextInputFallback.tsx
-- [ ] T037 [US4] Handle microphone permission denied (NotAllowedError)
-- [ ] T038 [US4] Hide mic button when permission denied
-- [ ] T039 [US4] Show text input with message for denied permission
-- [ ] T040 [US4] Implement voice failure tracking (voiceFailureCount state)
-- [ ] T041 [US4] Show "Couldn't understand. Try again." after first failure
-- [ ] T042 [US4] Show "Still having trouble. Would you like to type instead?" after second failure
-- [ ] T043 [US4] Display text input field below mic button after 2 failures
-- [ ] T044 [US4] Process text input through /api/onboarding/process-voice endpoint
-- [ ] T045 [US4] Apply text processing results same as voice (add/remove operations)
-- [ ] T046 [US4] Show inline processing spinner during text API call
-- [ ] T047 [US4] Disable submit button during processing to prevent duplicates
+- [X] T036 [P] [US4] Create TextInputFallback component in apps/nextjs/src/components/onboarding/TextInputFallback.tsx
+- [X] T037 [US4] Handle microphone permission denied (NotAllowedError)
+- [X] T038 [US4] Hide mic button when permission denied
+- [X] T039 [US4] Show text input with message for denied permission
+- [X] T040 [US4] Implement voice failure tracking (voiceFailureCount state)
+- [X] T041 [US4] Show "Couldn't understand. Try again." after first failure
+- [X] T042 [US4] Show "Still having trouble. Would you like to type instead?" after second failure
+- [X] T043 [US4] Display text input field below mic button after 2 failures
+- [X] T044 [US4] Process text input through /api/onboarding/process-voice endpoint
+- [X] T045 [US4] Apply text processing results same as voice (add/remove operations)
+- [X] T046 [US4] Show inline processing spinner during text API call
+- [X] T047 [US4] Disable submit button during processing to prevent duplicates
 
 **Checkpoint**: User Story 4 complete - text fallback functional for all error scenarios
 
