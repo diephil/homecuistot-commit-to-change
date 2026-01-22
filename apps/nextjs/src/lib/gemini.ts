@@ -1,5 +1,5 @@
 import { google } from '@ai-sdk/google';
-import { generateText } from 'ai';
+import { generateText, Output } from 'ai';
 import { VoiceUpdateSchema } from '@/types/onboarding';
 
 /**
@@ -45,7 +45,7 @@ Return structured JSON matching the schema. Be case-sensitive for proper names.`
         },
         {
           type: 'file' as const,
-          mimeType: 'audio/webm',
+          mediaType: 'audio/webm',
           data: audioBase64,
         },
       ]
@@ -76,9 +76,10 @@ Return structured JSON matching the schema. Be case-sensitive for proper names.`
         content: userContent,
       },
     ],
-    output: 'object',
-    schema: VoiceUpdateSchema,
+    output: Output.object({
+      schema: VoiceUpdateSchema,
+    }),
   });
 
-  return result.object;
+  return result.output;
 }
