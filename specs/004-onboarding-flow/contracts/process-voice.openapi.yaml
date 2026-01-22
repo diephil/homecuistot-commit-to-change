@@ -1,0 +1,297 @@
+openapi: 3.1.0
+info:
+  title: Voice Onboarding API
+  description: Natural language processing endpoint for voice/text input during kitchen onboarding
+  version: 1.0.0
+  contact:
+    name: HomeCuistot Team
+
+servers:
+  - url: http://localhost:3000/api
+    description: Development server
+  - url: https://homecuistot.app/api
+    description: Production server
+
+paths:
+  /onboarding/process-voice:
+    post:
+      summary: Process voice or text input for onboarding
+      description: |
+        Accepts audio (base64-encoded WebM) or text input and returns structured
+        add/remove operations for dishes and ingredients. Uses Google Gemini API
+        for natural language processing.
+
+        **Processing Time**: Typically 2-5 seconds, maximum 15 seconds (timeout)
+
+        **Rate Limits**: TBD (implement after MVP)
+
+      operationId: processVoiceInput
+
+      tags:
+        - Onboarding
+        - Voice Input
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                audioBase64:
+                  type: string
+                  format: byte
+                  description: |
+                    Base64-encoded audio file (WebM format with Opus codec preferred).
+                    Maximum duration: 60 seconds.
+                    Mutually exclusive with `text` field.
+                  example: "UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAAB9AAACABAAZGF0YQAAAAA="
+
+                text:
+                  type: string
+                  minLength: 1
+                  maxLength: 500
+                  description: |
+                    Plain text input as fallback to voice. User types natural language
+                    describing what to add/remove.
+                    Mutually exclusive with `audioBase64` field.
+                  example: "Add eggs, tomatoes, remove milk. I can also cook scrambled eggs."
+
+                currentContext:
+                  type: object
+                  required:
+                    - dishes
+                    - ingredients
+                  properties:
+                    dishes:
+                      type: array
+                      items:
+                        type: string
+                      description: Current list of cooking skills
+                      example: ["Pasta Carbonara", "Grilled Cheese"]
+
+                    ingredients:
+                      type: array
+                      items:
+                        type: string
+                      description: Current list of ingredients (merged fridge + pantry)
+                      example: ["Eggs", "Cheese", "Pasta", "Milk"]
+
+              required:
+                - currentContext
+
+              oneOf:
+                - required: [audioBase64]
+                - required: [text]
+
+            examples:
+              voiceInput:
+                summary: Voice input with audio
+                value:
+                  audioBase64: "UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAAB9AAACABAAZGF0YQAAAAA="
+                  currentContext:
+                    dishes: ["Pasta Carbonara"]
+                    ingredients: ["Eggs", "Cheese", "Pasta"]
+
+              textInput:
+                summary: Text fallback input
+                value:
+                  text: "Add tomatoes and eggs, remove milk"
+                  currentContext:
+                    dishes: []
+                    ingredients: []
+
+      responses:
+        '200':
+          description: Successfully processed voice/text input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VoiceUpdate'
+
+              examples:
+                addItems:
+                  summary: Adding dishes and ingredients
+                  value:
+                    add:
+                      dishes: ["Scrambled Eggs", "Fried Rice"]
+                      ingredients: ["Eggs", "Tomatoes", "Rice"]
+                    remove:
+                      dishes: []
+                      ingredients: []
+
+                removeItems:
+                  summary: Removing ingredients
+                  value:
+                    add:
+                      dishes: []
+                      ingredients: []
+                    remove:
+                      dishes: []
+                      ingredients: ["Milk", "Cheese"]
+
+                mixed:
+                  summary: Mixed add/remove operations
+                  value:
+                    add:
+                      dishes: ["Grilled Cheese"]
+                      ingredients: ["Butter"]
+                    remove:
+                      dishes: ["Pasta Carbonara"]
+                      ingredients: ["Milk"]
+
+        '400':
+          description: Invalid request (missing required fields, malformed audio, etc.)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                missingInput:
+                  summary: Neither audio nor text provided
+                  value:
+                    error: "Either audioBase64 or text must be provided"
+                    code: "MISSING_INPUT"
+
+                invalidAudio:
+                  summary: Malformed base64 audio
+                  value:
+                    error: "Invalid base64 audio format"
+                    code: "INVALID_AUDIO"
+
+                invalidContext:
+                  summary: Missing currentContext field
+                  value:
+                    error: "currentContext is required"
+                    code: "MISSING_CONTEXT"
+
+        '500':
+          description: Internal server error (Gemini API failure, parsing error, etc.)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                geminiError:
+                  summary: Gemini API processing failed
+                  value:
+                    error: "NLP processing failed"
+                    code: "NLP_ERROR"
+                    details: "Gemini API returned unparseable response"
+
+                timeout:
+                  summary: Processing timeout
+                  value:
+                    error: "Request timeout after 15 seconds"
+                    code: "TIMEOUT"
+
+        '503':
+          description: Service temporarily unavailable (Gemini API down, rate limit exceeded)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                serviceDown:
+                  summary: Gemini API unavailable
+                  value:
+                    error: "NLP service temporarily unavailable"
+                    code: "SERVICE_UNAVAILABLE"
+                    retryAfter: 60
+
+components:
+  schemas:
+    VoiceUpdate:
+      type: object
+      required:
+        - add
+        - remove
+      properties:
+        add:
+          type: object
+          required:
+            - dishes
+            - ingredients
+          properties:
+            dishes:
+              type: array
+              items:
+                type: string
+              description: Cooking skills to add
+              example: ["Scrambled Eggs", "Fried Rice"]
+
+            ingredients:
+              type: array
+              items:
+                type: string
+              description: Food items to add
+              example: ["Eggs", "Tomatoes", "Rice"]
+
+        remove:
+          type: object
+          required:
+            - dishes
+            - ingredients
+          properties:
+            dishes:
+              type: array
+              items:
+                type: string
+              description: Cooking skills to remove
+              example: ["Pasta Carbonara"]
+
+            ingredients:
+              type: array
+              items:
+                type: string
+              description: Food items to remove
+              example: ["Milk", "Cheese"]
+
+    Error:
+      type: object
+      required:
+        - error
+        - code
+      properties:
+        error:
+          type: string
+          description: Human-readable error message
+          example: "Invalid base64 audio format"
+
+        code:
+          type: string
+          description: Machine-readable error code
+          enum:
+            - MISSING_INPUT
+            - INVALID_AUDIO
+            - MISSING_CONTEXT
+            - NLP_ERROR
+            - TIMEOUT
+            - SERVICE_UNAVAILABLE
+          example: "INVALID_AUDIO"
+
+        details:
+          type: string
+          description: Additional error context (optional, for debugging)
+          example: "Gemini API returned 500 status"
+
+        retryAfter:
+          type: integer
+          description: Seconds to wait before retrying (503 responses only)
+          example: 60
+
+  securitySchemes:
+    sessionAuth:
+      type: apiKey
+      in: cookie
+      name: supabase-auth-token
+      description: Supabase session cookie (auto-included by browser)
+
+security:
+  - sessionAuth: []
+
+tags:
+  - name: Onboarding
+    description: Kitchen profile setup endpoints
+  - name: Voice Input
+    description: Voice/text processing operations
