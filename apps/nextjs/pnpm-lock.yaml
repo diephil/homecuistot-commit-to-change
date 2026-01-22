@@ -10,7 +10,7 @@ importers:
     dependencies:
       '@ai-sdk/google':
         specifier: ^3.0.10
-        version: 3.0.10(zod@3.25.76)
+        version: 3.0.10(zod@4.3.6)
       '@opentelemetry/api-logs':
         specifier: ^0.210.0
         version: 0.210.0
@@ -37,7 +37,7 @@ importers:
         version: 2.1.0(@opentelemetry/api-logs@0.210.0)(@opentelemetry/api@1.9.0)(@opentelemetry/instrumentation@0.210.0(@opentelemetry/api@1.9.0))(@opentelemetry/resources@2.4.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-logs@0.210.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-metrics@2.4.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.4.0(@opentelemetry/api@1.9.0))
       ai:
         specifier: ^6.0.39
-        version: 6.0.39(zod@3.25.76)
+        version: 6.0.39(zod@4.3.6)
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -55,10 +55,10 @@ importers:
         version: 16.1.3(@babel/core@7.28.6)(@opentelemetry/api@1.9.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       opik:
         specifier: ^1.9.89
-        version: 1.9.89(zod@3.25.76)
+        version: 1.9.89(zod@4.3.6)
       opik-vercel:
         specifier: ^1.9.89
-        version: 1.9.89(@opentelemetry/api@1.9.0)(@opentelemetry/core@2.4.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-node@0.210.0(@opentelemetry/api@1.9.0))(opik@1.9.89(zod@3.25.76))
+        version: 1.9.89(@opentelemetry/api@1.9.0)(@opentelemetry/core@2.4.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-node@0.210.0(@opentelemetry/api@1.9.0))(opik@1.9.89(zod@4.3.6))
       postgres:
         specifier: ^3.4.8
         version: 3.4.8
@@ -71,6 +71,9 @@ importers:
       tailwind-merge:
         specifier: ^3.4.0
         version: 3.4.0
+      zod:
+        specifier: ^4.3.6
+        version: 4.3.6
     devDependencies:
       '@tailwindcss/postcss':
         specifier: ^4
@@ -4634,53 +4637,53 @@ packages:
   zod@3.25.76:
     resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
 
-  zod@4.3.5:
-    resolution: {integrity: sha512-k7Nwx6vuWx1IJ9Bjuf4Zt1PEllcwe7cls3VNzm4CQ1/hgtFUK2bRNG3rvnpPUhFjmqJKAKtjV576KnUkHocg/g==}
+  zod@4.3.6:
+    resolution: {integrity: sha512-rftlrkhHZOcjDwkGlnUtZZkvaPHCsDATp4pGpuOOMDaTdDDXF91wuVDJoWoPsKX/3YPQ5fHuF3STjcYyKr+Qhg==}
 
 snapshots:
 
-  '@ai-sdk/anthropic@3.0.15(zod@3.25.76)':
+  '@ai-sdk/anthropic@3.0.15(zod@4.3.6)':
     dependencies:
       '@ai-sdk/provider': 3.0.4
-      '@ai-sdk/provider-utils': 4.0.8(zod@3.25.76)
-      zod: 3.25.76
+      '@ai-sdk/provider-utils': 4.0.8(zod@4.3.6)
+      zod: 4.3.6
 
-  '@ai-sdk/gateway@3.0.16(zod@3.25.76)':
+  '@ai-sdk/gateway@3.0.16(zod@4.3.6)':
     dependencies:
       '@ai-sdk/provider': 3.0.4
-      '@ai-sdk/provider-utils': 4.0.8(zod@3.25.76)
+      '@ai-sdk/provider-utils': 4.0.8(zod@4.3.6)
       '@vercel/oidc': 3.1.0
-      zod: 3.25.76
+      zod: 4.3.6
 
-  '@ai-sdk/google-vertex@4.0.17(zod@3.25.76)':
+  '@ai-sdk/google-vertex@4.0.17(zod@4.3.6)':
     dependencies:
-      '@ai-sdk/anthropic': 3.0.15(zod@3.25.76)
-      '@ai-sdk/google': 3.0.10(zod@3.25.76)
+      '@ai-sdk/anthropic': 3.0.15(zod@4.3.6)
+      '@ai-sdk/google': 3.0.10(zod@4.3.6)
       '@ai-sdk/provider': 3.0.4
-      '@ai-sdk/provider-utils': 4.0.8(zod@3.25.76)
+      '@ai-sdk/provider-utils': 4.0.8(zod@4.3.6)
       google-auth-library: 10.5.0
-      zod: 3.25.76
+      zod: 4.3.6
     transitivePeerDependencies:
       - supports-color
 
-  '@ai-sdk/google@3.0.10(zod@3.25.76)':
+  '@ai-sdk/google@3.0.10(zod@4.3.6)':
     dependencies:
       '@ai-sdk/provider': 3.0.4
-      '@ai-sdk/provider-utils': 4.0.8(zod@3.25.76)
-      zod: 3.25.76
+      '@ai-sdk/provider-utils': 4.0.8(zod@4.3.6)
+      zod: 4.3.6
 
-  '@ai-sdk/openai@3.0.12(zod@3.25.76)':
+  '@ai-sdk/openai@3.0.12(zod@4.3.6)':
     dependencies:
       '@ai-sdk/provider': 3.0.4
-      '@ai-sdk/provider-utils': 4.0.8(zod@3.25.76)
-      zod: 3.25.76
+      '@ai-sdk/provider-utils': 4.0.8(zod@4.3.6)
+      zod: 4.3.6
 
-  '@ai-sdk/provider-utils@4.0.8(zod@3.25.76)':
+  '@ai-sdk/provider-utils@4.0.8(zod@4.3.6)':
     dependencies:
       '@ai-sdk/provider': 3.0.4
       '@standard-schema/spec': 1.1.0
       eventsource-parser: 3.0.6
-      zod: 3.25.76
+      zod: 4.3.6
 
   '@ai-sdk/provider@3.0.4':
     dependencies:
@@ -6326,13 +6329,13 @@ snapshots:
 
   agent-base@7.1.4: {}
 
-  ai@6.0.39(zod@3.25.76):
+  ai@6.0.39(zod@4.3.6):
     dependencies:
-      '@ai-sdk/gateway': 3.0.16(zod@3.25.76)
+      '@ai-sdk/gateway': 3.0.16(zod@4.3.6)
       '@ai-sdk/provider': 3.0.4
-      '@ai-sdk/provider-utils': 4.0.8(zod@3.25.76)
+      '@ai-sdk/provider-utils': 4.0.8(zod@4.3.6)
       '@opentelemetry/api': 1.9.0
-      zod: 3.25.76
+      zod: 4.3.6
 
   ajv-formats@3.0.1(ajv@8.17.1):
     optionalDependencies:
@@ -7100,8 +7103,8 @@ snapshots:
       '@babel/parser': 7.28.6
       eslint: 9.39.2(jiti@2.6.1)
       hermes-parser: 0.25.1
-      zod: 4.3.5
-      zod-validation-error: 4.0.2(zod@4.3.5)
+      zod: 4.3.6
+      zod-validation-error: 4.0.2(zod@4.3.6)
     transitivePeerDependencies:
       - supports-color
 
@@ -8155,20 +8158,20 @@ snapshots:
       powershell-utils: 0.1.0
       wsl-utils: 0.3.1
 
-  opik-vercel@1.9.89(@opentelemetry/api@1.9.0)(@opentelemetry/core@2.4.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-node@0.210.0(@opentelemetry/api@1.9.0))(opik@1.9.89(zod@3.25.76)):
+  opik-vercel@1.9.89(@opentelemetry/api@1.9.0)(@opentelemetry/core@2.4.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-node@0.210.0(@opentelemetry/api@1.9.0))(opik@1.9.89(zod@4.3.6)):
     dependencies:
       '@opentelemetry/api': 1.9.0
       '@opentelemetry/core': 2.4.0(@opentelemetry/api@1.9.0)
       '@opentelemetry/sdk-node': 0.210.0(@opentelemetry/api@1.9.0)
-      opik: 1.9.89(zod@3.25.76)
+      opik: 1.9.89(zod@4.3.6)
 
-  opik@1.9.89(zod@3.25.76):
+  opik@1.9.89(zod@4.3.6):
     dependencies:
-      '@ai-sdk/anthropic': 3.0.15(zod@3.25.76)
-      '@ai-sdk/google': 3.0.10(zod@3.25.76)
-      '@ai-sdk/google-vertex': 4.0.17(zod@3.25.76)
-      '@ai-sdk/openai': 3.0.12(zod@3.25.76)
-      ai: 6.0.39(zod@3.25.76)
+      '@ai-sdk/anthropic': 3.0.15(zod@4.3.6)
+      '@ai-sdk/google': 3.0.10(zod@4.3.6)
+      '@ai-sdk/google-vertex': 4.0.17(zod@4.3.6)
+      '@ai-sdk/openai': 3.0.12(zod@4.3.6)
+      ai: 6.0.39(zod@4.3.6)
       ansi-escapes: 7.2.0
       boxen: 8.0.1
       chalk: 5.6.2
@@ -8190,7 +8193,7 @@ snapshots:
       url-join: 5.0.0
       uuid: 11.1.0
       xxhash-wasm: 1.1.0
-      zod: 3.25.76
+      zod: 4.3.6
     transitivePeerDependencies:
       - chokidar
       - supports-color
@@ -9241,10 +9244,10 @@ snapshots:
     dependencies:
       zod: 3.25.76
 
-  zod-validation-error@4.0.2(zod@4.3.5):
+  zod-validation-error@4.0.2(zod@4.3.6):
     dependencies:
-      zod: 4.3.5
+      zod: 4.3.6
 
   zod@3.25.76: {}
 
-  zod@4.3.5: {}
+  zod@4.3.6: {}
