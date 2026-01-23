@@ -2,7 +2,8 @@
 
 ## Gemini Builds Reference
 
-`gemini-builds/` folder: AI Studio mockups as reference. Code must NOT be used as-is - requires revision and proper integration following project standards. Use only as inspiration.
+- `gemini-builds/` folder: AI Studio mockups as reference. Code must NOT be used as-is - requires revision and proper integration following project standards. Use only as inspiration.
+- IMPORTANT: never modify the code inside `gemini-builds/`, you can only read the code
 
 ## Speckit Implementation Workflow
 
@@ -40,6 +41,7 @@
 **Backend**: Vercel AI SDK + `@ai-sdk/google` (Gemini), Supabase Auth
 
 **Database**: Supabase PostgreSQL, Drizzle ORM
+
 - Schema: `src/db/schema/`
 - Migrations: `drizzle/migrations/`
 - Deps: drizzle-orm, drizzle-kit, @neondatabase/serverless, @supabase/supabase-js, @supabase/ssr
