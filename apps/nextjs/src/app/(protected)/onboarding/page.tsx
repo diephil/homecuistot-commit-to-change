@@ -31,6 +31,9 @@ function OnboardingPageContent() {
     audioBlob,
     startRecording,
     stopRecording,
+    clearAudioBlob,
+    clearRecordingArtifacts,
+    reset: resetVoiceInput,
     error: voiceError,
     permissionDenied,
   } = useVoiceInput();
@@ -44,7 +47,14 @@ function OnboardingPageContent() {
 
   // T028: Process audio when recording stops
   useEffect(() => {
-    if (audioBlob && !isRecording) {
+    console.log('[onboarding] State:', {
+      hasAudioBlob: !!audioBlob,
+      isRecording,
+      isProcessing
+    });
+
+    if (audioBlob && !isRecording && !isProcessing) {
+      console.log('[onboarding] Triggering handleProcessVoice');
       handleProcessVoice();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -96,10 +106,16 @@ function OnboardingPageContent() {
 
   // T028: Process voice or text input
   const handleProcessVoice = async () => {
-    if (!audioBlob && !textInput.trim()) return;
+    if (!audioBlob && !textInput.trim()) {
+      console.log('[onboarding] handleProcessVoice: No input to process');
+      return;
+    }
 
+    console.log('[onboarding] handleProcessVoice: Starting processing');
     setIsProcessing(true);
     setErrorMessage(null);
+
+    let audioBlobUsed = false;
 
     try {
       let audioBase64: string | undefined;
@@ -109,6 +125,10 @@ function OnboardingPageContent() {
         const arrayBuffer = await audioBlob.arrayBuffer();
         const base64 = Buffer.from(arrayBuffer).toString("base64");
         audioBase64 = base64;
+        audioBlobUsed = true;
+
+        // Clear audioBlob immediately to prevent re-processing
+        clearAudioBlob();
       }
 
       // T048: 15s timeout enforced by API maxDuration
@@ -152,9 +172,16 @@ function OnboardingPageContent() {
 
       // Clear text input
       setTextInput("");
+
+      console.log('[onboarding] handleProcessVoice: Processing complete');
     } catch (error) {
       // T053: Log all errors
       console.error("[onboarding] Voice processing error:", error);
+
+      // Clear audioBlob on error if we didn't already (e.g., if conversion failed)
+      if (!audioBlobUsed) {
+        clearAudioBlob();
+      }
 
       // T051: Count network timeout as voice failure
       const isTimeout = error instanceof Error && error.message.startsWith("timeout:");
@@ -189,7 +216,11 @@ function OnboardingPageContent() {
         setErrorMessage("Something went wrong. Please try again.");
       }
     } finally {
+      // Clear recording artifacts (blob + duration) without touching isRecording
+      // This prevents UI glitches if user starts new recording during processing
+      clearRecordingArtifacts();
       setIsProcessing(false);
+      console.log('[onboarding] handleProcessVoice: Cleanup complete');
     }
   };
 
@@ -458,7 +489,7 @@ function OnboardingPageContent() {
                     hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px]
                     active:shadow-none active:translate-x-[4px] active:translate-y-[4px]
                     transition-all
-                    ${isRecording ? "animate-pulse ring-4 ring-red-500" : ""}
+                    ${isRecording && !isProcessing ? "animate-pulse ring-4 ring-red-500" : ""}
                     ${isProcessing ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
                   `}
                 >
@@ -469,7 +500,7 @@ function OnboardingPageContent() {
                   )}
 
                   {/* T024: Recording duration display */}
-                  {isRecording && (
+                  {isRecording && !isProcessing && (
                     <span className="absolute -top-8 left-1/2 -translate-x-1/2 text-sm font-bold bg-red-500 text-white px-2 py-1 rounded">
                       {formatDuration(recordingDuration)}
                     </span>
@@ -477,7 +508,7 @@ function OnboardingPageContent() {
                 </button>
 
                 {/* T068: ARIA live regions for status updates */}
-                {isRecording && (
+                {isRecording && !isProcessing && (
                   <p className="text-sm font-bold text-red-600" role="status" aria-live="polite">
                     Recording...
                   </p>

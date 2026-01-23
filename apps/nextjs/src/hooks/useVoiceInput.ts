@@ -1,9 +1,11 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from "react";
 
 /**
  * T004: useVoiceInput hook for voice capture with MediaRecorder API
  * Spec: specs/004-onboarding-flow/research.md lines 124-243
  */
+
+const MAX_RECORDING_DURATION_MS = 60 * 1000;
 
 interface UseVoiceInputReturn {
   isRecording: boolean;
@@ -11,6 +13,9 @@ interface UseVoiceInputReturn {
   audioBlob: Blob | null;
   startRecording: () => Promise<void>;
   stopRecording: () => void;
+  clearAudioBlob: () => void;
+  clearRecordingArtifacts: () => void;
+  reset: () => void;
   error: Error | null;
   permissionDenied: boolean;
 }
@@ -29,15 +34,15 @@ export function useVoiceInput(): UseVoiceInputReturn {
   const autoStopTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const getOptimalMimeType = (): string => {
-    const preferred = 'audio/webm;codecs=opus';
+    const preferred = "audio/webm;codecs=opus";
     if (MediaRecorder.isTypeSupported(preferred)) {
       return preferred;
     }
 
     const fallbacks = [
-      'audio/webm',
-      'audio/ogg;codecs=opus',
-      'audio/mp4', // Safari fallback
+      "audio/webm",
+      "audio/ogg;codecs=opus",
+      "audio/mp4", // Safari fallback
     ];
 
     for (const mimeType of fallbacks) {
@@ -46,15 +51,45 @@ export function useVoiceInput(): UseVoiceInputReturn {
       }
     }
 
-    return ''; // Browser will choose default
+    return ""; // Browser will choose default
   };
+
+  const stopRecording = useCallback(() => {
+    if (
+      mediaRecorderRef.current &&
+      mediaRecorderRef.current.state === "recording"
+    ) {
+      mediaRecorderRef.current.stop();
+
+      // Immediately update UI state (onstop handler will complete the cleanup)
+      setIsRecording(false);
+
+      // Clear duration timer immediately to stop incrementing
+      if (durationTimerRef.current) {
+        clearInterval(durationTimerRef.current);
+        durationTimerRef.current = null;
+      }
+    }
+  }, []);
 
   const startRecording = useCallback(async () => {
     try {
+      // Reset all state before starting
       setError(null);
       setPermissionDenied(false);
       setAudioBlob(null);
+      setRecordingDuration(0);
       chunksRef.current = [];
+
+      // Clear any existing timers
+      if (durationTimerRef.current) {
+        clearInterval(durationTimerRef.current);
+        durationTimerRef.current = null;
+      }
+      if (autoStopTimerRef.current) {
+        clearTimeout(autoStopTimerRef.current);
+        autoStopTimerRef.current = null;
+      }
 
       // Request microphone with enhanced audio settings
       const stream = await navigator.mediaDevices.getUserMedia({
@@ -82,10 +117,9 @@ export function useVoiceInput(): UseVoiceInputReturn {
 
       mediaRecorder.onstop = () => {
         const blob = new Blob(chunksRef.current, {
-          type: mimeType || 'audio/webm',
+          type: mimeType || "audio/webm",
         });
         setAudioBlob(blob);
-        setIsRecording(false);
 
         // Cleanup stream
         if (streamRef.current) {
@@ -93,22 +127,20 @@ export function useVoiceInput(): UseVoiceInputReturn {
           streamRef.current = null;
         }
 
-        // Clear timers
-        if (durationTimerRef.current) {
-          clearInterval(durationTimerRef.current);
-          durationTimerRef.current = null;
-        }
+        // Clear auto-stop timer (duration timer already cleared in stopRecording)
         if (autoStopTimerRef.current) {
           clearTimeout(autoStopTimerRef.current);
           autoStopTimerRef.current = null;
         }
-        setRecordingDuration(0);
       };
 
       mediaRecorder.onerror = (event: Event) => {
-        const errorEvent = event as ErrorEvent;
-        console.error('MediaRecorder error:', errorEvent.error);
-        setError(new Error('Recording failed'));
+        console.error("MediaRecorder error:", event);
+        const errorMsg =
+          event instanceof ErrorEvent && event.error
+            ? event.error.message
+            : "Recording failed";
+        setError(new Error(errorMsg));
         stopRecording();
       };
 
@@ -120,33 +152,72 @@ export function useVoiceInput(): UseVoiceInputReturn {
         setRecordingDuration((prev) => prev + 1);
       }, 1000);
 
-      // Auto-stop after 60 seconds
+      // Auto-stop after maximum duration
       autoStopTimerRef.current = setTimeout(() => {
-        if (mediaRecorder.state === 'recording') {
-          mediaRecorder.stop();
-        }
-      }, 60 * 1000);
+        stopRecording();
+      }, MAX_RECORDING_DURATION_MS);
     } catch (err) {
       if (err instanceof Error) {
-        if (err.name === 'NotAllowedError') {
+        if (err.name === "NotAllowedError") {
           setPermissionDenied(true);
-          setError(new Error('Microphone permission denied'));
-        } else if (err.name === 'NotFoundError') {
-          setError(new Error('No microphone found'));
+          setError(new Error("Microphone permission denied"));
+        } else if (err.name === "NotFoundError") {
+          setError(new Error("No microphone found"));
         } else {
           setError(err);
         }
       } else {
-        setError(new Error('Unknown error occurred'));
+        setError(new Error("Unknown error occurred"));
       }
       setIsRecording(false);
     }
+  }, [stopRecording]);
+
+  const clearAudioBlob = useCallback(() => {
+    setAudioBlob(null);
+    chunksRef.current = [];
   }, []);
 
-  const stopRecording = useCallback(() => {
-    if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
-      mediaRecorderRef.current.stop();
-    }
+  const clearRecordingArtifacts = useCallback(() => {
+    setAudioBlob(null);
+    setRecordingDuration(0);
+    chunksRef.current = [];
+  }, []);
+
+  const reset = useCallback(() => {
+    setIsRecording(false);
+    setAudioBlob(null);
+    setRecordingDuration(0);
+    setError(null);
+    setPermissionDenied(false);
+    chunksRef.current = [];
+  }, []);
+
+  // Cleanup on unmount: stop recording, clear timers, release stream
+  useEffect(() => {
+    return () => {
+      // Stop recording if active
+      if (
+        mediaRecorderRef.current &&
+        mediaRecorderRef.current.state === "recording"
+      ) {
+        mediaRecorderRef.current.stop();
+      }
+
+      // Release media stream
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((track) => track.stop());
+        streamRef.current = null;
+      }
+
+      // Clear all timers
+      if (durationTimerRef.current) {
+        clearInterval(durationTimerRef.current);
+      }
+      if (autoStopTimerRef.current) {
+        clearTimeout(autoStopTimerRef.current);
+      }
+    };
   }, []);
 
   return {
@@ -155,6 +226,9 @@ export function useVoiceInput(): UseVoiceInputReturn {
     audioBlob,
     startRecording,
     stopRecording,
+    clearAudioBlob,
+    clearRecordingArtifacts,
+    reset,
     error,
     permissionDenied,
   };
