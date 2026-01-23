@@ -75,7 +75,7 @@ const ROUTE_MAPPINGS = {
    b. Call supabase.auth.getUser()
    c. Split ADMIN_USER_IDS env var by comma and check if user.id is in list
    d. If match: allow access
-   e. If no match: redirect to unauthorized page
+   e. If no match: rewrite to non-existent route (shows 404, URL stays same)
    f. If no user: redirect to /login
 3. Admin page renders
 ```
@@ -102,8 +102,8 @@ const ROUTE_MAPPINGS = {
 
 **Error States**:
 - Unauthenticated: Redirect to `/login?redirect=/admin`
-- Authenticated but not admin: Show unauthorized page
-- Invalid/missing ADMIN_USER_IDS env var: Log error, deny all admin access
+- Authenticated but not admin: Rewrite to 404 page (URL unchanged)
+- Invalid/missing ADMIN_USER_IDS env var: Log error, show 404 page
 
 ### Route Access Validation
 

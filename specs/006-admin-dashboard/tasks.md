@@ -82,19 +82,19 @@ All paths relative to `apps/nextjs/` directory:
 
 ## Phase 4: User Story 2 - Admin Access Control (Priority: P2)
 
-**Goal**: Restrict /admin route to authorized admin user only, redirect unauthorized users
+**Goal**: Restrict /admin route to authorized admin user only, show 404 to unauthorized users
 
-**Independent Test**: Admin user (ID matching ADMIN_USER_IDS) navigates to /admin → sees page. Non-admin user navigates to /admin → redirected to /unauthorized. Unauthenticated user → redirected to /login?redirect=/admin.
+**Independent Test**: Admin user (ID matching ADMIN_USER_IDS) navigates to /admin → sees page. Non-admin user navigates to /admin → sees 404 page (URL unchanged). Unauthenticated user → redirected to /login?redirect=/admin.
 
 ### Implementation for User Story 2
 
-- [X] T025 [P] [US2] Create apps/nextjs/src/app/(admin)/layout.tsx (Admin-specific layout)
-- [X] T026 [P] [US2] Create apps/nextjs/src/app/(auth)/unauthorized/ directory for access denied page
-- [X] T027 [US2] Create apps/nextjs/src/app/(auth)/unauthorized/page.tsx with neobrutalism design
-- [X] T028 [US2] Implement unauthorized page content: yellow/orange gradient, thick borders, error message
-- [X] T029 [US2] Add "Back to Home" link to unauthorized page with shadow hover effects
-- [X] T030 [US2] Test middleware admin check: verify ADMIN_USER_IDS comparison logic
-- [X] T031 [US2] Test unauthorized redirect: non-admin authenticated user → /unauthorized
+- [X] T025 [P] [US2] Create apps/nextjs/src/app/admin/layout.tsx (Admin-specific layout)
+- [X] T026 [P] [US2] Create apps/nextjs/src/app/not-found.tsx for custom 404 page
+- [X] T027 [US2] Implement 404 page with neobrutalism design (yellow/orange gradient, thick borders)
+- [X] T028 [US2] Add 404 page content: "404 - Not Found" heading, "There's nothing to find here" message
+- [X] T029 [US2] Add "Back to Home" link to 404 page with shadow hover effects
+- [X] T030 [US2] Test proxy admin check: verify ADMIN_USER_IDS comparison logic
+- [X] T031 [US2] Test 404 rewrite: non-admin authenticated user → sees 404 (URL unchanged)
 - [X] T032 [US2] Test login redirect: unauthenticated user at /admin → /login?redirect=/admin
 - [X] T033 [US2] Verify admin user can access /admin (will show 404 until US3 complete - expected)
 

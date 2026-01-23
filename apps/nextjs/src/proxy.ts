@@ -38,13 +38,14 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
 
       if (!process.env.ADMIN_USER_IDS) {
         console.error('[Proxy] ADMIN_USER_IDS not configured')
-        return NextResponse.redirect(new URL('/unauthorized', request.url))
+        return NextResponse.rewrite(new URL('/this-page-does-not-exist', request.url))
       }
 
       const isAdmin = user.id && adminIds.includes(user.id)
 
       if (!isAdmin) {
-        return NextResponse.redirect(new URL('/unauthorized', request.url))
+        // Rewrite to non-existent route to trigger 404 without changing URL
+        return NextResponse.rewrite(new URL('/this-page-does-not-exist', request.url))
       }
 
       // Allow admin access

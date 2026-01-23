@@ -48,7 +48,7 @@ mkdir -p "(app)/inventory"
 mkdir -p "(app)/recipes"
 mkdir -p "(app)/suggestions"
 mkdir -p "(admin)"
-mkdir -p "(auth)/unauthorized"
+# Custom 404 page will be at app root (not-found.tsx)
 ```
 
 **2. Create App Layout**
@@ -139,34 +139,29 @@ export default function AdminDashboard() {
 }
 ```
 
-**2. Create unauthorized page**
+**2. Create custom 404 page**
 
 ```typescript
-// apps/nextjs/src/app/(auth)/unauthorized/page.tsx
+// apps/nextjs/src/app/not-found.tsx
 import Link from 'next/link'
+import { Button } from '@/components/retroui/Button'
+import { PageContainer } from '@/components/PageContainer'
 
-export default function UnauthorizedPage() {
+export default function NotFound() {
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 md:p-8">
-      <div className="border-4 md:border-6 border-black
-                      bg-gradient-to-br from-yellow-200 to-orange-300
-                      shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]
-                      md:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]
-                      p-6 md:p-10 max-w-2xl w-full">
-        <h1 className="text-3xl md:text-5xl font-black uppercase mb-4 md:mb-6
-                       leading-tight">
-          Access Denied
+    <PageContainer maxWidth="md" gradientFrom="from-yellow-100" gradientVia="via-orange-100" gradientTo="to-red-100">
+      <div className="border-4 md:border-6 border-black bg-gradient-to-br from-yellow-300 to-orange-300
+                      shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] md:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]
+                      p-8 md:p-12 text-center">
+        <h1 className="text-3xl md:text-5xl font-black uppercase mb-4">
+          404 - Not Found
         </h1>
-        <p className="text-lg md:text-xl font-bold mb-4 md:mb-6">
-          You don't have permission to access this area.
+        <p className="text-lg md:text-xl font-bold text-gray-800 mb-6">
+          There's nothing to find here.
         </p>
-        <p className="text-base md:text-lg font-bold text-gray-700 mb-6 md:mb-8">
-          Admin pages are for system administration tasks like processing
-          user feedback and managing application data.
-        </p>
-        <Link
-          href="/"
-          className="inline-block px-4 py-2 md:px-6 md:py-3
+        <Button asChild variant="default" size="lg">
+          <Link href="/">Back to Home</Link>
+        </Button>
                      bg-cyan-400 border-3 md:border-4 border-black
                      font-black uppercase text-sm md:text-base
                      shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]
@@ -190,7 +185,7 @@ export default function UnauthorizedPage() {
 **1. Create middleware file**
 
 ```typescript
-// apps/nextjs/src/middleware.ts
+// apps/nextjs/src/proxy.ts
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 
@@ -235,8 +230,8 @@ export async function middleware(request: NextRequest) {
     const isAdmin = user.id && adminIds.includes(user.id)
 
     if (!isAdmin) {
-      // Authenticated but not admin: show unauthorized
-      return NextResponse.redirect(new URL('/unauthorized', request.url))
+      // Authenticated but not admin: rewrite to 404 (URL unchanged)
+      return NextResponse.rewrite(new URL('/this-page-does-not-exist', request.url))
     }
 
     // Admin user: allow access
@@ -281,7 +276,7 @@ pnpm dev
 
 # Test cases:
 # 1. Visit /admin (not logged in) → should redirect to /login
-# 2. Login as non-admin user, visit /admin → should show /unauthorized
+# 2. Login as non-admin user, visit /admin → should show 404 page (URL stays /admin)
 # 3. Login as admin user, visit /admin → should show admin dashboard
 # 4. Visit /app/inventory → should require login
 # 5. Visit /onboarding → should return 404 (old URL)
@@ -309,7 +304,7 @@ pnpm dev
 # Authentication
 □ Unauthenticated at /app/* → redirects to /login
 □ Unauthenticated at /admin → redirects to /login
-□ Non-admin at /admin → shows /unauthorized
+□ Non-admin at /admin → shows 404 page (URL unchanged)
 □ Admin at /admin → shows admin dashboard
 
 # Design
@@ -472,7 +467,7 @@ cp -r apps/nextjs/src/app/(protected)/onboarding apps/nextjs/src/app/(app)/
 
 **Fix**:
 ```typescript
-// Check middleware.ts config.matcher includes:
+// Check proxy.ts config.matcher includes:
 '/onboarding',
 '/inventory',
 '/recipes',
@@ -486,7 +481,7 @@ cp -r apps/nextjs/src/app/(protected)/onboarding apps/nextjs/src/app/(app)/
 **Fix**:
 ```bash
 # Middleware must be at:
-apps/nextjs/src/middleware.ts
+apps/nextjs/src/proxy.ts
 
 # Verify export:
 export async function middleware(request: NextRequest) { ... }

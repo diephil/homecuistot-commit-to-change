@@ -1,16 +1,16 @@
-# Middleware Contract: Route Protection and Redirection
+# Proxy Contract: Route Protection and Redirection
 
 **Feature**: 006-admin-dashboard
-**Type**: Edge Middleware
+**Type**: Edge Proxy
 **Runtime**: Next.js Edge Runtime
 
 ## Overview
 
-Middleware handles authentication checks, admin role validation, and backward-compatible URL redirects. Runs before all route handlers.
+Proxy handles authentication checks, admin role validation, and backward-compatible URL redirects. Runs before all route handlers.
 
 ## Execution Context
 
-**File**: `apps/nextjs/src/middleware.ts`
+**File**: `apps/nextjs/src/proxy.ts`
 **Runtime**: Edge Runtime (Vercel Edge, Cloudflare Workers compatible)
 **Execution Order**: Before all route handlers and API routes
 **Performance Budget**: <50ms total execution time
@@ -96,9 +96,10 @@ loginUrl.searchParams.set('redirect', request.nextUrl.pathname)
 return NextResponse.redirect(loginUrl)
 ```
 
-#### 4. Forbidden (403 → Unauthorized Page)
+#### 4. Forbidden (403 → Show 404)
 ```typescript
-return NextResponse.redirect(new URL('/unauthorized', request.url))
+// Rewrite to non-existent route to show 404 page without changing URL
+return NextResponse.rewrite(new URL('/this-page-does-not-exist', request.url))
 ```
 
 ## Behavior Specification
@@ -116,7 +117,7 @@ if (pathname.startsWith('/admin')) {
 
   const adminIds = process.env.ADMIN_USER_IDS?.split(',') || []
   if (!user.id || !adminIds.includes(user.id)) {
-    return redirect('/unauthorized')
+    return rewrite('/this-page-does-not-exist')  // Shows 404, URL unchanged
   }
 
   return next()  // Allow access
@@ -125,7 +126,7 @@ if (pathname.startsWith('/admin')) {
 
 **Test Cases**:
 - ✅ Admin user navigates to /admin → Allow (200)
-- ❌ Non-admin user navigates to /admin → Redirect to /unauthorized (403)
+- ❌ Non-admin user navigates to /admin → Rewrite to 404 (URL stays /admin)
 - ❌ Unauthenticated user navigates to /admin → Redirect to /login (401)
 - ✅ Admin user navigates to /admin/dashboard → Allow (200)
 

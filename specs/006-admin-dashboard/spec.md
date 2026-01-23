@@ -35,7 +35,7 @@ As the system administrator, I need to access an admin-only dashboard while prev
 **Acceptance Scenarios**:
 
 1. **Given** I am the authorized admin user and logged in, **When** I navigate to /admin, **Then** I see the admin dashboard placeholder page
-2. **Given** I am a non-admin user, **When** I attempt to access /admin, **Then** I see an unauthorized message
+2. **Given** I am a non-admin user, **When** I attempt to access /admin, **Then** I see a 404 page
 3. **Given** I am not logged in, **When** I attempt to access /admin, **Then** I am redirected to login page
 
 ---
@@ -72,7 +72,7 @@ As the admin user, I need a basic landing page at /admin that serves as entry po
 - **FR-002**: Landing page MUST remain accessible at root "/" without /app prefix
 - **FR-003**: System MUST update all internal navigation links to use /app/* URLs (old URLs will 404)
 - **FR-004**: System MUST restrict /admin route access to authorized admin user only
-- **FR-005**: System MUST display unauthorized message to non-admin users attempting /admin access
+- **FR-005**: System MUST display 404 page to non-admin users attempting /admin access
 - **FR-006**: System MUST redirect unauthenticated users from /admin to login page
 - **FR-007**: Admin dashboard MUST display placeholder landing page indicating admin area
 - **FR-008**: System MUST identify admin users via comma-separated list of user IDs in environment variable
@@ -88,7 +88,7 @@ As the admin user, I need a basic landing page at /admin that serves as entry po
 ### Measurable Outcomes
 
 - **SC-001**: All existing application pages function correctly under new /app/* route structure with zero broken links
-- **SC-002**: Non-admin users see unauthorized message within 1 second when attempting /admin access
+- **SC-002**: Non-admin users see 404 page within 1 second when attempting /admin access
 - **SC-003**: Admin user can access /admin dashboard in under 2 clicks from any application page
 - **SC-004**: 100% of internal navigation links updated to /app/* URLs (no old URLs remain)
 - **SC-005**: Landing page remains at root "/" and loads in under 2 seconds
