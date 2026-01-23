@@ -2,9 +2,7 @@
 
 ## Gemini Builds Reference
 
-`gemini-builds/` folder: AI Studio mockups as reference. Code must NOT be used as-is - requires revision and proper integration following project standards -> They can only be used as a source of inspiration.
-
-<<<<<<< HEAD
+`gemini-builds/` folder: AI Studio mockups as reference. Code must NOT be used as-is - requires revision and proper integration following project standards. Use only as inspiration.
 
 ## Speckit Implementation Workflow
 
@@ -37,12 +35,11 @@
 
 ## Active Technologies
 
-- TypeScript 5+ (strict mode), React 19, Next.js 16 + `@ai-sdk/google` (Gemini), Vercel AI SDK, RetroUI components, Tailwind CSS v4, `lucide-react` icons (004-onboarding-flow)
-- TypeScript 5+ (strict mode), Node.js 18+ + drizzle-orm, drizzle-kit, @neondatabase/serverless (or postgres driver), @supabase/supabase-js, @supabase/ssr (003-db-ops)
-- Supabase PostgreSQL (existing), Drizzle schema in src/db/schema/, migrations in drizzle/migrations/ (003-db-ops)
-- TypeScript 5+ (strict mode), React 19, Next.js 16 + shadcn/ui, RetroUI registry (@retroui), Tailwind CSS v4, Reac (003-base-pages-ui)
-- N/A (mock data only, no persistence) (003-base-pages-ui)
+**Frontend**: TypeScript 5+ (strict), React 19, Next.js 16, Tailwind CSS v4, RetroUI + shadcn/ui, lucide-react icons
 
-## Recent Changes
+**Backend**: Vercel AI SDK + `@ai-sdk/google` (Gemini), Supabase Auth
 
-- 003-db-ops: Added TypeScript 5+ (strict mode), Node.js 18+ + drizzle-orm, drizzle-kit, @neondatabase/serverless (or postgres driver), @supabase/supabase-js, @supabase/ssr
+**Database**: Supabase PostgreSQL, Drizzle ORM
+- Schema: `src/db/schema/`
+- Migrations: `drizzle/migrations/`
+- Deps: drizzle-orm, drizzle-kit, @neondatabase/serverless, @supabase/supabase-js, @supabase/ssr
