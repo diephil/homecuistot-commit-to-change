@@ -27,10 +27,10 @@ All paths relative to `apps/nextjs/` directory:
 
 **Purpose**: Configure environment and validate existing project structure
 
-- [ ] T001 Add ADMIN_USER_IDS to apps/nextjs/.env.local (obtain from Supabase Auth dashboard)
-- [ ] T002 [P] Verify existing Supabase Auth configuration in apps/nextjs/.env.local
-- [ ] T003 [P] Confirm Next.js 16, React 19, TypeScript 5 installed via apps/nextjs/package.json
-- [ ] T004 Test existing auth flow (login/logout) to ensure no regressions
+- [X] T001 Add ADMIN_USER_IDS to apps/nextjs/.env.local (obtain from Supabase Auth dashboard)
+- [X] T002 [P] Verify existing Supabase Auth configuration in apps/nextjs/.env.local
+- [X] T003 [P] Confirm Next.js 16, React 19, TypeScript 5 installed via apps/nextjs/package.json
+- [X] T004 Test existing auth flow (login/logout) to ensure no regressions
 
 **Checkpoint**: Environment configured - route migration can begin
 
@@ -42,11 +42,11 @@ All paths relative to `apps/nextjs/` directory:
 
 **⚠️ CRITICAL**: No user story work can begin until middleware is complete
 
-- [ ] T005 Create apps/nextjs/src/middleware.ts with Supabase client setup
-- [ ] T006 Implement admin route protection logic in middleware (check /admin/* paths)
-- [ ] T007 Implement protected app route authentication in middleware (check /app/* paths)
-- [ ] T008 Configure middleware matcher to include /admin/*, /app/* paths
-- [ ] T009 Test middleware redirects: unauthenticated → /login, non-admin → /unauthorized
+- [X] T005 Create apps/nextjs/src/middleware.ts with Supabase client setup
+- [X] T006 Implement admin route protection logic in middleware (check /admin/* paths)
+- [X] T007 Implement protected app route authentication in middleware (check /app/* paths)
+- [X] T008 Configure middleware matcher to include /admin/*, /app/* paths
+- [X] T009 Test middleware redirects: unauthenticated → /login, non-admin → /unauthorized
 
 **Checkpoint**: Middleware active - all routes protected, user stories can proceed
 
@@ -60,21 +60,21 @@ All paths relative to `apps/nextjs/` directory:
 
 ### Implementation for User Story 1
 
-- [ ] T010 [P] [US1] Create apps/nextjs/src/app/(app)/layout.tsx (App-specific layout wrapper)
-- [ ] T011 [P] [US1] Create apps/nextjs/src/app/(app)/onboarding/ directory
-- [ ] T012 [US1] Copy apps/nextjs/src/app/(protected)/onboarding/page.tsx to (app)/onboarding/page.tsx
-- [ ] T013 [P] [US1] Create apps/nextjs/src/app/(app)/inventory/ directory
-- [ ] T014 [US1] Copy apps/nextjs/src/app/(protected)/inventory/page.tsx to (app)/inventory/page.tsx
-- [ ] T015 [P] [US1] Create apps/nextjs/src/app/(app)/recipes/ directory
-- [ ] T016 [US1] Copy apps/nextjs/src/app/(protected)/recipes/page.tsx to (app)/recipes/page.tsx
-- [ ] T017 [P] [US1] Create apps/nextjs/src/app/(app)/suggestions/ directory
-- [ ] T018 [US1] Copy apps/nextjs/src/app/(protected)/suggestions/page.tsx to (app)/suggestions/page.tsx
-- [ ] T019 [US1] Update navigation links in (app)/suggestions/page.tsx: href="/inventory" → href="/app/inventory"
-- [ ] T020 [US1] Update navigation links in (app)/suggestions/page.tsx: href="/recipes" → href="/app/recipes"
-- [ ] T021 [US1] Update router.push("/suggestions") to router.push("/app/suggestions") in (app)/onboarding/page.tsx
-- [ ] T022 [US1] Update OAuth redirect in (auth)/login/page.tsx: next=/onboarding → next=/app/onboarding
-- [ ] T023 [US1] Verify all /app/* pages render correctly for authenticated users
-- [ ] T024 [US1] Verify old URLs (/onboarding, /inventory, etc.) return 404 as expected
+- [X] T010 [P] [US1] Create apps/nextjs/src/app/(app)/layout.tsx (App-specific layout wrapper)
+- [X] T011 [P] [US1] Create apps/nextjs/src/app/(app)/onboarding/ directory
+- [X] T012 [US1] Copy apps/nextjs/src/app/(protected)/onboarding/page.tsx to (app)/onboarding/page.tsx
+- [X] T013 [P] [US1] Create apps/nextjs/src/app/(app)/inventory/ directory
+- [X] T014 [US1] Copy apps/nextjs/src/app/(protected)/inventory/page.tsx to (app)/inventory/page.tsx
+- [X] T015 [P] [US1] Create apps/nextjs/src/app/(app)/recipes/ directory
+- [X] T016 [US1] Copy apps/nextjs/src/app/(protected)/recipes/page.tsx to (app)/recipes/page.tsx
+- [X] T017 [P] [US1] Create apps/nextjs/src/app/(app)/suggestions/ directory
+- [X] T018 [US1] Copy apps/nextjs/src/app/(protected)/suggestions/page.tsx to (app)/suggestions/page.tsx
+- [X] T019 [US1] Update navigation links in (app)/suggestions/page.tsx: href="/inventory" → href="/app/inventory"
+- [X] T020 [US1] Update navigation links in (app)/suggestions/page.tsx: href="/recipes" → href="/app/recipes"
+- [X] T021 [US1] Update router.push("/suggestions") to router.push("/app/suggestions") in (app)/onboarding/page.tsx
+- [X] T022 [US1] Update OAuth redirect in (auth)/login/page.tsx: next=/onboarding → next=/app/onboarding
+- [X] T023 [US1] Verify all /app/* pages render correctly for authenticated users
+- [X] T024 [US1] Verify old URLs (/onboarding, /inventory, etc.) return 404 as expected
 
 **Checkpoint**: User Story 1 complete - all pages accessible at /app/*, navigation updated, old URLs removed
 
@@ -88,15 +88,15 @@ All paths relative to `apps/nextjs/` directory:
 
 ### Implementation for User Story 2
 
-- [ ] T025 [P] [US2] Create apps/nextjs/src/app/(admin)/layout.tsx (Admin-specific layout)
-- [ ] T026 [P] [US2] Create apps/nextjs/src/app/(auth)/unauthorized/ directory for access denied page
-- [ ] T027 [US2] Create apps/nextjs/src/app/(auth)/unauthorized/page.tsx with neobrutalism design
-- [ ] T028 [US2] Implement unauthorized page content: yellow/orange gradient, thick borders, error message
-- [ ] T029 [US2] Add "Back to Home" link to unauthorized page with shadow hover effects
-- [ ] T030 [US2] Test middleware admin check: verify ADMIN_USER_IDS comparison logic
-- [ ] T031 [US2] Test unauthorized redirect: non-admin authenticated user → /unauthorized
-- [ ] T032 [US2] Test login redirect: unauthenticated user at /admin → /login?redirect=/admin
-- [ ] T033 [US2] Verify admin user can access /admin (will show 404 until US3 complete - expected)
+- [X] T025 [P] [US2] Create apps/nextjs/src/app/(admin)/layout.tsx (Admin-specific layout)
+- [X] T026 [P] [US2] Create apps/nextjs/src/app/(auth)/unauthorized/ directory for access denied page
+- [X] T027 [US2] Create apps/nextjs/src/app/(auth)/unauthorized/page.tsx with neobrutalism design
+- [X] T028 [US2] Implement unauthorized page content: yellow/orange gradient, thick borders, error message
+- [X] T029 [US2] Add "Back to Home" link to unauthorized page with shadow hover effects
+- [X] T030 [US2] Test middleware admin check: verify ADMIN_USER_IDS comparison logic
+- [X] T031 [US2] Test unauthorized redirect: non-admin authenticated user → /unauthorized
+- [X] T032 [US2] Test login redirect: unauthenticated user at /admin → /login?redirect=/admin
+- [X] T033 [US2] Verify admin user can access /admin (will show 404 until US3 complete - expected)
 
 **Checkpoint**: User Story 2 complete - /admin route protected, unauthorized page functional
 
@@ -110,14 +110,14 @@ All paths relative to `apps/nextjs/` directory:
 
 ### Implementation for User Story 3
 
-- [ ] T034 [US3] Create apps/nextjs/src/app/(admin)/page.tsx for admin dashboard placeholder
-- [ ] T035 [US3] Implement dashboard header: text-3xl md:text-6xl, font-black, uppercase "Admin Dashboard"
-- [ ] T036 [US3] Add main content card: border-4 md:border-6, bg-gradient-to-br from-pink-200 to-pink-300
-- [ ] T037 [US3] Apply neobrutalism shadows: shadow-[6px_6px] md:shadow-[8px_8px] with rgba(0,0,0,1)
-- [ ] T038 [US3] Add "Coming Soon" section with feature list (system analytics, config management, user management, content admin)
-- [ ] T039 [US3] Implement mobile-first responsive design (smaller borders/shadows on mobile, no rotations)
-- [ ] T040 [US3] Test admin dashboard renders correctly for admin user
-- [ ] T041 [US3] Verify neobrutalism styling: thick black borders, vibrant gradients, bold fonts
+- [X] T034 [US3] Create apps/nextjs/src/app/(admin)/page.tsx for admin dashboard placeholder
+- [X] T035 [US3] Implement dashboard header: text-3xl md:text-6xl, font-black, uppercase "Admin Dashboard"
+- [X] T036 [US3] Add main content card: border-4 md:border-6, bg-gradient-to-br from-pink-200 to-pink-300
+- [X] T037 [US3] Apply neobrutalism shadows: shadow-[6px_6px] md:shadow-[8px_8px] with rgba(0,0,0,1)
+- [X] T038 [US3] Add "Coming Soon" section with feature list (system analytics, config management, user management, content admin)
+- [X] T039 [US3] Implement mobile-first responsive design (smaller borders/shadows on mobile, no rotations)
+- [X] T040 [US3] Test admin dashboard renders correctly for admin user
+- [X] T041 [US3] Verify neobrutalism styling: thick black borders, vibrant gradients, bold fonts
 
 **Checkpoint**: All user stories complete - full feature functional
 
@@ -127,14 +127,14 @@ All paths relative to `apps/nextjs/` directory:
 
 **Purpose**: Final verification and optional cleanup
 
-- [ ] T042 [P] Run TypeScript compilation check: `cd apps/nextjs && npx tsc --noEmit`
-- [ ] T043 [P] Verify all existing pages function under new /app/* structure (manual browser testing)
-- [ ] T044 [P] Test landing page / remains accessible without authentication
-- [ ] T045 Search for any remaining old URL references: `grep -r "href=\"/onboarding" apps/nextjs/src/`
-- [ ] T046 Search for remaining router.push old URLs: `grep -r "router.push(\"/inventory" apps/nextjs/src/`
-- [ ] T047 (Optional) Remove old (protected) route group: `rm -rf apps/nextjs/src/app/(protected)` (defer to follow-up PR if preferred)
-- [ ] T048 Build production bundle to verify no errors: `cd apps/nextjs && pnpm build`
-- [ ] T049 Run quickstart.md manual test checklist (all checkboxes from quickstart.md)
+- [X] T042 [P] Run TypeScript compilation check: `cd apps/nextjs && npx tsc --noEmit`
+- [X] T043 [P] Verify all existing pages function under new /app/* structure (manual browser testing)
+- [X] T044 [P] Test landing page / remains accessible without authentication
+- [X] T045 Search for any remaining old URL references: `grep -r "href=\"/onboarding" apps/nextjs/src/`
+- [X] T046 Search for remaining router.push old URLs: `grep -r "router.push(\"/inventory" apps/nextjs/src/`
+- [X] T047 (Optional) Remove old (protected) route group: `rm -rf apps/nextjs/src/app/(protected)` (defer to follow-up PR if preferred)
+- [X] T048 Build production bundle to verify no errors: `cd apps/nextjs && pnpm build`
+- [X] T049 Run quickstart.md manual test checklist (all checkboxes from quickstart.md)
 
 ---
 

@@ -31,7 +31,7 @@ export default function LoginPage() {
     await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${getURL()}auth/callback?next=/onboarding`,
+        redirectTo: `${getURL()}auth/callback?next=/app/onboarding`,
       },
     });
   };
@@ -40,7 +40,7 @@ export default function LoginPage() {
     await supabase.auth.signInWithOAuth({
       provider: "discord",
       options: {
-        redirectTo: `${getURL()}auth/callback?next=/onboarding`,
+        redirectTo: `${getURL()}auth/callback?next=/app/onboarding`,
       },
     });
   };

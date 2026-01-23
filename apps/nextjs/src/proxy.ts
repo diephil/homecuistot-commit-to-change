@@ -1,31 +1,98 @@
-import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/utils/supabase/proxy";
+import { NextRequest, NextResponse } from 'next/server'
+import { createServerClient } from '@supabase/ssr'
 
-const PROTECTED_ROUTES = ["/onboarding"];
-const AUTH_ROUTES = ["/login"];
+export async function proxy(request: NextRequest): Promise<NextResponse> {
+  const { pathname } = request.nextUrl
 
-export async function proxy(request: NextRequest) {
-  const { supabase, getResponse } = createClient(request);
+  // Create Supabase client for auth checks
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
+    {
+      cookies: {
+        getAll: () => request.cookies.getAll(),
+        setAll: () => {}, // No-op for middleware (readonly)
+      },
+    }
+  )
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // Admin route protection (/admin/*)
+  if (pathname.startsWith('/admin')) {
+    try {
+      const { data: { user }, error } = await supabase.auth.getUser()
 
-  const { pathname } = request.nextUrl;
+      if (error) {
+        console.error('[Proxy] Supabase auth error:', error)
+        return NextResponse.next() // Graceful degradation for MVP
+      }
 
-  // Redirect unauthenticated users from protected routes
-  if (PROTECTED_ROUTES.some((route) => pathname.startsWith(route)) && !user) {
-    return NextResponse.redirect(new URL("/login", request.url));
+      // Redirect unauthenticated users to login
+      if (!user) {
+        const loginUrl = new URL('/login', request.url)
+        loginUrl.searchParams.set('redirect', pathname)
+        return NextResponse.redirect(loginUrl)
+      }
+
+      // Check admin role
+      const adminIds = process.env.ADMIN_USER_IDS?.split(',').map(id => id.trim()) || []
+
+      if (!process.env.ADMIN_USER_IDS) {
+        console.error('[Proxy] ADMIN_USER_IDS not configured')
+        return NextResponse.redirect(new URL('/unauthorized', request.url))
+      }
+
+      const isAdmin = user.id && adminIds.includes(user.id)
+
+      if (!isAdmin) {
+        return NextResponse.redirect(new URL('/unauthorized', request.url))
+      }
+
+      // Allow admin access
+      return NextResponse.next()
+    } catch (err) {
+      console.error('[Proxy] Unexpected error:', err)
+      return NextResponse.next() // Graceful degradation
+    }
   }
 
-  // Redirect authenticated users from auth routes to onboarding
-  if (AUTH_ROUTES.some((route) => pathname.startsWith(route)) && user) {
-    return NextResponse.redirect(new URL("/onboarding", request.url));
+  // Protected app route authentication (/app/*)
+  if (pathname.startsWith('/app')) {
+    try {
+      const { data: { user }, error } = await supabase.auth.getUser()
+
+      if (error) {
+        console.error('[Proxy] Supabase auth error:', error)
+        return NextResponse.next() // Graceful degradation for MVP
+      }
+
+      // Redirect unauthenticated users to login
+      if (!user) {
+        const loginUrl = new URL('/login', request.url)
+        loginUrl.searchParams.set('redirect', pathname)
+        return NextResponse.redirect(loginUrl)
+      }
+
+      // Allow authenticated access
+      return NextResponse.next()
+    } catch (err) {
+      console.error('[Proxy] Unexpected error:', err)
+      return NextResponse.next() // Graceful degradation
+    }
   }
 
-  return getResponse();
+  // Allow access to all other routes
+  return NextResponse.next()
 }
 
 export const config = {
-  matcher: ["/login", "/onboarding/:path*"],
-};
+  matcher: [
+    // Admin routes
+    '/admin/:path*',
+
+    // Protected app routes
+    '/app/:path*',
+
+    // Exclude static files and internals
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+  ],
+}

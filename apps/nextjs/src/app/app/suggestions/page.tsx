@@ -84,10 +84,10 @@ export default function SuggestionsPage() {
           {/* T035: Navigation CTAs */}
           <div className="flex gap-2">
             <Button asChild variant="ghost" size="sm">
-              <Link href="/inventory">View Inventory</Link>
+              <Link href="/app/inventory">View Inventory</Link>
             </Button>
             <Button asChild variant="ghost" size="sm">
-              <Link href="/recipes">All Recipes</Link>
+              <Link href="/app/recipes">All Recipes</Link>
             </Button>
           </div>
         </div>
