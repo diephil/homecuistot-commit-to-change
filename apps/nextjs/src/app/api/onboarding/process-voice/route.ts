@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { processVoiceInput } from '@/lib/gemini';
+import { processVoiceInput } from '@/lib/prompts/onboarding-voice/process';
+import { processTextInput } from '@/lib/prompts/onboarding-text/process';
 import { VoiceUpdateSchema } from '@/types/onboarding';
 
 /**
@@ -31,15 +32,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Process via Gemini
-    const result = await processVoiceInput({
-      audioBase64: body.audioBase64,
-      text: body.text,
-      currentContext: {
-        dishes: body.currentContext.dishes || [],
-        ingredients: body.currentContext.ingredients || [],
-      },
-    });
+    const currentContext = {
+      dishes: body.currentContext.dishes || [],
+      ingredients: body.currentContext.ingredients || [],
+    };
+
+    // Process via Gemini with opik tracing
+    const result = body.audioBase64
+      ? await processVoiceInput({ audioBase64: body.audioBase64, currentContext })
+      : await processTextInput({ text: body.text, currentContext });
 
     // Validate response schema
     const validated = VoiceUpdateSchema.parse(result);
