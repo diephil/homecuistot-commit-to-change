@@ -35,6 +35,8 @@
   - `docs(readme): add setup instructions`
 
 ## Active Technologies
+- TypeScript 5, React 19, Next.js 16 + Next.js App Router, Supabase Auth (@supabase/ssr, @supabase/supabase-js), Drizzle ORM (006-admin-dashboard)
+- Supabase PostgreSQL (user roles/permissions) (006-admin-dashboard)
 
 **Frontend**: TypeScript 5+ (strict), React 19, Next.js 16, Tailwind CSS v4, RetroUI + shadcn/ui, lucide-react icons
 
@@ -45,3 +47,6 @@
 - Schema: `src/db/schema/`
 - Migrations: `drizzle/migrations/`
 - Deps: drizzle-orm, drizzle-kit, @neondatabase/serverless, @supabase/supabase-js, @supabase/ssr
+
+## Recent Changes
+- 006-admin-dashboard: Added TypeScript 5, React 19, Next.js 16 + Next.js App Router, Supabase Auth (@supabase/ssr, @supabase/supabase-js), Drizzle ORM
