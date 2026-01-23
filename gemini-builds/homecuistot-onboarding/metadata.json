@@ -1,0 +1,7 @@
+{
+  "name": "HomeCuistot Onboarding",
+  "description": "An AI kitchen assistant onboarding flow with voice-enabled ingredient management.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}

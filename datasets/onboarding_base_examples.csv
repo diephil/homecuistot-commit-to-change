@@ -1,0 +1,51 @@
+voice_transcription,comment,detected_dishes,detected_ingredients,created
+"I can make an omelette, but I cannot cook pizza Margherita; that is beyond my skills. I have salt, sugar, brown rice, and a biscuit that I think is Argentinian called ""afocados"" or something like that.",description of ingredient without naming it with confidence,omelette,"salt, sugar, brown rice, alfajores",2026-01-22
+"Umm... I have... let me see... eggs, uh, some chicken breast, and... wait... yeah, butter and... oh! garlic. I think I can make... hmm... pasta carbonara.",excessive hesitations and filler words,pasta carbonara,"eggs, chicken breast, butter, garlic",2026-01-22
+"I got eggs milk cheese and also I know how to cook the scrambled eggs and also pancakes but not the fancy ones just regular",run-on sentence without punctuation or pauses,scrambled eggs; pancakes,"eggs, milk, cheese",2026-01-22
+"I can make stir-fry veggies, I have those long orange things, you know, the crunchy ones, and also that leafy green stuff that looks like small trees.",multiple ingredient descriptions without proper names,stir-fry veggies,"carrots, broccoli",2026-01-22
+"Remove pasta carbonara. Remove eggs. Actually wait, keep the eggs, I do have those.",self-correction and conflicting instructions,,"eggs",2026-01-22
+"Je peux faire... sorry, I can make omelette and I have des oeufs— I mean eggs and fromage... cheese.",code-switching between languages,omelette,"eggs, cheese",2026-01-22
+"I have chicken, tomatos— I mean tomatoes, and I can cook stake frites.",spelling-based pronunciation errors and typos,steak frites,"chicken, tomatoes",2026-01-22
+"So like basically I'm pretty good at making that Italian pasta thing with the bacon and eggs? And I've got like some dairy stuff and meat in the fridge obvs.",informal speech patterns and vague descriptions,pasta carbonara,"bacon, eggs, milk, cheese",2026-01-22
+"I HAVE EGGS AND BUTTER AND MILK! Oh sorry, didn't mean to yell. I can make pancakes and french toast.",abrupt volume or tone changes,pancakes; french toast,"eggs, butter, milk",2026-01-22
+"My roommate bought some vegetables yesterday but I'm not sure what exactly, maybe broccoli? And I think I can cook curry if I look up a recipe online.",uncertainty about inventory and conditional cooking ability,curry,broccoli,2026-01-22
+"I've got about half a bottle of olive oil, maybe three or four eggs, and some chicken from last week.",container-based quantity with temporal and approximate count,,"olive oil, eggs, chicken",2026-01-22
+"There's a big bag of rice in the pantry, a small piece of ginger, and I think medium-sized onions, like two of them.",size-based approximations,,"rice, ginger, onions",2026-01-22
+"I have that white soft cheese, you know, the one that comes in a tub? And some of that hard yellow cheese for grating.",texture and state-based descriptions,,"cream cheese, parmesan",2026-01-22
+"There's a bottle of soy sauce, a jar of peanut butter, and a packet of instant noodles.",container-based references,,"soy sauce, peanut butter, instant noodles",2026-01-22
+"I've got more than enough pasta, less than half a carton of milk, and about a quarter stick of butter left.",comparative quantity expressions,,"pasta, milk, butter",2026-01-22
+"I have some Heinz ketchup, Philadelphia cream cheese, and Barilla spaghetti.",brand names instead of ingredient names,,"ketchup, cream cheese, spaghetti",2026-01-22
+"There's cooked rice from yesterday, raw chicken thighs, and I think some blanched broccoli in a container.",prepared vs raw state ambiguity,,"rice, chicken thighs, broccoli",2026-01-22
+"I'd say roughly five potatoes, around eight carrots, maybe a dozen eggs give or take.",estimated counts with hedging language,,"potatoes, carrots, eggs",2026-01-22
+"I've got leftover chicken, some pizza from the weekend, and half a pot of soup.",leftover references without clear quantity,,"chicken, pizza, soup",2026-01-22
+"There are some veggies in the crisper, various spices in the cabinet, and a few different cheeses.",vague category grouping,,"mixed vegetables, mixed spices, mixed cheeses",2026-01-22
+"The lettuce is kinda old but still okay, the strawberries are pretty fresh, and the bread is getting a bit stale.",imprecise freshness indicators,,"lettuce, strawberries, bread",2026-01-22
+"I have half an onion wrapped in the fridge, a quarter of a rotisserie chicken, and like three-quarters of a bell pepper.",partial portion descriptions,,"onion, chicken, bell pepper",2026-01-22
+"There are those summer tomatoes I got from the farmer's market, some French cheese my friend brought back, and Italian pasta.",seasonal and origin-based descriptions,,"tomatoes, brie, pasta",2026-01-22
+"I've got chicken in the freezer, canned beans in the pantry, and fresh herbs on the counter.",storage location as proxy for type,,"frozen chicken, canned beans, fresh herbs",2026-01-22
+"There's enough rice for two meals, one serving of salmon left, and maybe pasta for three dinners.",usage-based quantity descriptions,,"rice, salmon, pasta",2026-01-22
+"I can definitely make fried rice, probably could do a basic curry, and I'm learning how to make pad thai.",skill level qualifiers with dishes,fried rice; curry; pad thai,,2026-01-22
+"Remove steak frites, I don't actually know how to make that. But keep omelette and add scrambled eggs.",correction with removal and addition,omelette; scrambled eggs,,2026-01-22
+"I have what's left of the groceries from Monday, so probably some greens, proteins, and carbs.",temporal reference with vague categories,,"mixed greens, mixed proteins, mixed carbs",2026-01-22
+"There's a bunch of cilantro, a head of garlic, and a couple stalks of celery.",bunch and collective nouns for quantities,,"cilantro, garlic, celery",2026-01-22
+"I picked up some Asian ingredients yesterday - bok choy, rice noodles, sesame oil, that sort of thing.",category reference with examples,,"bok choy, rice noodles, sesame oil",2026-01-22
+"I can make anything with eggs basically - omelettes, fried eggs, boiled eggs, whatever.",skill with ingredient category,omelette; fried eggs; boiled eggs,,2026-01-22
+"Got a whole chicken I need to break down, some root vegetables, and fresh pasta from the Italian place.",ingredient processing state and source,,"whole chicken, root vegetables, fresh pasta",2026-01-22
+"I have the usual suspects - eggs, milk, butter, bread. And I can make the classics - toast, cereal, basic stuff.",common items with generic descriptions,toast; cereal,"eggs, milk, butter, bread",2026-01-22
+"There's protein powder, regular flour, and that gluten-free flour my sister left here.",specific dietary variations,,"protein powder, all-purpose flour, gluten-free flour",2026-01-22
+"I bought ingredients for tacos but haven't made them yet, so ground beef, tortillas, lettuce, cheese, salsa.",meal-based ingredient listing,tacos,"ground beef, tortillas, lettuce, cheese, salsa",2026-01-22
+"My fridge has: top shelf - dairy stuff, middle shelf - leftovers and produce, bottom - meat and fish.",location-based organization reference,,"milk, cheese, mixed leftovers, mixed vegetables, chicken, salmon",2026-01-22
+"I can cook anything in one pan, like stir fries, pasta dishes, rice bowls, that kind of thing.",cooking method-based skill description,stir-fry; pasta; rice bowl,,2026-01-22
+"There's ingredients for breakfast - eggs, bacon, bread, OJ. And sandwich stuff - deli meat, cheese, lettuce, tomato.",meal time categorization,,"eggs, bacon, bread, orange juice, deli meat, cheese, lettuce, tomato",2026-01-22
+"I have snacky things like crackers and hummus, meal things like chicken and rice, and baking things like flour and sugar.",usage-based categorization,,"crackers, hummus, chicken, rice, flour, sugar",2026-01-22
+"Got some bougie ingredients - truffle oil, aged balsamic, fancy sea salt. And normal stuff too.",quality level descriptions,,"truffle oil, balsamic vinegar, sea salt",2026-01-22
+"I can make my grandma's recipes - her meatballs, her tomato sauce, her tiramisu. Family classics.",heritage-based dish references,meatballs; tomato sauce; tiramisu,,2026-01-22
+"Emergency supplies: ramen, canned soup, frozen pizza. Real food: fresh vegetables, chicken breast, quinoa.",quality categorization with examples,,"ramen, canned soup, frozen pizza, mixed vegetables, chicken breast, quinoa",2026-01-22
+"I've mastered the art of not cooking - I can order takeout, heat up frozen meals, make cereal.",humorous non-cooking references,cereal,,2026-01-22
+"Spice cabinet is stocked: cumin, paprika, oregano, all the usuals. Oh and I have some meat and veggies too.",detailed category with summary additions,,"cumin, paprika, oregano, mixed spices, meat, vegetables",2026-01-22
+"I can make anything that doesn't require an oven because mine is broken. So stovetop stuff - pastas, stir fries, pan-seared things.",constraint-based cooking ability,pasta; stir-fry,,2026-01-22
+"Random stuff I grabbed: that green sauce, the white cheese that melts good, some of those pre-cut veggies.",very vague descriptive references,,"pesto, mozzarella, mixed pre-cut vegetables",2026-01-22
+"Meal prep containers in the fridge: grilled chicken from Sunday, cooked quinoa, steamed broccoli, roasted sweet potato.",pre-prepared components,,"grilled chicken, quinoa, broccoli, sweet potato",2026-01-22
+"I'm vegetarian so I have lots of beans, lentils, tofu, tempeh. And I can make veggie burgers, bean chili, tofu scramble.",dietary identity with relevant items,veggie burgers; bean chili; tofu scramble,"beans, lentils, tofu, tempeh",2026-01-22
+"Staples running low: almost out of eggs, need more milk, butter is basically gone. But I have plenty of pasta and rice.",inventory status descriptors,,"eggs, milk, butter, pasta, rice",2026-01-22
+"I cook like a college student - mac and cheese, quesadillas, instant ramen upgraded with an egg and veggies.",demographic-based cooking style reference,mac and cheese; quesadillas; ramen,"cheese, tortillas, instant ramen, eggs, vegetables",2026-01-22
