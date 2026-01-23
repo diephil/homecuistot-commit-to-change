@@ -21,15 +21,15 @@ export default function NotFound() {
 
       {/* Main 404 card */}
       <div className="relative border-4 md:border-6 border-black bg-gradient-to-br from-purple-300 to-pink-300
-        shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] md:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)]
+        shadow-retro-lg md:shadow-retro-xl
         p-6 md:p-10 md:transform md:-rotate-1 transition-all
-        hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]
+        hover:shadow-retro-md md:hover:shadow-retro-lg
         hover:translate-x-[2px] hover:translate-y-[2px] md:hover:translate-x-[4px] md:hover:translate-y-[4px]">
 
         <div className="flex flex-col items-center gap-6 md:gap-8 text-center">
           {/* 404 badge */}
           <div className="bg-pink-400 border-3 md:border-4 border-black px-6 py-3 md:px-8 md:py-4
-            shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]
+            shadow-retro-md md:shadow-retro-lg
             md:transform md:rotate-2">
             <Text as="h1" className="text-5xl md:text-7xl font-black uppercase">
               404
@@ -58,8 +58,8 @@ export default function NotFound() {
                 variant="default"
                 size="lg"
                 className="justify-center gap-3 bg-cyan-400 hover:bg-cyan-500 border-4 border-black font-black uppercase text-sm md:text-base
-                  shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]
-                  hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]
+                  shadow-retro-md
+                  hover:shadow-retro-sm
                   hover:translate-x-[2px] hover:translate-y-[2px]
                   transition-all md:transform md:hover:rotate-1 py-5 md:py-6"
               >
@@ -74,8 +74,8 @@ export default function NotFound() {
                 variant="default"
                 size="lg"
                 className="justify-center gap-3 bg-yellow-400 hover:bg-yellow-500 border-4 border-black font-black uppercase text-sm md:text-base
-                  shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]
-                  hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]
+                  shadow-retro-md
+                  hover:shadow-retro-sm
                   hover:translate-x-[2px] hover:translate-y-[2px]
                   transition-all md:transform md:hover:-rotate-1 py-5 md:py-6"
               >
@@ -90,8 +90,8 @@ export default function NotFound() {
                 variant="secondary"
                 size="lg"
                 className="justify-center gap-3 bg-pink-400 hover:bg-pink-500 border-4 border-black font-black uppercase text-sm md:text-base
-                  shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]
-                  hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]
+                  shadow-retro-md
+                  hover:shadow-retro-sm
                   hover:translate-x-[2px] hover:translate-y-[2px]
                   transition-all md:transform md:hover:rotate-1 py-5 md:py-6"
               >
@@ -106,8 +106,8 @@ export default function NotFound() {
                 variant="secondary"
                 size="lg"
                 className="justify-center gap-3 bg-orange-400 hover:bg-orange-500 border-4 border-black font-black uppercase text-sm md:text-base
-                  shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]
-                  hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]
+                  shadow-retro-md
+                  hover:shadow-retro-sm
                   hover:translate-x-[2px] hover:translate-y-[2px]
                   transition-all md:transform md:hover:-rotate-1 py-5 md:py-6"
               >

@@ -20,13 +20,13 @@ export default function Loading() {
 
       {/* Main loading card */}
       <div className="relative border-4 md:border-6 border-black bg-gradient-to-br from-cyan-300 to-blue-300
-        shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] md:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)]
+        shadow-retro-lg md:shadow-retro-xl
         p-6 md:p-10 md:transform md:-rotate-1">
 
         <div className="flex flex-col items-center gap-6 md:gap-8 text-center">
           {/* Loading spinner badge */}
           <div className="bg-blue-400 border-3 md:border-4 border-black p-4 md:p-6
-            shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]
+            shadow-retro-md md:shadow-retro-lg
             md:transform md:rotate-2 animate-pulse">
             <div className="relative h-12 w-12 md:h-16 md:w-16">
               {/* Animated cooking icon */}

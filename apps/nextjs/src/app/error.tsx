@@ -34,15 +34,15 @@ export default function Error({
 
       {/* Main error card */}
       <div className="relative border-4 md:border-6 border-black bg-gradient-to-br from-red-300 to-orange-300
-        shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] md:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)]
+        shadow-retro-lg md:shadow-retro-xl
         p-6 md:p-10 md:transform md:-rotate-1 transition-all
-        hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]
+        hover:shadow-retro-md md:hover:shadow-retro-lg
         hover:translate-x-[2px] hover:translate-y-[2px] md:hover:translate-x-[4px] md:hover:translate-y-[4px]">
 
         <div className="flex flex-col items-center gap-6 md:gap-8 text-center">
           {/* Error icon badge */}
           <div className="bg-red-400 border-3 md:border-4 border-black p-4 md:p-6
-            shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]
+            shadow-retro-md md:shadow-retro-lg
             md:transform md:rotate-2">
             <AlertCircle className="h-12 w-12 md:h-16 md:w-16" />
           </div>
@@ -73,8 +73,8 @@ export default function Error({
               variant="default"
               size="lg"
               className="w-full justify-center gap-3 bg-cyan-400 hover:bg-cyan-500 border-4 border-black font-black uppercase text-base md:text-lg
-                shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]
-                hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] md:hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]
+                shadow-retro-md md:shadow-retro-lg
+                hover:shadow-retro-sm md:hover:shadow-retro-hover-sm
                 hover:translate-x-[2px] hover:translate-y-[2px] md:hover:translate-x-[3px] md:hover:translate-y-[3px]
                 transition-all md:transform md:hover:rotate-1 py-6 md:py-7"
             >
@@ -87,8 +87,8 @@ export default function Error({
               variant="secondary"
               size="lg"
               className="w-full justify-center gap-3 bg-yellow-400 hover:bg-yellow-500 border-4 border-black font-black uppercase text-base md:text-lg
-                shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]
-                hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] md:hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]
+                shadow-retro-md md:shadow-retro-lg
+                hover:shadow-retro-sm md:hover:shadow-retro-hover-sm
                 hover:translate-x-[2px] hover:translate-y-[2px] md:hover:translate-x-[3px] md:hover:translate-y-[3px]
                 transition-all md:transform md:hover:-rotate-1 py-6 md:py-7"
             >
