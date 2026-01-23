@@ -50,7 +50,7 @@ export default function IngredientBadgeDemoPage() {
 
   return (
     <PageContainer
-      maxWidth="4xl"
+      maxWidth="2xl"
       gradientFrom="from-blue-50"
       gradientVia="via-purple-50"
       gradientTo="to-pink-50"
