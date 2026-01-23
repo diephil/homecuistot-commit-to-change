@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Badge } from "@/components/retroui/Badge";
 import { Button } from "@/components/retroui/Button";
@@ -26,17 +26,17 @@ function OnboardingPageContent() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const {
-    isRecording,
-    recordingDuration,
-    audioBlob,
-    startRecording,
-    stopRecording,
-    clearAudioBlob,
-    clearRecordingArtifacts,
-    reset: resetVoiceInput,
+    state: voiceState,
+    duration,
     error: voiceError,
     permissionDenied,
+    start,
+    stop,
+    consumeAudio,
   } = useVoiceInput();
+
+  // Track if we're waiting for audio to be ready after stop
+  const pendingProcessRef = useRef(false);
 
   // T037-T039: Handle microphone permission denied
   useEffect(() => {
@@ -45,20 +45,16 @@ function OnboardingPageContent() {
     }
   }, [permissionDenied]);
 
-  // T028: Process audio when recording stops
+  // Process audio when voice state transitions to 'stopped'
   useEffect(() => {
-    console.log('[onboarding] State:', {
-      hasAudioBlob: !!audioBlob,
-      isRecording,
-      isProcessing
-    });
-
-    if (audioBlob && !isRecording && !isProcessing) {
-      console.log('[onboarding] Triggering handleProcessVoice');
-      handleProcessVoice();
+    if (voiceState === "stopped" && pendingProcessRef.current) {
+      pendingProcessRef.current = false;
+      const blob = consumeAudio();
+      if (blob) {
+        processAudioBlob(blob);
+      }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [audioBlob, isRecording]);
+  }, [voiceState, consumeAudio]);
 
   // T009: Advance to step 2
   const handleGetStarted = () => {
@@ -104,40 +100,38 @@ function OnboardingPageContent() {
     }));
   };
 
-  // T028: Process voice or text input
-  const handleProcessVoice = async () => {
-    if (!audioBlob && !textInput.trim()) {
-      console.log('[onboarding] handleProcessVoice: No input to process');
-      return;
-    }
+  // Handle recording start
+  const handleRecordStart = useCallback(() => {
+    if (isProcessing) return;
+    setErrorMessage(null);
+    start();
+  }, [isProcessing, start]);
 
-    console.log('[onboarding] handleProcessVoice: Starting processing');
+  // Handle recording stop - mark pending process
+  const handleRecordStop = useCallback(() => {
+    if (voiceState === "recording") {
+      pendingProcessRef.current = true;
+      stop();
+    }
+  }, [voiceState, stop]);
+
+  // Process audio blob
+  const processAudioBlob = async (blob: Blob) => {
     setIsProcessing(true);
     setErrorMessage(null);
 
-    let audioBlobUsed = false;
-
     try {
-      let audioBase64: string | undefined;
-
-      if (audioBlob) {
-        // Convert blob to base64
-        const arrayBuffer = await audioBlob.arrayBuffer();
-        const base64 = Buffer.from(arrayBuffer).toString("base64");
-        audioBase64 = base64;
-        audioBlobUsed = true;
-
-        // Clear audioBlob immediately to prevent re-processing
-        clearAudioBlob();
-      }
+      // Convert blob to base64
+      const arrayBuffer = await blob.arrayBuffer();
+      const base64 = Buffer.from(arrayBuffer).toString("base64");
 
       // T048: 15s timeout enforced by API maxDuration
       const response = await fetch("/api/onboarding/process-voice", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          audioBase64,
-          text: textInput.trim() || undefined,
+          audioBase64: base64,
+          text: undefined,
           currentContext: {
             dishes: state.dishes,
             ingredients: state.ingredients,
@@ -149,12 +143,10 @@ function OnboardingPageContent() {
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ error: "Unknown error" }));
 
-        // T049: Network timeout (408 status)
         if (response.status === 408) {
           throw new Error("timeout:Connection issue. Try again.");
         }
 
-        // T050: Unparseable NLP response (500 with specific message)
         if (response.status === 500 && errorData.error?.includes("Invalid response format")) {
           throw new Error("parse:Couldn't understand. Try again.");
         }
@@ -170,57 +162,92 @@ function OnboardingPageContent() {
       // T035: Reset failure count on success
       setState((prev) => ({ ...prev, voiceFailureCount: 0 }));
 
-      // Clear text input
-      setTextInput("");
-
-      console.log('[onboarding] handleProcessVoice: Processing complete');
     } catch (error) {
-      // T053: Log all errors
       console.error("[onboarding] Voice processing error:", error);
+      handleProcessingError(error);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
-      // Clear audioBlob on error if we didn't already (e.g., if conversion failed)
-      if (!audioBlobUsed) {
-        clearAudioBlob();
-      }
+  // T028: Process text input
+  const handleProcessText = async () => {
+    if (!textInput.trim() || isProcessing) return;
 
-      // T051: Count network timeout as voice failure
-      const isTimeout = error instanceof Error && error.message.startsWith("timeout:");
-      const isParseFail = error instanceof Error && error.message.startsWith("parse:");
+    setIsProcessing(true);
+    setErrorMessage(null);
 
-      // T040-T042: Voice failure tracking
-      setState((prev) => {
-        const newCount = prev.voiceFailureCount + 1;
-        const showFallback = newCount >= 2;
-
-        return {
-          ...prev,
-          voiceFailureCount: newCount,
-          showTextFallback: showFallback,
-        };
+    try {
+      const response = await fetch("/api/onboarding/process-voice", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          audioBase64: undefined,
+          text: textInput.trim(),
+          currentContext: {
+            dishes: state.dishes,
+            ingredients: state.ingredients,
+          },
+        }),
       });
 
-      // T049-T050: Display appropriate error messages
-      if (error instanceof Error) {
-        if (isTimeout) {
-          setErrorMessage(error.message.replace("timeout:", ""));
-        } else if (isParseFail) {
-          setErrorMessage(error.message.replace("parse:", ""));
-        } else if (state.voiceFailureCount === 0) {
-          setErrorMessage("Couldn't understand. Try again.");
-        } else if (state.voiceFailureCount === 1) {
-          setErrorMessage("Still having trouble. Would you like to type instead?");
-        } else {
-          setErrorMessage("Please use text input below.");
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: "Unknown error" }));
+
+        if (response.status === 408) {
+          throw new Error("timeout:Connection issue. Try again.");
         }
-      } else {
-        setErrorMessage("Something went wrong. Please try again.");
+
+        if (response.status === 500 && errorData.error?.includes("Invalid response format")) {
+          throw new Error("parse:Couldn't understand. Try again.");
+        }
+
+        throw new Error(errorData.error || "Failed to process input");
       }
+
+      const result: VoiceUpdate = await response.json();
+      applyVoiceUpdate(result);
+      setState((prev) => ({ ...prev, voiceFailureCount: 0 }));
+      setTextInput("");
+
+    } catch (error) {
+      console.error("[onboarding] Text processing error:", error);
+      handleProcessingError(error);
     } finally {
-      // Clear recording artifacts (blob + duration) without touching isRecording
-      // This prevents UI glitches if user starts new recording during processing
-      clearRecordingArtifacts();
       setIsProcessing(false);
-      console.log('[onboarding] handleProcessVoice: Cleanup complete');
+    }
+  };
+
+  // Handle processing errors
+  const handleProcessingError = (error: unknown) => {
+    const isTimeout = error instanceof Error && error.message.startsWith("timeout:");
+    const isParseFail = error instanceof Error && error.message.startsWith("parse:");
+
+    // T040-T042: Voice failure tracking
+    setState((prev) => {
+      const newCount = prev.voiceFailureCount + 1;
+      return {
+        ...prev,
+        voiceFailureCount: newCount,
+        showTextFallback: newCount >= 2,
+      };
+    });
+
+    // T049-T050: Display appropriate error messages
+    if (error instanceof Error) {
+      if (isTimeout) {
+        setErrorMessage(error.message.replace("timeout:", ""));
+      } else if (isParseFail) {
+        setErrorMessage(error.message.replace("parse:", ""));
+      } else if (state.voiceFailureCount === 0) {
+        setErrorMessage("Couldn't understand. Try again.");
+      } else if (state.voiceFailureCount === 1) {
+        setErrorMessage("Still having trouble. Would you like to type instead?");
+      } else {
+        setErrorMessage("Please use text input below.");
+      }
+    } else {
+      setErrorMessage("Something went wrong. Please try again.");
     }
   };
 
@@ -239,7 +266,7 @@ function OnboardingPageContent() {
           )
       );
 
-      // T032: Show toast for duplicates (simplified - using alert for MVP)
+      // T032: Log duplicates
       const duplicates = [
         ...update.add.dishes.filter((dish) =>
           prev.dishes.some((existing) => existing.toLowerCase() === dish.toLowerCase())
@@ -285,12 +312,6 @@ function OnboardingPageContent() {
     });
   };
 
-  // T044: Process text input
-  const handleTextSubmit = () => {
-    if (!textInput.trim()) return;
-    handleProcessVoice();
-  };
-
   // T062-T064: Complete setup (enabled only after voice changes)
   const handleCompleteSetup = () => {
     router.push("/suggestions");
@@ -302,6 +323,10 @@ function OnboardingPageContent() {
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
+
+  // Derived state for UI
+  const isRecording = voiceState === "recording";
+  const showRecordingUI = isRecording && !isProcessing;
 
   return (
     <PageContainer
@@ -477,10 +502,10 @@ function OnboardingPageContent() {
 
                 {/* T022-T024: Hold-to-speak button */}
                 <button
-                  onMouseDown={startRecording}
-                  onMouseUp={stopRecording}
-                  onTouchStart={startRecording}
-                  onTouchEnd={stopRecording}
+                  onMouseDown={handleRecordStart}
+                  onMouseUp={handleRecordStop}
+                  onTouchStart={handleRecordStart}
+                  onTouchEnd={handleRecordStop}
                   disabled={isProcessing}
                   className={`
                     relative rounded-full p-6 min-h-[80px] min-w-[80px]
@@ -489,7 +514,7 @@ function OnboardingPageContent() {
                     hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px]
                     active:shadow-none active:translate-x-[4px] active:translate-y-[4px]
                     transition-all
-                    ${isRecording && !isProcessing ? "animate-pulse ring-4 ring-red-500" : ""}
+                    ${showRecordingUI ? "animate-pulse ring-4 ring-red-500" : ""}
                     ${isProcessing ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
                   `}
                 >
@@ -500,15 +525,15 @@ function OnboardingPageContent() {
                   )}
 
                   {/* T024: Recording duration display */}
-                  {isRecording && !isProcessing && (
+                  {showRecordingUI && (
                     <span className="absolute -top-8 left-1/2 -translate-x-1/2 text-sm font-bold bg-red-500 text-white px-2 py-1 rounded">
-                      {formatDuration(recordingDuration)}
+                      {formatDuration(duration)}
                     </span>
                   )}
                 </button>
 
                 {/* T068: ARIA live regions for status updates */}
-                {isRecording && !isProcessing && (
+                {showRecordingUI && (
                   <p className="text-sm font-bold text-red-600" role="status" aria-live="polite">
                     Recording...
                   </p>
@@ -548,7 +573,7 @@ function OnboardingPageContent() {
                     onChange={(e) => setTextInput(e.target.value)}
                     onKeyDown={(e) => {
                       if (e.key === "Enter" && !isProcessing) {
-                        handleTextSubmit();
+                        handleProcessText();
                       }
                     }}
                     placeholder="Type what to add or remove (e.g., 'add eggs, remove milk')"
@@ -556,7 +581,7 @@ function OnboardingPageContent() {
                     disabled={isProcessing}
                   />
                   <Button
-                    onClick={handleTextSubmit}
+                    onClick={handleProcessText}
                     disabled={isProcessing || !textInput.trim()}
                     className="min-h-[44px]"
                   >
