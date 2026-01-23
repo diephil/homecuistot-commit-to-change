@@ -8,7 +8,13 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest",
-    "test:db": "vitest run tests/db"
+    "test:db": "vitest run tests/db",
+    "prompt:voice": "tsx --env-file=.env.local scripts/register-voice-prompt.ts",
+    "prompt:voice:prod": "tsx --env-file=.env.prod scripts/register-voice-prompt.ts",
+    "prompt:text": "tsx --env-file=.env.local scripts/register-text-prompt.ts",
+    "prompt:text:prod": "tsx --env-file=.env.prod scripts/register-text-prompt.ts",
+    "prompt:all": "tsx --env-file=.env.local scripts/register-voice-prompt.ts && tsx --env-file=.env.local scripts/register-text-prompt.ts",
+    "prompt:all:prod": "tsx --env-file=.env.prod scripts/register-voice-prompt.ts && tsx --env-file=.env.prod scripts/register-text-prompt.ts"
   },
   "dependencies": {
     "@ai-sdk/google": "^3.0.10",
@@ -48,6 +54,7 @@
     "shadcn": "^3.7.0",
     "supabase": "^2.72.8",
     "tailwindcss": "^4",
+    "tsx": "^4.21.0",
     "typescript": "^5",
     "vitest": "^4.0.17"
   }

@@ -136,6 +136,24 @@ pnpx supabase db push
 - Only applies new migrations (never destructive).
 - Requires project to be linked first.
 
+### Opik Prompt Management
+
+Register LLM prompts to Opik for versioning and tracking:
+
+```bash
+# Local (uses .env.local)
+pnpm prompt:voice
+pnpm prompt:text
+pnpm prompt:all
+
+# Production (uses .env.prod)
+pnpm prompt:voice:prod
+pnpm prompt:text:prod
+pnpm prompt:all:prod
+```
+
+**Note:** Local requires Opik running (`make opstart` from repo root). View prompts at http://localhost:5173.
+
 ### Running Tests
 
 ```bash
