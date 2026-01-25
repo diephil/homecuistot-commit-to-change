@@ -471,7 +471,7 @@ function OnboardingPageContent() {
             {/* T021: Display current selections */}
             <div className="space-y-4">
               <div className="md:-rotate-1">
-                <h3 className="text-lg font-black uppercase mb-2">Your Dishes</h3>
+                <h3 className="text-lg font-black uppercase mb-2">Dishes you can cook</h3>
                 {state.dishes.length === 0 ? (
                   <p className="text-gray-500 italic">No dishes selected</p>
                 ) : (
@@ -486,7 +486,7 @@ function OnboardingPageContent() {
               </div>
 
               <div className="md:rotate-1">
-                <h3 className="text-lg font-black uppercase mb-2">Your Ingredients</h3>
+                <h3 className="text-lg font-black uppercase mb-2">Available ingredients</h3>
                 {state.ingredients.length === 0 ? (
                   <p className="text-gray-500 italic">No ingredients selected</p>
                 ) : (
@@ -619,7 +619,7 @@ function OnboardingPageContent() {
             <div className="flex justify-end mt-6">
               <Button
                 onClick={handleCompleteSetup}
-                disabled={state.dishes.length < 1 || state.ingredients.length < 1}
+                disabled={state.dishes.length < 1 && state.ingredients.length < 1}
                 variant="default"
                 size="lg"
                 className="min-h-[44px]"
@@ -629,9 +629,9 @@ function OnboardingPageContent() {
             </div>
 
             {/* T068: ARIA live region for completion status */}
-            {(state.dishes.length < 1 || state.ingredients.length < 1) && (
+            {(state.dishes.length < 1 && state.ingredients.length < 1) && (
               <p className="text-sm text-gray-500 text-center" role="status" aria-live="polite">
-                Add at least one dish and one ingredient to continue
+                Add at least one dish or ingredient to continue
               </p>
             )}
           </div>
