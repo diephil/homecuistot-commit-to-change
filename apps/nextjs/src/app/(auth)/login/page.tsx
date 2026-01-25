@@ -82,7 +82,7 @@ export default function LoginPage() {
             shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] md:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]
             md:transform md:-rotate-1">
             <Badge variant="solid" size="sm" className="text-xs md:text-sm font-black uppercase bg-transparent border-0 shadow-none">
-              ✨ Milestone 2: Mid-Hackathon Checkpoint
+              ✨ Milestone 2: Mid-Hackathon Checkpoint (Opik workspace: &quot;philippe-diep&quot;)
             </Badge>
           </div>
 
