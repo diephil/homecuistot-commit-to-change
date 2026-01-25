@@ -1,99 +1,77 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { createServerClient } from '@supabase/ssr'
+import { createServerClient } from "@supabase/ssr";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function proxy(request: NextRequest): Promise<NextResponse> {
-  const { pathname } = request.nextUrl
+// Protected and public routes
+const protectedRoutes = ["/app", "/admin"];
+const publicRoutes = ["/login", "/"];
 
-  // Create Supabase client for auth checks
+export default async function proxy(request: NextRequest): Promise<NextResponse> {
+  let response = NextResponse.next({
+    request: {
+      headers: request.headers,
+    },
+  });
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
     {
       cookies: {
-        getAll: () => request.cookies.getAll(),
-        setAll: () => {}, // No-op for middleware (readonly)
+        getAll() {
+          return request.cookies.getAll();
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) =>
+            response.cookies.set(name, value, options)
+          );
+        },
       },
     }
-  )
+  );
 
-  // Admin route protection (/admin/*)
-  if (pathname.startsWith('/admin')) {
-    try {
-      const { data: { user }, error } = await supabase.auth.getUser()
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
 
-      if (error) {
-        console.error('[Proxy] Supabase auth error:', error)
-        return NextResponse.next() // Graceful degradation for MVP
-      }
+  const path = request.nextUrl.pathname;
+  const isProtectedRoute = protectedRoutes.some((route) =>
+    path.startsWith(route)
+  );
+  const isPublicRoute = publicRoutes.some((route) => path === route);
 
-      // Redirect unauthenticated users to login
-      if (!user) {
-        const loginUrl = new URL('/login', request.url)
-        loginUrl.searchParams.set('redirect', pathname)
-        return NextResponse.redirect(loginUrl)
-      }
+  // Redirect to /login if user is not authenticated on protected routes
+  if (isProtectedRoute && !session) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
 
-      // Check admin role
-      const adminIds = process.env.ADMIN_USER_IDS?.split(',').map(id => id.trim()) || []
+  // Admin route protection: check user role
+  if (path.startsWith("/admin")) {
+    const { data: { user } } = await supabase.auth.getUser();
+    const adminIds = process.env.ADMIN_USER_IDS?.split(',').map(id => id.trim()) || [];
 
-      if (!process.env.ADMIN_USER_IDS) {
-        console.error('[Proxy] ADMIN_USER_IDS not configured')
-        return NextResponse.rewrite(new URL('/this-page-does-not-exist', request.url))
-      }
-
-      const isAdmin = user.id && adminIds.includes(user.id)
-
-      if (!isAdmin) {
-        // Rewrite to non-existent route to trigger 404 without changing URL
-        return NextResponse.rewrite(new URL('/this-page-does-not-exist', request.url))
-      }
-
-      // Allow admin access
-      return NextResponse.next()
-    } catch (err) {
-      console.error('[Proxy] Unexpected error:', err)
-      return NextResponse.next() // Graceful degradation
+    if (!user || !adminIds.includes(user.id)) {
+      return NextResponse.rewrite(new URL('/404', request.url));
     }
   }
 
-  // Protected app route authentication (/app/*)
-  if (pathname.startsWith('/app')) {
-    try {
-      const { data: { user }, error } = await supabase.auth.getUser()
-
-      if (error) {
-        console.error('[Proxy] Supabase auth error:', error)
-        return NextResponse.next() // Graceful degradation for MVP
-      }
-
-      // Redirect unauthenticated users to login
-      if (!user) {
-        const loginUrl = new URL('/login', request.url)
-        loginUrl.searchParams.set('redirect', pathname)
-        return NextResponse.redirect(loginUrl)
-      }
-
-      // Allow authenticated access
-      return NextResponse.next()
-    } catch (err) {
-      console.error('[Proxy] Unexpected error:', err)
-      return NextResponse.next() // Graceful degradation
-    }
+  // Redirect to /app/onboarding if user is authenticated on public routes
+  if (isPublicRoute && session && path === "/login") {
+    return NextResponse.redirect(new URL("/app/onboarding", request.url));
   }
 
-  // Allow access to all other routes
-  return NextResponse.next()
+  return response;
 }
 
 export const config = {
   matcher: [
-    // Admin routes
-    '/admin/:path*',
-
-    // Protected app routes
-    '/app/:path*',
-
-    // Exclude static files and internals
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    /*
+     * Match all request paths except:
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - public folder
+     * - auth callback
+     */
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$|auth/callback).*)",
   ],
-}
+};

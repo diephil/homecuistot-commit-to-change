@@ -155,7 +155,7 @@ export default function LoginPage() {
                   For Jury Members
                 </Text>
                 <Text as="p" className="text-xs md:text-sm font-bold leading-relaxed">
-                  Please log in with Discord. Your profile will be elevated to admin access for the final demo.
+                  During the review, please log in with Google/Discord account. Your profiles will be elevated to admin access for the final version of the app.
                 </Text>
               </div>
             </div>

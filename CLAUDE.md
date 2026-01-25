@@ -48,5 +48,15 @@
 - Migrations: `drizzle/migrations/`
 - Deps: drizzle-orm, drizzle-kit, @neondatabase/serverless, @supabase/supabase-js, @supabase/ssr
 
+## Next.js Patterns
+
+**Authentication & Route Protection**:
+- Next.js v16: `middleware.ts` → `proxy.ts` (file and function renamed)
+- File: `src/proxy.ts` (NOT `src/middleware.ts`)
+- Function: `export default async function proxy(request: NextRequest)` (NOT `middleware`)
+- Migration: `npx @next/codemod@latest middleware-to-proxy .`
+- Pattern: Define protected/public routes arrays, use Supabase `getSession()` for auth checks
+
 ## Recent Changes
 - 006-admin-dashboard: Added TypeScript 5, React 19, Next.js 16 + Next.js App Router, Supabase Auth (@supabase/ssr, @supabase/supabase-js), Drizzle ORM
+- Auth: Implemented proxy-based route protection with Supabase session validation
