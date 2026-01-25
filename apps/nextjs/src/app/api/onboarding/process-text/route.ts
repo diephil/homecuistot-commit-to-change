@@ -1,25 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { processVoiceInput } from '@/lib/prompts/onboarding-voice/process';
+import { processTextInput } from '@/lib/prompts/onboarding-text/process';
 import { OnboardingUpdateSchema } from '@/types/onboarding';
 
 /**
- * T005: API route for voice processing
- * Spec: specs/004-onboarding-flow/contracts/process-voice.openapi.yaml
- *
- * POST /api/onboarding/process-voice
- * Accepts audio (base64) input and returns structured add/remove operations
+ * API route for text-based onboarding input processing
+ * POST /api/onboarding/process-text
+ * Accepts text input and returns structured add/remove operations
  */
 
-export const maxDuration = 15; // 15 second timeout per spec
+export const maxDuration = 15; // 15 second timeout
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
     // Validate request body
-    if (!body.audioBase64) {
+    if (!body.text) {
       return NextResponse.json(
-        { error: 'audioBase64 is required' },
+        { error: 'text is required' },
         { status: 400 }
       );
     }
@@ -37,21 +35,17 @@ export async function POST(request: NextRequest) {
     };
 
     // Process via Gemini with opik tracing
-    const result = await processVoiceInput({
-      audioBase64: body.audioBase64,
-      currentContext
-    });
+    const result = await processTextInput({ text: body.text, currentContext });
 
     // Validate response schema
     const validated = OnboardingUpdateSchema.parse(result);
 
     return NextResponse.json(validated);
   } catch (error) {
-    // T053: Log all errors to console (no external service for MVP)
-    console.error('[process-voice] Error:', error);
+    console.error('[process-text] Error:', error);
 
     if (error instanceof Error) {
-      // T049: Check if it's a timeout error (408 Request Timeout)
+      // Timeout error
       if (error.message.includes('timeout') || error.message.includes('ETIMEDOUT') || error.message.includes('ECONNABORTED')) {
         return NextResponse.json(
           { error: 'Request timeout. Please try again.' },
@@ -59,7 +53,7 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      // T050: Check if it's a validation error (unparseable NLP response)
+      // Validation error (unparseable NLP response)
       if (error.name === 'ZodError') {
         return NextResponse.json(
           { error: 'Invalid response format from NLP service' },
@@ -78,7 +72,7 @@ export async function POST(request: NextRequest) {
 
     // Generic error
     return NextResponse.json(
-      { error: 'NLP processing failed. Please try again.' },
+      { error: 'Text processing failed. Please try again.' },
       { status: 500 }
     );
   }
