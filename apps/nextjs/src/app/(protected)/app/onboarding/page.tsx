@@ -65,7 +65,7 @@ function OnboardingPageContent() {
 
   // T010: Skip to suggestions
   const handleSkipSetup = () => {
-    router.push("/app/suggestions");
+    router.push("/app");
   };
 
   // T017: Toggle badge selection
@@ -314,7 +314,7 @@ function OnboardingPageContent() {
 
   // T062-T064: Complete setup (enabled only after voice changes)
   const handleCompleteSetup = () => {
-    router.push("/app/suggestions");
+    router.push("/app");
   };
 
   // T065: Format recording duration
