@@ -76,6 +76,15 @@ export default function LoginPage() {
             </Badge>
           </div>
 
+          {/* Milestone badge */}
+          <div className="bg-green-400 border-3 md:border-4 border-black px-4 py-2 md:px-6 md:py-3
+            shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] md:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]
+            md:transform md:-rotate-1">
+            <Badge variant="solid" size="sm" className="text-xs md:text-sm font-black uppercase bg-transparent border-0 shadow-none">
+              ✨ Milestone 2: Mid-Hackathon Checkpoint
+            </Badge>
+          </div>
+
           {/* Heading section */}
           <div className="text-center">
             <Text as="h1" className="text-3xl md:text-5xl font-black uppercase mb-2 md:mb-3 leading-tight tracking-tight">
@@ -134,6 +143,22 @@ export default function LoginPage() {
               </svg>
               Continue with Discord
             </Button>
+          </div>
+
+          {/* Jury instructions */}
+          <div className="mt-4 md:mt-6 border-3 md:border-4 border-black bg-purple-200 p-4 md:p-5
+            shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+            <div className="flex items-start gap-3">
+              <span className="text-2xl md:text-3xl">👨‍⚖️</span>
+              <div>
+                <Text as="h3" className="text-sm md:text-base font-black uppercase mb-1 md:mb-2">
+                  For Jury Members
+                </Text>
+                <Text as="p" className="text-xs md:text-sm font-bold leading-relaxed">
+                  During the review, please log in with Google/Discord account. Your profiles will be elevated to admin access for the final version of the app.
+                </Text>
+              </div>
+            </div>
           </div>
         </div>
       </div>
