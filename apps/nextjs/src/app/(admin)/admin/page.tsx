@@ -1,4 +1,5 @@
 import { PageContainer } from '@/components/PageContainer'
+import { InfoCard } from '@/components/retroui/InfoCard'
 
 export default function AdminDashboardPage() {
   return (
@@ -9,6 +10,15 @@ export default function AdminDashboardPage() {
       gradientTo="to-blue-100"
     >
       <div className="space-y-6 md:space-y-8">
+        <InfoCard
+          emoji="🧪"
+          heading="Demo In Progress"
+          variant="orange"
+        >
+          These pages use mock data and are still being developed.
+          Expect changes and incomplete features.
+        </InfoCard>
+
         {/* Header */}
         <div className="border-4 md:border-6 border-black bg-gradient-to-br from-pink-200 to-pink-300 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] md:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-6 md:p-10 text-center">
           <h1 className="text-3xl md:text-6xl font-black uppercase">

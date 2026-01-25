@@ -1,6 +1,7 @@
 import { Badge } from "@/components/retroui/Badge";
 import { Button } from "@/components/retroui/Button";
 import { Card } from "@/components/retroui/Card";
+import { InfoCard } from "@/components/retroui/InfoCard";
 import { PageContainer } from "@/components/PageContainer";
 import Link from "next/link";
 
@@ -78,6 +79,15 @@ export default function SuggestionsPage() {
       gradientTo="to-teal-50"
     >
       <div className="space-y-8">
+        <InfoCard
+          emoji="🧪"
+          heading="Demo In Progress"
+          variant="orange"
+        >
+          These pages use mock data and are still being developed.
+          Expect changes and incomplete features.
+        </InfoCard>
+
         {/* Header with navigation CTAs */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <h1 className="text-3xl font-bold">Recipe Suggestions</h1>

@@ -58,6 +58,15 @@ https://homecuistot-commit-to-change.vercel.app/
 
 ## Changelog
 
+### Jan 25, 2026
+
+- Dual-input onboarding: text fallback for voice input failures
+- InfoCard component for user notifications
+- Route structure simplified: /app/suggestions → /app
+- Logout button in protected layout
+- Bug fixes: login page and InfoCard styling
+- Spec documentation for dual-input onboarding feature
+
 ### Jan 23, 2026
 
 - Onboarding flow with voice input

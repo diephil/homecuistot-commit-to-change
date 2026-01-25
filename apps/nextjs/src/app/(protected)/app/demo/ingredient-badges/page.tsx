@@ -4,6 +4,7 @@
 import { PageContainer } from "@/components/PageContainer";
 import { IngredientBadge } from "@/components/retroui/IngredientBadge";
 import { Button } from "@/components/retroui/Button";
+import { InfoCard } from "@/components/retroui/InfoCard";
 import { useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
@@ -57,6 +58,15 @@ export default function IngredientBadgeDemoPage() {
       gradientTo="to-pink-50"
     >
       <div className="space-y-8">
+        <InfoCard
+          emoji="🧪"
+          heading="Demo In Progress"
+          variant="orange"
+        >
+          These pages use mock data and are still being developed.
+          Expect changes and incomplete features.
+        </InfoCard>
+
         {/* Header */}
         <div className="flex items-center gap-4">
           <Link href="/inventory">

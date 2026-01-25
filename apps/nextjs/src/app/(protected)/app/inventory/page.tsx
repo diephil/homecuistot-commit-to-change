@@ -1,4 +1,5 @@
 import { Button } from "@/components/retroui/Button";
+import { InfoCard } from "@/components/retroui/InfoCard";
 import { PageContainer } from "@/components/PageContainer";
 import { Mic } from "lucide-react";
 
@@ -52,6 +53,15 @@ export default function InventoryPage() {
       gradientTo="to-orange-50"
     >
       <div className="space-y-8">
+        <InfoCard
+          emoji="🧪"
+          heading="Demo In Progress"
+          variant="orange"
+        >
+          These pages use mock data and are still being developed.
+          Expect changes and incomplete features.
+        </InfoCard>
+
         <h1 className="text-3xl font-bold">My Inventory</h1>
 
         {/* T041: Instructions for editing quantities */}

@@ -1,6 +1,7 @@
 import { Badge } from "@/components/retroui/Badge";
 import { Button } from "@/components/retroui/Button";
 import { Card } from "@/components/retroui/Card";
+import { InfoCard } from "@/components/retroui/InfoCard";
 import { PageContainer } from "@/components/PageContainer";
 import { Plus } from "lucide-react";
 
@@ -65,6 +66,15 @@ export default function RecipesPage() {
       gradientTo="to-rose-50"
     >
       <div className="space-y-8">
+        <InfoCard
+          emoji="🧪"
+          heading="Demo In Progress"
+          variant="orange"
+        >
+          These pages use mock data and are still being developed.
+          Expect changes and incomplete features.
+        </InfoCard>
+
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold">My Recipes</h1>
         </div>
