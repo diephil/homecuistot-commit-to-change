@@ -5,6 +5,7 @@ import { Button } from "@/components/retroui/Button";
 import { Text } from "@/components/retroui/Text";
 import { Badge } from "@/components/retroui/Badge";
 import { PageContainer } from "@/components/PageContainer";
+import { InfoCard } from "@/components/retroui/InfoCard";
 
 const getURL = () => {
   if (typeof window !== 'undefined') {
@@ -146,20 +147,16 @@ export default function LoginPage() {
           </div>
 
           {/* Jury instructions */}
-          <div className="mt-4 md:mt-6 border-3 md:border-4 border-black bg-purple-200 p-4 md:p-5
-            shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
-            <div className="flex items-start gap-3">
-              <span className="text-2xl md:text-3xl">👨‍⚖️</span>
-              <div>
-                <Text as="h3" className="text-sm md:text-base font-black uppercase mb-1 md:mb-2">
-                  For Jury Members
-                </Text>
-                <Text as="p" className="text-xs md:text-sm font-bold leading-relaxed">
-                  During the review, please log in with Google/Discord account. Your profiles will be elevated to admin access for the final version of the app.
-                </Text>
-              </div>
-            </div>
-          </div>
+          <InfoCard
+            className="mt-4 md:mt-6"
+            variant="purple"
+            emoji="👨‍⚖️"
+            heading="For Jury Members"
+          >
+            During the review, please log in with Google/Discord account. Your
+            profiles will be elevated to admin access for the final version of
+            the app.
+          </InfoCard>
         </div>
       </div>
     </PageContainer>
