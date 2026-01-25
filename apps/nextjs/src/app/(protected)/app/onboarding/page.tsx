@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Badge } from "@/components/retroui/Badge";
 import { Button } from "@/components/retroui/Button";
+import { InfoCard } from "@/components/retroui/InfoCard";
 import { PageContainer } from "@/components/PageContainer";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { Mic, Loader2 } from "lucide-react";
@@ -459,6 +460,14 @@ function OnboardingPageContent() {
               Review & Refine
             </h2>
 
+            {/* Example sentences */}
+            <InfoCard variant="cyan" emoji="💬" heading="Hold the button and speak naturally">
+              <div className="space-y-1">
+                <p>&quot;I know how to make fried rice and a peanut butter sandwich. I also have rice, chicken, and cream.&quot;</p>
+                <p>&quot;I can cook scrambled eggs and pasta carbonara. I have eggs, milk, and bacon, and... oh no... I ran out of bacon!&quot;</p>
+              </div>
+            </InfoCard>
+
             {/* T021: Display current selections */}
             <div className="space-y-4">
               <div className="md:-rotate-1">
@@ -495,16 +504,6 @@ function OnboardingPageContent() {
             {/* T022-T029: Voice input button (if permission not denied and voice mode active) */}
             {inputMode === 'voice' && !permissionDenied && (
               <div className="flex flex-col items-center gap-4 mt-6">
-                <div className="flex flex-col items-center gap-2 text-center">
-                  <p className="text-sm font-bold text-gray-700">
-                    Hold the button and speak naturally
-                  </p>
-                  <div className="text-xs text-gray-600 space-y-1">
-                    <p>💬 &quot;I know how to make fried rice and a peanut butter sandwich. I also have rice, chicken, and cream.&quot;</p>
-                    <p>💬 &quot;I can cook scrambled eggs and pasta carbonara. I have eggs, milk, and bacon, and... oh no... I ran out of bacon!&quot;</p>
-                  </div>
-                </div>
-
                 {/* T022-T024: Hold-to-speak button */}
                 <button
                   onMouseDown={handleRecordStart}
