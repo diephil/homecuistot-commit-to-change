@@ -13,16 +13,21 @@ export default function Home() {
               <div className="w-10 h-10 md:w-16 md:h-16 bg-yellow-300 border-3 md:border-4 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] md:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex items-center justify-center text-2xl md:text-4xl md:rotate-3 hover:rotate-0 transition-transform">
                 🍳
               </div>
-              <Text as="h1" className="text-xl md:text-4xl font-black uppercase tracking-tight md:transform md:-rotate-1">
-                HomeCuistot
-              </Text>
+              <div className="flex flex-col">
+                <Text as="h1" className="text-xl md:text-4xl font-black uppercase tracking-tight md:transform md:-rotate-1">
+                  HomeCuistot
+                </Text>
+                <span className="text-xs md:text-sm font-bold lowercase opacity-80">
+                  (French: &ldquo;Home Chef&rdquo;)
+                </span>
+              </div>
             </div>
             <div className="flex items-center gap-2 md:gap-4">
               <Button asChild variant="outline" size="sm" className="border-3 md:border-4 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] md:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] md:hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] md:hover:translate-x-[2px] md:hover:translate-y-[2px] transition-all font-black text-xs md:text-sm px-2 md:px-3">
-                <Link href="/login">Log In</Link>
+                <Link href="/login">Sign Up</Link>
               </Button>
               <Button asChild variant="default" size="sm" className="bg-cyan-300 hover:bg-cyan-400 border-3 md:border-4 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] md:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] md:hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] md:hover:translate-x-[2px] md:hover:translate-y-[2px] transition-all font-black text-xs md:text-sm px-2 md:px-3">
-                <Link href="/login">Sign Up</Link>
+                <Link href="/app">Go to App</Link>
               </Button>
             </div>
           </div>
@@ -36,14 +41,14 @@ export default function Home() {
           <div className="text-center space-y-6 md:space-y-8">
             <div className="inline-block bg-yellow-300 border-4 md:border-6 border-black px-4 md:px-6 py-2 md:rotate-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
               <span className="text-sm md:text-xl font-black uppercase font-head">
-                🎉 Know what you have, cook smart
+                🤖 AI-Powered Voice Assistant for Home Cooks
               </span>
             </div>
             <Text as="h2" className="text-3xl md:text-7xl lg:text-8xl font-black uppercase leading-tight md:leading-none tracking-tight md:tracking-tighter md:transform md:-rotate-1 px-2">
               From &ldquo;What&rsquo;s in my fridge?&rdquo; to &ldquo;What&rsquo;s for dinner?&rdquo;
             </Text>
             <Text as="p" className="text-lg md:text-3xl font-black text-zinc-800 md:transform md:rotate-1">
-              in 10 seconds. Zero typing. Just talk. 🎤
+              Just talk to the app. 🎤
             </Text>
             <div className="pt-4 md:pt-8 flex flex-col sm:flex-row gap-3 md:gap-4 justify-center items-stretch sm:items-center px-4">
               <Button asChild size="lg" className="text-lg md:text-3xl px-8 md:px-16 py-5 md:py-8 bg-pink-400 hover:bg-pink-500 border-4 md:border-6 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] md:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] md:hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[3px] hover:translate-y-[3px] md:hover:translate-x-[4px] md:hover:translate-y-[4px] transition-all font-black uppercase md:transform md:-rotate-2">
@@ -68,8 +73,8 @@ export default function Home() {
             </Text>
             <div className="space-y-4 md:space-y-6 text-center text-base md:text-2xl font-bold">
               <Text as="p" className="leading-relaxed">
-                You come home hungry. You stare at your fridge. You have ingredients but no idea what to make.
-                You don&rsquo;t want to meal plan. You just want to eat.
+                You come home hungry. You stare at your fridge. You have ingredients, some cooking skills, but no idea what to make.
+                You don&rsquo;t want to meal plan. You just want to eat and move on.
               </Text>
               <div className="bg-yellow-200 border-4 md:border-6 border-black p-4 md:p-6 inline-block shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] md:transform md:rotate-2">
                 <Text as="p" className="text-2xl md:text-4xl font-black">
@@ -90,7 +95,7 @@ export default function Home() {
             ✨ How It Works
           </Text>
           <Text as="p" className="text-base md:text-2xl font-bold text-center mb-8 md:mb-14 max-w-3xl mx-auto px-4">
-            Three simple steps to transform your fridge chaos into delicious meals
+            Voice-powered meal planning. Just talk. Three simple steps, zero typing.
           </Text>
 
           {/* Demo Video Placeholder */}
@@ -116,10 +121,10 @@ export default function Home() {
                 <div className="text-4xl md:text-5xl font-black font-head">01</div>
               </div>
               <Text as="h4" className="text-xl md:text-3xl font-black uppercase mb-3 md:mb-4 leading-tight">
-                🎤 Voice Scan
+                📦 Collect Ingredients
               </Text>
               <Text as="p" className="text-base md:text-xl font-bold leading-relaxed">
-                Tell us what&rsquo;s in your fridge. &ldquo;Some chicken, eggs, pasta, tomatoes&hellip;&rdquo;
+                Tell us what&rsquo;s in your fridge. &ldquo;Chicken, eggs, pasta, tomatoes&hellip;&rdquo;
               </Text>
             </div>
 
@@ -128,10 +133,10 @@ export default function Home() {
                 <div className="text-4xl md:text-5xl font-black font-head">02</div>
               </div>
               <Text as="h4" className="text-xl md:text-3xl font-black uppercase mb-3 md:mb-4 leading-tight">
-                🤖 AI Matches
+                📖 Build Your Cookbook
               </Text>
               <Text as="p" className="text-base md:text-xl font-bold leading-relaxed">
-                Our AI instantly finds recipes you can cook right now with what you have.
+                Tell us what dishes you can cook. &ldquo;Pasta carbonara, chicken stir-fry&hellip;&rdquo; We&rsquo;ll remember.
               </Text>
             </div>
 
@@ -140,45 +145,11 @@ export default function Home() {
                 <div className="text-4xl md:text-5xl font-black font-head">03</div>
               </div>
               <Text as="h4" className="text-xl md:text-3xl font-black uppercase mb-3 md:mb-4 leading-tight">
-                👨‍🍳 Get Cooking
+                🍳 Cook More
               </Text>
               <Text as="p" className="text-base md:text-xl font-bold leading-relaxed">
-                Pick a recipe. Cook. Eat. We&rsquo;ll track what you used automatically.
+                We tell you what to cook right now via instant recipe matching, zero thinking.
               </Text>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* How It Was Built Section */}
-      <section className="py-12 md:py-28 border-b-4 md:border-b-8 border-black bg-gradient-to-r from-yellow-300 via-pink-300 to-orange-300 relative overflow-hidden">
-        <div className="absolute top-12 right-12 w-20 h-20 md:w-32 md:h-32 bg-cyan-400 border-3 md:border-4 border-black rounded-full opacity-40" />
-        <div className="absolute bottom-12 left-12 w-24 h-24 md:w-40 md:h-40 bg-pink-400 border-3 md:border-4 border-black opacity-40" />
-        <div className="max-w-7xl mx-auto px-4 md:px-8 relative">
-          <Text as="h3" className="text-3xl md:text-6xl font-black uppercase text-center mb-6 md:mb-10 md:transform md:rotate-1">
-            🛠️ Built With Modern Tech
-          </Text>
-          <div className="bg-white border-4 md:border-8 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] md:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] p-6 md:p-14 md:transform md:-rotate-1">
-            <Text as="p" className="text-base md:text-2xl font-bold text-center mb-8 md:mb-12 leading-relaxed">
-              Powered by cutting-edge AI and modern web technologies to give you the best experience
-            </Text>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-              <div className="bg-cyan-200 border-3 md:border-4 border-black p-4 md:p-6 text-center shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] md:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:transform md:hover:rotate-3 transition-transform">
-                <div className="text-3xl md:text-4xl mb-2 md:mb-3">⚛️</div>
-                <Text as="p" className="font-black text-sm md:text-lg">React 19</Text>
-              </div>
-              <div className="bg-pink-200 border-3 md:border-4 border-black p-4 md:p-6 text-center shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] md:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:transform md:hover:-rotate-3 transition-transform">
-                <div className="text-3xl md:text-4xl mb-2 md:mb-3">▲</div>
-                <Text as="p" className="font-black text-sm md:text-lg">Next.js 16</Text>
-              </div>
-              <div className="bg-yellow-200 border-3 md:border-4 border-black p-4 md:p-6 text-center shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] md:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:transform md:hover:rotate-3 transition-transform">
-                <div className="text-3xl md:text-4xl mb-2 md:mb-3">🤖</div>
-                <Text as="p" className="font-black text-sm md:text-lg">AI Powered</Text>
-              </div>
-              <div className="bg-orange-200 border-3 md:border-4 border-black p-4 md:p-6 text-center shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] md:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:transform md:hover:-rotate-3 transition-transform">
-                <div className="text-3xl md:text-4xl mb-2 md:mb-3">🎨</div>
-                <Text as="p" className="font-black text-sm md:text-lg">TypeScript</Text>
-              </div>
             </div>
           </div>
         </div>
@@ -189,10 +160,10 @@ export default function Home() {
         <div className="max-w-5xl mx-auto px-4 md:px-8">
           <div className="text-center space-y-6 md:space-y-8">
             <Text as="h3" className="text-4xl md:text-7xl font-black uppercase leading-tight md:transform md:-rotate-2 px-4">
-              Ready to eat better? 🚀
+              Ready to stop ordering takeout? 🚀
             </Text>
             <Text as="p" className="text-xl md:text-3xl font-black">
-              Start cooking smarter in 60 seconds
+              Start cooking smarter after a rapid onboarding
             </Text>
             <Button asChild size="lg" className="text-2xl md:text-4xl px-10 md:px-20 py-6 md:py-10 bg-cyan-300 hover:bg-cyan-400 border-4 md:border-6 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] md:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[4px] hover:translate-y-[4px] md:hover:translate-x-[6px] md:hover:translate-y-[6px] transition-all font-black uppercase md:transform md:rotate-2">
               <Link href="/login">Let&rsquo;s Go! 🍳</Link>
