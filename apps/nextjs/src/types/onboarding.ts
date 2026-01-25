@@ -5,8 +5,8 @@ import { z } from 'zod';
  * Spec: specs/004-onboarding-flow/data-model.md
  */
 
-// Voice Update Schema (NLP response from Gemini)
-export const VoiceUpdateSchema = z.object({
+// Onboarding Input Update Schema (NLP response from Gemini for voice or text)
+export const OnboardingUpdateSchema = z.object({
   add: z.object({
     dishes: z.array(z.string()),
     ingredients: z.array(z.string()),
@@ -18,7 +18,7 @@ export const VoiceUpdateSchema = z.object({
 });
 
 // Derived type from schema
-export type VoiceUpdate = z.infer<typeof VoiceUpdateSchema>;
+export type OnboardingUpdate = z.infer<typeof OnboardingUpdateSchema>;
 
 // Onboarding state interface
 export interface OnboardingState {
@@ -29,7 +29,6 @@ export interface OnboardingState {
   ingredients: string[];
   hasVoiceChanges: boolean;
   voiceFailureCount: number;
-  showTextFallback: boolean;
 }
 
 // Initial state
@@ -41,7 +40,6 @@ export const initialOnboardingState: OnboardingState = {
   ingredients: [],
   hasVoiceChanges: false,
   voiceFailureCount: 0,
-  showTextFallback: false,
 };
 
 // Suggested item structure

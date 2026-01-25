@@ -9,7 +9,7 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { Mic, Loader2 } from "lucide-react";
 import { useVoiceInput } from "@/hooks/useVoiceInput";
 import { SUGGESTED_ITEMS } from "@/constants/onboarding";
-import type { OnboardingState, VoiceUpdate } from "@/types/onboarding";
+import type { OnboardingState, OnboardingUpdate } from "@/types/onboarding";
 import { initialOnboardingState } from "@/types/onboarding";
 
 /**
@@ -24,6 +24,7 @@ function OnboardingPageContent() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [textInput, setTextInput] = useState("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [inputMode, setInputMode] = useState<'voice' | 'text'>('voice');
 
   const {
     state: voiceState,
@@ -41,7 +42,7 @@ function OnboardingPageContent() {
   // T037-T039: Handle microphone permission denied
   useEffect(() => {
     if (permissionDenied) {
-      setState((prev) => ({ ...prev, showTextFallback: true }));
+      setInputMode('text');
     }
   }, [permissionDenied]);
 
@@ -154,10 +155,10 @@ function OnboardingPageContent() {
         throw new Error(errorData.error || "Failed to process input");
       }
 
-      const result: VoiceUpdate = await response.json();
+      const result: OnboardingUpdate = await response.json();
 
       // T030: Apply voice update
-      applyVoiceUpdate(result);
+      applyOnboardingUpdate(result);
 
       // T035: Reset failure count on success
       setState((prev) => ({ ...prev, voiceFailureCount: 0 }));
@@ -178,11 +179,10 @@ function OnboardingPageContent() {
     setErrorMessage(null);
 
     try {
-      const response = await fetch("/api/onboarding/process-voice", {
+      const response = await fetch("/api/onboarding/process-text", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          audioBase64: undefined,
           text: textInput.trim(),
           currentContext: {
             dishes: state.dishes,
@@ -205,8 +205,8 @@ function OnboardingPageContent() {
         throw new Error(errorData.error || "Failed to process input");
       }
 
-      const result: VoiceUpdate = await response.json();
-      applyVoiceUpdate(result);
+      const result: OnboardingUpdate = await response.json();
+      applyOnboardingUpdate(result);
       setState((prev) => ({ ...prev, voiceFailureCount: 0 }));
       setTextInput("");
 
@@ -229,7 +229,6 @@ function OnboardingPageContent() {
       return {
         ...prev,
         voiceFailureCount: newCount,
-        showTextFallback: newCount >= 2,
       };
     });
 
@@ -251,8 +250,8 @@ function OnboardingPageContent() {
     }
   };
 
-  // T030-T032: Apply voice update with duplicate detection
-  const applyVoiceUpdate = (update: VoiceUpdate) => {
+  // T030-T032: Apply onboarding update with duplicate detection
+  const applyOnboardingUpdate = (update: OnboardingUpdate) => {
     setState((prev) => {
       // T031: Duplicate detection (case-insensitive)
       const newDishes = update.add.dishes.filter(
@@ -493,12 +492,18 @@ function OnboardingPageContent() {
               </div>
             </div>
 
-            {/* T022-T029: Voice input button (if permission not denied) */}
-            {!permissionDenied && !state.showTextFallback && (
+            {/* T022-T029: Voice input button (if permission not denied and voice mode active) */}
+            {inputMode === 'voice' && !permissionDenied && (
               <div className="flex flex-col items-center gap-4 mt-6">
-                <p className="text-sm text-gray-600 text-center">
-                  Hold the button and tell us what to add or remove
-                </p>
+                <div className="flex flex-col items-center gap-2 text-center">
+                  <p className="text-sm font-bold text-gray-700">
+                    Hold the button and speak naturally
+                  </p>
+                  <div className="text-xs text-gray-600 space-y-1">
+                    <p>💬 &quot;I know how to make fried rice and a peanut butter sandwich. I also have rice, chicken, and cream.&quot;</p>
+                    <p>💬 &quot;I can cook scrambled eggs and pasta carbonara. I have eggs, milk, and bacon, and... oh no... I ran out of bacon!&quot;</p>
+                  </div>
+                </div>
 
                 {/* T022-T024: Hold-to-speak button */}
                 <button
@@ -543,6 +548,14 @@ function OnboardingPageContent() {
                     Processing...
                   </p>
                 )}
+
+                {/* Toggle to text input */}
+                <button
+                  onClick={() => setInputMode('text')}
+                  className="text-sm text-gray-600 hover:text-gray-900 underline mt-2"
+                >
+                  Prefer to type instead?
+                </button>
               </div>
             )}
 
@@ -557,9 +570,21 @@ function OnboardingPageContent() {
               </div>
             )}
 
-            {/* T036-T047: Text fallback */}
-            {(permissionDenied || state.showTextFallback) && (
+            {/* T036-T047: Text input */}
+            {(inputMode === 'text' || permissionDenied) && (
               <div className="space-y-3">
+                {/* Toggle back to voice (if permission granted) */}
+                {!permissionDenied && (
+                  <div className="text-center">
+                    <button
+                      onClick={() => setInputMode('voice')}
+                      className="text-sm text-gray-600 hover:text-gray-900 underline"
+                    >
+                      Use voice instead?
+                    </button>
+                  </div>
+                )}
+
                 {permissionDenied && (
                   <p className="text-sm text-gray-600 text-center">
                     Microphone access denied. Please use text input below.
@@ -576,7 +601,7 @@ function OnboardingPageContent() {
                         handleProcessText();
                       }
                     }}
-                    placeholder="Type what to add or remove (e.g., 'add eggs, remove milk')"
+                    placeholder="Add eggs and butter"
                     className="flex-1 px-4 py-3 border-4 border-black rounded focus:outline-none focus:ring-2 focus:ring-pink-500 min-h-[44px]"
                     disabled={isProcessing}
                   />
@@ -595,7 +620,7 @@ function OnboardingPageContent() {
             <div className="flex justify-end mt-6">
               <Button
                 onClick={handleCompleteSetup}
-                disabled={!state.hasVoiceChanges}
+                disabled={state.dishes.length < 1 || state.ingredients.length < 1}
                 variant="default"
                 size="lg"
                 className="min-h-[44px]"
@@ -605,9 +630,9 @@ function OnboardingPageContent() {
             </div>
 
             {/* T068: ARIA live region for completion status */}
-            {!state.hasVoiceChanges && (
+            {(state.dishes.length < 1 || state.ingredients.length < 1) && (
               <p className="text-sm text-gray-500 text-center" role="status" aria-live="polite">
-                Make at least one change using voice or text to continue
+                Add at least one dish and one ingredient to continue
               </p>
             )}
           </div>

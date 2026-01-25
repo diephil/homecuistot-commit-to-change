@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { GoogleGenAI, type Schema } from "@google/genai";
 import { trackGemini } from "opik-gemini";
-import { VoiceUpdateSchema, type VoiceUpdate } from "@/types/onboarding";
+import { OnboardingUpdateSchema, type OnboardingUpdate } from "@/types/onboarding";
 import { ONBOARDING_TEXT_PROMPT } from "./prompt";
 
 const genAI = new GoogleGenAI({
@@ -16,7 +16,7 @@ const trackedGenAI = trackGemini(genAI, {
   },
 });
 
-const responseSchema = z.toJSONSchema(VoiceUpdateSchema) as Schema;
+const responseSchema = z.toJSONSchema(OnboardingUpdateSchema) as Schema;
 
 interface ProcessTextInputParams {
   text: string;
@@ -28,7 +28,7 @@ interface ProcessTextInputParams {
 
 export async function processTextInput(
   params: ProcessTextInputParams,
-): Promise<VoiceUpdate> {
+): Promise<OnboardingUpdate> {
   const { text, currentContext } = params;
 
   const systemPrompt = ONBOARDING_TEXT_PROMPT.prompt
@@ -61,5 +61,5 @@ export async function processTextInput(
   }
 
   const parsed = JSON.parse(responseText);
-  return VoiceUpdateSchema.parse(parsed);
+  return OnboardingUpdateSchema.parse(parsed);
 }
