@@ -26,7 +26,7 @@ export default function Home() {
               <Button asChild variant="outline" size="sm" className="border-3 md:border-4 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] md:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] md:hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] md:hover:translate-x-[2px] md:hover:translate-y-[2px] transition-all font-black text-xs md:text-sm px-2 md:px-3">
                 <Link href="/login">Login</Link>
               </Button>
-              <Button asChild variant="default" size="sm" className="bg-yellow-300 hover:bg-yellow-400 text-black border-3 md:border-4 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] md:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] md:hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] md:hover:translate-x-[2px] md:hover:translate-y-[2px] transition-all font-black text-xs md:text-sm px-2 md:px-3">
+              <Button asChild variant="default" size="sm" className="bg-pink-400 hover:bg-pink-500 border-3 md:border-4 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] md:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] md:hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] md:hover:translate-x-[2px] md:hover:translate-y-[2px] transition-all font-black text-xs md:text-sm px-2 md:px-3">
                 <Link href="/app">Go to App</Link>
               </Button>
             </div>
@@ -39,7 +39,7 @@ export default function Home() {
         <div className="absolute inset-0 bg-gradient-to-br from-pink-200 via-yellow-200 to-cyan-200 opacity-50" />
         <div className="max-w-6xl mx-auto px-4 md:px-8 relative">
           <div className="text-center space-y-6 md:space-y-8">
-            <div className="inline-block bg-yellow-300 border-4 md:border-6 border-black px-4 md:px-6 py-2 md:rotate-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+            <div className="inline-block bg-yellow-300 border-2 border-black px-4 md:px-6 py-2 md:rotate-2">
               <span className="text-sm md:text-xl font-black uppercase font-head">
                 🤖 AI-Powered Voice Assistant for Home Cooks
               </span>
@@ -76,7 +76,7 @@ export default function Home() {
                 You come home hungry. You stare at your fridge. You have ingredients, some cooking skills, but no idea what to make.
                 You don&rsquo;t want to meal plan. You just want to eat and move on.
               </Text>
-              <div className="bg-yellow-200 border-4 md:border-6 border-black p-4 md:p-6 inline-block shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] md:transform md:rotate-2">
+              <div className="bg-yellow-200 border-2 border-black p-4 md:p-6 inline-block md:transform md:rotate-2">
                 <Text as="p" className="text-2xl md:text-4xl font-black">
                   Sound familiar? 🤔
                 </Text>
@@ -165,7 +165,7 @@ export default function Home() {
             <Text as="p" className="text-xl md:text-3xl font-black">
               Start cooking smarter after a rapid onboarding
             </Text>
-            <Button asChild size="lg" className="text-2xl md:text-4xl px-10 md:px-20 py-6 md:py-10 bg-yellow-300 hover:bg-yellow-400 text-black border-4 md:border-6 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] md:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[4px] hover:translate-y-[4px] md:hover:translate-x-[6px] md:hover:translate-y-[6px] transition-all font-black uppercase md:transform md:rotate-2">
+            <Button asChild size="lg" className="text-2xl md:text-4xl px-10 md:px-20 py-6 md:py-10 bg-pink-400 hover:bg-pink-500 border-4 md:border-6 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] md:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[4px] hover:translate-y-[4px] md:hover:translate-x-[6px] md:hover:translate-y-[6px] transition-all font-black uppercase md:transform md:rotate-2">
               <Link href="/login">Let&rsquo;s Go! 🍳</Link>
             </Button>
           </div>
