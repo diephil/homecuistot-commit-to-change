@@ -1,7 +1,10 @@
 import { z } from "zod";
 import { GoogleGenAI, type Schema } from "@google/genai";
 import { trackGemini } from "opik-gemini";
-import { OnboardingUpdateSchema, type OnboardingUpdate } from "@/types/onboarding";
+import {
+  OnboardingUpdateSchema,
+  type OnboardingUpdate,
+} from "@/types/onboarding";
 import { ONBOARDING_VOICE_PROMPT } from "./prompt";
 
 const genAI = new GoogleGenAI({
@@ -38,6 +41,7 @@ export async function processVoiceInput(
       currentContext.ingredients.join(", ") || "none",
     );
 
+  // TODO: in week 3, use opik to optmimize latency and compare Gemini / Whisper + cheaper model / etc...
   const response = await trackedGenAI.models.generateContent({
     model: "gemini-2.0-flash",
     contents: [

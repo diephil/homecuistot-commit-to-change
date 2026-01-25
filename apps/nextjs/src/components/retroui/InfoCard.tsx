@@ -53,12 +53,9 @@ const InfoCard = ({
             </Text>
           )}
           {children && (
-            <Text
-              as="p"
-              className="text-xs md:text-sm font-bold leading-relaxed"
-            >
+            <div className="text-xs md:text-sm font-bold leading-relaxed">
               {children}
-            </Text>
+            </div>
           )}
         </div>
       </div>
