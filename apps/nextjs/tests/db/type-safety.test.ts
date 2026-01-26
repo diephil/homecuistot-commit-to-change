@@ -69,7 +69,6 @@ describe('TypeScript Type Safety', () => {
       .values({
         name: 'Test Ingredient ' + Date.now(),
         category: 'meat',
-        isAssumed: false,
       })
       .returning()
 
@@ -82,7 +81,6 @@ describe('TypeScript Type Safety', () => {
     //   .insert(ingredients)
     //   .values({
     //     category: 'meat',
-    //     isAssumed: false,
     //   })
     //   // TS Error: Property 'name' is missing
 
@@ -91,7 +89,6 @@ describe('TypeScript Type Safety', () => {
     //   .insert(ingredients)
     //   .values({
     //     name: 'Test',
-    //     isAssumed: false,
     //   })
     //   // TS Error: Property 'category' is missing
   })
@@ -103,7 +100,6 @@ describe('TypeScript Type Safety', () => {
       .values({
         name: 'Test Ingredient ' + Date.now(),
         category: 'meat',
-        isAssumed: false,
       })
 
     expect(validEnum).toBeDefined()
@@ -116,7 +112,6 @@ describe('TypeScript Type Safety', () => {
     //   .values({
     //     name: 'Test',
     //     category: 'invalid_category',
-    //     isAssumed: false,
     //   })
     //   // TS Error: Type '"invalid_category"' is not assignable to type
   })

@@ -69,7 +69,7 @@
  *
  * async function seedIngredients() {
  *   await adminDb.insert(ingredients).values([
- *     { name: 'Chicken', category: 'meat', isAssumed: false },
+ *     { name: 'Chicken', category: 'meat' },
  *     // ...
  *   ])
  * }
@@ -425,7 +425,6 @@ export async function getUserInventoryWithIngredients(params: {
       updatedAt: schema.userInventory.updatedAt,
       ingredientName: schema.ingredients.name,
       ingredientCategory: schema.ingredients.category,
-      isAssumed: schema.ingredients.isAssumed,
     })
     .from(schema.userInventory)
     .innerJoin(

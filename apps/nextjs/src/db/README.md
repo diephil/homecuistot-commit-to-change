@@ -310,8 +310,8 @@ import { adminDb } from '@/db/client'
 
 async function seedIngredients() {
   await adminDb.insert(ingredients).values([
-    { name: 'Chicken', category: 'meat', isAssumed: false },
-    { name: 'Onion', category: 'vegetables', isAssumed: false },
+    { name: 'Chicken', category: 'meat' },
+    { name: 'Onion', category: 'vegetables' },
   ])
 }
 
@@ -382,11 +382,11 @@ import { ingredients, recipes } from '@/db/schema'
 
 // Select type (all columns)
 type Ingredient = typeof ingredients.$inferSelect
-// { id: string, name: string, category: 'meat' | 'vegetables' | ..., isAssumed: boolean, createdAt: Date }
+// { id: string, name: string, category: 'meat' | 'vegetables' | ..., createdAt: Date }
 
 // Insert type (required fields only)
 type NewIngredient = typeof ingredients.$inferInsert
-// { id?: string, name: string, category: 'meat' | ..., isAssumed?: boolean, createdAt?: Date }
+// { id?: string, name: string, category: 'meat' | ..., createdAt?: Date }
 
 // Query result type
 const result = await db.select({

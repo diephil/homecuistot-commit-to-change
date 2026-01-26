@@ -1,6 +1,10 @@
 import * as fs from 'fs'
 import * as path from 'path'
 import * as readline from 'readline'
+import { fileURLToPath } from 'url'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 const SECTION_PATTERN = /^#\s+[A-Z]\s+[A-Z\s\d-]+S\s+E\s+C\s+T\s+I\s+O\s+N/
 const SECTION_NAME_MAP: Record<string, string> = {
@@ -120,10 +124,12 @@ function writeCsv(params: { ingredients: Ingredient[]; outputPath: string }) {
 
 async function main() {
   const langCode = process.argv[2] || 'en'
-  const scriptDir = path.dirname(new URL(import.meta.url).pathname)
-  const researchDir = path.dirname(scriptDir)
+  const scriptDir = __dirname
+  const appDir = path.dirname(scriptDir) // apps/nextjs/
+  const repoRoot = path.dirname(path.dirname(appDir)) // repo root
+  const researchDir = path.join(repoRoot, 'research')
 
-  const inputPath = path.join(researchDir, 'food-ingredient-taxonomy.txt')
+  const inputPath = path.join(researchDir, 'food-ingredient-taxonomy-openfoodfacts.txt')
   const outputPath = path.join(researchDir, `${langCode}-ingredient-names.csv`)
 
   console.log(`Extracting ${langCode} ingredients from taxonomy...`)

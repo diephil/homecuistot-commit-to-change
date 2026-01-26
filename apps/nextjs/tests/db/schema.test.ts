@@ -5,12 +5,11 @@ describe('Drizzle Schema Structure', () => {
   describe('Tables', () => {
     it('ingredients table exists with correct structure', () => {
       expect(schema.ingredients).toBeDefined()
-      const { id, name, category, isAssumed, createdAt } = schema.ingredients
+      const { id, name, category, createdAt } = schema.ingredients
 
       expect(id).toBeDefined()
       expect(name).toBeDefined()
       expect(category).toBeDefined()
-      expect(isAssumed).toBeDefined()
       expect(createdAt).toBeDefined()
     })
 
@@ -95,26 +94,26 @@ describe('Drizzle Schema Structure', () => {
   })
 
   describe('Enums', () => {
-    it('ingredientCategoryEnum has valid values', () => {
-      expect(schema.ingredientCategoryEnum).toBeDefined()
-      const validCategories = ['meat', 'proteins_nonmeat', 'legumes', 'vegetables', 'starches', 'dairy', 'canned_jarred']
-
-      // Enum values are accessible via the enumValues property
-      expect(schema.ingredientCategoryEnum.enumValues).toEqual(validCategories)
+    it('INGREDIENT_CATEGORIES has 30 valid values', () => {
+      expect(schema.INGREDIENT_CATEGORIES).toBeDefined()
+      expect(schema.INGREDIENT_CATEGORIES.length).toBe(30)
+      expect(schema.INGREDIENT_CATEGORIES).toContain('meat')
+      expect(schema.INGREDIENT_CATEGORIES).toContain('dairy')
+      expect(schema.INGREDIENT_CATEGORIES).toContain('vegetables')
+      expect(schema.INGREDIENT_CATEGORIES).toContain('starch')
+      expect(schema.INGREDIENT_CATEGORIES).toContain('beans')
     })
 
-    it('ingredientTypeEnum has valid values', () => {
-      expect(schema.ingredientTypeEnum).toBeDefined()
+    it('INGREDIENT_TYPES has valid values', () => {
+      expect(schema.INGREDIENT_TYPES).toBeDefined()
       const validTypes = ['anchor', 'optional', 'assumed']
-
-      expect(schema.ingredientTypeEnum.enumValues).toEqual(validTypes)
+      expect([...schema.INGREDIENT_TYPES]).toEqual(validTypes)
     })
 
-    it('recipeSourceEnum has valid values', () => {
-      expect(schema.recipeSourceEnum).toBeDefined()
+    it('RECIPE_SOURCES has valid values', () => {
+      expect(schema.RECIPE_SOURCES).toBeDefined()
       const validSources = ['onboarding', 'added', 'other']
-
-      expect(schema.recipeSourceEnum.enumValues).toEqual(validSources)
+      expect([...schema.RECIPE_SOURCES]).toEqual(validSources)
     })
   })
 

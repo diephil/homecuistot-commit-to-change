@@ -22,6 +22,20 @@
       "when": 1769453850529,
       "tag": "0002_green_mojo",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1769453850530,
+      "tag": "0003_insert_ingredients",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1769457758090,
+      "tag": "0004_shiny_bill_hollister",
+      "breakpoints": true
     }
   ]
 }
