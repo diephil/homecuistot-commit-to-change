@@ -26,7 +26,7 @@
 
 **Purpose**: Project initialization - minimal for this feature (existing project)
 
-- [ ] T001 Verify existing DB schema supports all required tables (ingredients, recipes, user_recipes, recipe_ingredients, user_inventory, user_pantry_staples, unrecognized_items) in `apps/nextjs/src/db/schema/`
+- [x] T001 Verify existing DB schema supports all required tables (ingredients, recipes, user_recipes, recipe_ingredients, user_inventory, user_pantry_staples, unrecognized_items) in `apps/nextjs/src/db/schema/`
 
 ---
 
@@ -36,10 +36,10 @@
 
 **CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T002 Create Zod validation schema for PersistRequest in `apps/nextjs/src/types/onboarding.ts`
-- [ ] T003 [P] Create recipe generation prompt template in `apps/nextjs/src/lib/prompts/recipe-generation/prompt.ts`
-- [ ] T004 [P] Create recipe generation Zod schema (RecipeDetailSchema, RecipeBatchSchema) in `apps/nextjs/src/lib/prompts/recipe-generation/schema.ts`
-- [ ] T005 Implement recipe generation LLM process function in `apps/nextjs/src/lib/prompts/recipe-generation/process.ts`
+- [x] T002 Create Zod validation schema for PersistRequest in `apps/nextjs/src/types/onboarding.ts`
+- [x] T003 [P] Create recipe generation prompt template in `apps/nextjs/src/lib/prompts/recipe-generation/prompt.ts`
+- [x] T004 [P] Create recipe generation Zod schema (RecipeDetailSchema, RecipeBatchSchema) in `apps/nextjs/src/lib/prompts/recipe-generation/schema.ts`
+- [x] T005 Implement recipe generation LLM process function in `apps/nextjs/src/lib/prompts/recipe-generation/process.ts`
 
 **Checkpoint**: Foundation ready - user story implementation can now begin
 
@@ -53,17 +53,17 @@
 
 ### Implementation for User Story 1 + 2 (Combined - tightly coupled)
 
-- [ ] T006 [US1] Create persist API route handler in `apps/nextjs/src/app/api/onboarding/persist/route.ts`
-- [ ] T007 [US1] Implement auth validation using createClient/getSession pattern in `apps/nextjs/src/app/api/onboarding/persist/route.ts`
-- [ ] T008 [US1] Implement ingredient matching with case-insensitive WHERE LOWER(name) IN clause in `apps/nextjs/src/app/api/onboarding/persist/route.ts`
-- [ ] T009 [US1] Implement unrecognized items logging (context='ingredient') with console.log and DB insert in `apps/nextjs/src/app/api/onboarding/persist/route.ts`
-- [ ] T010 [US1] Call LLM recipe generation for dishes and match returned ingredients against DB in `apps/nextjs/src/app/api/onboarding/persist/route.ts`
-- [ ] T011 [US1] Insert recipes records (name, description from LLM, userId, isSeeded=false) with ON CONFLICT DO NOTHING in `apps/nextjs/src/app/api/onboarding/persist/route.ts`
-- [ ] T012 [US1] Insert user_recipes junction records (source='onboarding') with ON CONFLICT DO NOTHING in `apps/nextjs/src/app/api/onboarding/persist/route.ts`
-- [ ] T013 [US1] Insert recipe_ingredients records (ingredientType='anchor') for matched LLM ingredients with ON CONFLICT DO NOTHING in `apps/nextjs/src/app/api/onboarding/persist/route.ts`
-- [ ] T014 [US1] Insert user_inventory records (quantityLevel=3) for all matched ingredients with ON CONFLICT DO NOTHING in `apps/nextjs/src/app/api/onboarding/persist/route.ts`
-- [ ] T015 [US1] Insert user_pantry_staples records for matched pantry items with ON CONFLICT DO NOTHING in `apps/nextjs/src/app/api/onboarding/persist/route.ts`
-- [ ] T016 [US1] Return PersistResponse with counts (recipesCreated, inventoryCreated, pantryStaplesCreated, unrecognizedCount) in `apps/nextjs/src/app/api/onboarding/persist/route.ts`
+- [x] T006 [US1] Create persist API route handler in `apps/nextjs/src/app/api/onboarding/persist/route.ts`
+- [x] T007 [US1] Implement auth validation using createClient/getSession pattern in `apps/nextjs/src/app/api/onboarding/persist/route.ts`
+- [x] T008 [US1] Implement ingredient matching with case-insensitive WHERE LOWER(name) IN clause in `apps/nextjs/src/app/api/onboarding/persist/route.ts`
+- [x] T009 [US1] Implement unrecognized items logging (context='ingredient') with console.log and DB insert in `apps/nextjs/src/app/api/onboarding/persist/route.ts`
+- [x] T010 [US1] Call LLM recipe generation for dishes and match returned ingredients against DB in `apps/nextjs/src/app/api/onboarding/persist/route.ts`
+- [x] T011 [US1] Insert recipes records (name, description from LLM, userId, isSeeded=false) with ON CONFLICT DO NOTHING in `apps/nextjs/src/app/api/onboarding/persist/route.ts`
+- [x] T012 [US1] Insert user_recipes junction records (source='onboarding') with ON CONFLICT DO NOTHING in `apps/nextjs/src/app/api/onboarding/persist/route.ts`
+- [x] T013 [US1] Insert recipe_ingredients records (ingredientType='anchor') for matched LLM ingredients with ON CONFLICT DO NOTHING in `apps/nextjs/src/app/api/onboarding/persist/route.ts`
+- [x] T014 [US1] Insert user_inventory records (quantityLevel=3) for all matched ingredients with ON CONFLICT DO NOTHING in `apps/nextjs/src/app/api/onboarding/persist/route.ts`
+- [x] T015 [US1] Insert user_pantry_staples records for matched pantry items with ON CONFLICT DO NOTHING in `apps/nextjs/src/app/api/onboarding/persist/route.ts`
+- [x] T016 [US1] Return PersistResponse with counts (recipesCreated, inventoryCreated, pantryStaplesCreated, unrecognizedCount) in `apps/nextjs/src/app/api/onboarding/persist/route.ts`
 
 **Checkpoint**: API endpoint complete - can persist onboarding data
 
@@ -79,9 +79,9 @@ Note: Core LLM integration already in Phase 2 (foundational) and Phase 3 (API ca
 
 ### Implementation for User Story 3
 
-- [ ] T017 [US3] Handle LLM retry on failure (retry once, save recipe name-only on second failure) in `apps/nextjs/src/app/api/onboarding/persist/route.ts`
-- [ ] T018 [US3] Handle 0 dishes edge case (skip LLM call, only save inventory) in `apps/nextjs/src/app/api/onboarding/persist/route.ts`
-- [ ] T019 [US3] Deduplicate ingredient names before DB lookup in `apps/nextjs/src/app/api/onboarding/persist/route.ts`
+- [x] T017 [US3] Handle LLM retry on failure (retry once, save recipe name-only on second failure) in `apps/nextjs/src/app/api/onboarding/persist/route.ts`
+- [x] T018 [US3] Handle 0 dishes edge case (skip LLM call, only save inventory) in `apps/nextjs/src/app/api/onboarding/persist/route.ts`
+- [x] T019 [US3] Deduplicate ingredient names before DB lookup in `apps/nextjs/src/app/api/onboarding/persist/route.ts`
 
 **Checkpoint**: Recipe generation complete with edge case handling
 
@@ -95,12 +95,12 @@ Note: Core LLM integration already in Phase 2 (foundational) and Phase 3 (API ca
 
 ### Implementation for User Story 4
 
-- [ ] T020 [US4] Add Step 4 to OnboardingState type (currentStep: 1 | 2 | 3 | 4) in `apps/nextjs/src/types/onboarding.ts`
-- [ ] T021 [US4] Add handleCompleteSetup function with 4-second minimum timer logic in `apps/nextjs/src/app/(protected)/app/onboarding/page.tsx`
-- [ ] T022 [US4] Implement Step 4 UI with "Congrats!" message and neobrutalism animation in `apps/nextjs/src/app/(protected)/app/onboarding/page.tsx`
-- [ ] T023 [US4] Add API call to /api/onboarding/persist with error handling in handleCompleteSetup in `apps/nextjs/src/app/(protected)/app/onboarding/page.tsx`
-- [ ] T024 [US4] Implement redirect to /app after timer completes in `apps/nextjs/src/app/(protected)/app/onboarding/page.tsx`
-- [ ] T025 [US4] Update Step 3 "Complete Setup" button to trigger handleCompleteSetup in `apps/nextjs/src/app/(protected)/app/onboarding/page.tsx`
+- [x] T020 [US4] Add Step 4 to OnboardingState type (currentStep: 1 | 2 | 3 | 4) in `apps/nextjs/src/types/onboarding.ts`
+- [x] T021 [US4] Add handleCompleteSetup function with 4-second minimum timer logic in `apps/nextjs/src/app/(protected)/app/onboarding/page.tsx`
+- [x] T022 [US4] Implement Step 4 UI with "Congrats!" message and neobrutalism animation in `apps/nextjs/src/app/(protected)/app/onboarding/page.tsx`
+- [x] T023 [US4] Add API call to /api/onboarding/persist with error handling in handleCompleteSetup in `apps/nextjs/src/app/(protected)/app/onboarding/page.tsx`
+- [x] T024 [US4] Implement redirect to /app after timer completes in `apps/nextjs/src/app/(protected)/app/onboarding/page.tsx`
+- [x] T025 [US4] Update Step 3 "Complete Setup" button to trigger handleCompleteSetup in `apps/nextjs/src/app/(protected)/app/onboarding/page.tsx`
 
 **Checkpoint**: Completion screen UX complete
 
@@ -114,9 +114,9 @@ Note: Core LLM integration already in Phase 2 (foundational) and Phase 3 (API ca
 
 ### Implementation for /app Page
 
-- [ ] T026 Fetch user_recipes with source='onboarding' joined with recipes table in `apps/nextjs/src/app/(protected)/app/page.tsx`
-- [ ] T027 Display fetched recipes in "Available Recipes" section (replace mock if real data exists) in `apps/nextjs/src/app/(protected)/app/page.tsx`
-- [ ] T028 Keep mock data for "Almost Available Recipes" section in `apps/nextjs/src/app/(protected)/app/page.tsx`
+- [x] T026 Fetch user_recipes with source='onboarding' joined with recipes table in `apps/nextjs/src/app/(protected)/app/page.tsx`
+- [x] T027 Display fetched recipes in "Available Recipes" section (replace mock if real data exists) in `apps/nextjs/src/app/(protected)/app/page.tsx`
+- [x] T028 Keep mock data for "Almost Available Recipes" section in `apps/nextjs/src/app/(protected)/app/page.tsx`
 
 **Checkpoint**: Full onboarding flow complete - end-to-end testable
 
@@ -126,8 +126,8 @@ Note: Core LLM integration already in Phase 2 (foundational) and Phase 3 (API ca
 
 **Purpose**: Error handling, edge cases, validation
 
-- [ ] T029 Add graceful error handling for persistence failures (don't crash Step 4) in `apps/nextjs/src/app/(protected)/app/onboarding/page.tsx`
-- [ ] T030 Validate edge case: duplicate ingredient names in user list (dedupe before lookup) in `apps/nextjs/src/app/api/onboarding/persist/route.ts`
+- [x] T029 Add graceful error handling for persistence failures (don't crash Step 4) in `apps/nextjs/src/app/(protected)/app/onboarding/page.tsx`
+- [x] T030 Validate edge case: duplicate ingredient names in user list (dedupe before lookup) in `apps/nextjs/src/app/api/onboarding/persist/route.ts`
 - [ ] T031 Run quickstart.md manual testing checklist
 
 ---
