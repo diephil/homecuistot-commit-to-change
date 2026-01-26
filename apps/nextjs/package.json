@@ -10,6 +10,7 @@
     "test": "vitest",
     "test:db": "vitest run tests/db",
     "db:generate": "drizzle-kit generate",
+    "db:generate:manual": "tsx src/db/generate-manual-migration.ts",
     "db:migrate": "tsx --env-file=.env.local src/db/migrate.ts",
     "db:migrate:prod": "tsx --env-file=.env.prod src/db/migrate.ts",
     "db:baseline:prod": "tsx --env-file=.env.prod src/db/baseline.ts",
