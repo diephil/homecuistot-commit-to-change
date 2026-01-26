@@ -53,12 +53,32 @@ As a user, I want to view all my pantry staples in one place to manage what I al
 
 ---
 
+### User Story 4 - View Ingredients Separated by Storage Location (Priority: P1)
+
+As a user, I want to see my ingredients separated into "Pantry Items" and "Fridge Items" in the Review & Refine view so I can quickly understand what I have and where it's stored.
+
+**Why this priority**: Currently ingredients are mixed under "Available Ingredients" - separating them improves scannability and matches the final view's structure.
+
+**Independent Test**: User adds ingredients via voice/text and sees them categorized into separate Pantry and Fridge sections.
+
+**Acceptance Scenarios**:
+
+1. **Given** user has added pantry ingredients (flour, rice, pasta), **When** viewing Review & Refine, **Then** those items appear under "Pantry Items" section
+2. **Given** user has added fridge ingredients (milk, eggs, cheese), **When** viewing Review & Refine, **Then** those items appear under "Fridge Items" section
+3. **Given** user has both pantry and fridge items, **When** viewing Review & Refine, **Then** items are displayed in two distinct labeled sections
+4. **Given** user has only fridge items, **When** viewing Review & Refine, **Then** only "Fridge Items" section is shown (pantry section hidden or empty state)
+5. **Given** user says "I have rice, milk, and olive oil", **When** LLM extracts ingredients, **Then** output includes storage location: rice→pantry, milk→fridge, olive oil→pantry
+
+---
+
 ### Edge Cases
 
 - What happens when user marks the same ingredient as staple twice? → Silently ignored (idempotent)
 - What happens when an ingredient is deleted from the system? → User's staple entry is cascade deleted
 - What happens when user account is deleted? → All their staple entries are removed
 - What is the maximum number of staples per user? → No artificial limit (reasonable practical limit ~500)
+- How are ingredients categorized as pantry vs fridge? → LLM determines at extraction time based on typical storage (shelf-stable = pantry, perishable = fridge)
+- What if LLM can't determine storage location? → Default to fridge (safer assumption for perishables)
 
 ## Requirements *(mandatory)*
 
@@ -71,6 +91,11 @@ As a user, I want to view all my pantry staples in one place to manage what I al
 - **FR-005**: System MUST persist staples per user (not shared across users)
 - **FR-006**: System MUST remove the ingredient aliases table and all related functionality
 - **FR-007**: System MUST update any existing code that references ingredient aliases to handle removal gracefully
+- **FR-008**: System MUST display ingredients in Review & Refine view separated into "Pantry Items" and "Fridge Items" sections
+- **FR-009**: System MUST categorize each ingredient as either pantry or fridge based on storage type
+- **FR-010**: System MUST hide empty sections (if user has no pantry items, don't show empty Pantry section)
+- **FR-011**: LLM structured output MUST include storage location (pantry or fridge) for each detected ingredient
+- **FR-012**: System MUST use LLM-determined storage location to categorize ingredients at extraction time
 
 ### Key Entities
 
@@ -78,6 +103,10 @@ As a user, I want to view all my pantry staples in one place to manage what I al
   - Attributes: user reference, ingredient reference, created timestamp
   - Unique constraint: one entry per user-ingredient combination
   - Relationship: belongs to one ingredient, belongs to one user
+
+- **ExtractedIngredient** (LLM output structure): Represents an ingredient detected from user input
+  - Attributes: ingredient name, storage location (pantry | fridge)
+  - Used for: categorizing ingredients in Review & Refine view
 
 ## Success Criteria *(mandatory)*
 
@@ -88,6 +117,8 @@ As a user, I want to view all my pantry staples in one place to manage what I al
 - **SC-003**: Staple data persists correctly across user sessions (100% data integrity)
 - **SC-004**: Removing a staple reflects immediately in the user's list
 - **SC-005**: Ingredient aliases table is fully removed with zero remaining references in codebase
+- **SC-006**: Review & Refine view displays ingredients in two clearly labeled sections (Pantry Items, Fridge Items)
+- **SC-007**: LLM correctly identifies storage location for common ingredients (>90% accuracy for typical household items)
 
 ## Assumptions
 
