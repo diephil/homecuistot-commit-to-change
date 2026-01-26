@@ -46,9 +46,33 @@
 
 **Database**: Supabase PostgreSQL, Drizzle ORM
 
-- Schema: `src/db/schema/`
-- Migrations: `drizzle/migrations/`
-- Deps: drizzle-orm, drizzle-kit, @neondatabase/serverless, @supabase/supabase-js, @supabase/ssr
+- Schema: `apps/nextjs/src/db/schema/`
+- Migrations: `apps/nextjs/src/db/migrations/` (Drizzle-managed, tracked in `drizzle` schema)
+- Deps: drizzle-orm, drizzle-kit, postgres, @supabase/supabase-js, @supabase/ssr
+
+**Database Commands** (from `apps/nextjs/`):
+
+```bash
+# Development workflow
+pnpm db:generate          # Generate migration from schema changes
+pnpm db:migrate           # Apply migrations to local DB
+pnpm db:status            # Show applied migrations + schema status
+
+# Production workflow
+pnpm db:baseline:prod     # Mark existing migrations as applied (one-time)
+pnpm db:migrate:prod      # Apply migrations to production DB
+pnpm db:status:prod       # Show production migration status
+
+# Development utilities
+pnpm db:push              # Push schema directly (no migration, dev only)
+pnpm db:studio            # Open Drizzle Studio GUI
+```
+
+**Migration Notes**:
+- Migrations tracked in `drizzle.__drizzle_migrations` table
+- Schema-first approach: modify `src/db/schema/` → generate → migrate
+- Use baseline script for existing production databases
+- Verbose logging enabled in drizzle.config.ts
 
 ## Next.js Patterns
 
