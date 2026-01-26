@@ -312,9 +312,42 @@ function OnboardingPageContent() {
     });
   };
 
-  // T062-T064: Complete setup (enabled only after voice changes)
-  const handleCompleteSetup = () => {
-    router.push("/app");
+  // T021-T025: Complete setup with Step 4 and persistence
+  const handleCompleteSetup = async () => {
+    // T021: Transition to Step 4
+    setState((prev) => ({ ...prev, currentStep: 4 }));
+    const startTime = Date.now();
+
+    try {
+      // T023: Call persist API
+      const response = await fetch('/api/onboarding/persist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          dishes: state.dishes,
+          ingredients: state.ingredients,
+          pantryItems: state.pantry,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+        console.error('[onboarding] Persist error:', errorData);
+        // T029: Don't crash Step 4 on error, still redirect
+      }
+    } catch (error) {
+      // T029: Graceful error handling - log but continue
+      console.error('[onboarding] Persist failed:', error);
+    }
+
+    // T021: Ensure minimum 4-second display
+    const elapsed = Date.now() - startTime;
+    if (elapsed < 4000) {
+      await new Promise((r) => setTimeout(r, 4000 - elapsed));
+    }
+
+    // T024: Redirect to /app
+    router.push('/app');
   };
 
   // T065: Format recording duration
@@ -339,8 +372,8 @@ function OnboardingPageContent() {
       <div className="border-4 md:border-6 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
         {/* T011: Progress indicator with T068 ARIA label */}
         <div className="bg-gradient-to-r from-yellow-300 via-orange-400 to-pink-400 border-b-4 md:border-b-6 border-black px-6 py-3">
-          <p className="text-sm font-black uppercase text-center" role="status" aria-live="polite" aria-label={`Step ${state.currentStep} of 3`}>
-            Step {state.currentStep} of 3
+          <p className="text-sm font-black uppercase text-center" role="status" aria-live="polite" aria-label={`Step ${state.currentStep} of ${state.currentStep === 4 ? 4 : 3}`}>
+            {state.currentStep === 4 ? 'Finishing up...' : `Step ${state.currentStep} of 3`}
           </p>
         </div>
 
@@ -636,6 +669,25 @@ function OnboardingPageContent() {
                 Add at least one dish or ingredient to continue
               </p>
             )}
+          </div>
+
+          {/* T020-T022: Step 4 - Completion Screen */}
+          <div className="min-w-full p-8 flex flex-col items-center justify-center gap-6 min-h-[400px]">
+            <h2 className="text-3xl md:text-4xl font-black uppercase text-center">
+              Congrats!
+            </h2>
+            <p className="text-lg text-gray-700 text-center max-w-md">
+              We&apos;re preparing your Home cook gears, one moment please.
+            </p>
+            {/* T022: Neobrutalism animation */}
+            <div className="flex gap-4 mt-4">
+              <div className="w-12 h-12 bg-pink-400 border-4 border-black rotate-12 animate-bounce" style={{ animationDelay: '0ms' }} />
+              <div className="w-12 h-12 bg-yellow-400 border-4 border-black -rotate-12 animate-bounce" style={{ animationDelay: '150ms' }} />
+              <div className="w-12 h-12 bg-cyan-400 border-4 border-black rotate-6 animate-bounce" style={{ animationDelay: '300ms' }} />
+            </div>
+            <p className="text-sm text-gray-500 mt-4" role="status" aria-live="polite">
+              Saving your preferences...
+            </p>
           </div>
         </div>
       </div>

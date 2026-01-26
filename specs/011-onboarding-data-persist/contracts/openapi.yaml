@@ -1,0 +1,162 @@
+openapi: 3.0.3
+info:
+  title: Onboarding Persistence API
+  version: 1.0.0
+  description: Persist onboarding data (dishes, ingredients) to database
+
+servers:
+  - url: /api/onboarding
+    description: Next.js API routes
+
+paths:
+  /persist:
+    post:
+      summary: Persist onboarding data
+      description: |
+        Saves user's onboarding selections to database:
+        - Matches ingredients against catalog (case-insensitive)
+        - Generates recipe descriptions via LLM
+        - Creates user_inventory, user_recipes, recipe_ingredients records
+        - Logs unrecognized ingredients for annotation queue
+      operationId: persistOnboarding
+      security:
+        - supabaseAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PersistRequest'
+            example:
+              dishes:
+                - Pasta Carbonara
+                - Scrambled Eggs
+              ingredients:
+                - eggs
+                - milk
+                - bacon
+                - pasta
+              pantryItems:
+                - salt
+                - pepper
+                - olive oil
+      responses:
+        '200':
+          description: Data persisted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersistResponse'
+              example:
+                success: true
+                recipesCreated: 2
+                inventoryCreated: 4
+                pantryStaplesCreated: 3
+                unrecognizedCount: 0
+        '400':
+          description: Invalid request body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: Invalid request body
+                details: dishes must contain at least 1 item
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: Unauthorized
+        '500':
+          description: Persistence failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: Failed to persist data
+
+components:
+  securitySchemes:
+    supabaseAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Supabase session token
+
+  schemas:
+    PersistRequest:
+      type: object
+      required:
+        - dishes
+        - ingredients
+        - pantryItems
+      properties:
+        dishes:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 100
+          maxItems: 20
+          description: Dish names to convert to recipes
+        ingredients:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 100
+          maxItems: 100
+          description: All ingredients (fridge + pantry merged)
+        pantryItems:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 100
+          maxItems: 50
+          description: Pantry-only ingredients (subset of ingredients)
+
+    PersistResponse:
+      type: object
+      required:
+        - success
+        - recipesCreated
+        - inventoryCreated
+        - pantryStaplesCreated
+        - unrecognizedCount
+      properties:
+        success:
+          type: boolean
+          description: Whether persistence succeeded
+        recipesCreated:
+          type: integer
+          minimum: 0
+          description: Number of recipes created
+        inventoryCreated:
+          type: integer
+          minimum: 0
+          description: Number of user_inventory records created
+        pantryStaplesCreated:
+          type: integer
+          minimum: 0
+          description: Number of user_pantry_staples records created
+        unrecognizedCount:
+          type: integer
+          minimum: 0
+          description: Number of ingredients logged as unrecognized
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+          description: Error message
+        details:
+          type: string
+          description: Additional error context

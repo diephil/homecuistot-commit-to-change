@@ -4,6 +4,10 @@ import { Card } from "@/components/retroui/Card";
 import { InfoCard } from "@/components/retroui/InfoCard";
 import { PageContainer } from "@/components/PageContainer";
 import Link from "next/link";
+import { createClient } from "@/utils/supabase/server";
+import { createUserDb, decodeSupabaseToken } from "@/db/client";
+import { recipes, userRecipes } from "@/db/schema";
+import { eq } from "drizzle-orm";
 
 // T030: MOCK_RECIPES constant (8 items with id, title, description, ingredients, isAvailable)
 const MOCK_RECIPES = [
@@ -65,10 +69,47 @@ const MOCK_RECIPES = [
   },
 ] as const;
 
-export default function SuggestionsPage() {
-  // T032: Filter available recipes
-  const availableRecipes = MOCK_RECIPES.filter((r) => r.isAvailable);
-  // T033: Filter almost-available recipes
+// T026-T028: Fetch user recipes from onboarding
+export default async function SuggestionsPage() {
+  // T026: Fetch user_recipes with source='onboarding'
+  let onboardedRecipes: { id: string; title: string; description: string | null }[] = [];
+
+  try {
+    const supabase = await createClient();
+    const { data: { session } } = await supabase.auth.getSession();
+
+    if (session) {
+      const token = decodeSupabaseToken(session.access_token);
+      const db = createUserDb(token);
+
+      onboardedRecipes = await db(async (tx) => {
+        return await tx
+          .select({
+            id: recipes.id,
+            title: recipes.name,
+            description: recipes.description,
+          })
+          .from(userRecipes)
+          .innerJoin(recipes, eq(userRecipes.recipeId, recipes.id))
+          .where(eq(userRecipes.source, 'onboarding'));
+      });
+    }
+  } catch (error) {
+    console.error('[app] Failed to fetch onboarded recipes:', error);
+  }
+
+  // T027: Use real data if exists, else fall back to mock
+  const availableRecipes = onboardedRecipes.length > 0
+    ? onboardedRecipes.map((r) => ({
+        id: r.id,
+        title: r.title,
+        description: r.description || 'A delicious recipe from your kitchen.',
+        ingredients: [] as string[],
+        isAvailable: true as const,
+      }))
+    : MOCK_RECIPES.filter((r) => r.isAvailable);
+
+  // T028: Keep mock data for "Almost Available Recipes" section
   const almostAvailableRecipes = MOCK_RECIPES.filter((r) => !r.isAvailable);
 
   return (
