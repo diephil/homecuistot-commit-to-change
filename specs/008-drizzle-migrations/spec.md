@@ -39,7 +39,23 @@ A developer needs to apply pending migrations to update the database schema to m
 
 ---
 
-### User Story 3 - Developer Views Migration Status (Priority: P2)
+### User Story 3 - Developer Creates Custom SQL Migration (Priority: P2)
+
+A developer needs to create a migration with custom SQL that isn't automatically generated from schema changes (e.g., data migrations, manual INSERT statements, or custom DDL).
+
+**Why this priority**: Important for real-world scenarios like seeding data or complex transformations, but not blocking core schema migration workflow.
+
+**Independent Test**: Can be tested by running the manual migration generation command, adding custom SQL, and verifying it applies correctly.
+
+**Acceptance Scenarios**:
+
+1. **Given** a developer needs to seed data or run custom SQL, **When** they run the manual migration generation command with a name, **Then** a new migration file is created with a template for custom SQL statements.
+2. **Given** a manual migration file has been created, **When** the developer adds INSERT/UPDATE statements and applies migrations, **Then** the custom SQL executes successfully and is tracked like schema migrations.
+3. **Given** multiple manual migrations exist, **When** they are applied, **Then** they execute in chronological order with schema migrations.
+
+---
+
+### User Story 4 - Developer Views Migration Status (Priority: P2)
 
 A developer needs to see which migrations have been applied and which are pending.
 
@@ -68,7 +84,7 @@ A developer needs migrations to work consistently across local development, stag
 
 ---
 
-### User Story 5 - Team Collaborates on Schema Changes (Priority: P3)
+### User Story 6 - Team Collaborates on Schema Changes (Priority: P3)
 
 Multiple developers on a team need to create and merge schema changes without conflicts or data loss.
 
@@ -129,6 +145,7 @@ Multiple developers on a team need to create and merge schema changes without co
 ### In Scope
 
 - Migration generation from schema definitions
+- Manual migration generation for custom SQL (data migrations, seeds)
 - Migration application to databases
 - Migration status tracking
 - Transition of existing Supabase-managed migrations to new system
@@ -136,8 +153,8 @@ Multiple developers on a team need to create and merge schema changes without co
 
 ### Out of Scope
 
-- Data migrations (transforming existing data)
-- Seed data management
+- Automated data transformation migrations (developer must write custom SQL)
+- Seed data UI or management interface (manual SQL only)
 - Database backup/restore functionality
 - Multi-tenant schema management
 - Real-time schema synchronization

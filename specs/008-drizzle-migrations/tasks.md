@@ -86,21 +86,37 @@
 
 ---
 
-## Phase 5: User Story 3 & 4 - Status & Multi-Environment (Priority: P2)
+## Phase 5: User Story 3 - Manual Migration Generator (Priority: P2)
+
+**Goal**: Developer can create custom SQL migrations for data operations
+
+**Independent Test**: Run `pnpm db:generate:manual seed_recipes` → verify migration template created with proper journal/snapshot
+
+- [ ] T021 [US3] Create generate-manual-migration.ts script in apps/nextjs/src/db/generate-manual-migration.ts
+- [ ] T022 [US3] Add db:generate:manual script to package.json: `tsx src/db/generate-manual-migration.ts`
+- [ ] T023 [US3] Test manual migration: run `pnpm db:generate:manual test_migration` and verify files created
+- [ ] T024 [US3] Add custom INSERT/UPDATE SQL to manual migration file and verify it applies with `pnpm db:migrate`
+- [ ] T025 [US3] Delete test migration files after verification
+
+**Checkpoint**: Manual migration generation working
+
+---
+
+## Phase 6: User Story 4 & 5 - Status & Multi-Environment (Priority: P2)
 
 **Goal**: Migrations work consistently across environments with status tracking
 
 **Independent Test**: Check `__drizzle_migrations` table shows correct applied migrations
 
-- [ ] T021 [US3] Verify migration status by querying `__drizzle_migrations` table in local database
-- [ ] T022 [US4] Verify migration status by querying `__drizzle_migrations` table in production database
-- [ ] T023 [US4] Confirm schema is identical between local and production (compare table structures)
+- [ ] T026 [US4] Verify migration status by querying `__drizzle_migrations` table in local database
+- [ ] T027 [US5] Verify migration status by querying `__drizzle_migrations` table in production database
+- [ ] T028 [US5] Confirm schema is identical between local and production (compare table structures)
 
 **Checkpoint**: Multi-environment support verified
 
 ---
 
-## Phase 6: Validation - Enum to Text Migration
+## Phase 7: Validation - Enum to Text Migration
 
 **Goal**: Validate full migration workflow by making real schema change
 
@@ -108,30 +124,30 @@
 
 ### Schema Changes
 
-- [ ] T024 [P] Update enums.ts: Remove pgEnum definitions, export string literal types instead in apps/nextjs/src/db/schema/enums.ts
-- [ ] T025 [P] Update ingredients.ts: Change ingredientCategory from enum to text() with index in apps/nextjs/src/db/schema/ingredients.ts
-- [ ] T026 [P] Update user-recipes.ts: Change recipeSource from enum to text() with index in apps/nextjs/src/db/schema/user-recipes.ts
-- [ ] T027 [P] Update recipes.ts: Change ingredientType reference if needed in apps/nextjs/src/db/schema/recipes.ts
+- [ ] T029 [P] Update enums.ts: Remove pgEnum definitions, export string literal types instead in apps/nextjs/src/db/schema/enums.ts
+- [ ] T030 [P] Update ingredients.ts: Change ingredientCategory from enum to text() with index in apps/nextjs/src/db/schema/ingredients.ts
+- [ ] T031 [P] Update user-recipes.ts: Change recipeSource from enum to text() with index in apps/nextjs/src/db/schema/user-recipes.ts
+- [ ] T032 [P] Update recipes.ts: Change ingredientType reference if needed in apps/nextjs/src/db/schema/recipes.ts
 
 ### Generate and Apply
 
-- [ ] T028 Run `pnpm db:generate` to create migration 0002_*.sql in apps/nextjs/src/db/migrations/
-- [ ] T029 Review generated migration SQL: verify DROP TYPE, ALTER COLUMN, CREATE INDEX statements
-- [ ] T030 Run `pnpm db:migrate` to apply enum-to-text migration to local database
-- [ ] T031 Run `pnpm db:migrate:prod` to apply enum-to-text migration to production database
-- [ ] T032 Verify columns are now text type by querying information_schema in both databases
+- [ ] T033 Run `pnpm db:generate` to create migration 0002_*.sql in apps/nextjs/src/db/migrations/
+- [ ] T034 Review generated migration SQL: verify DROP TYPE, ALTER COLUMN, CREATE INDEX statements
+- [ ] T035 Run `pnpm db:migrate` to apply enum-to-text migration to local database
+- [ ] T036 Run `pnpm db:migrate:prod` to apply enum-to-text migration to production database
+- [ ] T037 Verify columns are now text type by querying information_schema in both databases
 
 **Checkpoint**: Full migration workflow validated end-to-end
 
 ---
 
-## Phase 7: Cleanup & Documentation
+## Phase 8: Cleanup & Documentation
 
 **Purpose**: Remove old artifacts and finalize
 
-- [ ] T033 Delete supabase/migrations/ folder after confirming new system works in apps/nextjs/
-- [ ] T034 [P] Update CLAUDE.md to document new db:* commands
-- [ ] T035 Commit all changes with message: `feat(db): migrate to drizzle-only migrations`
+- [ ] T038 Delete supabase/migrations/ folder after confirming new system works in apps/nextjs/
+- [ ] T039 [P] Update CLAUDE.md to document new db:* commands (including db:generate:manual)
+- [ ] T040 Commit all changes with message: `feat(db): migrate to drizzle-only migrations`
 
 ---
 
@@ -143,16 +159,18 @@
 - **Phase 2 (Foundational)**: Depends on Phase 1 - BLOCKS all user stories
 - **Phase 3 (US1)**: Depends on Phase 2
 - **Phase 4 (US2)**: Depends on Phase 2, can parallel with Phase 3
-- **Phase 5 (US3/4)**: Depends on Phase 4
-- **Phase 6 (Validation)**: Depends on Phase 5
-- **Phase 7 (Cleanup)**: Depends on Phase 6
+- **Phase 5 (US3 - Manual Migrations)**: Depends on Phase 2, can parallel with Phase 3/4
+- **Phase 6 (US4/5 - Status)**: Depends on Phase 4
+- **Phase 7 (Validation)**: Depends on Phase 6
+- **Phase 8 (Cleanup)**: Depends on Phase 7
 
 ### User Story Dependencies
 
 - **US1 (Generate)**: Independent after Phase 2
 - **US2 (Apply)**: Independent after Phase 2, validates US1 output
-- **US3 (Status)**: Depends on US2 (needs applied migrations to check)
-- **US4 (Multi-env)**: Depends on US2 applied to both environments
+- **US3 (Manual Migrations)**: Independent after Phase 2, parallel with US1/US2
+- **US4 (Status)**: Depends on US2 (needs applied migrations to check)
+- **US5 (Multi-env)**: Depends on US2 applied to both environments
 
 ### Parallel Opportunities
 
@@ -160,11 +178,13 @@
 
 **Phase 2**: T009, T011, T012, T013 all parallel (different files)
 
-**Phase 6**: T024, T025, T026, T027 all parallel (different schema files)
+**Phase 5**: Can be implemented in parallel with Phase 3/4 (independent feature)
+
+**Phase 7**: T029, T030, T031, T032 all parallel (different schema files)
 
 ---
 
-## Parallel Example: Phase 6 Schema Changes
+## Parallel Example: Phase 7 Schema Changes
 
 ```bash
 # Launch all schema updates together:
@@ -189,9 +209,10 @@ Task: "Update recipes.ts in apps/nextjs/src/db/schema/recipes.ts"
 ### Full Delivery
 
 1. MVP above
-2. Phase 5: Verify status and multi-env
-3. Phase 6: Validation migration (enum→text)
-4. Phase 7: Cleanup and commit
+2. Phase 5: Manual migration generator (US3)
+3. Phase 6: Verify status and multi-env (US4/5)
+4. Phase 7: Validation migration (enum→text)
+5. Phase 8: Cleanup and commit
 
 ---
 
@@ -200,5 +221,6 @@ Task: "Update recipes.ts in apps/nextjs/src/db/schema/recipes.ts"
 - [P] tasks = different files, no dependencies
 - Local env can be reset fresh; production must preserve data
 - Baseline script only needed for production (marks existing migrations as applied)
+- Manual migration generator allows custom SQL for data operations (seeds, updates)
 - Validation step (enum→text) proves the full workflow before cleanup
 - Manual testing per MVP constitution - no automated tests required
