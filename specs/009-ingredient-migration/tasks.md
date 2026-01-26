@@ -22,9 +22,9 @@ description: "Task list for ingredient database migration and script reorganizat
 
 **Purpose**: Verify environment and prepare workspace
 
-- [ ] T001 Verify Drizzle ORM configuration in apps/nextjs/drizzle.config.ts
-- [ ] T002 Verify PostgreSQL database connection with pnpm db:status
-- [ ] T003 Create apps/nextjs/scripts directory if not exists
+- [x] T001 Verify Drizzle ORM configuration in apps/nextjs/drizzle.config.ts
+- [x] T002 Verify PostgreSQL database connection with pnpm db:status
+- [x] T003 Create apps/nextjs/scripts directory if not exists
 
 ---
 
@@ -34,9 +34,9 @@ description: "Task list for ingredient database migration and script reorganizat
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T004 Replace INGREDIENT_CATEGORIES array in apps/nextjs/src/db/schema/enums.ts with 30-category taxonomy
-- [ ] T005 Verify IngredientCategory type derives correctly from updated array
-- [ ] T006 Run pnpm typecheck from apps/nextjs/ to identify old category references
+- [x] T004 Replace INGREDIENT_CATEGORIES array in apps/nextjs/src/db/schema/enums.ts with 30-category taxonomy
+- [x] T005 Verify IngredientCategory type derives correctly from updated array
+- [x] T006 Run pnpm typecheck from apps/nextjs/ to identify old category references
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -50,20 +50,20 @@ description: "Task list for ingredient database migration and script reorganizat
 
 ### Implementation for User Story 1
 
-- [ ] T007 [P] [US1] Create generate-ingredient-migration.ts script in apps/nextjs/scripts/
-- [ ] T008 [US1] Implement CSV parsing function with proper quote handling and UTF-8 encoding
-- [ ] T009 [US1] Implement SQL string escaping function (double single quotes)
-- [ ] T010 [US1] Implement batch INSERT generation function (100 rows per batch)
-- [ ] T011 [US1] Implement category validation against 30 INGREDIENT_CATEGORIES
-- [ ] T012 [US1] Implement migration file generation with ON CONFLICT DO NOTHING clause
-- [ ] T013 [US1] Add category breakdown statistics reporting
-- [ ] T014 [US1] Execute generate-ingredient-migration.ts to create SQL migration file
-- [ ] T015 [US1] Review generated migration file in apps/nextjs/src/db/migrations/NNNN_insert_ingredients.sql
-- [ ] T016 [US1] Run pnpm db:migrate from apps/nextjs/ to apply migration
-- [ ] T017 [US1] Validate ingredient count with SELECT COUNT(*) FROM ingredients (expect 2000+)
-- [ ] T018 [US1] Validate category coverage with category GROUP BY query (expect all 30 categories)
-- [ ] T019 [US1] Validate no duplicates with duplicate name check query (expect 0 rows)
-- [ ] T020 [US1] Test migration idempotency by running pnpm db:migrate again (expect no changes)
+- [x] T007 [P] [US1] Create generate-ingredient-migration.ts script in apps/nextjs/scripts/
+- [x] T008 [US1] Implement CSV parsing function with proper quote handling and UTF-8 encoding
+- [x] T009 [US1] Implement SQL string escaping function (double single quotes)
+- [x] T010 [US1] Implement batch INSERT generation function (100 rows per batch)
+- [x] T011 [US1] Implement category validation against 30 INGREDIENT_CATEGORIES
+- [x] T012 [US1] Implement migration file generation with ON CONFLICT DO NOTHING clause
+- [x] T013 [US1] Add category breakdown statistics reporting
+- [x] T014 [US1] Execute generate-ingredient-migration.ts to create SQL migration file
+- [x] T015 [US1] Review generated migration file in apps/nextjs/src/db/migrations/NNNN_insert_ingredients.sql
+- [x] T016 [US1] Run pnpm db:migrate from apps/nextjs/ to apply migration
+- [x] T017 [US1] Validate ingredient count with SELECT COUNT(*) FROM ingredients (expect 2000+)
+- [x] T018 [US1] Validate category coverage with category GROUP BY query (expect all 30 categories)
+- [x] T019 [US1] Validate no duplicates with duplicate name check query (expect 0 rows)
+- [x] T020 [US1] Test migration idempotency by running pnpm db:migrate again (expect no changes)
 
 **Checkpoint**: At this point, database should be fully populated with ingredients and User Story 1 is complete
 
@@ -77,16 +77,16 @@ description: "Task list for ingredient database migration and script reorganizat
 
 ### Implementation for User Story 2
 
-- [ ] T021 [US2] Copy research/scripts/extract-ingredients.ts to apps/nextjs/scripts/extract-ingredients.ts
-- [ ] T022 [US2] Update path resolution in extract-ingredients.ts to navigate from apps/nextjs/scripts/ to research/
-- [ ] T023 [US2] Update scriptDir calculation to use __dirname instead of import.meta.url if needed
-- [ ] T024 [US2] Update researchDir calculation to navigate up 3 levels from script location
-- [ ] T025 [US2] Verify inputPath correctly references research/food-ingredient-taxonomy.txt
-- [ ] T026 [US2] Verify outputPath correctly references research/[langCode]-ingredient-names.csv
-- [ ] T027 [US2] Test script execution from apps/nextjs/ with tsx scripts/extract-ingredients.ts en
-- [ ] T028 [US2] Verify script outputs to research/en-ingredient-names.csv with correct data
-- [ ] T029 [US2] Compare output with original script output to ensure identical functionality
-- [ ] T030 [US2] Remove research/scripts/extract-ingredients.ts after verification
+- [x] T021 [US2] Copy research/scripts/extract-ingredients.ts to apps/nextjs/scripts/extract-ingredients.ts
+- [x] T022 [US2] Update path resolution in extract-ingredients.ts to navigate from apps/nextjs/scripts/ to research/
+- [x] T023 [US2] Update scriptDir calculation to use __dirname instead of import.meta.url if needed
+- [x] T024 [US2] Update researchDir calculation to navigate up 3 levels from script location
+- [x] T025 [US2] Verify inputPath correctly references research/food-ingredient-taxonomy.txt
+- [x] T026 [US2] Verify outputPath correctly references research/[langCode]-ingredient-names.csv
+- [x] T027 [US2] Test script execution from apps/nextjs/ with tsx scripts/extract-ingredients.ts en
+- [x] T028 [US2] Verify script outputs to research/en-ingredient-names.csv with correct data
+- [x] T029 [US2] Compare output with original script output to ensure identical functionality
+- [x] T030 [US2] Remove research/scripts/extract-ingredients.ts after verification
 
 **Checkpoint**: Script is now in proper location and User Story 2 is complete
 
@@ -100,16 +100,16 @@ description: "Task list for ingredient database migration and script reorganizat
 
 ### Implementation for User Story 3
 
-- [ ] T031 [P] [US3] Search codebase for old category references (proteins_nonmeat, canned_jarred, starches, legumes)
-- [ ] T032 [US3] Update all hardcoded category references to use new taxonomy values
-- [ ] T033 [US3] Replace hardcoded category arrays with INGREDIENT_CATEGORIES import where appropriate
-- [ ] T034 [US3] Update type annotations to use IngredientCategory type from enums.ts
-- [ ] T035 [US3] Update any category validation logic to use new 30 categories
-- [ ] T036 [US3] Update category filter/dropdown components if present
-- [ ] T037 [US3] Run pnpm typecheck from apps/nextjs/ to verify zero type errors
+- [x] T031 [P] [US3] Search codebase for old category references (proteins_nonmeat, canned_jarred, starches, legumes)
+- [x] T032 [US3] Update all hardcoded category references to use new taxonomy values
+- [x] T033 [US3] Replace hardcoded category arrays with INGREDIENT_CATEGORIES import where appropriate
+- [x] T034 [US3] Update type annotations to use IngredientCategory type from enums.ts
+- [x] T035 [US3] Update any category validation logic to use new 30 categories
+- [x] T036 [US3] Update category filter/dropdown components if present
+- [x] T037 [US3] Run pnpm typecheck from apps/nextjs/ to verify zero type errors
 - [ ] T038 [US3] Run pnpm dev to verify app starts without errors
 - [ ] T039 [US3] Test ingredient-related features locally (filters, search, autocomplete)
-- [ ] T040 [US3] Grep codebase to ensure no old category strings remain
+- [x] T040 [US3] Grep codebase to ensure no old category strings remain
 
 **Checkpoint**: All code now uses correct taxonomy and User Story 3 is complete
 
@@ -119,11 +119,11 @@ description: "Task list for ingredient database migration and script reorganizat
 
 **Purpose**: Documentation and final validation
 
-- [ ] T041 [P] Update CLAUDE.md with note about 30-category ingredient taxonomy
-- [ ] T042 [P] Update CLAUDE.md with reference to ingredient migration
-- [ ] T043 [P] Update CLAUDE.md with script location change (research/scripts → apps/nextjs/scripts)
-- [ ] T044 Validate all success criteria from spec.md are met
-- [ ] T045 Run final pnpm typecheck to ensure zero errors
+- [x] T041 [P] Update CLAUDE.md with note about 30-category ingredient taxonomy
+- [x] T042 [P] Update CLAUDE.md with reference to ingredient migration
+- [x] T043 [P] Update CLAUDE.md with script location change (research/scripts → apps/nextjs/scripts)
+- [x] T044 Validate all success criteria from spec.md are met
+- [x] T045 Run final pnpm typecheck to ensure zero errors
 - [ ] T046 Document migration in project changelog or release notes if applicable
 - [ ] T047 Commit all changes with descriptive commit message
 

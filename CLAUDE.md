@@ -45,6 +45,8 @@
 - Migrations: `apps/nextjs/src/db/migrations/` (Drizzle-managed, tracked in `drizzle` schema)
 - Deps: drizzle-orm 0.45.1, drizzle-kit 0.31.8, postgres 3.4.8, @supabase/supabase-js, @supabase/ssr
 - Notes: User roles/permissions, ingredients table exists
+- **Ingredient Taxonomy**: 30 categories (non_classified, e100_e199, ferments, dairy, cheeses, salt, meat, starch, oils_and_fats, alcohol, aroma, cereal, cocoa, water, fruit, vegetables, beans, nuts, seed, plants, mushroom, fish, molluscs, crustaceans, bee_ingredients, synthesized, poultry, eggs, parts, compound_ingredients)
+- **Ingredient Data**: 5931 ingredients populated via migration 0003_insert_ingredients
 
 **Database Commands** (from `apps/nextjs/`):
 
@@ -79,7 +81,21 @@ pnpm db:studio            # Open Drizzle Studio GUI
 - Migration: `npx @next/codemod@latest middleware-to-proxy .`
 - Pattern: Define protected/public routes arrays, use Supabase `getSession()` for auth checks
 
+## Project Scripts
+
+**Ingredient Extraction** (from `apps/nextjs/`):
+- Script: `apps/nextjs/scripts/extract-ingredients.ts`
+- Usage: `pnpm tsx scripts/extract-ingredients.ts <langCode>`
+- Output: `research/<langCode>-ingredient-names.csv`
+- Purpose: Extract ingredient names from taxonomy file
+
+**Migration Generation** (from `apps/nextjs/`):
+- Script: `apps/nextjs/scripts/generate-ingredient-migration.ts`
+- Usage: `pnpm tsx scripts/generate-ingredient-migration.ts`
+- Output: `src/db/migrations/NNNN_insert_ingredients.sql`
+- Purpose: Generate SQL migration from CSV data
+
 ## Recent Changes
-- 009-ingredient-migration: Ingredient data model + migration
+- 009-ingredient-migration: 30-category ingredient taxonomy, 5931 ingredients populated, script relocated to apps/nextjs/scripts
 - 008-drizzle-migrations: Drizzle migration system setup
 - 006-admin-dashboard: Admin dashboard + user roles/permissions

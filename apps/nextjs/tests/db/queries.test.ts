@@ -7,7 +7,6 @@ import {
   recipeIngredients,
   userRecipes,
   cookingLog,
-  ingredientCategoryEnum
 } from '@/db/schema'
 import { eq, and, gt, sql, count, avg } from 'drizzle-orm'
 
@@ -83,7 +82,7 @@ describe('Basic CRUD Operations', () => {
     await adminDb.insert(ingredients).values({
       id: TEST_INGREDIENT_ID,
       name: 'Test Rice',
-      category: 'starches',
+      category: 'starch',
       isAssumed: false,
     })
 
@@ -118,7 +117,7 @@ describe('Basic CRUD Operations', () => {
     await adminDb.insert(ingredients).values({
       id: TEST_INGREDIENT_ID,
       name: 'Test Beans',
-      category: 'legumes',
+      category: 'beans',
       isAssumed: false,
     })
 
@@ -494,13 +493,13 @@ describe('Transaction Support', () => {
       {
         id: TEST_INGREDIENT_ID,
         name: 'Pasta',
-        category: 'starches',
+        category: 'starch',
         isAssumed: false,
       },
       {
         id: TEST_INGREDIENT_ID_2,
         name: 'Tomato Sauce',
-        category: 'canned_jarred',
+        category: 'vegetables',
         isAssumed: false,
       },
     ])
