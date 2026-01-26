@@ -37,6 +37,8 @@
 ## Active Technologies
 - TypeScript 5, React 19, Next.js 16 + Next.js App Router, Supabase Auth (@supabase/ssr, @supabase/supabase-js), Drizzle ORM (006-admin-dashboard)
 - Supabase PostgreSQL (user roles/permissions) (006-admin-dashboard)
+- TypeScript 5+, Node.js + drizzle-orm 0.45.1, drizzle-kit 0.31.8, postgres 3.4.8 (008-drizzle-migrations)
+- PostgreSQL (Supabase-hosted, accessed directly) (008-drizzle-migrations)
 
 **Frontend**: TypeScript 5+ (strict), React 19, Next.js 16, Tailwind CSS v4, RetroUI + shadcn/ui, lucide-react icons
 
@@ -58,5 +60,6 @@
 - Pattern: Define protected/public routes arrays, use Supabase `getSession()` for auth checks
 
 ## Recent Changes
+- 008-drizzle-migrations: Added TypeScript 5+, Node.js + drizzle-orm 0.45.1, drizzle-kit 0.31.8, postgres 3.4.8
 - 006-admin-dashboard: Added TypeScript 5, React 19, Next.js 16 + Next.js App Router, Supabase Auth (@supabase/ssr, @supabase/supabase-js), Drizzle ORM
 - Auth: Implemented proxy-based route protection with Supabase session validation
