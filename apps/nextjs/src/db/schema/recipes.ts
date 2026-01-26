@@ -1,6 +1,6 @@
 import { pgTable, uuid, text, boolean, timestamp, check, index, uniqueIndex } from 'drizzle-orm/pg-core'
 import { relations, sql } from 'drizzle-orm'
-import { ingredientTypeEnum } from './enums'
+import type { IngredientType } from './enums'
 import { ingredients } from './ingredients'
 import { userRecipes } from './user-recipes'
 import { cookingLog } from './cooking-log'
@@ -26,7 +26,7 @@ export const recipeIngredients = pgTable('recipe_ingredients', {
   id: uuid('id').primaryKey().defaultRandom(),
   recipeId: uuid('recipe_id').notNull().references(() => recipes.id, { onDelete: 'cascade' }),
   ingredientId: uuid('ingredient_id').notNull().references(() => ingredients.id, { onDelete: 'restrict' }),
-  ingredientType: ingredientTypeEnum('ingredient_type').notNull(),
+  ingredientType: text('ingredient_type').$type<IngredientType>().notNull(),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 }, (table) => [
   uniqueIndex('idx_recipe_ingredients_unique').on(table.recipeId, table.ingredientId),
