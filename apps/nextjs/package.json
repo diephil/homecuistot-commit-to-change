@@ -13,6 +13,8 @@
     "db:migrate": "tsx --env-file=.env.local src/db/migrate.ts",
     "db:migrate:prod": "tsx --env-file=.env.prod src/db/migrate.ts",
     "db:baseline:prod": "tsx --env-file=.env.prod src/db/baseline.ts",
+    "db:status": "tsx --env-file=.env.local src/db/status.ts",
+    "db:status:prod": "tsx --env-file=.env.prod src/db/status.ts",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "prompt:voice": "tsx --env-file=.env.local scripts/register-voice-prompt.ts",

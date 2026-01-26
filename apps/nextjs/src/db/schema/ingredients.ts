@@ -1,13 +1,13 @@
 import { pgTable, uuid, text, boolean, timestamp, index } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm'
-import { ingredientCategoryEnum } from './enums'
+import type { IngredientCategory } from './enums'
 import { recipeIngredients } from './recipes'
 import { userInventory } from './user-inventory'
 
 export const ingredients = pgTable('ingredients', {
   id: uuid('id').primaryKey().defaultRandom(),
   name: text('name').notNull().unique(),
-  category: ingredientCategoryEnum('category').notNull(),
+  category: text('category').$type<IngredientCategory>().notNull(),
   isAssumed: boolean('is_assumed').notNull().default(false),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 }, (table) => [
