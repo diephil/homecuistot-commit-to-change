@@ -1,13 +1,13 @@
-# Data Model: User Pantry Staples
+# Data Model: Schema Cleanup & User Pantry Staples Table
 
 **Feature**: 010-user-pantry-staples
 **Date**: 2026-01-26
 
 ## Database Entities
 
-### 1. userPantryStaples (NEW)
+### 1. userPantryStaples (NEW - for future use)
 
-User-specific "always have" ingredients.
+User-specific "always have" ingredients. Table created but UI not implemented in this feature.
 
 | Field | Type | Constraints | Notes |
 |-------|------|-------------|-------|
@@ -61,59 +61,6 @@ DROP TABLE IF EXISTS ingredient_aliases CASCADE;
 
 ---
 
-## Application Types
-
-### StorageLocation
-
-```typescript
-export const StorageLocationSchema = z.enum(['pantry', 'fridge'])
-export type StorageLocation = z.infer<typeof StorageLocationSchema>
-```
-
-### ExtractedIngredient (LLM Output)
-
-```typescript
-export const ExtractedIngredientSchema = z.object({
-  name: z.string(),
-  storageLocation: StorageLocationSchema,
-})
-export type ExtractedIngredient = z.infer<typeof ExtractedIngredientSchema>
-```
-
-### OnboardingUpdate (Modified)
-
-```typescript
-export const OnboardingUpdateSchema = z.object({
-  add: z.object({
-    dishes: z.array(z.string()),
-    ingredients: z.array(ExtractedIngredientSchema),  // CHANGED: was z.array(z.string())
-  }),
-  remove: z.object({
-    dishes: z.array(z.string()),
-    ingredients: z.array(z.string()),  // Remove by name only (unchanged)
-  }),
-})
-export type OnboardingUpdate = z.infer<typeof OnboardingUpdateSchema>
-```
-
-### OnboardingState (Unchanged)
-
-State already has `pantry` and `fridge` arrays - will use those instead of merged `ingredients`.
-
-```typescript
-export interface OnboardingState {
-  currentStep: 1 | 2 | 3;
-  dishes: string[];
-  fridge: string[];      // Use for fridge storage
-  pantry: string[];      // Use for pantry storage
-  ingredients: string[]; // Derived: [...pantry, ...fridge]
-  hasVoiceChanges: boolean;
-  voiceFailureCount: number;
-}
-```
-
----
-
 ## Entity Relationships
 
 ```
@@ -148,36 +95,3 @@ export interface OnboardingState {
 |--------|------|-------------|
 | userPantryStaples | No duplicate user-ingredient pairs | DB unique constraint |
 | userPantryStaples | Valid ingredient reference | FK constraint + CASCADE |
-| ExtractedIngredient | storageLocation must be 'pantry' or 'fridge' | Zod enum validation |
-| ExtractedIngredient | name must be non-empty string | Zod string validation |
-
----
-
-## State Transitions
-
-### Adding Ingredient (LLM extraction)
-
-```
-LLM Output: { name: "flour", storageLocation: "pantry" }
-     │
-     ▼
-Validate via Zod ExtractedIngredientSchema
-     │
-     ▼
-Route to state.pantry or state.fridge based on storageLocation
-     │
-     ▼
-Deduplicate (case-insensitive)
-     │
-     ▼
-Update UI (separate sections)
-```
-
-### Removing Ingredient
-
-```
-LLM Output: { ingredients: ["flour"] } in remove.ingredients
-     │
-     ▼
-Remove from BOTH state.pantry AND state.fridge (case-insensitive)
-```

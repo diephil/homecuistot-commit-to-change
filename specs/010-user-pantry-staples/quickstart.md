@@ -1,7 +1,7 @@
-# Quickstart: User Pantry Staples
+# Quickstart: Schema Cleanup & User Pantry Staples Table
 
 **Feature**: 010-user-pantry-staples
-**Estimated Steps**: 6
+**Estimated Steps**: 2
 
 ## Prerequisites
 
@@ -37,56 +37,20 @@ pnpm db:migrate     # Apply to local DB
 - `ingredient_aliases` table dropped
 - `user_pantry_staples` table created
 
-### Step 3: Update Onboarding Types
-
-**File**: `apps/nextjs/src/types/onboarding.ts`
-
-**Changes**:
-1. Add `StorageLocationSchema` enum
-2. Add `ExtractedIngredientSchema` with name + storageLocation
-3. Update `OnboardingUpdateSchema.add.ingredients` to use `ExtractedIngredientSchema`
-
-### Step 4: Update LLM Prompts and Schemas
-
-**Files**:
-- `apps/nextjs/src/lib/prompts/onboarding-text/process.ts`
-- `apps/nextjs/src/lib/prompts/onboarding-voice/process.ts`
-
-**Changes**:
-1. Update prompt to request storage location classification
-2. Update `responseSchema` for Gemini to include storageLocation enum
-3. Both files need identical schema changes
-
-### Step 5: Update Onboarding UI
-
-**File**: `apps/nextjs/src/app/(protected)/app/onboarding/page.tsx`
-
-**Changes**:
-1. Update `applyOnboardingUpdate` to route ingredients by storageLocation
-2. Update Step 3 UI to show "Pantry Items" and "Fridge Items" as separate sections
-3. Update display logic to use `state.pantry` and `state.fridge` instead of `state.ingredients`
-
-### Step 6: Production Migration
-
-**Commands** (from `apps/nextjs/`):
-```bash
-pnpm db:migrate:prod    # Apply to production DB
-```
-
-**Verify**:
-- Run app locally, test voice/text input
-- Verify ingredients appear in correct sections
-
 ---
 
 ## Verification Checklist
 
 - [ ] `ingredient_aliases` table no longer exists
 - [ ] `user_pantry_staples` table created with correct indexes
-- [ ] LLM output includes `storageLocation` for each ingredient
-- [ ] Review & Refine shows "Pantry Items" / "Fridge Items" sections
-- [ ] Ingredients routed correctly (flour→pantry, milk→fridge)
 - [ ] No TypeScript errors (`pnpm build` passes)
+
+## Production Migration
+
+**Commands** (from `apps/nextjs/`):
+```bash
+pnpm db:migrate:prod    # Apply to production DB
+```
 
 ## Rollback Plan
 
