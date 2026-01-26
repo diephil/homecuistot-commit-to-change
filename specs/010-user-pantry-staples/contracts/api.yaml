@@ -1,0 +1,170 @@
+openapi: 3.0.3
+info:
+  title: Onboarding API - Storage Location Update
+  version: 1.0.0
+  description: |
+    Updated onboarding endpoints with storage location for ingredients.
+    Changes from previous version:
+    - `add.ingredients` now returns objects with `name` and `storageLocation`
+    - `storageLocation` is enum: "pantry" | "fridge"
+
+paths:
+  /api/onboarding/process-text:
+    post:
+      summary: Process text input for onboarding
+      description: Extract dishes and ingredients from text, with storage location classification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProcessTextRequest'
+      responses:
+        '200':
+          description: Successful extraction
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OnboardingUpdate'
+        '408':
+          description: Request timeout
+        '500':
+          description: Processing error
+
+  /api/onboarding/process-voice:
+    post:
+      summary: Process voice input for onboarding
+      description: Extract dishes and ingredients from audio, with storage location classification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProcessVoiceRequest'
+      responses:
+        '200':
+          description: Successful extraction
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OnboardingUpdate'
+        '408':
+          description: Request timeout
+        '500':
+          description: Processing error
+
+components:
+  schemas:
+    StorageLocation:
+      type: string
+      enum:
+        - pantry
+        - fridge
+      description: |
+        Where ingredient is typically stored:
+        - pantry: shelf-stable, dry goods, canned items, oils, spices
+        - fridge: perishables, dairy, meat, fresh produce, eggs
+
+    ExtractedIngredient:
+      type: object
+      required:
+        - name
+        - storageLocation
+      properties:
+        name:
+          type: string
+          description: Ingredient name
+          example: "flour"
+        storageLocation:
+          $ref: '#/components/schemas/StorageLocation'
+      example:
+        name: "milk"
+        storageLocation: "fridge"
+
+    OnboardingUpdate:
+      type: object
+      required:
+        - add
+        - remove
+      properties:
+        add:
+          type: object
+          required:
+            - dishes
+            - ingredients
+          properties:
+            dishes:
+              type: array
+              items:
+                type: string
+              description: Dishes to add
+              example: ["scrambled eggs", "pasta carbonara"]
+            ingredients:
+              type: array
+              items:
+                $ref: '#/components/schemas/ExtractedIngredient'
+              description: Ingredients to add with storage location
+              example:
+                - name: "eggs"
+                  storageLocation: "fridge"
+                - name: "flour"
+                  storageLocation: "pantry"
+        remove:
+          type: object
+          required:
+            - dishes
+            - ingredients
+          properties:
+            dishes:
+              type: array
+              items:
+                type: string
+              description: Dishes to remove
+            ingredients:
+              type: array
+              items:
+                type: string
+              description: Ingredient names to remove
+
+    ProcessTextRequest:
+      type: object
+      required:
+        - text
+        - currentContext
+      properties:
+        text:
+          type: string
+          description: User's text input
+          example: "I have flour, eggs, and milk"
+        currentContext:
+          $ref: '#/components/schemas/CurrentContext'
+
+    ProcessVoiceRequest:
+      type: object
+      required:
+        - audioBase64
+        - currentContext
+      properties:
+        audioBase64:
+          type: string
+          format: byte
+          description: Base64-encoded audio data
+        currentContext:
+          $ref: '#/components/schemas/CurrentContext'
+
+    CurrentContext:
+      type: object
+      required:
+        - dishes
+        - ingredients
+      properties:
+        dishes:
+          type: array
+          items:
+            type: string
+          description: Currently selected dishes
+        ingredients:
+          type: array
+          items:
+            type: string
+          description: Currently selected ingredients (combined pantry + fridge)

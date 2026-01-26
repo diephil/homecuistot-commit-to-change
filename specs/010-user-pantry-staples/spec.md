@@ -1,6 +1,6 @@
 # Feature Specification: User Pantry Staples
 
-**Feature Branch**: `001-user-pantry-staples`
+**Feature Branch**: `010-user-pantry-staples`
 **Created**: 2026-01-26
 **Status**: Draft
 **Input**: Replace `isAssumed` with user-specific pantry staples table and remove ingredient aliases table
