@@ -35,20 +35,16 @@
   - `docs(readme): add setup instructions`
 
 ## Active Technologies
-- TypeScript 5, React 19, Next.js 16 + Next.js App Router, Supabase Auth (@supabase/ssr, @supabase/supabase-js), Drizzle ORM (006-admin-dashboard)
-- Supabase PostgreSQL (user roles/permissions) (006-admin-dashboard)
-- TypeScript 5+, Node.js + drizzle-orm 0.45.1, drizzle-kit 0.31.8, postgres 3.4.8 (008-drizzle-migrations)
-- PostgreSQL (Supabase-hosted, accessed directly) (008-drizzle-migrations)
 
-**Frontend**: TypeScript 5+ (strict), React 19, Next.js 16, Tailwind CSS v4, RetroUI + shadcn/ui, lucide-react icons
+**Frontend**: TypeScript 5+ (strict), React 19, Next.js 16 App Router, Tailwind CSS v4, RetroUI + shadcn/ui, lucide-react icons
 
-**Backend**: Vercel AI SDK + `@ai-sdk/google` (Gemini), Supabase Auth
+**Backend**: Vercel AI SDK + `@ai-sdk/google` (Gemini), Supabase Auth (@supabase/ssr, @supabase/supabase-js)
 
 **Database**: Supabase PostgreSQL, Drizzle ORM
-
 - Schema: `apps/nextjs/src/db/schema/`
 - Migrations: `apps/nextjs/src/db/migrations/` (Drizzle-managed, tracked in `drizzle` schema)
-- Deps: drizzle-orm, drizzle-kit, postgres, @supabase/supabase-js, @supabase/ssr
+- Deps: drizzle-orm 0.45.1, drizzle-kit 0.31.8, postgres 3.4.8, @supabase/supabase-js, @supabase/ssr
+- Notes: User roles/permissions, ingredients table exists
 
 **Database Commands** (from `apps/nextjs/`):
 
@@ -84,6 +80,6 @@ pnpm db:studio            # Open Drizzle Studio GUI
 - Pattern: Define protected/public routes arrays, use Supabase `getSession()` for auth checks
 
 ## Recent Changes
-- 008-drizzle-migrations: Added TypeScript 5+, Node.js + drizzle-orm 0.45.1, drizzle-kit 0.31.8, postgres 3.4.8
-- 006-admin-dashboard: Added TypeScript 5, React 19, Next.js 16 + Next.js App Router, Supabase Auth (@supabase/ssr, @supabase/supabase-js), Drizzle ORM
-- Auth: Implemented proxy-based route protection with Supabase session validation
+- 009-ingredient-migration: Ingredient data model + migration
+- 008-drizzle-migrations: Drizzle migration system setup
+- 006-admin-dashboard: Admin dashboard + user roles/permissions
