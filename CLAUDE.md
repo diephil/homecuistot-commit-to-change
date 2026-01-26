@@ -35,6 +35,8 @@
   - `docs(readme): add setup instructions`
 
 ## Active Technologies
+- TypeScript 5+ (strict mode) + React 19, Next.js 16, Drizzle ORM 0.45.1, Zod, @google/genai (Gemini) (010-user-pantry-staples)
+- Supabase PostgreSQL via Drizzle (010-user-pantry-staples)
 
 **Frontend**: TypeScript 5+ (strict), React 19, Next.js 16 App Router, Tailwind CSS v4, RetroUI + shadcn/ui, lucide-react icons
 
@@ -96,6 +98,6 @@ pnpm db:studio            # Open Drizzle Studio GUI
 - Purpose: Generate SQL migration from CSV data
 
 ## Recent Changes
+- 010-user-pantry-staples: Added TypeScript 5+ (strict mode) + React 19, Next.js 16, Drizzle ORM 0.45.1, Zod, @google/genai (Gemini)
 - 009-ingredient-migration: 30-category ingredient taxonomy, 5931 ingredients populated, script relocated to apps/nextjs/scripts
 - 008-drizzle-migrations: Drizzle migration system setup
-- 006-admin-dashboard: Admin dashboard + user roles/permissions

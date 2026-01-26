@@ -36,6 +36,13 @@
       "when": 1769457758090,
       "tag": "0004_shiny_bill_hollister",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1769463105708,
+      "tag": "0005_hard_black_panther",
+      "breakpoints": true
     }
   ]
 }

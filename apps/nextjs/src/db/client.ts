@@ -280,8 +280,9 @@ export function createUserDb(token: SupabaseToken) {
 // Type exports for query results
 export type Ingredient = typeof schema.ingredients.$inferSelect;
 export type NewIngredient = typeof schema.ingredients.$inferInsert;
-export type IngredientAlias = typeof schema.ingredientAliases.$inferSelect;
-export type NewIngredientAlias = typeof schema.ingredientAliases.$inferInsert;
+
+export type UserPantryStaple = typeof schema.userPantryStaples.$inferSelect;
+export type NewUserPantryStaple = typeof schema.userPantryStaples.$inferInsert;
 
 export type Recipe = typeof schema.recipes.$inferSelect;
 export type NewRecipe = typeof schema.recipes.$inferInsert;

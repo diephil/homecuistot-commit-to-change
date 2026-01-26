@@ -407,6 +407,23 @@ function OnboardingPageContent() {
               </div>
             </div>
 
+                        {/* T016: Pantry section */}
+            <div className="space-y-3 md:rotate-1">
+              <h3 className="text-lg font-black uppercase">Pantry Items</h3>
+              <div className="flex flex-wrap gap-2">
+                {SUGGESTED_ITEMS.pantryItems.map((item) => (
+                  <Badge
+                    key={item.id}
+                    variant={state.pantry.includes(item.name) ? "solid" : "outline"}
+                    className="cursor-pointer min-h-[44px] min-w-[44px] border-4 md:border-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+                    onClick={() => toggleItem(item.name, "pantry")}
+                  >
+                    {item.name}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+
             {/* T015: Fridge section */}
             <div className="space-y-3 md:-rotate-1">
               <h3 className="text-lg font-black uppercase">Fridge Items</h3>
@@ -424,22 +441,7 @@ function OnboardingPageContent() {
               </div>
             </div>
 
-            {/* T016: Pantry section */}
-            <div className="space-y-3 md:rotate-1">
-              <h3 className="text-lg font-black uppercase">Pantry Items</h3>
-              <div className="flex flex-wrap gap-2">
-                {SUGGESTED_ITEMS.pantryItems.map((item) => (
-                  <Badge
-                    key={item.id}
-                    variant={state.pantry.includes(item.name) ? "solid" : "outline"}
-                    className="cursor-pointer min-h-[44px] min-w-[44px] border-4 md:border-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
-                    onClick={() => toggleItem(item.name, "pantry")}
-                  >
-                    {item.name}
-                  </Badge>
-                ))}
-              </div>
-            </div>
+
 
             {/* T019: Continue button (no back button - forward-only) */}
             <div className="flex justify-end mt-4">
