@@ -216,14 +216,12 @@ research/
   id: uuid,                    // Primary key, defaultRandom()
   name: text,                  // NOT NULL, UNIQUE
   category: text,              // NOT NULL, typed as IngredientCategory
-  isAssumed: boolean,          // NOT NULL, default false
   createdAt: timestamp         // NOT NULL, defaultNow()
 }
 ```
 
 **Indexes**:
 - idx_ingredients_category (on category)
-- idx_ingredients_is_assumed (on isAssumed)
 
 **Constraints**:
 - UNIQUE constraint on name (prevents duplicates)

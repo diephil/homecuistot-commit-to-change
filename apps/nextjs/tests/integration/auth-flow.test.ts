@@ -63,13 +63,11 @@ describe("RLS Enforcement", () => {
         id: INGREDIENT1_ID,
         name: "User1 Ingredient " + Date.now(),
         category: "meat",
-        isAssumed: false,
       },
       {
         id: INGREDIENT2_ID,
         name: "User2 Ingredient " + Date.now(),
         category: "vegetables",
-        isAssumed: false,
       },
     ]);
 
@@ -114,7 +112,6 @@ describe("RLS Enforcement", () => {
       id: INGREDIENT1_ID,
       name: "Test Ingredient " + Date.now(),
       category: "dairy",
-      isAssumed: false,
     });
 
     // Setup: Create inventory for user1

@@ -5,12 +5,11 @@ describe('Drizzle Schema Structure', () => {
   describe('Tables', () => {
     it('ingredients table exists with correct structure', () => {
       expect(schema.ingredients).toBeDefined()
-      const { id, name, category, isAssumed, createdAt } = schema.ingredients
+      const { id, name, category, createdAt } = schema.ingredients
 
       expect(id).toBeDefined()
       expect(name).toBeDefined()
       expect(category).toBeDefined()
-      expect(isAssumed).toBeDefined()
       expect(createdAt).toBeDefined()
     })
 

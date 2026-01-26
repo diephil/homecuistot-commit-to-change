@@ -18,11 +18,9 @@ export const ingredients = pgTable('ingredients', {
   id: uuid('id').primaryKey().defaultRandom(),
   name: text('name').notNull().unique(),
   category: text('category').$type<IngredientCategory>().notNull(),
-  isAssumed: boolean('is_assumed').notNull().default(false),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 }, (table) => [
   index('idx_ingredients_category').on(table.category),
-  index('idx_ingredients_is_assumed').on(table.isAssumed),
 ])
 ```
 
@@ -32,23 +30,20 @@ CREATE TABLE ingredients (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name TEXT NOT NULL UNIQUE,
   category TEXT NOT NULL,
-  is_assumed BOOLEAN NOT NULL DEFAULT false,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 CREATE INDEX idx_ingredients_category ON ingredients(category);
-CREATE INDEX idx_ingredients_is_assumed ON ingredients(is_assumed);
 ```
 
 **Constraints**:
 - **Primary Key**: `id` (UUID, auto-generated)
 - **Unique**: `name` (prevents duplicate ingredient names)
-- **Not Null**: `name`, `category`, `isAssumed`, `createdAt`
-- **Default Values**: `id` (random UUID), `isAssumed` (false), `createdAt` (now)
+- **Not Null**: `name`, `category`, `createdAt`
+- **Default Values**: `id` (random UUID), `createdAt` (now)
 
 **Indexes**:
 - `idx_ingredients_category`: Fast category filtering (used for dietary filtering)
-- `idx_ingredients_is_assumed`: Fast filtering of assumed vs explicit ingredients
 
 **Relations** (from schema):
 - `ingredientAliases`: One-to-many (ingredient has many aliases)
@@ -250,8 +245,7 @@ ON CONFLICT (name) DO NOTHING;
 3. **ON CONFLICT**: `DO NOTHING` for idempotency
 4. **Column order**: `(name, category)` matches table definition
 5. **No ID column**: UUID generated automatically by database
-6. **No isAssumed**: Defaults to `false`
-7. **No createdAt**: Defaults to `NOW()`
+6. **No createdAt**: Defaults to `NOW()`
 
 **Example String Escaping**:
 ```sql

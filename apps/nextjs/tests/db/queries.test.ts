@@ -36,7 +36,6 @@ describe('Basic CRUD Operations', () => {
       id: TEST_INGREDIENT_ID,
       name: 'Test Chicken',
       category: 'meat',
-      isAssumed: false,
     })
 
     // Insert inventory item
@@ -58,7 +57,6 @@ describe('Basic CRUD Operations', () => {
       id: TEST_INGREDIENT_ID,
       name: 'Test Tomato',
       category: 'vegetables',
-      isAssumed: false,
     })
 
     await adminDb.insert(userInventory).values({
@@ -83,7 +81,6 @@ describe('Basic CRUD Operations', () => {
       id: TEST_INGREDIENT_ID,
       name: 'Test Rice',
       category: 'starch',
-      isAssumed: false,
     })
 
     await adminDb.insert(userInventory).values({
@@ -118,7 +115,6 @@ describe('Basic CRUD Operations', () => {
       id: TEST_INGREDIENT_ID,
       name: 'Test Beans',
       category: 'beans',
-      isAssumed: false,
     })
 
     await adminDb.insert(userInventory).values({
@@ -152,7 +148,6 @@ describe('Basic CRUD Operations', () => {
       id: TEST_INGREDIENT_ID,
       name: 'Test Milk',
       category: 'dairy',
-      isAssumed: false,
     })
 
     // First insert
@@ -211,14 +206,12 @@ describe('Join Queries', () => {
       id: TEST_INGREDIENT_ID,
       name: 'Test Chicken',
       category: 'meat',
-      isAssumed: false,
     })
 
     await adminDb.insert(ingredients).values({
       id: TEST_INGREDIENT_ID_2,
       name: 'Test Tomato',
       category: 'vegetables',
-      isAssumed: false,
     })
 
     await adminDb.insert(userInventory).values([
@@ -258,14 +251,12 @@ describe('Join Queries', () => {
       id: TEST_INGREDIENT_ID,
       name: 'High Stock Item',
       category: 'meat',
-      isAssumed: false,
     })
 
     await adminDb.insert(ingredients).values({
       id: TEST_INGREDIENT_ID_2,
       name: 'Low Stock Item',
       category: 'vegetables',
-      isAssumed: false,
     })
 
     await adminDb.insert(userInventory).values([
@@ -377,14 +368,12 @@ describe('Aggregation Queries', () => {
         id: TEST_INGREDIENT_ID,
         name: 'Test Item 1',
         category: 'meat',
-        isAssumed: false,
-      },
+        },
       {
         id: TEST_INGREDIENT_ID_2,
         name: 'Test Item 2',
         category: 'vegetables',
-        isAssumed: false,
-      },
+        },
     ])
 
     await adminDb.insert(userInventory).values([
@@ -419,14 +408,12 @@ describe('Aggregation Queries', () => {
         id: TEST_INGREDIENT_ID,
         name: 'Chicken',
         category: 'meat',
-        isAssumed: false,
-      },
+        },
       {
         id: TEST_INGREDIENT_ID_2,
         name: 'Tomato',
         category: 'vegetables',
-        isAssumed: false,
-      },
+        },
     ])
 
     await adminDb.insert(userInventory).values([
@@ -494,14 +481,12 @@ describe('Transaction Support', () => {
         id: TEST_INGREDIENT_ID,
         name: 'Pasta',
         category: 'starch',
-        isAssumed: false,
-      },
+        },
       {
         id: TEST_INGREDIENT_ID_2,
         name: 'Tomato Sauce',
         category: 'vegetables',
-        isAssumed: false,
-      },
+        },
     ])
 
     await adminDb.insert(userInventory).values([
@@ -563,7 +548,6 @@ describe('Transaction Support', () => {
       id: TEST_INGREDIENT_ID,
       name: 'Test Ingredient ' + Date.now(),
       category: 'meat',
-      isAssumed: false,
     })
 
     await adminDb.insert(userInventory).values({
@@ -622,7 +606,6 @@ describe('Transaction Support', () => {
       id: TEST_INGREDIENT_ID,
       name: 'Low Stock Item',
       category: 'vegetables',
-      isAssumed: false,
     })
 
     await adminDb.insert(userInventory).values({
