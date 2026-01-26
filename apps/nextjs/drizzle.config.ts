@@ -10,6 +10,6 @@ export default defineConfig({
   },
   migrations: {
     table: '__drizzle_migrations',
-    schema: 'public',
+    schema: 'drizzle',
   },
 })
