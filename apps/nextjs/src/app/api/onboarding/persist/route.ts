@@ -3,11 +3,9 @@ import { createClient } from '@/utils/supabase/server';
 import { createUserDb, decodeSupabaseToken } from '@/db/client';
 import {
   ingredients,
-  recipes,
   userRecipes,
   recipeIngredients,
   userInventory,
-  userPantryStaples,
   unrecognizedItems,
 } from '@/db/schema';
 import { sql } from 'drizzle-orm';
@@ -161,16 +159,15 @@ export async function POST(request: NextRequest) {
           .onConflictDoNothing();
       }
 
-      // T011-T013: Insert recipes and recipe_ingredients
+      // T011-T013: Insert recipes (user_recipes table)
       for (const recipe of recipeDetails) {
         // T011: Insert recipe with ON CONFLICT DO NOTHING
         const insertedRecipes = await tx
-          .insert(recipes)
+          .insert(userRecipes)
           .values({
             name: recipe.dishName,
             description: recipe.description || null,
             userId,
-            isSeeded: false,
           })
           .onConflictDoNothing()
           .returning();
@@ -178,16 +175,6 @@ export async function POST(request: NextRequest) {
         if (insertedRecipes.length > 0) {
           const insertedRecipe = insertedRecipes[0];
           recipesCreated++;
-
-          // T012: Insert user_recipes junction
-          await tx
-            .insert(userRecipes)
-            .values({
-              userId,
-              recipeId: insertedRecipe.id,
-              source: 'onboarding',
-            })
-            .onConflictDoNothing();
 
           // T013: Insert recipe_ingredients for matched LLM ingredients
           const matchedRecipeIngredients = recipe.ingredients
@@ -226,24 +213,28 @@ export async function POST(request: NextRequest) {
         inventoryCreated = inventoryInserts.length;
       }
 
-      // T015: Insert user_pantry_staples for matched pantry items
+      // T015: Mark pantry staples in user_inventory (isPantryStaple flag)
       const pantryIngredientIds = matchedUserIngredients
         .filter((ing) => uniquePantryItems.includes(ing.name.toLowerCase()))
         .map((ing) => ing.id);
 
       if (pantryIngredientIds.length > 0) {
-        const pantryInserts = await tx
-          .insert(userPantryStaples)
-          .values(
-            pantryIngredientIds.map((ingredientId) => ({
+        // Update existing inventory items to mark as pantry staples
+        for (const ingredientId of pantryIngredientIds) {
+          await tx
+            .insert(userInventory)
+            .values({
               userId,
               ingredientId,
-            }))
-          )
-          .onConflictDoNothing()
-          .returning();
-
-        pantryStaplesCreated = pantryInserts.length;
+              quantityLevel: 3,
+              isPantryStaple: true,
+            })
+            .onConflictDoUpdate({
+              target: [userInventory.userId, userInventory.ingredientId],
+              set: { isPantryStaple: true },
+            });
+        }
+        pantryStaplesCreated = pantryIngredientIds.length;
       }
 
       return {
