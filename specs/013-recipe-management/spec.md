@@ -69,20 +69,22 @@ As a user editing a recipe, I see the recipe title, description, and list of ing
 
 ---
 
-### User Story 4 - Voice Input for Recipe Creation (Priority: P2)
+### User Story 4 - Voice or Text Input for Recipe Creation (Priority: P2)
 
-As a user creating or editing a recipe, I can use microphone input to describe my dish. The system calls an LLM ("Recipe editor" prompt) to extract the title, description, and 1-20 ingredients. The LLM also suggests which ingredients should be optional.
+As a user creating or editing a recipe, I can use **microphone input** OR **text input** to describe my dish. The system calls an LLM ("Recipe editor" prompt) to extract the title, description, and 1-20 ingredients. The LLM suggests which ingredients should be optional based on what feels essential vs garnish. If I don't mention ingredients, the LLM infers a minimal ingredient list to achieve the recipe.
 
-**Why this priority**: Enhances UX with voice input but requires P1 base functionality first.
+**Why this priority**: Enhances UX with flexible input but requires P1 base functionality first.
 
-**Independent Test**: Can be tested by clicking microphone, speaking a recipe description, and verifying extracted fields appear.
+**Independent Test**: Can be tested by clicking microphone OR typing in text field, then verifying extracted fields appear.
 
 **Acceptance Scenarios**:
 
-1. **Given** I am on a recipe card (new or edit), **When** I click microphone and speak, **Then** the system records my input
-2. **Given** my speech is recorded, **When** the LLM processes it, **Then** skeleton placeholders appear with "Extracting recipe..." text until fields populate
-3. **Given** the LLM extracts ingredients, **When** results appear, **Then** some ingredients are pre-marked as optional based on LLM suggestion
-4. **Given** the LLM suggested optional ingredients, **When** I review, **Then** I can adjust the optional status before saving
+1. **Given** I am on a recipe card (new or edit), **When** I click microphone and speak, **Then** the system records my input (max 1 minute)
+2. **Given** I am on a recipe card (new or edit), **When** I type in the text input field and submit, **Then** the system processes my text
+3. **Given** my input is processed, **When** the LLM processes it, **Then** skeleton placeholders appear with "Extracting recipe..." text until fields populate
+4. **Given** the LLM extracts ingredients, **When** results appear, **Then** some ingredients are pre-marked as optional based on LLM suggestion
+5. **Given** the LLM suggested optional ingredients, **When** I review, **Then** I can adjust the optional status before saving
+6. **Given** I described a dish without mentioning ingredients, **When** the LLM processes it, **Then** it infers a minimal ingredient list needed for the recipe
 
 ---
 
@@ -106,7 +108,9 @@ Before saving a recipe, the system validates all detected ingredients against th
 
 - What happens when user speaks but audio is unclear or empty?
   - System shows error message and prompts to retry
-- What happens when LLM extraction returns no ingredients?
+- What happens when user describes a dish without mentioning ingredients?
+  - LLM infers minimal ingredient list needed to achieve the recipe
+- What happens when LLM extraction returns no ingredients (even after inference)?
   - System shows warning that no ingredients detected, allows manual entry
 - What happens when LLM returns more than 20 ingredients?
   - System caps at 20 and informs user to remove some
@@ -114,6 +118,8 @@ Before saving a recipe, the system validates all detected ingredients against th
   - System prevents saving; at least 1 ingredient required
 - What happens when user deletes all ingredients from an existing recipe?
   - System prevents saving with validation message
+- What happens when voice recording exceeds 1 minute?
+  - Recording stops automatically at 1 minute limit
 
 ## Requirements *(mandatory)*
 
@@ -129,10 +135,12 @@ Before saving a recipe, the system validates all detected ingredients against th
 - **FR-006**: Recipe card MUST show title, description, and ingredient list
 - **FR-007**: Each ingredient MUST have a checkbox to mark as optional
 - **FR-008**: Edit mode MUST include a delete button; add mode MUST NOT
-- **FR-009**: System MUST support microphone input for voice-based recipe description
+- **FR-009**: System MUST support microphone input for voice-based recipe description (max 1 minute)
+- **FR-009a**: System MUST support text input as fallback for recipe description
 - **FR-010**: System MUST call LLM ("Recipe editor" prompt) to extract title, description, and 1-20 ingredients
 - **FR-010a**: System MUST show skeleton placeholders + "Extracting recipe..." during LLM processing
-- **FR-011**: LLM MUST suggest which ingredients should be optional
+- **FR-010b**: LLM MUST infer minimal ingredient list when user mentions no ingredients
+- **FR-011**: LLM MUST suggest which ingredients should be optional based on recipe context
 - **FR-012**: User MUST be able to adjust optional status after LLM suggestion
 - **FR-013**: System MUST validate ingredients against database before saving
 - **FR-014**: Unrecognized ingredients MUST be placed in "unrecognized items" section with options: remove, rename/correct, or keep as custom text
@@ -194,6 +202,7 @@ Guidelines:
 - Mark as required: core/anchor ingredients, proteins, base vegetables
 - If no title detected, infer from main ingredients
 - If description unclear, generate appetizing 1-sentence summary
+- If user mentions NO ingredients, infer a MINIMAL ingredient list needed to achieve the recipe (only essential items)
 
 Return structured JSON matching the schema.
 ```
