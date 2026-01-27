@@ -5,7 +5,9 @@ import { PageContainer } from "@/components/PageContainer";
 import { Button } from "@/components/retroui/Button";
 import { RecipeList } from "@/components/recipes/recipe-list";
 import { RecipeForm } from "@/components/recipes/recipe-form";
+import { RecipeHelpModal } from "@/components/recipes/help-modal";
 import { getRecipes } from "@/app/actions/recipes";
+import { HelpCircle, Plus } from "lucide-react";
 
 interface Recipe {
   id: string;
@@ -29,6 +31,7 @@ export default function RecipesPage() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [selectedRecipeId, setSelectedRecipeId] = useState<string | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -78,7 +81,24 @@ export default function RecipesPage() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold">My Recipes</h1>
-          <Button onClick={handleAddRecipe}>Add Recipe</Button>
+          <div className="flex gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsHelpOpen(true)}
+            >
+              <HelpCircle className="h-5 w-5" />
+            </Button>
+            <Button
+              variant="default"
+              size="md"
+              className="gap-2 bg-black text-white hover:bg-gray-800 border-black"
+              onClick={handleAddRecipe}
+            >
+              <Plus className="h-5 w-5" />
+              Add Recipe
+            </Button>
+          </div>
         </div>
 
         {isLoading ? (
@@ -100,6 +120,8 @@ export default function RecipesPage() {
           />
         )}
       </div>
+
+      <RecipeHelpModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} />
     </PageContainer>
   );
 }
