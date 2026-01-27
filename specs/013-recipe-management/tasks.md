@@ -23,9 +23,9 @@ Monorepo structure: `apps/nextjs/src/`
 
 **Purpose**: Project initialization and toast component setup
 
-- [ ] T001 Install shadcn/ui toast component via `npx shadcn@latest add toast` in apps/nextjs/
-- [ ] T002 Add `<Toaster />` to root layout in apps/nextjs/src/app/layout.tsx
-- [ ] T003 [P] Add npm scripts `prompt:recipe` and `prompt:recipe:prod` to apps/nextjs/package.json
+- [X] T001 Install shadcn/ui toast component via `npx shadcn@latest add toast` in apps/nextjs/ (used sonner instead, toast deprecated)
+- [X] T002 Add `<Toaster />` to root layout in apps/nextjs/src/app/layout.tsx
+- [X] T003 [P] Add npm scripts `prompt:recipe` and `prompt:recipe:prod` to apps/nextjs/package.json
 
 ---
 
@@ -35,12 +35,12 @@ Monorepo structure: `apps/nextjs/src/`
 
 **CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T004 Create Zod schemas in apps/nextjs/src/types/recipes.ts (RecipeExtraction, ValidationResult, constraints)
-- [ ] T005 [P] Create recipe-editor prompt template in apps/nextjs/src/lib/prompts/recipe-editor/prompt.ts
-- [ ] T006 [P] Create recipe-editor output schema in apps/nextjs/src/lib/prompts/recipe-editor/schema.ts
-- [ ] T007 Create recipe-editor process utility in apps/nextjs/src/lib/prompts/recipe-editor/process.ts (Gemini integration with Opik tracking)
-- [ ] T008 [P] Create Opik prompt registration script in apps/nextjs/scripts/register-recipe-prompt.ts
-- [ ] T009 [P] Create server actions file in apps/nextjs/src/app/actions/recipes.ts (getRecipes, createRecipe, updateRecipe, deleteRecipe)
+- [X] T004 Create Zod schemas in apps/nextjs/src/types/recipes.ts (RecipeExtraction, ValidationResult, constraints)
+- [X] T005 [P] Create recipe-editor prompt template in apps/nextjs/src/lib/prompts/recipe-editor/prompt.ts
+- [X] T006 [P] Create recipe-editor output schema in apps/nextjs/src/lib/prompts/recipe-editor/schema.ts
+- [X] T007 Create recipe-editor process utility in apps/nextjs/src/lib/prompts/recipe-editor/process.ts (Gemini integration with Opik tracking)
+- [X] T008 [P] Create Opik prompt registration script in apps/nextjs/scripts/register-recipe-prompt.ts
+- [X] T009 [P] Create server actions file in apps/nextjs/src/app/actions/recipes.ts (getRecipes, createRecipe, updateRecipe, deleteRecipe)
 
 **Checkpoint**: Foundation ready - user story implementation can begin
 
@@ -54,10 +54,10 @@ Monorepo structure: `apps/nextjs/src/`
 
 ### Implementation for User Story 1
 
-- [ ] T010 [US1] Create RecipeCard component (non-interactive variant) in apps/nextjs/src/components/recipes/recipe-card.tsx
-- [ ] T011 [US1] Create RecipeList component (summary mode) in apps/nextjs/src/components/recipes/recipe-list.tsx
-- [ ] T012 [US1] Modify /app page to display recipe summary section in apps/nextjs/src/app/(protected)/app/page.tsx
-- [ ] T013 [US1] Add navigation link from /app to /recipes page
+- [X] T010 [US1] Create RecipeCard component (non-interactive variant) in apps/nextjs/src/components/recipes/recipe-card.tsx
+- [X] T011 [US1] Create RecipeList component (summary mode) in apps/nextjs/src/components/recipes/recipe-list.tsx
+- [X] T012 [US1] Modify /app page to display recipe summary section in apps/nextjs/src/app/(protected)/app/page.tsx
+- [X] T013 [US1] Add navigation link from /app to /recipes page
 
 **Checkpoint**: User Story 1 complete - /app shows top 10 recipes (non-clickable)
 
@@ -71,11 +71,11 @@ Monorepo structure: `apps/nextjs/src/`
 
 ### Implementation for User Story 2
 
-- [ ] T014 [P] [US2] Create /recipes page structure in apps/nextjs/src/app/(protected)/recipes/page.tsx
-- [ ] T015 [P] [US2] Extend RecipeCard for interactive variant (hover states, cursor pointer) in apps/nextjs/src/components/recipes/recipe-card.tsx
-- [ ] T016 [US2] Create RecipeForm component (modal/expanded card) in apps/nextjs/src/components/recipes/recipe-form.tsx
-- [ ] T017 [US2] Implement "Add recipe" button with blank form state on /recipes page
-- [ ] T018 [US2] Implement recipe card click → open modal with populated data for editing
+- [X] T014 [P] [US2] Create /recipes page structure in apps/nextjs/src/app/(protected)/recipes/page.tsx
+- [X] T015 [P] [US2] Extend RecipeCard for interactive variant (hover states, cursor pointer) in apps/nextjs/src/components/recipes/recipe-card.tsx
+- [X] T016 [US2] Create RecipeForm component (modal/expanded card) in apps/nextjs/src/components/recipes/recipe-form.tsx
+- [X] T017 [US2] Implement "Add recipe" button with blank form state on /recipes page
+- [X] T018 [US2] Implement recipe card click → open modal with populated data for editing
 
 **Checkpoint**: User Story 2 complete - /recipes page fully navigable with add/edit flows
 
@@ -89,11 +89,11 @@ Monorepo structure: `apps/nextjs/src/`
 
 ### Implementation for User Story 3
 
-- [ ] T019 [US3] Add ingredient list display to RecipeForm with optional checkboxes in apps/nextjs/src/components/recipes/recipe-form.tsx
-- [ ] T020 [US3] Implement optional toggle state management in RecipeForm
-- [ ] T021 [US3] Implement save functionality with updateRecipe server action integration
-- [ ] T022 [US3] Add inline delete confirmation (button transforms to "Confirm delete?" with confirm/cancel)
-- [ ] T023 [US3] Conditionally render delete button (edit mode only, not add mode)
+- [X] T019 [US3] Add ingredient list display to RecipeForm with optional checkboxes in apps/nextjs/src/components/recipes/recipe-form.tsx
+- [X] T020 [US3] Implement optional toggle state management in RecipeForm
+- [X] T021 [US3] Implement save functionality with updateRecipe server action integration
+- [X] T022 [US3] Add inline delete confirmation (button transforms to "Confirm delete?" with confirm/cancel)
+- [X] T023 [US3] Conditionally render delete button (edit mode only, not add mode)
 
 **Checkpoint**: User Story 3 complete - full recipe editing with ingredient optional marking
 
@@ -107,13 +107,13 @@ Monorepo structure: `apps/nextjs/src/`
 
 ### Implementation for User Story 4
 
-- [ ] T024 [P] [US4] Create /api/recipes/process-voice route in apps/nextjs/src/app/api/recipes/process-voice/route.ts
-- [ ] T025 [P] [US4] Create /api/recipes/process-text route in apps/nextjs/src/app/api/recipes/process-text/route.ts
-- [ ] T026 [US4] Create VoiceInput component (mic button, recording state, 1-min limit) in apps/nextjs/src/components/recipes/voice-input.tsx
-- [ ] T027 [US4] Add text input field with submit button to RecipeForm
-- [ ] T028 [US4] Implement skeleton placeholders + "Extracting recipe..." loading state in RecipeForm
-- [ ] T029 [US4] Wire voice/text API calls to RecipeForm and populate fields on response
-- [ ] T030 [US4] Display LLM-suggested optional flags on ingredients (pre-marked checkboxes)
+- [X] T024 [P] [US4] Create /api/recipes/process-voice route in apps/nextjs/src/app/api/recipes/process-voice/route.ts
+- [X] T025 [P] [US4] Create /api/recipes/process-text route in apps/nextjs/src/app/api/recipes/process-text/route.ts
+- [X] T026 [US4] Create VoiceInput component (mic button, recording state, 1-min limit) in apps/nextjs/src/components/recipes/voice-input.tsx
+- [X] T027 [US4] Add text input field with submit button to RecipeForm
+- [X] T028 [US4] Implement skeleton placeholders + "Extracting recipe..." loading state in RecipeForm
+- [X] T029 [US4] Wire voice/text API calls to RecipeForm and populate fields on response
+- [X] T030 [US4] Display LLM-suggested optional flags on ingredients (pre-marked checkboxes)
 
 **Checkpoint**: User Story 4 complete - voice/text input extracts and populates recipe fields
 
@@ -127,11 +127,11 @@ Monorepo structure: `apps/nextjs/src/`
 
 ### Implementation for User Story 5
 
-- [ ] T031 [P] [US5] Create /api/recipes/validate route in apps/nextjs/src/app/api/recipes/validate/route.ts
-- [ ] T032 [US5] Call validation endpoint before save in RecipeForm
-- [ ] T033 [US5] Display toast notification for unrecognized ingredients (auto-dismiss 5s)
-- [ ] T034 [US5] Implement unrecognized items resolution UI (remove, rename, keep as custom text)
-- [ ] T035 [US5] Store unrecognized items in database with context='recipe'
+- [X] T031 [P] [US5] Create /api/recipes/validate route in apps/nextjs/src/app/api/recipes/validate/route.ts
+- [X] T032 [US5] Call validation endpoint before save in RecipeForm (called during extraction)
+- [X] T033 [US5] Display toast notification for unrecognized ingredients (auto-dismiss 5s)
+- [ ] T034 [US5] Implement unrecognized items resolution UI (remove, rename, keep as custom text) - DEFERRED (MVP: just show toast)
+- [ ] T035 [US5] Store unrecognized items in database with context='recipe' - DEFERRED (MVP: just validate)
 
 **Checkpoint**: User Story 5 complete - ingredient validation with unrecognized items handling
 
@@ -141,10 +141,10 @@ Monorepo structure: `apps/nextjs/src/`
 
 **Purpose**: Refinements affecting multiple user stories
 
-- [ ] T036 Run quickstart.md validation checklist
-- [ ] T037 [P] Verify tenant isolation (RLS) works for all recipe operations
-- [ ] T038 Performance check: recipe list loads <2s, voice extraction <15s
-- [ ] T039 Register recipe-editor prompt with Opik (`pnpm prompt:recipe`)
+- [ ] T036 Run quickstart.md validation checklist - MANUAL TESTING REQUIRED
+- [X] T037 [P] Verify tenant isolation (RLS) works for all recipe operations (all queries use createUserDb pattern)
+- [ ] T038 Performance check: recipe list loads <2s, voice extraction <15s - MANUAL TESTING REQUIRED
+- [ ] T039 Register recipe-editor prompt with Opik (`pnpm prompt:recipe`) - USER ACTION REQUIRED
 
 ---
 
