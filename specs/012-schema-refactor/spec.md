@@ -56,7 +56,7 @@ The `recipes` table is renamed to `user_recipes` to follow the naming convention
 ### Edge Cases
 
 - What happens when a user has pantry staples in the old table but no corresponding inventory entry? → Create inventory entry with default quantity and pantry staple flag
-- What happens to the existing `user_recipes` junction table when `recipes` is renamed to `user_recipes`? → The junction table needs a new name to avoid conflict
+- What happens to the existing `user_recipes` junction table when `recipes` is renamed to `user_recipes`? → Drop the junction table (recipes already belong to users)
 - How are orphaned recipe ingredients handled after removing seeded recipes? → Cascade delete removes associated recipe_ingredients
 
 ## Requirements *(mandatory)*
@@ -67,7 +67,7 @@ The `recipes` table is renamed to `user_recipes` to follow the naming convention
 - **FR-002**: System MUST migrate existing `user_pantry_staples` data to `isPantryStaple` flags in `user_inventory`
 - **FR-003**: System MUST drop the `user_pantry_staples` table after successful migration
 - **FR-004**: System MUST rename the `recipes` table to `user_recipes`
-- **FR-005**: System MUST rename the existing `user_recipes` junction table to avoid naming conflict (e.g., `user_saved_recipes`)
+- **FR-005**: System MUST drop the existing `user_recipes` junction table (no longer needed - recipes already belong to users)
 - **FR-006**: System MUST remove the `isSeeded` column from recipes
 - **FR-007**: System MUST remove the `recipe_ownership` check constraint that depends on `isSeeded`
 - **FR-008**: System MUST update all foreign key references to reflect renamed tables
@@ -78,7 +78,6 @@ The `recipes` table is renamed to `user_recipes` to follow the naming convention
 
 - **User Inventory (user_inventory)**: User's ingredient inventory with quantity tracking. Now includes `isPantryStaple` boolean to indicate always-stocked items.
 - **User Recipes (formerly recipes)**: User-created recipes. Simplified to remove seeding logic - all recipes belong to a user.
-- **User Saved Recipes (formerly user_recipes)**: Junction table linking users to recipes they've saved/bookmarked with source tracking.
 - **Recipe Ingredients (recipe_ingredients)**: Ingredients required for a recipe. Foreign key updated to reference renamed table.
 
 ## Success Criteria *(mandatory)*
