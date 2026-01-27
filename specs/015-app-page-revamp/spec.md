@@ -92,6 +92,24 @@ As a user on any /app page, I want persistent navigation to quickly access the m
 
 ---
 
+### User Story 6 - View Cooking History (Priority: P3)
+
+As a user, I want to see my recent cooking history at the bottom of the main page, so I can track what I've cooked recently.
+
+**Why this priority**: Nice-to-have visibility feature - provides context but not essential for core cooking workflow.
+
+**Independent Test**: Can be tested by marking recipes as cooked, then verifying entries appear in the cooking log table at the bottom of /app.
+
+**Acceptance Scenarios**:
+
+1. **Given** I have cooking log entries, **When** I visit /app, **Then** I see a "Cooking History" section at the bottom of the page
+2. **Given** the cooking history section, **When** I view it, **Then** I see a table (not cards) displaying the latest 10 cooking log entries
+3. **Given** the cooking log table, **When** I view each row, **Then** I see recipe name and cooked date/time
+4. **Given** I have more than 10 cooking log entries, **When** I view the table, **Then** only the 10 most recent entries are displayed
+5. **Given** I have no cooking log entries, **When** I visit /app, **Then** I see an empty state message in the cooking history section
+
+---
+
 ### Edge Cases
 
 - What happens when a recipe has only optional ingredients (no anchors)? → Treated as available (no required ingredients to check)
@@ -99,6 +117,7 @@ As a user on any /app page, I want persistent navigation to quickly access the m
 - What happens when user marks a recipe cooked but the recipe gets deleted mid-flow? → Modal should handle gracefully with error message
 - What happens if ingredient quantity would go negative after cooking? → Quantity floors at 0, no negative values allowed
 - What happens if there are no available or almost-available recipes? → Show empty state message in each section
+- What happens if there are no cooking log entries? → Show empty state message in cooking history section
 
 ## Requirements *(mandatory)*
 
@@ -116,6 +135,8 @@ As a user on any /app page, I want persistent navigation to quickly access the m
 - **FR-010**: Users MUST be able to tap each ingredient in the modal to adjust final quantity (matching inventory update modal interaction)
 - **FR-011**: System MUST create a cooking_log entry when user confirms the "cooked" action
 - **FR-012**: System MUST update user inventory quantities according to user's final adjustments when saving
+- **FR-013**: System MUST display a "Cooking History (Last 10)" section at the bottom of the main page showing the latest 10 cooking log entries in table format
+- **FR-014**: Cooking history table MUST follow neo-brutalism design (thick borders, bold fonts, no rounded corners)
 
 ### Key Entities
 
