@@ -83,6 +83,7 @@ export default async function SuggestionsPage() {
       const db = createUserDb(token);
 
       if (token.sub) {
+        const userId = token.sub;
         onboardedRecipes = await db(async (tx) => {
           return await tx
             .select({
@@ -91,7 +92,7 @@ export default async function SuggestionsPage() {
               description: userRecipes.description,
             })
             .from(userRecipes)
-            .where(eq(userRecipes.userId, token.sub));
+            .where(eq(userRecipes.userId, userId));
         });
       }
     }
