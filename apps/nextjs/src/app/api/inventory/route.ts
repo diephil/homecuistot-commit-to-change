@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/utils/supabase/server'
 import { createUserDb, decodeSupabaseToken } from '@/db/client'
 import { userInventory, ingredients } from '@/db/schema'
-import { eq, gt } from 'drizzle-orm'
+import { eq } from 'drizzle-orm'
 
 export async function GET() {
   try {
@@ -46,7 +46,6 @@ export async function GET() {
         })
         .from(userInventory)
         .innerJoin(ingredients, eq(userInventory.ingredientId, ingredients.id))
-        .where(gt(userInventory.quantityLevel, 0))
     )
 
     return NextResponse.json({
