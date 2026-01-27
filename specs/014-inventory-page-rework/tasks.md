@@ -17,12 +17,12 @@
 
 **Purpose**: Project initialization and prompt registration
 
-- [ ] T001 Create types/inventory.ts with Zod schemas and derived types
-- [ ] T002 Create lib/prompts/inventory-update/prompt.ts with INVENTORY_UPDATE_PROMPT definition
-- [ ] T003 Create lib/prompts/inventory-update/process.ts with Gemini integration
-- [ ] T004 Create scripts/register-inventory-prompt.ts for Opik prompt registration
-- [ ] T005 Add npm scripts to package.json: prompt:inventory, prompt:inventory:prod, update prompt:all
-- [ ] T006 Run pnpm prompt:inventory to register prompt to local Opik
+- [X] T001 Create types/inventory.ts with Zod schemas and derived types
+- [X] T002 Create lib/prompts/inventory-update/prompt.ts with INVENTORY_UPDATE_PROMPT definition
+- [X] T003 Create lib/prompts/inventory-update/process.ts with Gemini integration
+- [X] T004 Create scripts/register-inventory-prompt.ts for Opik prompt registration
+- [X] T005 Add npm scripts to package.json: prompt:inventory, prompt:inventory:prod, update prompt:all
+- [X] T006 Run pnpm prompt:inventory to register prompt to local Opik
 
 ---
 
@@ -32,12 +32,12 @@
 
 **⚠️ CRITICAL**: User story implementation depends on these routes
 
-- [ ] T007 [P] Implement POST /api/inventory/process-voice in app/api/inventory/process-voice/route.ts
-- [ ] T008 [P] Implement POST /api/inventory/process-text in app/api/inventory/process-text/route.ts
-- [ ] T009 [P] Implement POST /api/inventory/validate in app/api/inventory/validate/route.ts
-- [ ] T010 [P] Implement POST /api/inventory/batch in app/api/inventory/batch/route.ts
-- [ ] T011 [P] Implement PATCH /api/inventory/[id]/toggle-staple in app/api/inventory/[id]/toggle-staple/route.ts
-- [ ] T012 [P] Implement DELETE /api/inventory/[id] in app/api/inventory/[id]/route.ts
+- [X] T007 [P] Implement POST /api/inventory/process-voice in app/api/inventory/process-voice/route.ts
+- [X] T008 [P] Implement POST /api/inventory/process-text in app/api/inventory/process-text/route.ts
+- [X] T009 [P] Implement POST /api/inventory/validate in app/api/inventory/validate/route.ts
+- [X] T010 [P] Implement POST /api/inventory/batch in app/api/inventory/batch/route.ts
+- [X] T011 [P] Implement PATCH /api/inventory/[id]/toggle-staple in app/api/inventory/[id]/toggle-staple/route.ts
+- [X] T012 [P] Implement DELETE /api/inventory/[id] in app/api/inventory/[id]/route.ts
 
 **Checkpoint**: Foundation ready - user story implementation can begin
 
