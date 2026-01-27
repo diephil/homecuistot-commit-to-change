@@ -11,6 +11,15 @@ export async function updateInventoryQuantity(params: {
   quantityLevel: number
 }) {
   const supabase = await createClient()
+
+  // Verify user authenticity
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) {
+    throw new Error('Unauthorized')
+  }
+
+  // Get session for JWT token
   const { data: { session } } = await supabase.auth.getSession()
 
   if (!session) {
@@ -50,6 +59,15 @@ export async function addInventoryItem(params: {
   quantityLevel: number
 }) {
   const supabase = await createClient()
+
+  // Verify user authenticity
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) {
+    throw new Error('Unauthorized')
+  }
+
+  // Get session for JWT token
   const { data: { session } } = await supabase.auth.getSession()
 
   if (!session) {
@@ -89,6 +107,15 @@ export async function addInventoryItem(params: {
 
 export async function deleteInventoryItem(params: { ingredientId: string }) {
   const supabase = await createClient()
+
+  // Verify user authenticity
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) {
+    throw new Error('Unauthorized')
+  }
+
+  // Get session for JWT token
   const { data: { session } } = await supabase.auth.getSession()
 
   if (!session) {

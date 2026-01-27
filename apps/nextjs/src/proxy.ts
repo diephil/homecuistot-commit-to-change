@@ -6,7 +6,7 @@ const protectedRoutes = ["/app", "/admin"];
 const publicRoutes = ["/login", "/"];
 
 export default async function proxy(request: NextRequest): Promise<NextResponse> {
-  let response = NextResponse.next({
+  const response = NextResponse.next({
     request: {
       headers: request.headers,
     },
@@ -29,9 +29,10 @@ export default async function proxy(request: NextRequest): Promise<NextResponse>
     }
   );
 
+  // Verify user authenticity
   const {
-    data: { session },
-  } = await supabase.auth.getSession();
+    data: { user },
+  } = await supabase.auth.getUser();
 
   const path = request.nextUrl.pathname;
   const isProtectedRoute = protectedRoutes.some((route) =>
@@ -40,13 +41,12 @@ export default async function proxy(request: NextRequest): Promise<NextResponse>
   const isPublicRoute = publicRoutes.some((route) => path === route);
 
   // Redirect to /login if user is not authenticated on protected routes
-  if (isProtectedRoute && !session) {
+  if (isProtectedRoute && !user) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
   // Admin route protection: check user role
   if (path.startsWith("/admin")) {
-    const { data: { user } } = await supabase.auth.getUser();
     const adminIds = process.env.ADMIN_USER_IDS?.split(',').map(id => id.trim()) || [];
 
     if (!user || !adminIds.includes(user.id)) {
@@ -55,7 +55,7 @@ export default async function proxy(request: NextRequest): Promise<NextResponse>
   }
 
   // Redirect to /app/onboarding if user is authenticated on public routes
-  if (isPublicRoute && session && path === "/login") {
+  if (isPublicRoute && user && path === "/login") {
     return NextResponse.redirect(new URL("/app/onboarding", request.url));
   }
 

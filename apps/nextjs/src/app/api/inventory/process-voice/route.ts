@@ -9,11 +9,13 @@ import { processVoiceInventory } from "@/lib/prompts/inventory-update/process";
 export async function POST(request: Request) {
   try {
     const supabase = await createClient();
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
 
-    if (!session) {
+    // Verify user authenticity
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -40,6 +42,10 @@ export async function POST(request: Request) {
     return NextResponse.json(extraction);
   } catch (error) {
     console.error("Voice processing error:", error);
+    // Log full error details for debugging
+    if (error && typeof error === 'object') {
+      console.error("Error details:", JSON.stringify(error, null, 2));
+    }
     return NextResponse.json(
       {
         error: "Processing failed",

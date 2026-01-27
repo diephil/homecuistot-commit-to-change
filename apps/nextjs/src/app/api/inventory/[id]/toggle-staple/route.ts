@@ -1,13 +1,8 @@
-// PATCH /api/inventory/[id]/toggle-staple
-// Toggle pantry staple status for an item
-// Feature: 014-inventory-page-rework
-
-import { NextResponse } from "next/server";
-import { createClient } from "@/utils/supabase/server";
-import { createUserDb, decodeSupabaseToken } from "@/db/client";
-import { userInventory } from "@/db/schema";
-import { eq, and } from "drizzle-orm";
-import { sql } from "drizzle-orm";
+import { NextResponse } from 'next/server';
+import { createClient } from '@/utils/supabase/server';
+import { createUserDb, decodeSupabaseToken } from '@/db/client';
+import { userInventory } from '@/db/schema';
+import { eq, and } from 'drizzle-orm';
 
 export async function PATCH(
   request: Request,
@@ -15,25 +10,59 @@ export async function PATCH(
 ) {
   try {
     const supabase = await createClient();
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
+
+    // Verify user authenticity
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    // Get session for JWT token
+    const { data: { session } } = await supabase.auth.getSession();
 
     if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
     }
 
     const { id } = await params;
 
+    // Decode JWT token for Drizzle RLS
     const token = decodeSupabaseToken(session.access_token);
     const db = createUserDb(token);
 
+    // Get current item
+    const [currentItem] = await db((tx) =>
+      tx
+        .select()
+        .from(userInventory)
+        .where(
+          and(
+            eq(userInventory.id, id),
+            eq(userInventory.userId, session.user.id)
+          )
+        )
+    );
+
+    if (!currentItem) {
+      return NextResponse.json(
+        { error: 'Item not found' },
+        { status: 404 }
+      );
+    }
+
     // Toggle isPantryStaple
-    const [result] = await db((tx) =>
+    const [updatedItem] = await db((tx) =>
       tx
         .update(userInventory)
         .set({
-          isPantryStaple: sql`NOT ${userInventory.isPantryStaple}`,
+          isPantryStaple: !currentItem.isPantryStaple,
           updatedAt: new Date(),
         })
         .where(
@@ -45,21 +74,17 @@ export async function PATCH(
         .returning()
     );
 
-    if (!result) {
-      return NextResponse.json({ error: "Item not found" }, { status: 404 });
-    }
-
     return NextResponse.json({
       success: true,
       item: {
-        id: result.id,
-        isPantryStaple: result.isPantryStaple,
+        id: updatedItem.id,
+        isPantryStaple: updatedItem.isPantryStaple,
       },
     });
   } catch (error) {
-    console.error("Toggle staple error:", error);
+    console.error('Toggle staple error:', error);
     return NextResponse.json(
-      { error: "Toggle failed", details: "Database error" },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }

@@ -78,9 +78,18 @@ export default async function SuggestionsPage() {
 
   try {
     const supabase = await createClient();
-    const { data: { session } } = await supabase.auth.getSession();
 
-    if (session) {
+    // Verify user authenticity
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (user) {
+      // Get session for JWT token
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (!session) {
+        console.error('[app] Session not found after user verification');
+        return;
+      }
       const token = decodeSupabaseToken(session.access_token);
       const db = createUserDb(token);
 

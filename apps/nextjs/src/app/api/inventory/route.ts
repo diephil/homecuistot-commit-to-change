@@ -7,6 +7,18 @@ import { eq, gt } from 'drizzle-orm'
 export async function GET() {
   try {
     const supabase = await createClient()
+
+    // Verify user authenticity
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
+
+    // Get session for JWT token
     const { data: { session } } = await supabase.auth.getSession()
 
     if (!session) {
@@ -29,6 +41,7 @@ export async function GET() {
           ingredientName: ingredients.name,
           ingredientCategory: ingredients.category,
           quantityLevel: userInventory.quantityLevel,
+          isPantryStaple: userInventory.isPantryStaple,
           updatedAt: userInventory.updatedAt,
         })
         .from(userInventory)
@@ -52,6 +65,18 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const supabase = await createClient()
+
+    // Verify user authenticity
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
+
+    // Get session for JWT token
     const { data: { session } } = await supabase.auth.getSession()
 
     if (!session) {

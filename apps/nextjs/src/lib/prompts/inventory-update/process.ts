@@ -4,7 +4,10 @@
 import { z } from "zod";
 import { GoogleGenAI, type Schema } from "@google/genai";
 import { trackGemini } from "opik-gemini";
-import { inventoryUpdateExtractionSchema, type InventoryUpdateExtraction } from "@/types/inventory";
+import {
+  inventoryUpdateExtractionSchema,
+  type InventoryUpdateExtraction,
+} from "@/types/inventory";
 import { INVENTORY_UPDATE_PROMPT } from "./prompt";
 
 const genAI = new GoogleGenAI({
@@ -19,7 +22,9 @@ const trackedGenAI = trackGemini(genAI, {
   },
 });
 
-const responseSchema = z.toJSONSchema(inventoryUpdateExtractionSchema) as Schema;
+const responseSchema = z.toJSONSchema(
+  inventoryUpdateExtractionSchema,
+) as Schema;
 
 // Process voice input (audio base64)
 export async function processVoiceInventory(params: {
@@ -28,8 +33,8 @@ export async function processVoiceInventory(params: {
   const { audioBase64 } = params;
 
   const systemPrompt = INVENTORY_UPDATE_PROMPT.prompt.replace(
-    "{{{input}}}",
-    "[Audio input - listen and extract inventory updates]"
+    "{{input}}",
+    "<Audio input - listen and extract inventory updates>",
   );
 
   const response = await trackedGenAI.models.generateContent({
@@ -73,7 +78,7 @@ export async function processTextInventory(params: {
 
   const systemPrompt = INVENTORY_UPDATE_PROMPT.prompt.replace(
     "{{{input}}}",
-    text
+    text,
   );
 
   const response = await trackedGenAI.models.generateContent({

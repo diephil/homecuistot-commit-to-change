@@ -80,6 +80,12 @@ pnpm db:studio            # Open Drizzle Studio GUI
 - Use baseline script for existing production databases
 - Verbose logging enabled in drizzle.config.ts
 
+## Gemini API Limitations
+
+- **No `z.enum()` in JSON schemas**: Gemini `responseSchema` does not support enum constraints from `z.enum()`. Use `z.string()` instead and validate in prompt text or post-process.
+  - Bad: `confidence: z.enum(['high', 'medium', 'low'])`
+  - Good: `confidence: z.string()` + describe valid values in prompt
+
 ## Next.js Patterns
 
 **Authentication & Route Protection**:

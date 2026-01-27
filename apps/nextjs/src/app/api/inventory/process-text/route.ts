@@ -9,11 +9,13 @@ import { processTextInventory } from "@/lib/prompts/inventory-update/process";
 export async function POST(request: Request) {
   try {
     const supabase = await createClient();
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
 
-    if (!session) {
+    // Verify user authenticity
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 

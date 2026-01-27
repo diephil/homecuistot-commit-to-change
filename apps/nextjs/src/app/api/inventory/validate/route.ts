@@ -11,6 +11,17 @@ import { ilike } from "drizzle-orm";
 export async function POST(request: Request) {
   try {
     const supabase = await createClient();
+
+    // Verify user authenticity
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Get session for JWT token
     const {
       data: { session },
     } = await supabase.auth.getSession();
