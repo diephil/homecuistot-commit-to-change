@@ -1,4 +1,4 @@
-import { pgTable, uuid, integer, timestamp, check, index, uniqueIndex } from 'drizzle-orm/pg-core'
+import { pgTable, uuid, integer, timestamp, check, index, uniqueIndex, boolean } from 'drizzle-orm/pg-core'
 import { relations, sql } from 'drizzle-orm'
 import { ingredients } from './ingredients'
 
@@ -7,6 +7,7 @@ export const userInventory = pgTable('user_inventory', {
   userId: uuid('user_id').notNull(),
   ingredientId: uuid('ingredient_id').notNull().references(() => ingredients.id, { onDelete: 'restrict' }),
   quantityLevel: integer('quantity_level').notNull().default(3),
+  isPantryStaple: boolean('is_pantry_staple').notNull().default(false),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 }, (table) => [
   check('quantity_level_check', sql`${table.quantityLevel} BETWEEN 0 AND 3`),
@@ -14,6 +15,7 @@ export const userInventory = pgTable('user_inventory', {
   index('idx_user_inventory_user').on(table.userId),
   index('idx_user_inventory_quantity').on(table.userId, table.quantityLevel).where(sql`${table.quantityLevel} > 0`),
   index('idx_user_inventory_matching').on(table.userId, table.ingredientId, table.quantityLevel).where(sql`${table.quantityLevel} > 0`),
+  index('idx_user_inventory_pantry').on(table.userId, table.isPantryStaple).where(sql`${table.isPantryStaple} = true`),
 ])
 
 // Relations

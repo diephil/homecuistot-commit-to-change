@@ -39,6 +39,7 @@
 - Supabase PostgreSQL via Drizzle (010-user-pantry-staples)
 - TypeScript 5+ (strict mode) + React 19, Next.js 16, Drizzle ORM 0.45.1, @google/genai (Gemini), Zod (011-onboarding-data-persist)
 - Supabase PostgreSQL via Drizzle ORM (011-onboarding-data-persist)
+- TypeScript 5+ (strict mode) + Drizzle ORM 0.45.1, postgres 3.4.8, Next.js 16 (012-schema-refactor)
 
 **Frontend**: TypeScript 5+ (strict), React 19, Next.js 16 App Router, Tailwind CSS v4, RetroUI + shadcn/ui, lucide-react icons
 
@@ -100,6 +101,6 @@ pnpm db:studio            # Open Drizzle Studio GUI
 - Purpose: Generate SQL migration from CSV data
 
 ## Recent Changes
+- 012-schema-refactor: Added TypeScript 5+ (strict mode) + Drizzle ORM 0.45.1, postgres 3.4.8, Next.js 16
 - 011-onboarding-data-persist: Added TypeScript 5+ (strict mode) + React 19, Next.js 16, Drizzle ORM 0.45.1, @google/genai (Gemini), Zod
 - 010-user-pantry-staples: Added TypeScript 5+ (strict mode) + React 19, Next.js 16, Drizzle ORM 0.45.1, Zod, @google/genai (Gemini)
-- 009-ingredient-migration: 30-category ingredient taxonomy, 5931 ingredients populated, script relocated to apps/nextjs/scripts

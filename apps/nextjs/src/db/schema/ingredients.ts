@@ -7,7 +7,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import type { IngredientCategory } from "./enums";
-import { recipeIngredients } from "./recipes";
+import { recipeIngredients } from "./user-recipes";
 import { userInventory } from "./user-inventory";
 
 export const ingredients = pgTable(
