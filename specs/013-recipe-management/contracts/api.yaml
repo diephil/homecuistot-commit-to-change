@@ -1,0 +1,239 @@
+openapi: 3.0.3
+info:
+  title: Recipe Management API
+  version: 1.0.0
+  description: API endpoints for recipe management feature
+
+servers:
+  - url: /api
+    description: Next.js API routes
+
+paths:
+  /recipes/process-voice:
+    post:
+      summary: Process voice input to extract recipe details
+      description: |
+        Accepts base64-encoded audio (webm) and uses Gemini LLM to extract
+        recipe title, description, and ingredients with optional flags.
+      operationId: processVoice
+      tags:
+        - Recipe
+        - LLM
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - audioBase64
+              properties:
+                audioBase64:
+                  type: string
+                  description: Base64-encoded webm audio data
+                  example: "UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAI..."
+      responses:
+        "200":
+          description: Successfully extracted recipe details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecipeExtraction"
+        "400":
+          description: Invalid request (missing audio data)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Unauthorized (no valid session)
+        "408":
+          description: Request timeout during LLM processing
+        "500":
+          description: Internal server error
+
+  /recipes/process-text:
+    post:
+      summary: Process text input to extract recipe details
+      description: |
+        Accepts text description and uses Gemini LLM to extract
+        recipe title, description, and ingredients with optional flags.
+        If no ingredients mentioned, LLM infers minimal ingredient list.
+      operationId: processText
+      tags:
+        - Recipe
+        - LLM
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - text
+              properties:
+                text:
+                  type: string
+                  description: Recipe description text
+                  example: "I want to make spaghetti carbonara with crispy bacon"
+      responses:
+        "200":
+          description: Successfully extracted recipe details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecipeExtraction"
+        "400":
+          description: Invalid request (missing text)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Unauthorized (no valid session)
+        "408":
+          description: Request timeout during LLM processing
+        "500":
+          description: Internal server error
+
+  /recipes/validate:
+    post:
+      summary: Validate ingredient names against database
+      description: |
+        Checks ingredient names against the 5931-item ingredient catalog.
+        Returns matched ingredients with IDs and unrecognized names.
+      operationId: validateIngredients
+      tags:
+        - Recipe
+        - Validation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - ingredients
+              properties:
+                ingredients:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                      - name
+                      - isOptional
+                    properties:
+                      name:
+                        type: string
+                        example: "tomato"
+                      isOptional:
+                        type: boolean
+                        example: false
+                  minItems: 1
+                  maxItems: 20
+      responses:
+        "200":
+          description: Validation results
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationResult"
+        "400":
+          description: Invalid request
+        "401":
+          description: Unauthorized
+
+components:
+  schemas:
+    RecipeExtraction:
+      type: object
+      required:
+        - title
+        - description
+        - ingredients
+      properties:
+        title:
+          type: string
+          maxLength: 100
+          example: "Spaghetti Carbonara"
+        description:
+          type: string
+          maxLength: 200
+          example: "Classic Italian pasta dish with eggs, cheese, and pancetta"
+        ingredients:
+          type: array
+          items:
+            type: object
+            required:
+              - name
+              - isOptional
+            properties:
+              name:
+                type: string
+                description: Lowercase, singular ingredient name
+                example: "egg"
+              isOptional:
+                type: boolean
+                description: True for garnishes, toppings, or optional items
+                example: false
+          minItems: 1
+          maxItems: 20
+
+    ValidationResult:
+      type: object
+      required:
+        - matched
+        - unrecognized
+      properties:
+        matched:
+          type: array
+          items:
+            type: object
+            required:
+              - id
+              - name
+              - isOptional
+            properties:
+              id:
+                type: string
+                format: uuid
+                description: Ingredient ID from database
+              name:
+                type: string
+                example: "tomato"
+              isOptional:
+                type: boolean
+          description: Ingredients found in database
+        unrecognized:
+          type: array
+          items:
+            type: string
+          description: Ingredient names not found in database
+          example: ["magic sauce", "special blend"]
+
+    Error:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+          example: "Audio data is required"
+
+  securitySchemes:
+    supabaseAuth:
+      type: apiKey
+      in: cookie
+      name: sb-access-token
+      description: Supabase session cookie
+
+security:
+  - supabaseAuth: []
+
+tags:
+  - name: Recipe
+    description: Recipe CRUD operations
+  - name: LLM
+    description: LLM-powered extraction
+  - name: Validation
+    description: Data validation endpoints

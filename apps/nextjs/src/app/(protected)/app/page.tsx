@@ -7,7 +7,8 @@ import Link from "next/link";
 import { createClient } from "@/utils/supabase/server";
 import { createUserDb, decodeSupabaseToken } from "@/db/client";
 import { userRecipes } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
+import { RecipeList } from "@/components/recipes/recipe-list";
 
 // T030: MOCK_RECIPES constant (8 items with id, title, description, ingredients, isAvailable)
 const MOCK_RECIPES = [
@@ -73,6 +74,7 @@ const MOCK_RECIPES = [
 export default async function SuggestionsPage() {
   // T026: Fetch all user_recipes (recipes table renamed)
   let onboardedRecipes: { id: string; title: string; description: string | null }[] = [];
+  let recentRecipes: { id: string; title: string; description: string | null }[] = [];
 
   try {
     const supabase = await createClient();
@@ -93,6 +95,20 @@ export default async function SuggestionsPage() {
             })
             .from(userRecipes)
             .where(eq(userRecipes.userId, userId));
+        });
+
+        // Fetch top 10 recent recipes for summary section
+        recentRecipes = await db(async (tx) => {
+          return await tx
+            .select({
+              id: userRecipes.id,
+              title: userRecipes.name,
+              description: userRecipes.description,
+            })
+            .from(userRecipes)
+            .where(eq(userRecipes.userId, userId))
+            .orderBy(desc(userRecipes.createdAt))
+            .limit(10);
         });
       }
     }
@@ -130,6 +146,19 @@ export default async function SuggestionsPage() {
           These pages use mock data and are still being developed.
           Expect changes and incomplete features.
         </InfoCard>
+
+        {/* Recent Recipes Summary Section */}
+        {recentRecipes.length > 0 && (
+          <section className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-2xl font-semibold">Recent Recipes</h2>
+              <Button asChild variant="ghost" size="sm">
+                <Link href="/app/recipes">View All</Link>
+              </Button>
+            </div>
+            <RecipeList recipes={recentRecipes} variant="summary" />
+          </section>
+        )}
 
         {/* Header with navigation CTAs */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
