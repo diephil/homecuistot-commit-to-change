@@ -21,6 +21,10 @@ export default function InventoryPage() {
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<InventoryDisplayItem | null>(null);
 
+  // Sort items alphabetically by name
+  const sortByName = (items: InventoryDisplayItem[]) =>
+    items.sort((a, b) => a.name.localeCompare(b.name));
+
   // Fetch inventory data
   useEffect(() => {
     async function fetchInventory() {
@@ -51,10 +55,10 @@ export default function InventoryPage() {
           updatedAt: new Date(item.updatedAt),
         }));
 
-        // Group by isPantryStaple
+        // Group by isPantryStaple and sort alphabetically
         const grouped: InventoryGroups = {
-          available: items.filter((item) => !item.isPantryStaple),
-          pantryStaples: items.filter((item) => item.isPantryStaple),
+          available: sortByName(items.filter((item) => !item.isPantryStaple)),
+          pantryStaples: sortByName(items.filter((item) => item.isPantryStaple)),
         };
 
         setInventory(grouped);
@@ -85,8 +89,8 @@ export default function InventoryPage() {
     );
 
     setInventory({
-      available: updatedItems.filter((i) => !i.isPantryStaple),
-      pantryStaples: updatedItems.filter((i) => i.isPantryStaple),
+      available: sortByName(updatedItems.filter((i) => !i.isPantryStaple)),
+      pantryStaples: sortByName(updatedItems.filter((i) => i.isPantryStaple)),
     });
 
     try {
@@ -126,8 +130,8 @@ export default function InventoryPage() {
     );
 
     setInventory({
-      available: updatedItems.filter((i) => !i.isPantryStaple),
-      pantryStaples: updatedItems.filter((i) => i.isPantryStaple),
+      available: sortByName(updatedItems.filter((i) => !i.isPantryStaple)),
+      pantryStaples: sortByName(updatedItems.filter((i) => i.isPantryStaple)),
     });
 
     try {
@@ -173,8 +177,8 @@ export default function InventoryPage() {
     const remainingItems = allItems.filter((i) => i.id !== itemToDelete.id);
 
     setInventory({
-      available: remainingItems.filter((i) => !i.isPantryStaple),
-      pantryStaples: remainingItems.filter((i) => i.isPantryStaple),
+      available: sortByName(remainingItems.filter((i) => !i.isPantryStaple)),
+      pantryStaples: sortByName(remainingItems.filter((i) => i.isPantryStaple)),
     });
 
     // Close modal
@@ -352,8 +356,8 @@ export default function InventoryPage() {
                 updatedAt: new Date(item.updatedAt),
               }));
               setInventory({
-                available: items.filter((i) => !i.isPantryStaple),
-                pantryStaples: items.filter((i) => i.isPantryStaple),
+                available: sortByName(items.filter((i) => !i.isPantryStaple)),
+                pantryStaples: sortByName(items.filter((i) => i.isPantryStaple)),
               });
             })
             .finally(() => setIsLoading(false));

@@ -33,7 +33,7 @@ export async function processVoiceInventory(params: {
   const { audioBase64 } = params;
 
   const systemPrompt = INVENTORY_UPDATE_PROMPT.prompt.replace(
-    "{{input}}",
+    "{{{input}}}",
     "<Audio input - listen and extract inventory updates>",
   );
 

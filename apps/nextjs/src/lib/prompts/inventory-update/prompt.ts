@@ -7,7 +7,7 @@ export const INVENTORY_UPDATE_PROMPT = {
     "Extract ingredient names and quantity levels from voice or text input",
   prompt: `You are an inventory update assistant. Extract ingredient changes from user input.
 
-Input: {{input}}
+Input: {{{input}}}
 
 Extract each ingredient with:
 1. ingredientName: lowercase, singular form (e.g., "tomato" not "Tomatoes")

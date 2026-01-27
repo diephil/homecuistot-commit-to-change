@@ -228,6 +228,9 @@ export function InventoryUpdateModal({
               <p className="text-sm font-bold uppercase tracking-wide">
                 Detected Ingredients ({proposal.recognized.length})
               </p>
+              <p className="text-xs text-gray-600">
+                Tap badges to adjust quantity before saving
+              </p>
               <div className="flex flex-wrap gap-2">
                 {proposal.recognized.map((item, index) => (
                   <div key={index} className="relative">
@@ -236,7 +239,15 @@ export function InventoryUpdateModal({
                       level={item.proposedQuantity as QuantityLevel}
                       variant="dots"
                       size="md"
-                      interactive={false}
+                      interactive={true}
+                      onLevelChange={(newLevel) => {
+                        setProposal({
+                          ...proposal,
+                          recognized: proposal.recognized.map((r, i) =>
+                            i === index ? { ...r, proposedQuantity: newLevel } : r
+                          ),
+                        });
+                      }}
                     />
                     {item.previousQuantity !== null && item.previousQuantity !== item.proposedQuantity && (
                       <span className="absolute -top-2 -right-2 bg-blue-400 border-2 border-black text-xs px-2 py-0.5 rounded-full font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
