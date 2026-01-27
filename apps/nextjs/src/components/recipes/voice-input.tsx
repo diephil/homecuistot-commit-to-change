@@ -41,24 +41,29 @@ export function VoiceInput(props: VoiceInputProps) {
   };
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex flex-col gap-3">
       <Button
         type="button"
-        variant="secondary"
+        variant={isRecording ? "secondary" : "default"}
         onClick={handleMicClick}
         disabled={disabled || isStopped}
-        className={isRecording ? "flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white border-red-700" : "flex items-center gap-2"}
+        className={isRecording ? "bg-red-500 hover:bg-red-600 text-white border-red-700 gap-2" : "gap-2"}
+        size="lg"
       >
-        {isRecording ? "🔴" : "🎤"}
-        {isRecording ? "Stop" : "Record"}
+        <span className="text-xl">{isRecording ? "🔴" : "🎤"}</span>
+        <span className="font-bold">{isRecording ? "Stop Recording" : "Record"}</span>
       </Button>
       {isRecording && (
-        <span className="text-sm text-muted-foreground">
-          {formatDuration(duration)} / 1:00
-        </span>
+        <div className="text-center">
+          <span className="text-sm font-bold">
+            {formatDuration(duration)} / 1:00
+          </span>
+        </div>
       )}
       {error && (
-        <span className="text-sm text-red-500">{error}</span>
+        <div className="p-3 bg-red-100 border-2 border-red-500 rounded">
+          <span className="text-sm font-medium text-red-700">{error}</span>
+        </div>
       )}
     </div>
   );

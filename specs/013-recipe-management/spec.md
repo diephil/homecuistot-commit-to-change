@@ -15,6 +15,15 @@
 - Q: How should recipe deletion be confirmed? → A: Inline confirmation (button transforms to "Confirm delete?" with confirm/cancel)
 - Q: What should user see while LLM processes voice input? → A: Skeleton placeholders in form fields + "Extracting recipe..." text
 
+### Session 2026-01-27 - UI/UX Refinements
+
+- **Input Mode Toggle**: Record button appears alone with "Do you prefer typing?" link below. Clicking switches to text input mode (replaces button in-place). Text mode shows input + Extract button with "Switch to voice recording" link. Users can freely toggle between modes.
+- **Non-Editable Title/Description**: Display-only fields (not editable inputs). Use gray background (bg-gray-100), thick left border (4px) instead of full border, no shadow, italic placeholders ("No title yet").
+- **Neo-Brutalism Design**: 4px modal border, 2px section borders, bold uppercase labels, shadow effects, thick button borders, proper spacing.
+- **Mark Optional Toggle**: Badge itself is clickable (no separate link). Hover lift effect, smooth transitions.
+- **Ingredient Deletion**: Cross (×) button on right. Subtle gray that turns red on hover. Quick removal from list.
+- **Delete Recipe Button**: Subtle red text link (not large button). Light gray divider. Cleaner confirmation with simple question + smaller "Yes, Delete" button.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - View Recipe Summary on App Dashboard (Priority: P1)
@@ -54,37 +63,44 @@ As a user on `/recipes`, the **single place** to manage all my recipes, I see al
 
 ### User Story 3 - Edit Recipe Details with Ingredient Management (Priority: P1)
 
-As a user editing a recipe, I see the recipe title, description, and list of ingredients. Each ingredient has a checkbox to mark it as optional. I can save my changes. In edit mode, I see a delete button to remove the recipe.
+As a user editing a recipe, I see the title and description as **non-editable displays** and a list of ingredients. Each ingredient has a **clickable badge** to toggle optional/required status and a **delete button (×)** to remove it from the list. I can save my changes. In edit mode, I see a **subtle red text link** at the bottom to delete the recipe (not a large button).
 
-**Why this priority**: Core recipe editing functionality with ingredient optional marking.
+**Why this priority**: Core recipe editing functionality with ingredient optional marking and removal.
 
-**Independent Test**: Can be tested by opening a recipe, toggling ingredient optional checkboxes, and saving.
+**Independent Test**: Can be tested by opening a recipe, clicking badges to toggle optional status, clicking × to remove ingredients, clicking delete link.
 
 **Acceptance Scenarios**:
 
-1. **Given** I opened an existing recipe, **When** I view the card, **Then** I see title, description, ingredients with optional checkboxes, and a delete button
-2. **Given** I am adding a new recipe, **When** I view the card, **Then** I do NOT see a delete button
-3. **Given** I toggled an ingredient as optional, **When** I save, **Then** the optional status persists
-4. **Given** I click delete on an existing recipe, **When** button transforms to inline "Confirm delete?" and I confirm, **Then** the recipe is removed from my list
+1. **Given** I opened an existing recipe, **When** I view the card, **Then** I see title/description as non-editable displays, ingredients with clickable badges and × buttons, and a subtle delete link at bottom
+2. **Given** I am adding a new recipe, **When** I view the card, **Then** I do NOT see a delete link
+3. **Given** I click an ingredient's Required/Optional badge, **When** I click it, **Then** the status toggles with a hover lift animation
+4. **Given** I click an ingredient's × button, **When** I click it, **Then** the ingredient is immediately removed from the list
+5. **Given** I toggled an ingredient as optional, **When** I save, **Then** the optional status persists
+6. **Given** I click the delete recipe link, **When** I confirm in the dialog, **Then** the recipe is removed from my list
+7. **Given** the delete confirmation appears, **When** I view it, **Then** I see a simple question with a smaller "Yes, Delete" button (not a large red button)
 
 ---
 
 ### User Story 4 - Voice or Text Input for Recipe Creation (Priority: P2)
 
-As a user creating or editing a recipe, I can use **microphone input** OR **text input** to describe my dish. The system calls an LLM ("Recipe editor" prompt) to extract the title, description, and 1-20 ingredients. The LLM suggests which ingredients should be optional based on what feels essential vs garnish. If I don't mention ingredients, the LLM infers a minimal ingredient list to achieve the recipe.
+As a user creating a recipe, I start in **voice mode** with a Record button and a "Do you prefer typing?" link. Clicking the link switches to **text mode** (text input + Extract button) in-place. I can switch back anytime via "Switch to voice recording" link. The system calls an LLM to extract title, description, and ingredients. Title and description are **non-editable** (display-only) and can only be populated via voice/text extraction. The LLM suggests which ingredients should be optional.
 
 **Why this priority**: Enhances UX with flexible input but requires P1 base functionality first.
 
-**Independent Test**: Can be tested by clicking microphone OR typing in text field, then verifying extracted fields appear.
+**Independent Test**: Can be tested by toggling between voice/text modes, submitting input, verifying extracted fields appear as non-editable displays.
 
 **Acceptance Scenarios**:
 
-1. **Given** I am on a recipe card (new or edit), **When** I click microphone and speak, **Then** the system records my input (max 1 minute)
-2. **Given** I am on a recipe card (new or edit), **When** I type in the text input field and submit, **Then** the system processes my text
-3. **Given** my input is processed, **When** the LLM processes it, **Then** skeleton placeholders appear with "Extracting recipe..." text until fields populate
-4. **Given** the LLM extracts ingredients, **When** results appear, **Then** some ingredients are pre-marked as optional based on LLM suggestion
-5. **Given** the LLM suggested optional ingredients, **When** I review, **Then** I can adjust the optional status before saving
-6. **Given** I described a dish without mentioning ingredients, **When** the LLM processes it, **Then** it infers a minimal ingredient list needed for the recipe
+1. **Given** I am creating a recipe, **When** I view the Quick Add section, **Then** I see the Record button alone with "Do you prefer typing?" link below
+2. **Given** I click "Do you prefer typing?", **When** the mode switches, **Then** the Record button is replaced in-place with text input + Extract button
+3. **Given** I am in text mode, **When** I click "Switch to voice recording", **Then** the interface switches back to voice mode with the Record button
+4. **Given** I am in voice mode, **When** I click Record and speak, **Then** the system records my input (max 1 minute)
+5. **Given** I am in text mode, **When** I type and press Enter or click Extract, **Then** the system processes my text
+6. **Given** my input is processed, **When** the LLM processes it, **Then** skeleton placeholders appear with "Extracting recipe..." text until fields populate
+7. **Given** the LLM extracts data, **When** results appear, **Then** title and description are shown as non-editable displays (gray background, left border, not inputs)
+8. **Given** the LLM extracts ingredients, **When** results appear, **Then** some ingredients are pre-marked as optional based on LLM suggestion
+9. **Given** the LLM suggested optional ingredients, **When** I review, **Then** I can click the badge to toggle optional status
+10. **Given** I described a dish without mentioning ingredients, **When** the LLM processes it, **Then** it infers a minimal ingredient list needed for the recipe
 
 ---
 
@@ -120,6 +136,69 @@ Before saving a recipe, the system validates all detected ingredients against th
   - System prevents saving with validation message
 - What happens when voice recording exceeds 1 minute?
   - Recording stops automatically at 1 minute limit
+- What happens when user toggles between voice and text modes?
+  - Interface replaces in-place; any in-progress input is lost (user must re-submit)
+- What happens when user clicks × to delete an ingredient?
+  - Ingredient is immediately removed from UI; change takes effect on save
+- What happens when user tries to edit title/description directly?
+  - Nothing; fields are display-only, can only be changed via voice/text extraction
+- What happens if user accidentally clicks delete recipe link?
+  - Confirmation dialog appears; recipe is not deleted until user confirms
+
+## UI/UX Design Patterns *(mandatory)*
+
+### Recipe Form Modal
+
+**Layout**:
+- Modal: 4px border, max-width 2xl, max-height 90vh with scroll
+- Header: 3xl bold title, thick (2px) bottom border, close button (×)
+- Content: 8px padding, 6-unit vertical spacing
+
+**Quick Add Section** (Add mode only):
+- Secondary background with 2px black border, shadow-md, rounded
+- Bold uppercase "Quick Add" label
+- Input mode toggle (voice ↔ text) replaces content in-place
+
+**Voice Input Mode**:
+- Large Record button (lg size) with microphone emoji
+- "Do you prefer typing?" link below (underline hover)
+- Recording shows red stop button + timer
+
+**Text Input Mode**:
+- Text input: 2px black border, shadow-sm, font-medium, Enter key submits
+- Extract button next to input
+- "Switch to voice recording" link below
+
+**Title & Description Display**:
+- Gray background (bg-gray-100), 4px left border accent
+- Title: Large bold text when filled, italic placeholder when empty
+- Description: Regular text, min-height 80px
+- No input-like styling (no shadow, no full border)
+
+**Ingredients List**:
+- White background, 2px black border, shadow-sm per item
+- Ingredient name: base size, font-medium
+- Required/Optional badge: Clickable, 2px border, hover lift effect
+- Delete button (×): Subtle gray, red on hover, right-aligned
+- 2-unit vertical spacing between items
+
+**Action Buttons**:
+- Primary actions: lg size, thick borders, neo-brutalism shadows
+- Create/Update + Cancel: side-by-side, 3-unit gap
+- Delete: Subtle red text link at bottom, light gray divider
+
+**Loading States**:
+- Skeleton boxes: 2px black border, shadow-md, gray-200 background
+- "Extracting recipe..." text: bold uppercase, centered
+
+### Neo-Brutalism Visual Language
+
+**Borders**: 2px standard, 4px emphasis (modal, left accents)
+**Typography**: Bold uppercase labels, tracking-wide
+**Shadows**: md for cards, sm for inputs
+**Spacing**: 5-6 units between sections
+**Buttons**: Hover translate-y, active press effects
+**Colors**: Black borders, primary fills, gray accents
 
 ## Requirements *(mandatory)*
 
@@ -146,6 +225,18 @@ Before saving a recipe, the system validates all detected ingredients against th
 - **FR-014**: Unrecognized ingredients MUST be placed in "unrecognized items" section with options: remove, rename/correct, or keep as custom text
 - **FR-015**: System MUST require at least 1 ingredient to save a recipe
 - **FR-016**: System MUST cap ingredients at maximum of 20
+- **FR-017**: System MUST support in-place toggle between voice and text input modes
+- **FR-017a**: Voice mode MUST show Record button with "Do you prefer typing?" link
+- **FR-017b**: Text mode MUST show text input + Extract button with "Switch to voice recording" link
+- **FR-018**: Title and description MUST be non-editable display fields (populated only via voice/text extraction)
+- **FR-018a**: Title/description MUST use gray background, left border accent, italic placeholders (not input styling)
+- **FR-019**: Ingredient optional/required badge MUST be directly clickable to toggle status
+- **FR-019a**: Badge MUST show hover lift effect for visual feedback
+- **FR-020**: Each ingredient MUST have a delete button (×) for quick removal from list
+- **FR-020a**: Delete button MUST be subtle (gray) and turn red on hover
+- **FR-021**: Recipe delete action MUST be subtle (text link, not large button)
+- **FR-021a**: Delete confirmation MUST use light gray divider and smaller confirmation button
+- **FR-022**: Recipe form MUST follow neo-brutalism design: 4px modal border, 2px borders, bold uppercase labels, shadows
 
 ### Key Entities
 
@@ -161,17 +252,23 @@ Before saving a recipe, the system validates all detected ingredients against th
 - **SC-001**: Users can create a new recipe via voice input in under 60 seconds
 - **SC-002**: Users can view their top 10 recipes (title + description) on `/app` within 2 seconds of page load
 - **SC-003**: 90% of voice-described recipes have correctly extracted title and at least 3 ingredients
-- **SC-004**: Users can toggle ingredient optional status and save within 3 clicks
+- **SC-004**: Users can toggle ingredient optional status with 1 click (clickable badge)
 - **SC-005**: All unrecognized ingredients are surfaced to user before save completes
 - **SC-006**: Recipe delete confirmation prevents accidental data loss
+- **SC-007**: Users can switch between voice and text input modes seamlessly (in-place toggle)
+- **SC-008**: Users can remove unwanted ingredients with 1 click (× button)
+- **SC-009**: Title and description fields are clearly non-editable (no confusion with input fields)
+- **SC-010**: Neo-brutalism design is consistent (thick borders, bold labels, shadows, proper spacing)
 
 ## Assumptions
 
 - Neo-brutalism design tokens/components already exist in the codebase (RetroUI)
+- Neo-brutalism visual patterns defined: 2-4px borders, bold uppercase labels, shadows, hover effects
 - Microphone/audio input follows existing patterns from onboarding
 - LLM prompt structure follows existing @google/genai (Gemini) patterns
 - "Unrecognized items" handling reuses onboarding component/logic
 - User authentication already exists (Supabase Auth)
+- Title and description are purely display fields (not editable inputs) populated only via LLM extraction
 
 ## LLM Prompts
 

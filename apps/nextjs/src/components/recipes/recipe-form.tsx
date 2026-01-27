@@ -23,6 +23,8 @@ interface RecipeFormProps {
   onClose: () => void;
 }
 
+type InputMode = "voice" | "text";
+
 export function RecipeForm(props: RecipeFormProps) {
   const { recipe, onClose } = props;
   const isEditMode = !!recipe;
@@ -40,6 +42,7 @@ export function RecipeForm(props: RecipeFormProps) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isExtracting, setIsExtracting] = useState(false);
   const [textInput, setTextInput] = useState("");
+  const [inputMode, setInputMode] = useState<InputMode>("voice");
 
   async function blobToBase64(blob: Blob): Promise<string> {
     return new Promise((resolve, reject) => {
@@ -210,118 +213,148 @@ export function RecipeForm(props: RecipeFormProps) {
     );
   }
 
+  function removeIngredient(index: number) {
+    setIngredients((prev) => prev.filter((_, i) => i !== index));
+  }
+
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <div className="p-6 space-y-6">
-          <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-bold">
+      <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto border-4">
+        <div className="p-8 space-y-6">
+          <div className="flex items-center justify-between pb-4 border-b-2 border-black">
+            <h2 className="text-3xl font-bold">
               {isEditMode ? "Edit Recipe" : "Add Recipe"}
             </h2>
-            <Button variant="ghost" onClick={onClose}>
-              ✕
+            <Button variant="ghost" onClick={onClose} size="icon">
+              <span className="text-2xl">✕</span>
             </Button>
           </div>
 
           {!isEditMode && (
-            <div className="space-y-4 p-4 bg-gray-50 rounded-md">
-              <p className="text-sm font-medium">Quick Add (Optional)</p>
-              <div className="flex gap-2">
-                <VoiceInput
-                  onRecordingComplete={handleVoiceComplete}
-                  disabled={isExtracting}
-                />
-                <span className="text-sm text-muted-foreground self-center">
-                  or
-                </span>
-                <div className="flex-1 flex gap-2">
-                  <input
-                    type="text"
-                    value={textInput}
-                    onChange={(e) => setTextInput(e.target.value)}
-                    placeholder="Describe your recipe..."
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm"
+            <div className="space-y-3 p-5 bg-secondary border-2 border-black rounded shadow-md">
+              <p className="text-sm font-bold uppercase tracking-wide">Quick Add</p>
+
+              {inputMode === "voice" ? (
+                <div className="space-y-3">
+                  <VoiceInput
+                    onRecordingComplete={handleVoiceComplete}
                     disabled={isExtracting}
                   />
-                  <Button
+                  <button
                     type="button"
-                    onClick={handleTextSubmit}
-                    disabled={!textInput.trim() || isExtracting}
-                    size="sm"
+                    onClick={() => setInputMode("text")}
+                    className="text-sm font-medium underline hover:no-underline"
+                    disabled={isExtracting}
                   >
-                    Extract
-                  </Button>
+                    Do you prefer typing?
+                  </button>
                 </div>
-              </div>
+              ) : (
+                <div className="space-y-3">
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={textInput}
+                      onChange={(e) => setTextInput(e.target.value)}
+                      placeholder="Describe your recipe..."
+                      className="flex-1 px-4 py-2 border-2 border-black rounded shadow-sm font-medium focus:outline-none focus:shadow-md transition-shadow"
+                      disabled={isExtracting}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && textInput.trim()) {
+                          handleTextSubmit();
+                        }
+                      }}
+                    />
+                    <Button
+                      type="button"
+                      onClick={handleTextSubmit}
+                      disabled={!textInput.trim() || isExtracting}
+                    >
+                      Extract
+                    </Button>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setInputMode("voice")}
+                    className="text-sm font-medium underline hover:no-underline"
+                    disabled={isExtracting}
+                  >
+                    Switch to voice recording
+                  </button>
+                </div>
+              )}
             </div>
           )}
 
           {isExtracting && (
-            <div className="space-y-3 animate-pulse">
-              <div className="h-10 bg-gray-200 rounded"></div>
-              <div className="h-24 bg-gray-200 rounded"></div>
-              <div className="h-32 bg-gray-200 rounded"></div>
-              <p className="text-sm text-center text-muted-foreground">
+            <div className="space-y-4 animate-pulse">
+              <div className="h-12 bg-gray-200 border-2 border-black rounded shadow-md"></div>
+              <div className="h-24 bg-gray-200 border-2 border-black rounded shadow-md"></div>
+              <div className="h-40 bg-gray-200 border-2 border-black rounded shadow-md"></div>
+              <p className="text-base text-center font-bold uppercase tracking-wide">
                 Extracting recipe...
               </p>
             </div>
           )}
 
           {!isExtracting && (
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-5">
               <div>
-                <label className="block text-sm font-medium mb-2">
-                  Title <span className="text-red-500">*</span>
+                <label className="block text-sm font-bold uppercase tracking-wide mb-2">
+                  Title 
                 </label>
-                <input
-                  type="text"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  maxLength={100}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Recipe title (max 100 chars)"
-                />
+                <div className="w-full px-4 py-3 bg-gray-100 border-l-4 border-black rounded-sm min-h-[44px] flex items-center">
+                  {title ? (
+                    <span className="text-lg font-bold">{title}</span>
+                  ) : (
+                    <span className="text-muted-foreground italic">No title yet</span>
+                  )}
+                </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2">
+                <label className="block text-sm font-bold uppercase tracking-wide mb-2">
                   Description
                 </label>
-                <textarea
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  maxLength={200}
-                  rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Brief description (max 200 chars)"
-                />
+                <div className="w-full px-4 py-3 bg-gray-100 border-l-4 border-black rounded-sm min-h-[80px]">
+                  {description ? (
+                    <p className="text-base leading-relaxed">{description}</p>
+                  ) : (
+                    <span className="text-muted-foreground italic">No description yet</span>
+                  )}
+                </div>
               </div>
 
               {ingredients.length > 0 && (
                 <div>
-                  <label className="block text-sm font-medium mb-2">
+                  <label className="block text-sm font-bold uppercase tracking-wide mb-3">
                     Ingredients
                   </label>
                   <div className="space-y-2">
                     {ingredients.map((ing, index) => (
-                      <div key={index} className="flex items-center justify-between gap-3 p-2 bg-gray-50 rounded-md">
-                        <span className="text-sm font-medium flex-1">
+                      <div key={index} className="flex items-center gap-4 p-3 bg-white border-2 border-black rounded shadow-sm">
+                        <span className="text-base font-medium flex-1">
                           {ing.name}
                         </span>
-                        <div className="flex items-center gap-2">
-                          <span className={`text-xs px-2 py-1 rounded ${
-                            ing.isOptional
-                              ? "bg-gray-200 text-gray-700"
-                              : "bg-blue-100 text-blue-700"
-                          }`}>
-                            {ing.isOptional ? "Optional" : "Required"}
-                          </span>
+                        <div className="flex items-center gap-3">
                           <button
                             type="button"
                             onClick={() => toggleIngredientOptional(index)}
-                            className="text-xs text-blue-600 hover:text-blue-800 underline"
+                            className={`text-xs font-bold px-3 py-1 rounded border-2 border-black transition-all hover:translate-y-[-2px] active:translate-y-0 ${
+                              ing.isOptional
+                                ? "bg-gray-200 hover:bg-gray-300"
+                                : "bg-primary text-primary-foreground hover:bg-primary-hover"
+                            }`}
                           >
-                            {ing.isOptional ? "Mark Required" : "Mark Optional"}
+                            {ing.isOptional ? "Optional" : "Required"}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => removeIngredient(index)}
+                            className="text-xl text-gray-400 hover:text-red-600 w-8 h-8 flex items-center justify-center rounded hover:bg-red-50 transition-all"
+                            aria-label="Remove ingredient"
+                          >
+                            ✕
                           </button>
                         </div>
                       </div>
@@ -330,56 +363,54 @@ export function RecipeForm(props: RecipeFormProps) {
                 </div>
               )}
 
-              <div className="flex gap-2 pt-4">
-                <Button type="submit" disabled={isSubmitting} className="flex-1">
+              <div className="flex gap-3 pt-6">
+                <Button type="submit" disabled={isSubmitting} className="flex-1" size="lg">
                   {isSubmitting ? "Saving..." : isEditMode ? "Update" : "Create"}
                 </Button>
                 <Button
                   type="button"
-                  variant="ghost"
+                  variant="outline"
                   onClick={onClose}
                   disabled={isSubmitting}
+                  size="lg"
                 >
                   Cancel
                 </Button>
               </div>
 
               {isEditMode && (
-                <div className="pt-4 border-t">
+                <div className="pt-6 mt-6 border-t border-gray-200">
                   {!showDeleteConfirm ? (
-                    <Button
+                    <button
                       type="button"
-                      variant="secondary"
                       onClick={() => setShowDeleteConfirm(true)}
                       disabled={isSubmitting}
-                      className="w-full bg-red-500 hover:bg-red-600 text-white border-red-700"
+                      className="text-sm text-red-600 hover:text-red-800 hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       Delete Recipe
-                    </Button>
+                    </button>
                   ) : (
-                    <div className="space-y-2">
-                      <p className="text-sm text-center text-muted-foreground">
-                        Confirm delete?
+                    <div className="space-y-3">
+                      <p className="text-sm text-muted-foreground">
+                        Are you sure you want to delete this recipe?
                       </p>
                       <div className="flex gap-2">
-                        <Button
+                        <button
                           type="button"
-                          variant="secondary"
                           onClick={handleDelete}
                           disabled={isSubmitting}
-                          className="flex-1 bg-red-500 hover:bg-red-600 text-white border-red-700"
+                          className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded border-2 border-black shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                         >
-                          Confirm Delete
-                        </Button>
-                        <Button
+                          {isSubmitting ? "Deleting..." : "Yes, Delete"}
+                        </button>
+                        <button
                           type="button"
-                          variant="ghost"
                           onClick={() => setShowDeleteConfirm(false)}
                           disabled={isSubmitting}
-                          className="flex-1"
+                          className="px-4 py-2 text-sm font-medium hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           Cancel
-                        </Button>
+                        </button>
                       </div>
                     </div>
                   )}
