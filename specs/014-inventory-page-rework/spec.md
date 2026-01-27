@@ -190,7 +190,8 @@ A help icon on the inventory page opens a modal explaining how to use the page: 
 
 - The "dots" variant of IngredientBadge component will be used (Color-Coded Dot Matrix as specified)
 - Voice input infrastructure (useVoiceInput hook, VoiceInput component) already exists and will be reused
-- LLM processing will use existing Gemini integration pattern via Vercel AI SDK
+- LLM processing will use existing Gemini integration pattern via @google/genai
+- New prompt will be registered to Opik via `pnpm prompt:inventory` script (following existing pattern)
 - Quantity levels remain 0-3 as defined in existing schema (quantity_level_check constraint)
 - Pantry staples flag (is_pantry_staple) already exists in user_inventory table
 - User authentication/authorization already handled by existing Supabase auth flow
