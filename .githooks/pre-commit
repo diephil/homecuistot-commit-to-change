@@ -1,0 +1,32 @@
+#!/bin/bash
+# Pre-commit hook: Run TypeScript type checking on src/ directory
+# This prevents commits with TypeScript errors in production code
+
+set -e
+
+echo "🔍 Running TypeScript type check on src/..."
+
+cd "$(git rev-parse --show-toplevel)/apps/nextjs"
+
+# Create temporary tsconfig for src/ only
+cat > tsconfig.precommit.json << 'EOF'
+{
+  "extends": "./tsconfig.json",
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "tests/**/*"]
+}
+EOF
+
+# Run TypeScript type checking on src/ only
+if pnpm exec tsc --noEmit --project tsconfig.precommit.json; then
+  rm tsconfig.precommit.json
+  echo "✅ TypeScript check passed"
+  exit 0
+else
+  rm tsconfig.precommit.json
+  echo ""
+  echo "❌ TypeScript errors found in src/!"
+  echo "💡 Fix the errors above before committing"
+  echo "⚠️  Or use 'git commit --no-verify' to skip (not recommended)"
+  exit 1
+fi

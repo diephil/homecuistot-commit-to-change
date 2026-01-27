@@ -1,11 +1,11 @@
 import { pgTable, uuid, text, timestamp, index } from 'drizzle-orm/pg-core'
 import { relations, sql } from 'drizzle-orm'
-import { recipes } from './recipes'
+import { userRecipes } from './user-recipes'
 
 export const cookingLog = pgTable('cooking_log', {
   id: uuid('id').primaryKey().defaultRandom(),
   userId: uuid('user_id').notNull(),
-  recipeId: uuid('recipe_id').references(() => recipes.id, { onDelete: 'set null' }),
+  recipeId: uuid('recipe_id').references(() => userRecipes.id, { onDelete: 'set null' }),
   recipeName: text('recipe_name').notNull(),
   cookedAt: timestamp('cooked_at', { withTimezone: true }).notNull().defaultNow(),
 }, (table) => [
@@ -15,8 +15,8 @@ export const cookingLog = pgTable('cooking_log', {
 
 // Relations
 export const cookingLogRelations = relations(cookingLog, ({ one }) => ({
-  recipe: one(recipes, {
+  recipe: one(userRecipes, {
     fields: [cookingLog.recipeId],
-    references: [recipes.id],
+    references: [userRecipes.id],
   }),
 }))

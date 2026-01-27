@@ -6,7 +6,7 @@ import { PageContainer } from "@/components/PageContainer";
 import Link from "next/link";
 import { createClient } from "@/utils/supabase/server";
 import { createUserDb, decodeSupabaseToken } from "@/db/client";
-import { recipes, userRecipes } from "@/db/schema";
+import { userRecipes } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
 // T030: MOCK_RECIPES constant (8 items with id, title, description, ingredients, isAvailable)
@@ -69,9 +69,9 @@ const MOCK_RECIPES = [
   },
 ] as const;
 
-// T026-T028: Fetch user recipes from onboarding
+// T026-T028: Fetch user recipes (junction table dropped - now directly from user_recipes)
 export default async function SuggestionsPage() {
-  // T026: Fetch user_recipes with source='onboarding'
+  // T026: Fetch all user_recipes (recipes table renamed)
   let onboardedRecipes: { id: string; title: string; description: string | null }[] = [];
 
   try {
@@ -82,20 +82,22 @@ export default async function SuggestionsPage() {
       const token = decodeSupabaseToken(session.access_token);
       const db = createUserDb(token);
 
-      onboardedRecipes = await db(async (tx) => {
-        return await tx
-          .select({
-            id: recipes.id,
-            title: recipes.name,
-            description: recipes.description,
-          })
-          .from(userRecipes)
-          .innerJoin(recipes, eq(userRecipes.recipeId, recipes.id))
-          .where(eq(userRecipes.source, 'onboarding'));
-      });
+      if (token.sub) {
+        const userId = token.sub;
+        onboardedRecipes = await db(async (tx) => {
+          return await tx
+            .select({
+              id: userRecipes.id,
+              title: userRecipes.name,
+              description: userRecipes.description,
+            })
+            .from(userRecipes)
+            .where(eq(userRecipes.userId, userId));
+        });
+      }
     }
   } catch (error) {
-    console.error('[app] Failed to fetch onboarded recipes:', error);
+    console.error('[app] Failed to fetch user recipes:', error);
   }
 
   // T027: Use real data if exists, else fall back to mock

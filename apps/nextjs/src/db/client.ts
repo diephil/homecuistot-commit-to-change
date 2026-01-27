@@ -281,11 +281,8 @@ export function createUserDb(token: SupabaseToken) {
 export type Ingredient = typeof schema.ingredients.$inferSelect;
 export type NewIngredient = typeof schema.ingredients.$inferInsert;
 
-export type UserPantryStaple = typeof schema.userPantryStaples.$inferSelect;
-export type NewUserPantryStaple = typeof schema.userPantryStaples.$inferInsert;
-
-export type Recipe = typeof schema.recipes.$inferSelect;
-export type NewRecipe = typeof schema.recipes.$inferInsert;
+export type Recipe = typeof schema.userRecipes.$inferSelect;
+export type NewRecipe = typeof schema.userRecipes.$inferInsert;
 export type RecipeIngredient = typeof schema.recipeIngredients.$inferSelect;
 export type NewRecipeIngredient = typeof schema.recipeIngredients.$inferInsert;
 
@@ -469,22 +466,15 @@ export async function getTier1Recipes(params: { userId: string }) {
   // Main query: user's recipes WITHOUT missing anchors = Tier 1
   return await adminDb
     .select({
-      recipeId: schema.recipes.id,
-      recipeName: schema.recipes.name,
-      recipeDescription: schema.recipes.description,
-      isSeeded: schema.recipes.isSeeded,
-      userRecipeId: schema.userRecipes.id,
-      source: schema.userRecipes.source,
+      recipeId: schema.userRecipes.id,
+      recipeName: schema.userRecipes.name,
+      recipeDescription: schema.userRecipes.description,
     })
-    .from(schema.recipes)
-    .innerJoin(
-      schema.userRecipes,
-      eq(schema.recipes.id, schema.userRecipes.recipeId),
-    )
+    .from(schema.userRecipes)
     .where(
       and(
         eq(schema.userRecipes.userId, params.userId),
-        sqlFn`${schema.recipes.id} NOT IN ${recipesWithMissingAnchorsSubquery}`,
+        sqlFn`${schema.userRecipes.id} NOT IN ${recipesWithMissingAnchorsSubquery}`,
       ),
     );
 }

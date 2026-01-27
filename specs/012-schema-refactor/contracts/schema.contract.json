@@ -1,0 +1,144 @@
+{
+  "migration_name": "0004_schema_refactor",
+  "description": "Consolidate pantry staples into user_inventory, rename recipes to user_recipes, rename user_recipes junction to user_saved_recipes",
+  "changes": [
+    {
+      "type": "add_column",
+      "table": "user_inventory",
+      "column": {
+        "name": "is_pantry_staple",
+        "type": "BOOLEAN",
+        "nullable": false,
+        "default": false
+      },
+      "rationale": "Replace user_pantry_staples table with boolean flag"
+    },
+    {
+      "type": "add_index",
+      "table": "user_inventory",
+      "index": {
+        "name": "idx_user_inventory_pantry",
+        "columns": ["user_id", "is_pantry_staple"],
+        "where": "is_pantry_staple = true",
+        "unique": false
+      },
+      "rationale": "Optimize pantry staple queries with partial index"
+    },
+    {
+      "type": "data_migration",
+      "description": "Migrate user_pantry_staples to user_inventory.isPantryStaple",
+      "steps": [
+        "INSERT missing inventory entries for orphaned pantry staples (quantityLevel=3)",
+        "UPDATE existing inventory entries to set isPantryStaple=true from user_pantry_staples"
+      ],
+      "validation": "COUNT(user_pantry_staples) = COUNT(user_inventory WHERE isPantryStaple=true)"
+    },
+    {
+      "type": "drop_table",
+      "table": "user_pantry_staples",
+      "rationale": "Replaced by user_inventory.isPantryStaple"
+    },
+    {
+      "type": "rename_table",
+      "from": "recipes",
+      "to": "user_recipes",
+      "rationale": "Consistent naming with other user-specific tables"
+    },
+    {
+      "type": "drop_column",
+      "table": "user_recipes",
+      "column": "is_seeded",
+      "rationale": "All recipes now user-owned, no seeding logic"
+    },
+    {
+      "type": "alter_column",
+      "table": "user_recipes",
+      "column": "user_id",
+      "changes": {
+        "nullable": {
+          "from": true,
+          "to": false
+        }
+      },
+      "rationale": "All recipes must belong to a user"
+    },
+    {
+      "type": "drop_constraint",
+      "table": "user_recipes",
+      "constraint": "recipe_ownership",
+      "rationale": "Check constraint depended on removed isSeeded column"
+    },
+    {
+      "type": "drop_index",
+      "table": "user_recipes",
+      "index": "idx_recipes_user_seeded",
+      "rationale": "Index referenced removed isSeeded column"
+    },
+    {
+      "type": "rename_table",
+      "from": "user_recipes",
+      "to": "user_saved_recipes",
+      "rationale": "Avoid naming conflict with renamed recipes table, clarify junction table purpose"
+    },
+    {
+      "type": "auto_update_fk",
+      "table": "recipe_ingredients",
+      "foreign_key": {
+        "column": "recipe_id",
+        "references_table": {
+          "from": "recipes",
+          "to": "user_recipes"
+        }
+      },
+      "rationale": "PostgreSQL auto-updates FK when table renamed (OID-based)"
+    }
+  ],
+  "pre_migration_validation": [
+    {
+      "query": "SELECT COUNT(*) FROM recipes WHERE user_id IS NULL AND is_seeded = false",
+      "expected": 0,
+      "error_message": "Found user recipes without userId - cannot make userId NOT NULL"
+    },
+    {
+      "query": "SELECT COUNT(*) FROM user_pantry_staples",
+      "store_as": "pantry_staples_count"
+    },
+    {
+      "query": "SELECT COUNT(*) FROM recipes",
+      "store_as": "recipes_count"
+    },
+    {
+      "query": "SELECT COUNT(*) FROM user_recipes",
+      "store_as": "junction_count"
+    }
+  ],
+  "post_migration_validation": [
+    {
+      "query": "SELECT COUNT(*) FROM user_inventory WHERE is_pantry_staple = true",
+      "expected_var": "pantry_staples_count",
+      "error_message": "Pantry staple count mismatch after migration"
+    },
+    {
+      "query": "SELECT COUNT(*) FROM user_recipes",
+      "expected_var": "recipes_count",
+      "error_message": "Recipe count mismatch after migration"
+    },
+    {
+      "query": "SELECT COUNT(*) FROM user_saved_recipes",
+      "expected_var": "junction_count",
+      "error_message": "Junction table count mismatch after migration"
+    },
+    {
+      "query": "SELECT EXISTS (SELECT 1 FROM pg_tables WHERE tablename = 'user_pantry_staples')",
+      "expected": false,
+      "error_message": "user_pantry_staples table still exists"
+    },
+    {
+      "query": "SELECT EXISTS (SELECT 1 FROM pg_tables WHERE tablename = 'recipes')",
+      "expected": false,
+      "error_message": "recipes table still exists (should be renamed to user_recipes)"
+    }
+  ],
+  "rollback_available": true,
+  "rollback_script": "contracts/rollback.sql"
+}
