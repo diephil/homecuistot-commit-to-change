@@ -5,6 +5,7 @@ import { Button } from "@/components/retroui/Button";
 import { VoiceGuidance } from "./voice-guidance";
 
 type InputMode = "voice" | "text";
+type VoiceGuidanceContext = "inventory" | "recipe";
 
 interface QuickInputSectionProps {
   inputMode: InputMode;
@@ -18,6 +19,7 @@ interface QuickInputSectionProps {
   submitButtonText?: string;
   multiline?: boolean;
   showVoiceGuidance?: boolean;
+  voiceGuidanceContext?: VoiceGuidanceContext;
 }
 
 export function QuickInputSection({
@@ -32,6 +34,7 @@ export function QuickInputSection({
   submitButtonText = "Process",
   multiline = true,
   showVoiceGuidance = false,
+  voiceGuidanceContext = "inventory",
 }: QuickInputSectionProps) {
   return (
     <div className="space-y-3 p-5 bg-secondary border-2 border-black rounded shadow-md">
@@ -44,7 +47,7 @@ export function QuickInputSection({
             disabled={disabled}
           />
 
-          {showVoiceGuidance && <VoiceGuidance />}
+          {showVoiceGuidance && <VoiceGuidance context={voiceGuidanceContext} />}
 
           <button
             type="button"

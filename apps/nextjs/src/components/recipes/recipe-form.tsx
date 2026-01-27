@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/retroui/Button";
 import { Card } from "@/components/retroui/Card";
 import { createRecipe, updateRecipe, deleteRecipe, validateIngredients } from "@/app/actions/recipes";
-import { VoiceInput } from "./voice-input";
+import { QuickInputSection } from "@/components/shared/quick-input-section";
 import { toast } from "sonner";
 
 interface RecipeFormProps {
@@ -231,59 +231,20 @@ export function RecipeForm(props: RecipeFormProps) {
           </div>
 
           {!isEditMode && (
-            <div className="space-y-3 p-5 bg-secondary border-2 border-black rounded shadow-md">
-              <p className="text-sm font-bold uppercase tracking-wide">Quick Add</p>
-
-              {inputMode === "voice" ? (
-                <div className="space-y-3">
-                  <VoiceInput
-                    onRecordingComplete={handleVoiceComplete}
-                    disabled={isExtracting}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setInputMode("text")}
-                    className="text-sm font-medium underline hover:no-underline"
-                    disabled={isExtracting}
-                  >
-                    Do you prefer typing?
-                  </button>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={textInput}
-                      onChange={(e) => setTextInput(e.target.value)}
-                      placeholder="Describe your recipe..."
-                      className="flex-1 px-4 py-2 border-2 border-black rounded shadow-sm font-medium focus:outline-none focus:shadow-md transition-shadow"
-                      disabled={isExtracting}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" && textInput.trim()) {
-                          handleTextSubmit();
-                        }
-                      }}
-                    />
-                    <Button
-                      type="button"
-                      onClick={handleTextSubmit}
-                      disabled={!textInput.trim() || isExtracting}
-                    >
-                      Extract
-                    </Button>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setInputMode("voice")}
-                    className="text-sm font-medium underline hover:no-underline"
-                    disabled={isExtracting}
-                  >
-                    Switch to voice recording
-                  </button>
-                </div>
-              )}
-            </div>
+            <QuickInputSection
+              inputMode={inputMode}
+              textValue={textInput}
+              onInputModeChange={setInputMode}
+              onTextChange={setTextInput}
+              onTextSubmit={handleTextSubmit}
+              onVoiceComplete={handleVoiceComplete}
+              disabled={isExtracting}
+              textPlaceholder="Describe your recipe..."
+              submitButtonText="Extract"
+              multiline={false}
+              showVoiceGuidance={true}
+              voiceGuidanceContext="recipe"
+            />
           )}
 
           {isExtracting && (
