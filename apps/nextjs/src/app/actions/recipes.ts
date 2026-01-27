@@ -10,6 +10,17 @@ import type { IngredientType } from "@/db/schema/enums";
 // Get all recipes for current user
 export async function getRecipes(params?: { limit?: number }) {
   const supabase = await createClient();
+
+  // Verify user authenticity
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("Unauthorized");
+  }
+
+  // Get session for JWT token
   const {
     data: { session },
   } = await supabase.auth.getSession();
@@ -47,6 +58,17 @@ export async function createRecipe(params: {
   }>;
 }) {
   const supabase = await createClient();
+
+  // Verify user authenticity
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("Unauthorized");
+  }
+
+  // Get session for JWT token
   const {
     data: { session },
   } = await supabase.auth.getSession();
@@ -96,6 +118,17 @@ export async function updateRecipe(params: {
   }>;
 }) {
   const supabase = await createClient();
+
+  // Verify user authenticity
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("Unauthorized");
+  }
+
+  // Get session for JWT token
   const {
     data: { session },
   } = await supabase.auth.getSession();
@@ -145,6 +178,17 @@ export async function updateRecipe(params: {
 // Delete recipe
 export async function deleteRecipe(params: { recipeId: string }) {
   const supabase = await createClient();
+
+  // Verify user authenticity
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("Unauthorized");
+  }
+
+  // Get session for JWT token
   const {
     data: { session },
   } = await supabase.auth.getSession();
@@ -176,6 +220,17 @@ export async function validateIngredients(params: {
   ingredientNames: string[];
 }) {
   const supabase = await createClient();
+
+  // Verify user authenticity
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("Unauthorized");
+  }
+
+  // Get session for JWT token
   const {
     data: { session },
   } = await supabase.auth.getSession();
