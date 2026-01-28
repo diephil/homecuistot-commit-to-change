@@ -2,6 +2,7 @@ import { getRecipesWithAvailability, getCookingHistory } from '@/app/actions/coo
 import { RecipeSection } from './recipe-section'
 import { CookingHistoryTable } from '@/components/app/cooking-history-table'
 import { ResetUserDataButton } from '@/components/app/reset-user-data-button'
+import { AppPageHeader } from '@/components/app/app-page-header'
 
 export default async function AppPage() {
   const recipes = await getRecipesWithAvailability()
@@ -13,6 +14,8 @@ export default async function AppPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 py-6">
       <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 space-y-8">
+        <AppPageHeader />
+
         <RecipeSection
           title="Ready To Cook Recipes"
           recipes={availableRecipes}
