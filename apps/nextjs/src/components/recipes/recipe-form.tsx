@@ -301,7 +301,7 @@ export function RecipeForm(props: RecipeFormProps) {
                           <button
                             type="button"
                             onClick={() => toggleIngredientOptional(index)}
-                            className={`text-xs font-bold px-3 py-1 rounded border-2 border-black transition-all hover:translate-y-[-2px] active:translate-y-0 ${
+                            className={`text-xs font-bold px-3 py-1 rounded border-2 border-black transition-all cursor-pointer hover:translate-y-[-2px] active:translate-y-0 ${
                               ing.isOptional
                                 ? "bg-gray-200 hover:bg-gray-300"
                                 : "bg-primary text-primary-foreground hover:bg-primary-hover"
@@ -312,7 +312,7 @@ export function RecipeForm(props: RecipeFormProps) {
                           <button
                             type="button"
                             onClick={() => removeIngredient(index)}
-                            className="text-xl text-gray-400 hover:text-red-600 w-8 h-8 flex items-center justify-center rounded hover:bg-red-50 transition-all"
+                            className="text-xl text-gray-400 hover:text-red-600 w-8 h-8 flex items-center justify-center rounded hover:bg-red-50 transition-all cursor-pointer"
                             aria-label="Remove ingredient"
                           >
                             ✕
@@ -346,7 +346,7 @@ export function RecipeForm(props: RecipeFormProps) {
                       type="button"
                       onClick={() => setShowDeleteConfirm(true)}
                       disabled={isSubmitting}
-                      className="text-sm text-red-600 hover:text-red-800 hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="text-sm text-red-600 hover:text-red-800 hover:underline disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                     >
                       Delete Recipe
                     </button>
@@ -360,7 +360,7 @@ export function RecipeForm(props: RecipeFormProps) {
                           type="button"
                           onClick={handleDelete}
                           disabled={isSubmitting}
-                          className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded border-2 border-black shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                          className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded border-2 border-black shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
                         >
                           {isSubmitting ? "Deleting..." : "Yes, Delete"}
                         </button>
@@ -368,7 +368,7 @@ export function RecipeForm(props: RecipeFormProps) {
                           type="button"
                           onClick={() => setShowDeleteConfirm(false)}
                           disabled={isSubmitting}
-                          className="px-4 py-2 text-sm font-medium hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="px-4 py-2 text-sm font-medium hover:underline disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                         >
                           Cancel
                         </button>

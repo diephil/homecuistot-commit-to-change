@@ -6,8 +6,10 @@ import { Button } from "@/components/retroui/Button";
 import { RecipeList } from "@/components/recipes/recipe-list";
 import { RecipeForm } from "@/components/recipes/recipe-form";
 import { RecipeHelpModal } from "@/components/recipes/help-modal";
-import { getRecipes } from "@/app/actions/recipes";
+import { DeleteConfirmationModal } from "@/components/shared/delete-confirmation-modal";
+import { getRecipes, deleteRecipe } from "@/app/actions/recipes";
 import { HelpCircle, Plus } from "lucide-react";
+import { toast } from "sonner";
 
 interface Recipe {
   id: string;
@@ -34,6 +36,11 @@ export default function RecipesPage() {
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Delete modal state
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [recipeToDelete, setRecipeToDelete] = useState<Recipe | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   useEffect(() => {
     loadRecipes();
   }, []);
@@ -55,9 +62,40 @@ export default function RecipesPage() {
     setIsFormOpen(true);
   }
 
-  function handleRecipeClick(recipeId: string) {
+  function handleRecipeEdit(recipeId: string) {
     setSelectedRecipeId(recipeId);
     setIsFormOpen(true);
+  }
+
+  function handleRecipeDeleteClick(recipeId: string) {
+    const recipe = recipes.find((r) => r.id === recipeId);
+    if (recipe) {
+      setRecipeToDelete(recipe);
+      setDeleteModalOpen(true);
+    }
+  }
+
+  async function handleConfirmDelete() {
+    if (!recipeToDelete) return;
+
+    try {
+      setIsDeleting(true);
+      await deleteRecipe({ recipeId: recipeToDelete.id });
+      toast.success("Recipe deleted successfully");
+      setDeleteModalOpen(false);
+      setRecipeToDelete(null);
+      loadRecipes();
+    } catch (error) {
+      console.error("Failed to delete recipe:", error);
+      toast.error("Failed to delete recipe");
+    } finally {
+      setIsDeleting(false);
+    }
+  }
+
+  function handleCancelDelete() {
+    setDeleteModalOpen(false);
+    setRecipeToDelete(null);
   }
 
   function handleFormClose() {
@@ -108,8 +146,9 @@ export default function RecipesPage() {
         ) : (
           <RecipeList
             recipes={displayRecipes}
-            variant="interactive"
-            onRecipeClick={handleRecipeClick}
+            showActions
+            onRecipeEdit={handleRecipeEdit}
+            onRecipeDelete={handleRecipeDeleteClick}
           />
         )}
 
@@ -122,6 +161,15 @@ export default function RecipesPage() {
       </div>
 
       <RecipeHelpModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} />
+
+      <DeleteConfirmationModal
+        isOpen={deleteModalOpen}
+        itemName={recipeToDelete?.name || ""}
+        itemType="recipe"
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+        isDeleting={isDeleting}
+      />
     </PageContainer>
   );
 }

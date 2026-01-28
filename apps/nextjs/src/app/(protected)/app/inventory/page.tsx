@@ -6,7 +6,7 @@ import { Button } from "@/components/retroui/Button";
 import { InventorySection } from "@/components/inventory/inventory-section";
 import { HelpModal } from "@/components/inventory/help-modal";
 import { InventoryUpdateModal } from "@/components/inventory/inventory-update-modal";
-import { DeleteConfirmationModal } from "@/components/inventory/delete-confirmation-modal";
+import { DeleteConfirmationModal } from "@/components/shared/delete-confirmation-modal";
 import { InventoryDisplayItem, QuantityLevel, InventoryGroups } from "@/types/inventory";
 import { HelpCircle, Plus } from "lucide-react";
 import { toast } from "sonner";
@@ -366,7 +366,8 @@ export default function InventoryPage() {
       />
       <DeleteConfirmationModal
         isOpen={itemToDelete !== null}
-        ingredientName={itemToDelete?.name ?? ""}
+        itemName={itemToDelete?.name ?? ""}
+        itemType="ingredient"
         onConfirm={handleConfirmDelete}
         onCancel={() => setItemToDelete(null)}
       />
