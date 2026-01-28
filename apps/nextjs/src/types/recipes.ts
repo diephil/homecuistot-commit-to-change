@@ -33,7 +33,28 @@ export const validationResultSchema = z.object({
   unrecognized: z.array(z.string()),
 });
 
+// Recipe state for updates (current recipe being edited)
+export const recipeStateSchema = z.object({
+  title: z.string().min(1).max(100),
+  description: z.string().min(1).max(200),
+  ingredients: z.array(recipeIngredientSchema).min(1).max(20),
+});
+
+// Recipe update request schemas
+export const recipeUpdateVoiceRequestSchema = z.object({
+  currentRecipe: recipeStateSchema,
+  audioBase64: z.string().describe("base64-encoded audio/webm"),
+});
+
+export const recipeUpdateTextRequestSchema = z.object({
+  currentRecipe: recipeStateSchema,
+  text: z.string().min(1).describe("user's update instruction"),
+});
+
 // Type exports
 export type RecipeIngredient = z.infer<typeof recipeIngredientSchema>;
 export type RecipeExtraction = z.infer<typeof recipeExtractionSchema>;
 export type ValidationResult = z.infer<typeof validationResultSchema>;
+export type RecipeState = z.infer<typeof recipeStateSchema>;
+export type RecipeUpdateVoiceRequest = z.infer<typeof recipeUpdateVoiceRequestSchema>;
+export type RecipeUpdateTextRequest = z.infer<typeof recipeUpdateTextRequestSchema>;

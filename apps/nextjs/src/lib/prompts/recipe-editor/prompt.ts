@@ -19,6 +19,6 @@ Rules:
 - Required ingredients should be core to the dish
 
 Return JSON matching the schema.`,
-  metadata: { inputType: "audio|text", domain: "recipes", model: "gemini-2.0-flash" },
-  tags: ["recipe", "extraction", "voice-input", "gemini"],
+  metadata: { inputType: "audio|text", domain: "recipes", model: "gemini-2.0-flash", mode: "creation" },
+  tags: ["recipe", "creation", "voice-input", "gemini"],
 };

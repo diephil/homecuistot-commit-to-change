@@ -5,7 +5,7 @@ import { Button } from "@/components/retroui/Button";
 import { VoiceGuidance } from "./voice-guidance";
 
 type InputMode = "voice" | "text";
-type VoiceGuidanceContext = "inventory" | "recipe";
+type VoiceGuidanceContext = "inventory" | "recipe" | "recipe-update";
 
 interface QuickInputSectionProps {
   inputMode: InputMode;
