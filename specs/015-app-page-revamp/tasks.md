@@ -19,7 +19,7 @@
 
 **Purpose**: Project initialization and types
 
-- [ ] T001 [P] Create cooking-related types in src/types/cooking.ts (RecipeWithAvailability, CookingLogEntry, MarkCookedPayload, IngredientDiff)
+- [X] T001 [P] Create cooking-related types in src/types/cooking.ts (RecipeWithAvailability, CookingLogEntry, MarkCookedPayload, IngredientDiff)
 
 ---
 
@@ -29,9 +29,9 @@
 
 **CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T002 Create server action file src/app/actions/cooking-log.ts with getRecipesWithAvailability function
-- [ ] T003 Add getCookingHistory function to src/app/actions/cooking-log.ts (last 10 entries)
-- [ ] T004 Add markRecipeAsCooked server action to src/app/actions/cooking-log.ts (transaction: log + inventory update)
+- [X] T002 Create server action file src/app/actions/cooking-log.ts with getRecipesWithAvailability function
+- [X] T003 Add getCookingHistory function to src/app/actions/cooking-log.ts (last 10 entries)
+- [X] T004 Add markRecipeAsCooked server action to src/app/actions/cooking-log.ts (transaction: log + inventory update)
 
 **Checkpoint**: Data layer ready - user story implementation can now begin
 
@@ -45,8 +45,8 @@
 
 ### Implementation for User Story 4
 
-- [ ] T005 [US4] Modify src/app/(protected)/app/layout.tsx to check recipe/inventory count
-- [ ] T006 [US4] Add redirect to /onboarding when both counts are zero in layout.tsx
+- [X] T005 [US4] Modify src/app/(protected)/app/layout.tsx to check recipe/inventory count
+- [X] T006 [US4] Add redirect to /onboarding when both counts are zero in layout.tsx
 
 **Checkpoint**: Non-onboarded users now redirected - core gate in place
 
@@ -60,10 +60,10 @@
 
 ### Implementation for User Story 1
 
-- [ ] T007 [P] [US1] Create RecipeAvailabilityCard component in src/components/app/recipe-availability-card.tsx
-- [ ] T008 [US1] Modify src/app/(protected)/app/page.tsx to fetch recipes with availability
-- [ ] T009 [US1] Add "Available Recipes" section to page.tsx using RecipeAvailabilityCard (variant="available")
-- [ ] T010 [US1] Add empty state message when no available recipes
+- [X] T007 [P] [US1] Create RecipeAvailabilityCard component in src/components/app/recipe-availability-card.tsx
+- [X] T008 [US1] Modify src/app/(protected)/app/page.tsx to fetch recipes with availability
+- [X] T009 [US1] Add "Available Recipes" section to page.tsx using RecipeAvailabilityCard (variant="available")
+- [X] T010 [US1] Add empty state message when no available recipes
 
 **Checkpoint**: Users can see available recipes - core value proposition delivered
 
@@ -77,11 +77,11 @@
 
 ### Implementation for User Story 3
 
-- [ ] T011 [P] [US3] Create MarkCookedModal component in src/components/app/mark-cooked-modal.tsx
-- [ ] T012 [US3] Add ingredient diff display with adjustable quantities to modal (tap to cycle 0-3)
-- [ ] T013 [US3] Connect MarkCookedModal to markRecipeAsCooked server action
-- [ ] T014 [US3] Add "Mark as Cooked" button to RecipeAvailabilityCard (available variant only)
-- [ ] T015 [US3] Add page revalidation after successful cook action
+- [X] T011 [P] [US3] Create MarkCookedModal component in src/components/app/mark-cooked-modal.tsx
+- [X] T012 [US3] Add ingredient diff display with adjustable quantities to modal (tap to cycle 0-3)
+- [X] T013 [US3] Connect MarkCookedModal to markRecipeAsCooked server action
+- [X] T014 [US3] Add "Mark as Cooked" button to RecipeAvailabilityCard (available variant only)
+- [X] T015 [US3] Add page revalidation after successful cook action
 
 **Checkpoint**: Full cook cycle works - users can track what they cook
 
@@ -95,10 +95,10 @@
 
 ### Implementation for User Story 2
 
-- [ ] T016 [US2] Add "almost-available" variant to RecipeAvailabilityCard with missing ingredients display
-- [ ] T017 [US2] Add "Almost Available Recipes" section to page.tsx below available section
-- [ ] T018 [US2] Ensure recipes missing 3+ anchors are filtered out
-- [ ] T019 [US2] Add empty state message when no almost-available recipes
+- [X] T016 [US2] Add "almost-available" variant to RecipeAvailabilityCard with missing ingredients display
+- [X] T017 [US2] Add "Almost Available Recipes" section to page.tsx below available section
+- [X] T018 [US2] Ensure recipes missing 3+ anchors are filtered out
+- [X] T019 [US2] Add empty state message when no almost-available recipes
 
 **Checkpoint**: Users can see what's close to being cookable
 
@@ -112,9 +112,9 @@
 
 ### Implementation for User Story 5
 
-- [ ] T020 [P] [US5] Create AppNavigation component in src/components/app/app-navigation.tsx
-- [ ] T021 [US5] Implement usePathname-based active state highlighting
-- [ ] T022 [US5] Add AppNavigation to src/app/(protected)/app/layout.tsx
+- [X] T020 [P] [US5] Create AppNavigation component in src/components/app/app-navigation.tsx
+- [X] T021 [US5] Implement usePathname-based active state highlighting
+- [X] T022 [US5] Add AppNavigation to src/app/(protected)/app/layout.tsx
 
 **Checkpoint**: Users can navigate between Main, Recipes, Inventory with one click
 
@@ -128,10 +128,10 @@
 
 ### Implementation for User Story 6
 
-- [ ] T023 [P] [US6] Create CookingHistoryTable component in src/components/app/cooking-history-table.tsx
-- [ ] T024 [US6] Apply neo-brutalism styling to table (thick borders, bold fonts, no rounded corners)
-- [ ] T025 [US6] Add "Cooking History (Last 10)" section to page.tsx at bottom
-- [ ] T026 [US6] Add empty state message when no cooking history
+- [X] T023 [P] [US6] Create CookingHistoryTable component in src/components/app/cooking-history-table.tsx
+- [X] T024 [US6] Apply neo-brutalism styling to table (thick borders, bold fonts, no rounded corners)
+- [X] T025 [US6] Add "Cooking History (Last 10)" section to page.tsx at bottom
+- [X] T026 [US6] Add empty state message when no cooking history
 
 **Checkpoint**: Users can see their recent cooking history
 
@@ -141,9 +141,9 @@
 
 **Purpose**: Edge cases and final refinements
 
-- [ ] T027 [P] Handle edge case: recipe with no anchor ingredients (treat as available)
-- [ ] T028 [P] Handle edge case: quantity would go negative (floor at 0)
-- [ ] T029 [P] Handle edge case: recipe deleted mid-modal flow (graceful error)
+- [X] T027 [P] Handle edge case: recipe with no anchor ingredients (treat as available)
+- [X] T028 [P] Handle edge case: quantity would go negative (floor at 0)
+- [X] T029 [P] Handle edge case: recipe deleted mid-modal flow (graceful error)
 - [ ] T030 Run quickstart.md validation checklist
 
 ---
