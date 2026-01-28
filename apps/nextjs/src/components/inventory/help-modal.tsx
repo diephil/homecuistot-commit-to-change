@@ -15,7 +15,7 @@ export function InventoryHelpModal({ isOpen, onClose }: InventoryHelpModalProps)
       {/* Quantity Badges Section */}
       <HelpSection emoji="📊" title="Quantity Badges" bgColor="bg-purple-100">
         <p className="text-sm font-medium mb-3">
-          Each ingredient shows colored dots representing quantity:
+          Each dot represents one recipe you can cook with that ingredient:
         </p>
         <div className="space-y-3">
           <div className="flex items-center gap-3 p-3 bg-white border-2 border-black rounded">
@@ -26,7 +26,7 @@ export function InventoryHelpModal({ isOpen, onClose }: InventoryHelpModalProps)
               size="md"
               interactive={false}
             />
-            <span className="text-sm font-black text-red-600">= Out of stock (0 dots)</span>
+            <span className="text-sm font-black text-red-600">= Need to buy</span>
           </div>
           <div className="flex items-center gap-3 p-3 bg-white border-2 border-black rounded">
             <IngredientBadge
@@ -36,7 +36,7 @@ export function InventoryHelpModal({ isOpen, onClose }: InventoryHelpModalProps)
               size="md"
               interactive={false}
             />
-            <span className="text-sm font-black text-orange-600">= Running low (1 dot)</span>
+            <span className="text-sm font-black text-orange-600">= Good for 1 recipe</span>
           </div>
           <div className="flex items-center gap-3 p-3 bg-white border-2 border-black rounded">
             <IngredientBadge
@@ -46,7 +46,7 @@ export function InventoryHelpModal({ isOpen, onClose }: InventoryHelpModalProps)
               size="md"
               interactive={false}
             />
-            <span className="text-sm font-black text-yellow-600">= Medium supply (2 dots)</span>
+            <span className="text-sm font-black text-yellow-600">= Good for 2 recipes</span>
           </div>
           <div className="flex items-center gap-3 p-3 bg-white border-2 border-black rounded">
             <IngredientBadge
@@ -56,7 +56,7 @@ export function InventoryHelpModal({ isOpen, onClose }: InventoryHelpModalProps)
               size="md"
               interactive={false}
             />
-            <span className="text-sm font-black text-green-600">= Full stock (3 dots)</span>
+            <span className="text-sm font-black text-green-600">= Good for 3+ recipes</span>
           </div>
         </div>
       </HelpSection>

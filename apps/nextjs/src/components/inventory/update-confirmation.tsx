@@ -20,10 +20,10 @@ export function UpdateConfirmation({
 }: UpdateConfirmationProps) {
   const getQuantityLabel = (level: number) => {
     const labels = {
-      0: "Out of stock",
-      1: "Running low",
-      2: "Medium supply",
-      3: "Full stock",
+      0: "Need to buy",
+      1: "1 recipe",
+      2: "2 recipes",
+      3: "3+ recipes",
     };
     return labels[level as keyof typeof labels] || "Unknown";
   };
