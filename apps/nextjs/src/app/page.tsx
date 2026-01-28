@@ -4,9 +4,9 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-amber-50 dark:from-zinc-900 dark:to-zinc-800">
+    <div className="min-h-screen bg-amber-50">
       {/* Header */}
-      <header className="border-b-4 md:border-b-8 border-black bg-gradient-to-r from-pink-400 via-orange-400 to-yellow-400 dark:bg-pink-600 sticky top-0 z-50">
+      <header className="border-b-4 md:border-b-8 border-black bg-gradient-to-r from-pink-400 via-orange-400 to-yellow-400 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 md:px-8">
           <div className="flex items-center justify-between py-3 md:py-6">
             <div className="flex items-center gap-2 md:gap-3">
