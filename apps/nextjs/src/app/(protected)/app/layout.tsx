@@ -1,21 +1,35 @@
 import type { ReactNode } from 'react'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
+import { headers } from 'next/headers'
 import { LogoutButton } from '@/components/LogoutButton'
 import { getUserCounts } from '@/app/actions/cooking-log'
 import { AppNavigation } from '@/components/app/app-navigation'
 
 export default async function AppLayout({ children }: { children: ReactNode }) {
-  // T005-T006: Check recipe/inventory count and redirect if both are zero
-  try {
-    const { recipeCount, inventoryCount } = await getUserCounts()
+  const headersList = await headers()
+  const pathname = headersList.get('x-pathname') || ''
+  const isOnboarding = pathname.startsWith('/onboarding') || pathname.startsWith('/app/onboarding')
 
-    if (recipeCount === 0 && inventoryCount === 0) {
-      redirect('/onboarding')
+  // T005-T006: Check recipe/inventory count and redirect if both are zero
+  // Skip redirect check if already on onboarding
+  if (!isOnboarding) {
+    try {
+      const { recipeCount, inventoryCount } = await getUserCounts()
+
+      if (recipeCount === 0 && inventoryCount === 0) {
+        redirect('/app/onboarding')
+      }
+    } catch (error) {
+      // Re-throw redirect errors (Next.js uses error throwing for redirects)
+      const isRedirect = error instanceof Error &&
+        (error.message.includes('NEXT_REDIRECT') || (error as { digest?: string }).digest?.startsWith('NEXT_REDIRECT'))
+      if (isRedirect) {
+        throw error
+      }
+      // If auth fails, let the protected route handler deal with it
+      console.error('[app/layout] Failed to get user counts:', error)
     }
-  } catch (error) {
-    // If auth fails, let the protected route handler deal with it
-    console.error('[app/layout] Failed to get user counts:', error)
   }
 
   return (
@@ -25,10 +39,9 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
           <Link href="/app" className="hover:opacity-80 transition-opacity">
             <h1 className="text-2xl font-black uppercase cursor-pointer">🍳 HomeCuistot</h1>
           </Link>
-          <LogoutButton />
+          {!isOnboarding && <LogoutButton />}
         </div>
-        {/* T022: App Navigation */}
-        <AppNavigation />
+        {!isOnboarding && <AppNavigation />}
       </header>
       <main role="main" className="flex-1">
         {children}

@@ -50,6 +50,13 @@
       "when": 1769463105709,
       "tag": "0006_schema_refactor",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1769562042000,
+      "tag": "0007_add_cooking_log_delete_policy",
+      "breakpoints": true
     }
   ]
 }

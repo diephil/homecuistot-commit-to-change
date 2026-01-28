@@ -6,9 +6,13 @@ const protectedRoutes = ["/app", "/admin"];
 const publicRoutes = ["/login", "/"];
 
 export default async function proxy(request: NextRequest): Promise<NextResponse> {
+  // Add pathname header for server components
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set('x-pathname', request.nextUrl.pathname);
+
   const response = NextResponse.next({
     request: {
-      headers: request.headers,
+      headers: requestHeaders,
     },
   });
 

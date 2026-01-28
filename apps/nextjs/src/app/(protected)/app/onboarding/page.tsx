@@ -63,11 +63,6 @@ function OnboardingPageContent() {
     setState((prev) => ({ ...prev, currentStep: 2 }));
   };
 
-  // T010: Skip to suggestions
-  const handleSkipSetup = () => {
-    router.push("/app");
-  };
-
   // T017: Toggle badge selection
   const toggleItem = (item: string, category: "dishes" | "fridge" | "pantry") => {
     setState((prev) => {
@@ -401,14 +396,6 @@ function OnboardingPageContent() {
             >
               Get Started
             </Button>
-
-            {/* T010: Skip Setup link */}
-            <button
-              onClick={handleSkipSetup}
-              className="text-sm text-gray-600 hover:text-gray-900 underline"
-            >
-              Skip Setup
-            </button>
           </div>
 
           {/* T012-T020: Step 2 - Badge Selection */}

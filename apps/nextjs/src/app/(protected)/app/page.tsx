@@ -1,6 +1,7 @@
 import { getRecipesWithAvailability, getCookingHistory } from '@/app/actions/cooking-log'
 import { RecipeSection } from './recipe-section'
 import { CookingHistoryTable } from '@/components/app/cooking-history-table'
+import { ResetUserDataButton } from '@/components/app/reset-user-data-button'
 
 export default async function AppPage() {
   const recipes = await getRecipesWithAvailability()
@@ -29,6 +30,10 @@ export default async function AppPage() {
 
         <section>
           <CookingHistoryTable entries={cookingHistory} />
+        </section>
+
+        <section className="flex justify-center pt-8">
+          <ResetUserDataButton />
         </section>
       </div>
     </div>
