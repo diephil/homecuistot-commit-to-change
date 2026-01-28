@@ -3,6 +3,7 @@
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/retroui/Badge'
 import { Button } from '@/components/retroui/Button'
+import { X } from 'lucide-react'
 import type { RecipeWithAvailability } from '@/types/cooking'
 
 export interface RecipeAvailabilityCardProps {
@@ -47,23 +48,24 @@ export function RecipeAvailabilityCard(props: RecipeAvailabilityCardProps) {
             size="sm"
             className={cn(
               'bg-white/50',
-              !ing.inInventory && 'bg-red-100 border-red-400'
+              !ing.inInventory && 'bg-red-500 border-red-700 text-white font-black'
             )}
           >
+            {!ing.inInventory && <X className="w-3 h-3 mr-1 inline-block" />}
             {ing.name}
           </Badge>
         ))}
       </div>
 
       {/* T016: Missing ingredients display for almost-available */}
-      {variant === 'almost-available' && recipe.missingAnchorNames.length > 0 && (
+      {/* {variant === 'almost-available' && recipe.missingAnchorNames.length > 0 && (
         <div className="p-2 bg-white/50 border-2 border-black mb-3">
           <span className="text-sm font-black">Missing: </span>
           <span className="text-sm font-bold">
             {recipe.missingAnchorNames.join(', ')}
           </span>
         </div>
-      )}
+      )} */}
 
       {/* T014: Mark as Cooked button for available recipes only */}
       {variant === 'available' && onMarkAsCooked && (
