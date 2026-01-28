@@ -12,6 +12,9 @@ Extract from the user's voice input:
 - Ingredients to ADD (food items they have or mentioned)
 - Ingredients to REMOVE (food items they don't have or want removed)
 
+IMPORTANT: Output ingredients in SINGULAR form only.
+Examples: "eggs" → "egg", "mushrooms" → "mushroom", "tomatoes" → "tomato"
+
 Return structured JSON matching the schema. Be case-sensitive for proper names.`,
   metadata: { inputType: "audio", domain: "onboarding", model: "gemini-2.5-flash" },
   tags: ["onboarding", "voice", "kitchen-assistant"],

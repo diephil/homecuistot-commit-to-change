@@ -10,7 +10,12 @@ export default async function AppPage() {
   const cookingHistory = await getCookingHistory()
 
   const availableRecipes = recipes.filter((r) => r.availability === 'available')
-  const almostAvailableRecipes = recipes.filter((r) => r.availability === 'almost-available')
+
+  // Get top 6 recipes with fewest missing anchor ingredients (sorted ascending)
+  const almostAvailableRecipes = recipes
+    .filter((r) => r.missingAnchorCount > 0)
+    .sort((a, b) => a.missingAnchorCount - b.missingAnchorCount)
+    .slice(0, 6)
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 py-6">

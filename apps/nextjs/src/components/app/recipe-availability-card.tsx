@@ -40,7 +40,7 @@ export function RecipeAvailabilityCard(props: RecipeAvailabilityCardProps) {
       )}
 
       {/* Ingredients list */}
-      <div className="flex flex-wrap gap-1 mb-3">
+      <div className="flex flex-wrap gap-2 mb-3">
         {anchorIngredients.map((ing) => (
           <Badge
             key={ing.id}
@@ -57,15 +57,14 @@ export function RecipeAvailabilityCard(props: RecipeAvailabilityCardProps) {
         ))}
       </div>
 
-      {/* T016: Missing ingredients display for almost-available */}
-      {/* {variant === 'almost-available' && recipe.missingAnchorNames.length > 0 && (
+      {/* Missing ingredients count for almost-available */}
+      {variant === 'almost-available' && recipe.missingAnchorCount > 0 && (
         <div className="p-2 bg-white/50 border-2 border-black mb-3">
-          <span className="text-sm font-black">Missing: </span>
-          <span className="text-sm font-bold">
-            {recipe.missingAnchorNames.join(', ')}
+          <span className="text-sm font-black">
+            Missing {recipe.missingAnchorCount} ingredient{recipe.missingAnchorCount !== 1 ? 's' : ''}
           </span>
         </div>
-      )} */}
+      )}
 
       {/* T014: Mark as Cooked button for available recipes only */}
       {variant === 'available' && onMarkAsCooked && (

@@ -482,11 +482,15 @@ function OnboardingPageContent() {
               Review & Refine
             </h2>
 
+            <p className="text-sm text-gray-600 text-center -mt-2">
+              Don&apos;t worry—everything can be modified later
+            </p>
+
             {/* Example sentences */}
-            <InfoCard variant="cyan" emoji="💬" heading="Hold the button and speak naturally">
+            <InfoCard variant="cyan" emoji="💬" heading="Hold the button and speak naturally: Try reading this">
               <div className="space-y-1">
-                <p>&quot;I know how to make fried rice and a peanut butter sandwich. I also have rice, chicken, and cream.&quot;</p>
-                <p>&quot;I can cook scrambled eggs and pasta carbonara. I have eggs, milk, and bacon, and... oh no... I ran out of bacon!&quot;</p>
+                <p>&quot;I can cook Mushroom omelette. I just bought eggs, mushrooms, butter and bacon</p>
+                <p>&quot;I know how to make fried rice and a peanut butter sandwich. I also have rice, chicken, peanut butter and... oh no... I ran out of bacon!&quot;</p>
               </div>
             </InfoCard>
 
