@@ -1,6 +1,6 @@
 "use client";
 
-type VoiceGuidanceContext = "inventory" | "recipe";
+type VoiceGuidanceContext = "inventory" | "recipe" | "recipe-update";
 
 interface VoiceGuidanceProps {
   context?: VoiceGuidanceContext;
@@ -23,6 +23,13 @@ const GUIDANCE_CONFIG = {
       "My go-to is chicken stir-fry with broccoli, soy sauce, and garlic.",
       "I make a simple tomato soup with onions, garlic, tomatoes, and basil.",
       "For breakfast I often make scrambled eggs with cheese and chives.",
+    ],
+  },
+  "recipe-update": {
+    description: "Describe what you want to change in the recipe:",
+    examples: [
+      "Add garlic and basil to the ingredients",
+      "Make the onions optional",
     ],
   },
 };

@@ -19,8 +19,8 @@
 
 **Purpose**: Create new directories and base files
 
-- [ ] T001 Create `src/lib/prompts/recipe-updater/` directory structure
-- [ ] T002 [P] Add `"creation"` tag and `mode: "creation"` metadata to `src/lib/prompts/recipe-editor/prompt.ts`
+- [X] T001 Create `src/lib/prompts/recipe-updater/` directory structure
+- [X] T002 [P] Add `"creation"` tag and `mode: "creation"` metadata to `src/lib/prompts/recipe-editor/prompt.ts`
 
 ---
 
@@ -30,9 +30,9 @@
 
 **⚠️ CRITICAL**: Voice/text implementation depends on these types
 
-- [ ] T003 Add `recipeStateSchema` and `RecipeState` type to `src/types/recipes.ts`
-- [ ] T004 Add `recipeUpdateVoiceRequestSchema` and type to `src/types/recipes.ts`
-- [ ] T005 Add `recipeUpdateTextRequestSchema` and type to `src/types/recipes.ts`
+- [X] T003 Add `recipeStateSchema` and `RecipeState` type to `src/types/recipes.ts`
+- [X] T004 Add `recipeUpdateVoiceRequestSchema` and type to `src/types/recipes.ts`
+- [X] T005 Add `recipeUpdateTextRequestSchema` and type to `src/types/recipes.ts`
 
 **Checkpoint**: Types ready - LLM and API implementation can begin
 
@@ -46,14 +46,14 @@
 
 ### Implementation for User Story 1
 
-- [ ] T006 [US1] Create `RECIPE_UPDATER_PROMPT` in `src/lib/prompts/recipe-updater/prompt.ts`
-- [ ] T007 [US1] Create `processVoiceRecipeUpdate()` in `src/lib/prompts/recipe-updater/process.ts` with Opik tracing
-- [ ] T008 [US1] Create POST handler in `src/app/api/recipes/update-voice/route.ts`
-- [ ] T009 [US1] Add `stage` state (`form|processing|preview`) to `src/components/recipes/recipe-form.tsx`
-- [ ] T010 [US1] Enable `QuickInputSection` in edit mode in `src/components/recipes/recipe-form.tsx`
-- [ ] T011 [US1] Add `handleVoiceComplete` for edit mode → POST `/api/recipes/update-voice` in `src/components/recipes/recipe-form.tsx`
-- [ ] T012 [US1] Add preview state showing proposed changes in `src/components/recipes/recipe-form.tsx`
-- [ ] T013 [US1] Add save/dismiss actions from preview in `src/components/recipes/recipe-form.tsx`
+- [X] T006 [US1] Create `RECIPE_UPDATER_PROMPT` in `src/lib/prompts/recipe-updater/prompt.ts`
+- [X] T007 [US1] Create `processVoiceRecipeUpdate()` in `src/lib/prompts/recipe-updater/process.ts` with Opik tracing
+- [X] T008 [US1] Create POST handler in `src/app/api/recipes/update-voice/route.ts`
+- [X] T009 [US1] Add `stage` state (`form|processing|preview`) to `src/components/recipes/recipe-form.tsx`
+- [X] T010 [US1] Enable `QuickInputSection` in edit mode in `src/components/recipes/recipe-form.tsx`
+- [X] T011 [US1] Add `handleVoiceComplete` for edit mode → POST `/api/recipes/update-voice` in `src/components/recipes/recipe-form.tsx`
+- [X] T012 [US1] Add preview state showing proposed changes in `src/components/recipes/recipe-form.tsx`
+- [X] T013 [US1] Add save/dismiss actions from preview in `src/components/recipes/recipe-form.tsx`
 
 **Checkpoint**: Voice editing functional - user can record update, preview, save/dismiss
 
@@ -67,9 +67,9 @@
 
 ### Implementation for User Story 2
 
-- [ ] T014 [US2] Create `processTextRecipeUpdate()` in `src/lib/prompts/recipe-updater/process.ts` with Opik tracing
-- [ ] T015 [US2] Create POST handler in `src/app/api/recipes/update-text/route.ts`
-- [ ] T016 [US2] Add `handleTextSubmit` for edit mode → POST `/api/recipes/update-text` in `src/components/recipes/recipe-form.tsx`
+- [X] T014 [US2] Create `processTextRecipeUpdate()` in `src/lib/prompts/recipe-updater/process.ts` with Opik tracing
+- [X] T015 [US2] Create POST handler in `src/app/api/recipes/update-text/route.ts`
+- [X] T016 [US2] Add `handleTextSubmit` for edit mode → POST `/api/recipes/update-text` in `src/components/recipes/recipe-form.tsx`
 
 **Checkpoint**: Text editing functional - user can type update, preview, save/dismiss
 
@@ -83,7 +83,7 @@
 
 ### Implementation for User Story 3
 
-- [ ] T017 [US3] Verify `QuickInputSection` toggle works in edit mode in `src/components/recipes/recipe-form.tsx`
+- [X] T017 [US3] Verify `QuickInputSection` toggle works in edit mode in `src/components/recipes/recipe-form.tsx`
 
 **Checkpoint**: Input mode toggle functional (likely already works via QuickInputSection reuse)
 
@@ -97,8 +97,8 @@
 
 ### Implementation for User Story 4
 
-- [ ] T018 [US4] Update LLM prompt to emphasize field preservation rules in `src/lib/prompts/recipe-updater/prompt.ts`
-- [ ] T019 [US4] Add logging for field change detection in `src/lib/prompts/recipe-updater/process.ts`
+- [X] T018 [US4] Update LLM prompt to emphasize field preservation rules in `src/lib/prompts/recipe-updater/prompt.ts`
+- [X] T019 [US4] Add logging for field change detection in `src/lib/prompts/recipe-updater/process.ts`
 
 **Checkpoint**: Partial updates preserve unmentioned fields
 
@@ -108,11 +108,11 @@
 
 **Purpose**: Validation, edge cases, error handling
 
-- [ ] T020 Integrate `validateIngredients()` after LLM response in `src/lib/prompts/recipe-updater/process.ts`
-- [ ] T021 Show toast for unrecognized ingredients in `src/components/recipes/recipe-form.tsx`
-- [ ] T022 [P] Add error toast for API failures in `src/components/recipes/recipe-form.tsx`
-- [ ] T023 [P] Add loading skeleton during processing in `src/components/recipes/recipe-form.tsx`
-- [ ] T024 Add validation blocking zero-ingredient updates in `src/components/recipes/recipe-form.tsx`
+- [X] T020 Integrate `validateIngredients()` after LLM response in `src/lib/prompts/recipe-updater/process.ts`
+- [X] T021 Show toast for unrecognized ingredients in `src/components/recipes/recipe-form.tsx`
+- [X] T022 [P] Add error toast for API failures in `src/components/recipes/recipe-form.tsx`
+- [X] T023 [P] Add loading skeleton during processing in `src/components/recipes/recipe-form.tsx`
+- [X] T024 Add validation blocking zero-ingredient updates in `src/components/recipes/recipe-form.tsx`
 - [ ] T025 Run quickstart.md manual testing checklist
 
 ---

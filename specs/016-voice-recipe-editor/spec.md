@@ -75,6 +75,26 @@ A user makes a change to only one aspect of the recipe and expects all other dat
 
 ---
 
+### User Story 5 - Iterative Updates (Priority: P1)
+
+A user wants to refine their recipe through multiple sequential updates without committing after each change, allowing experimentation before final save.
+
+**Why this priority**: Core UX pattern - enables natural iterative refinement workflow. Users can try multiple updates, see cumulative changes, and commit or revert all at once.
+
+**Independent Test**: Can be fully tested by making 3+ sequential updates (e.g., add ingredient, change title, mark another ingredient optional) and verifying all changes accumulate in the form, then testing both save (commits all) and dismiss (reverts all).
+
+**Acceptance Scenarios**:
+
+1. **Given** a recipe in edit mode, **When** user records "add garlic", sees it appear, then records "make the onions optional", **Then** both changes (garlic added + onions optional) are visible in the form simultaneously.
+
+2. **Given** a recipe with accumulated changes from 3 sequential updates, **When** user clicks "Save", **Then** all changes commit to database and form closes with success message.
+
+3. **Given** a recipe with accumulated changes from 2 sequential updates, **When** user clicks "Dismiss" or "Cancel", **Then** all changes revert to original state and form returns to initial recipe data.
+
+4. **Given** a recipe in edit mode, **When** user makes update 1, then update 2, then dismisses, **Then** form shows original state. **When** user makes a new update 3, **Then** update 3 applies on the original state (not on dismissed changes).
+
+---
+
 ### Edge Cases
 
 - What happens when user requests to add an ingredient that already exists? (System should ignore duplicate or mark existing as optional if requested)
@@ -99,7 +119,12 @@ A user makes a change to only one aspect of the recipe and expects all other dat
 - **FR-010**: System MUST show a loading state while processing voice/text input
 - **FR-011**: System MUST display appropriate error messages for failed processing
 - **FR-012**: System MUST prevent updates that would result in zero ingredients
-- **FR-013**: System MUST provide an npm command to register the recipe updater prompt to Opik for tracking and versioning
+- **FR-013**: System MUST apply AI-generated updates immediately to the form (no blocking preview modal)
+- **FR-014**: System MUST allow multiple sequential updates to accumulate on top of each other
+- **FR-015**: System MUST preserve original recipe state for revert capability until user saves
+- **FR-016**: System MUST provide "Save" button to commit all accumulated changes
+- **FR-017**: System MUST provide "Cancel" or "Dismiss" button to revert all changes to original state
+- **FR-018**: System MUST provide an npm command to register the recipe updater prompt to Opik for tracking and versioning
 
 ### Key Entities
 
