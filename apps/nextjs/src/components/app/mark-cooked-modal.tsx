@@ -34,8 +34,9 @@ export function MarkCookedModal(props: MarkCookedModalProps) {
         ingredientId: i.id,
         name: i.name,
         currentQuantity: i.currentQuantity,
-        // Default: decrement by 1, floor at 0
-        proposedQuantity: Math.max(0, i.currentQuantity - 1) as QuantityLevel,
+        // Default: decrement by 1, floor at 0 (pantry staples stay at 3)
+        proposedQuantity: i.isPantryStaple ? 3 : Math.max(0, i.currentQuantity - 1) as QuantityLevel,
+        isPantryStaple: i.isPantryStaple,
       }))
     setIngredientDiffs(diffs)
     setStage('confirmation')
@@ -60,10 +61,13 @@ export function MarkCookedModal(props: MarkCookedModalProps) {
     setStage('processing')
     setError(null)
 
+    // Exclude pantry staples from inventory updates
+    const nonStapleDiffs = ingredientDiffs.filter((d) => !d.isPantryStaple)
+
     const result = await markRecipeAsCooked({
       recipeId: recipe.id,
       recipeName: recipe.name,
-      ingredientUpdates: ingredientDiffs.map((d) => ({
+      ingredientUpdates: nonStapleDiffs.map((d) => ({
         ingredientId: d.ingredientId,
         newQuantity: d.proposedQuantity,
       })),
@@ -139,9 +143,9 @@ export function MarkCookedModal(props: MarkCookedModalProps) {
                       <div key={diff.ingredientId} className="flex flex-col items-center gap-1">
                         <IngredientBadge
                           name={diff.name}
-                          level={diff.proposedQuantity}
+                          level={diff.isPantryStaple ? 3 : diff.proposedQuantity}
                           variant="dots"
-                          interactive
+                          interactive={!diff.isPantryStaple}
                           onLevelChange={(newLevel) =>
                             handleQuantityChange({
                               ingredientId: diff.ingredientId,
@@ -149,11 +153,13 @@ export function MarkCookedModal(props: MarkCookedModalProps) {
                             })
                           }
                         />
-                        {diff.proposedQuantity !== diff.currentQuantity && (
+                        {diff.isPantryStaple ? (
+                          <span className="text-xs text-green-600 font-medium">∞</span>
+                        ) : diff.proposedQuantity !== diff.currentQuantity ? (
                           <span className="text-xs text-gray-500">
                             {diff.currentQuantity} → {diff.proposedQuantity}
                           </span>
-                        )}
+                        ) : null}
                       </div>
                     ))}
                   </div>

@@ -13,6 +13,7 @@ export interface IngredientWithAvailability {
   type: IngredientType
   inInventory: boolean // user has quantity > 0 or isPantryStaple
   currentQuantity: QuantityLevel
+  isPantryStaple: boolean
 }
 
 // Recipe with computed availability
@@ -51,4 +52,5 @@ export interface IngredientDiff {
   name: string
   currentQuantity: QuantityLevel
   proposedQuantity: QuantityLevel // default: max(0, current - 1)
+  isPantryStaple: boolean
 }

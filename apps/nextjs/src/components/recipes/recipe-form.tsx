@@ -223,7 +223,7 @@ export function RecipeForm(props: RecipeFormProps) {
         <div className="p-8 space-y-6">
           <div className="flex items-center justify-between pb-4 border-b-2 border-black">
             <h2 className="text-3xl font-bold">
-              {isEditMode ? "Edit Recipe" : "Add Recipe"}
+              {isEditMode ? "Edit Recipe (WIP: missing LLM)" : "Add Recipe"}
             </h2>
             <Button variant="ghost" onClick={onClose} size="icon">
               <span className="text-2xl">✕</span>

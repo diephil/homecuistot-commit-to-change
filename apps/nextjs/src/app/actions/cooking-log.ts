@@ -75,6 +75,7 @@ export async function getRecipesWithAvailability(): Promise<RecipeWithAvailabili
         type: ri.ingredientType,
         inInventory,
         currentQuantity: (inv?.quantityLevel ?? 0) as QuantityLevel,
+        isPantryStaple: inv?.isPantryStaple ?? false,
       }
     })
 
