@@ -18,18 +18,23 @@ export function RecipeSection(props: RecipeSectionProps) {
   const { title, subtitle, recipes, variant, emptyMessage } = props
   const router = useRouter()
 
-  // Modal state
-  const [selectedRecipe, setSelectedRecipe] = useState<RecipeWithAvailability | null>(null)
+  // Modal state - store ID only, derive recipe from fresh props
+  const [selectedRecipeId, setSelectedRecipeId] = useState<string | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
+  // Derive recipe from fresh props to ensure updated quantities
+  const selectedRecipe = selectedRecipeId
+    ? recipes.find((r) => r.id === selectedRecipeId) ?? null
+    : null
+
   const handleMarkAsCooked = useCallback((recipe: RecipeWithAvailability) => {
-    setSelectedRecipe(recipe)
+    setSelectedRecipeId(recipe.id)
     setIsModalOpen(true)
   }, [])
 
   const handleModalClose = useCallback(() => {
     setIsModalOpen(false)
-    setSelectedRecipe(null)
+    setSelectedRecipeId(null)
   }, [])
 
   const handleSuccess = useCallback(() => {

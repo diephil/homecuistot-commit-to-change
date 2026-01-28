@@ -58,9 +58,9 @@ export default async function proxy(request: NextRequest): Promise<NextResponse>
     }
   }
 
-  // Redirect to /app/onboarding if user is authenticated on public routes
+  // Redirect to /app if user is authenticated on public routes
   if (isPublicRoute && user && path === "/login") {
-    return NextResponse.redirect(new URL("/app/onboarding", request.url));
+    return NextResponse.redirect(new URL("/app", request.url));
   }
 
   return response;

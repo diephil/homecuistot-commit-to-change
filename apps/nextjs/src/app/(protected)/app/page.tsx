@@ -14,7 +14,7 @@ export default async function AppPage() {
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 py-6">
       <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 space-y-8">
         <RecipeSection
-          title="Available Recipes"
+          title="Ready To Cook Recipes"
           recipes={availableRecipes}
           variant="available"
           emptyMessage="No recipes available with your current inventory."

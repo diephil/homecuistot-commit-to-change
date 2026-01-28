@@ -78,8 +78,9 @@ export function MarkCookedModal(props: MarkCookedModalProps) {
       // T015: Trigger page revalidation (handled by server action)
       setTimeout(() => {
         onSuccess?.()
-        onClose()
+        setIngredientDiffs([]) // Reset diffs so next open uses fresh data
         setStage('confirmation')
+        onClose()
       }, 1000)
     } else {
       setStage('error')
@@ -91,6 +92,7 @@ export function MarkCookedModal(props: MarkCookedModalProps) {
   const handleClose = () => {
     setStage('confirmation')
     setError(null)
+    setIngredientDiffs([])
     onClose()
   }
 
