@@ -206,7 +206,7 @@ export default function InventoryPage() {
   if (isLoading) {
     return (
       <PageContainer
-        maxWidth="2xl"
+        maxWidth="4xl"
         gradientFrom="from-yellow-50"
         gradientVia="via-amber-50"
         gradientTo="to-orange-50"
@@ -225,7 +225,7 @@ export default function InventoryPage() {
   if (totalItems === 0) {
     return (
       <PageContainer
-        maxWidth="2xl"
+        maxWidth="4xl"
         gradientFrom="from-yellow-50"
         gradientVia="via-amber-50"
         gradientTo="to-orange-50"
@@ -277,7 +277,7 @@ export default function InventoryPage() {
 
   return (
     <PageContainer
-      maxWidth="2xl"
+      maxWidth="4xl"
       gradientFrom="from-yellow-50"
       gradientVia="via-amber-50"
       gradientTo="to-orange-50"

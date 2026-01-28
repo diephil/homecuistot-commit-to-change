@@ -115,7 +115,7 @@ export default function RecipesPage() {
   }));
 
   return (
-    <PageContainer maxWidth="2xl">
+    <PageContainer maxWidth="4xl">
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold">My Recipes</h1>
