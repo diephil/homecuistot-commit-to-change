@@ -2,6 +2,7 @@ import { getRecipesWithAvailability, getCookingHistory } from '@/app/actions/coo
 import { RecipeSection } from './recipe-section'
 import { CookingHistoryTable } from '@/components/app/cooking-history-table'
 import { ResetUserDataButton } from '@/components/app/reset-user-data-button'
+import { StartDemoButton } from '@/components/app/start-demo-button'
 import { AppPageHeader } from '@/components/app/app-page-header'
 
 export default async function AppPage() {
@@ -35,7 +36,8 @@ export default async function AppPage() {
           <CookingHistoryTable entries={cookingHistory} />
         </section>
 
-        <section className="flex justify-center pt-8">
+        <section className="flex justify-center gap-4 pt-8">
+          <StartDemoButton />
           <ResetUserDataButton />
         </section>
       </div>

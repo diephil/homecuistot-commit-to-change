@@ -19,8 +19,8 @@
 
 **Purpose**: Create demo data constants and shared modal component
 
-- [ ] T001 [P] Create demo data constants in `src/db/demo-data.ts` with DEMO_INVENTORY (21 items) and DEMO_RECIPES (6 recipes) arrays per data-model.md
-- [ ] T002 [P] Create shared ConfirmationModal component in `src/components/app/confirmation-modal.tsx` with props: isOpen, title, message, confirmText, confirmButtonClass, isLoading, onConfirm, onCancel
+- [x] T001 [P] Create demo data constants in `src/db/demo-data.ts` with DEMO_INVENTORY (21 items) and DEMO_RECIPES (6 recipes) arrays per data-model.md
+- [x] T002 [P] Create shared ConfirmationModal component in `src/components/app/confirmation-modal.tsx` with props: isOpen, title, message, confirmText, confirmButtonClass, isLoading, onConfirm, onCancel
 
 ---
 
@@ -28,8 +28,8 @@
 
 **Purpose**: Refactor existing component to use shared modal, add server action
 
-- [ ] T003 Refactor ResetUserDataButton in `src/components/app/reset-user-data-button.tsx` to use ConfirmationModal component (remove inline modal, keep existing behavior: redirect to onboarding on success)
-- [ ] T004 Add startDemoData server action in `src/app/actions/user-data.ts` following contract: auth check → transaction (delete all user data → lookup ingredient IDs → insert demo inventory → insert demo recipes → insert recipe ingredients) → revalidate paths → return result
+- [x] T003 Refactor ResetUserDataButton in `src/components/app/reset-user-data-button.tsx` to use ConfirmationModal component (remove inline modal, keep existing behavior: redirect to onboarding on success)
+- [x] T004 Add startDemoData server action in `src/app/actions/user-data.ts` following contract: auth check → transaction (delete all user data → lookup ingredient IDs → insert demo inventory → insert demo recipes → insert recipe ingredients) → revalidate paths → return result
 
 **Checkpoint**: Foundation ready - shared modal works, server action available
 
@@ -43,9 +43,9 @@
 
 ### Implementation for User Story 1
 
-- [ ] T005 [US1] Create StartDemoButton component in `src/components/app/start-demo-button.tsx` with blue neo-brutalist styling (bg-blue-400), "🚀 Start Demo" text, opens ConfirmationModal on click
-- [ ] T006 [US1] Wire StartDemoButton to call startDemoData() server action on confirm, call router.refresh() on success, show alert on error
-- [ ] T007 [US1] Update page layout in `src/app/(protected)/app/page.tsx`: import StartDemoButton, add to section with gap-4 spacing next to ResetUserDataButton
+- [x] T005 [US1] Create StartDemoButton component in `src/components/app/start-demo-button.tsx` with blue neo-brutalist styling (bg-blue-400), "🚀 Start Demo" text, opens ConfirmationModal on click
+- [x] T006 [US1] Wire StartDemoButton to call startDemoData() server action on confirm, call router.refresh() on success, show alert on error
+- [x] T007 [US1] Update page layout in `src/app/(protected)/app/page.tsx`: import StartDemoButton, add to section with gap-4 spacing next to ResetUserDataButton
 
 **Checkpoint**: User Story 1 complete - demo mode fully functional
 
@@ -59,8 +59,8 @@
 
 ### Implementation for User Story 2
 
-- [ ] T008 [US2] Verify ConfirmationModal cancel behavior in `src/components/app/confirmation-modal.tsx`: clicking Cancel calls onCancel, clicking overlay calls onCancel (unless loading), both buttons disabled during loading
-- [ ] T009 [US2] Verify StartDemoButton cancel handling in `src/components/app/start-demo-button.tsx`: setIsModalOpen(false) on cancel, no server action call
+- [x] T008 [US2] Verify ConfirmationModal cancel behavior in `src/components/app/confirmation-modal.tsx`: clicking Cancel calls onCancel, clicking overlay calls onCancel (unless loading), both buttons disabled during loading
+- [x] T009 [US2] Verify StartDemoButton cancel handling in `src/components/app/start-demo-button.tsx`: setIsModalOpen(false) on cancel, no server action call
 
 **Checkpoint**: User Story 2 complete - cancel flow works correctly
 
