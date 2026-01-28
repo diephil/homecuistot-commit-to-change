@@ -508,7 +508,7 @@ function OnboardingPageContent() {
               </div>
 
               <div className="md:rotate-1">
-                <h3 className="text-lg font-black uppercase mb-2">Available ingredients</h3>
+                <h3 className="text-lg font-black uppercase mb-2">Tracked ingredients</h3>
                 {state.ingredients.length === 0 ? (
                   <p className="text-gray-500 italic">No ingredients selected</p>
                 ) : (

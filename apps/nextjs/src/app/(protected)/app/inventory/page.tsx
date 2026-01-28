@@ -306,9 +306,9 @@ export default function InventoryPage() {
           </div>
         </div>
 
-        {/* Available Ingredients */}
+        {/* Tracked Ingredients */}
         <InventorySection
-          title="Available Ingredients"
+          title="Tracked Ingredients"
           items={inventory.available}
           isPantrySection={false}
           onQuantityChange={handleQuantityChange}
