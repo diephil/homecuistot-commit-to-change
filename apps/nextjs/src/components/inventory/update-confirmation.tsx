@@ -6,7 +6,7 @@ import { InventoryUpdateProposal, InventoryDisplayItem } from "@/types/inventory
 
 interface UpdateConfirmationProps {
   proposal: InventoryUpdateProposal;
-  existingInventory: InventoryDisplayItem[]; // eslint-disable-line @typescript-eslint/no-unused-vars
+  existingInventory: InventoryDisplayItem[];  
   onConfirm: () => void;
   onCancel: () => void;
   isSaving: boolean;

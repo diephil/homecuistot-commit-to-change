@@ -5,10 +5,11 @@ import { PageContainer } from "@/components/PageContainer";
 import { Button } from "@/components/retroui/Button";
 import { InventorySection } from "@/components/inventory/inventory-section";
 import { HelpModal } from "@/components/inventory/help-modal";
+import { NeoHelpButton } from "@/components/shared/neo-help-button";
 import { InventoryUpdateModal } from "@/components/inventory/inventory-update-modal";
 import { DeleteConfirmationModal } from "@/components/shared/delete-confirmation-modal";
 import { InventoryDisplayItem, QuantityLevel, InventoryGroups } from "@/types/inventory";
-import { HelpCircle, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { toast } from "sonner";
 
 export default function InventoryPage() {
@@ -17,7 +18,6 @@ export default function InventoryPage() {
     pantryStaples: [],
   });
   const [isLoading, setIsLoading] = useState(true);
-  const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<InventoryDisplayItem | null>(null);
 
@@ -234,13 +234,11 @@ export default function InventoryPage() {
           <div className="flex items-center justify-between">
             <h1 className="text-3xl font-bold">My Inventory</h1>
             <div className="flex gap-2">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsHelpOpen(true)}
-              >
-                <HelpCircle className="h-5 w-5" />
-              </Button>
+              <NeoHelpButton
+                renderModal={({ isOpen, onClose }) => (
+                  <HelpModal isOpen={isOpen} onClose={onClose} />
+                )}
+              />
               <Button
                 variant="default"
                 size="md"
@@ -261,7 +259,6 @@ export default function InventoryPage() {
           </div>
         </div>
 
-        <HelpModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} />
         <InventoryUpdateModal
           isOpen={isUpdateModalOpen}
           onClose={() => setIsUpdateModalOpen(false)}
@@ -287,13 +284,11 @@ export default function InventoryPage() {
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold">My Inventory</h1>
           <div className="flex gap-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setIsHelpOpen(true)}
-            >
-              <HelpCircle className="h-5 w-5" />
-            </Button>
+            <NeoHelpButton
+              renderModal={({ isOpen, onClose }) => (
+                <HelpModal isOpen={isOpen} onClose={onClose} />
+              )}
+            />
             <Button
               variant="default"
               size="md"
@@ -328,7 +323,6 @@ export default function InventoryPage() {
         />
       </div>
 
-      <HelpModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} />
       <InventoryUpdateModal
         isOpen={isUpdateModalOpen}
         onClose={() => setIsUpdateModalOpen(false)}

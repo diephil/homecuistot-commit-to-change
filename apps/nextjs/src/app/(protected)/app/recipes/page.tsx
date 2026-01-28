@@ -6,9 +6,10 @@ import { Button } from "@/components/retroui/Button";
 import { RecipeList } from "@/components/recipes/recipe-list";
 import { RecipeForm } from "@/components/recipes/recipe-form";
 import { RecipeHelpModal } from "@/components/recipes/help-modal";
+import { NeoHelpButton } from "@/components/shared/neo-help-button";
 import { DeleteConfirmationModal } from "@/components/shared/delete-confirmation-modal";
 import { getRecipes, deleteRecipe } from "@/app/actions/recipes";
-import { HelpCircle, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { toast } from "sonner";
 
 interface Recipe {
@@ -33,7 +34,6 @@ export default function RecipesPage() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [selectedRecipeId, setSelectedRecipeId] = useState<string | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   // Delete modal state
@@ -120,13 +120,11 @@ export default function RecipesPage() {
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold">My Recipes</h1>
           <div className="flex gap-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setIsHelpOpen(true)}
-            >
-              <HelpCircle className="h-5 w-5" />
-            </Button>
+            <NeoHelpButton
+              renderModal={({ isOpen, onClose }) => (
+                <RecipeHelpModal isOpen={isOpen} onClose={onClose} />
+              )}
+            />
             <Button
               variant="default"
               size="md"
@@ -159,8 +157,6 @@ export default function RecipesPage() {
           />
         )}
       </div>
-
-      <RecipeHelpModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} />
 
       <DeleteConfirmationModal
         isOpen={deleteModalOpen}
