@@ -47,6 +47,8 @@
 - Supabase PostgreSQL via Drizzle (cooking_log, user_inventory, recipe_ingredients tables exist) (015-app-page-revamp)
 - TypeScript 5+ (strict mode) + React 19, Next.js 16, @google/genai (Gemini 2.0 Flash), Zod, opik-gemini (016-voice-recipe-editor)
 - Supabase PostgreSQL via Drizzle (existing recipes, ingredients tables) (016-voice-recipe-editor)
+- TypeScript 5+ (strict mode) + React 19, Next.js 16, Drizzle ORM 0.45.1, Supabase Auth (017-demo-data-reset)
+- Supabase PostgreSQL (user_inventory, user_recipes, recipe_ingredients, ingredients tables) (017-demo-data-reset)
 
 **Frontend**: TypeScript 5+ (strict), React 19, Next.js 16 App Router, Tailwind CSS v4, RetroUI + shadcn/ui, lucide-react icons
 
@@ -114,6 +116,6 @@ pnpm db:studio            # Open Drizzle Studio GUI
 - Purpose: Generate SQL migration from CSV data
 
 ## Recent Changes
+- 017-demo-data-reset: Added TypeScript 5+ (strict mode) + React 19, Next.js 16, Drizzle ORM 0.45.1, Supabase Auth
 - 016-voice-recipe-editor: Added TypeScript 5+ (strict mode) + React 19, Next.js 16, @google/genai (Gemini 2.0 Flash), Zod, opik-gemini
 - 015-app-page-revamp: Added TypeScript 5+ (strict mode) + React 19, Next.js 16 App Router, Tailwind CSS v4, RetroUI components, Drizzle ORM 0.45.1
-- 014-inventory-page-rework: Added TypeScript 5+ (strict mode) + React 19, Next.js 16, Drizzle ORM 0.45.1, @google/genai (Gemini 2.0 Flash), Zod, Opik
