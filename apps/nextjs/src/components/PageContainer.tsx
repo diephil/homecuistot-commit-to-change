@@ -42,7 +42,6 @@ export function PageContainer({
         gradientFrom,
         gradientVia,
         gradientTo,
-        "dark:from-zinc-900 dark:via-zinc-800 dark:to-zinc-900",
         className
       )}
     >
