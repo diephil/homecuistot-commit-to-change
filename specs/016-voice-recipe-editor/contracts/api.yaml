@@ -1,0 +1,122 @@
+# API Contracts: Voice Recipe Editor
+# OpenAPI 3.0 Specification
+
+openapi: 3.0.3
+info:
+  title: Recipe Update API
+  version: 1.0.0
+  description: Voice/text-based recipe editing endpoints
+
+paths:
+  /api/recipes/update-voice:
+    post:
+      summary: Update recipe via voice input
+      operationId: updateRecipeVoice
+      tags: [recipes, voice, llm]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecipeUpdateVoiceRequest'
+      responses:
+        '200':
+          description: Updated recipe state
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecipeUpdateResponse'
+        '400':
+          description: Invalid request (missing audio, invalid recipe state)
+        '500':
+          description: LLM processing error
+
+  /api/recipes/update-text:
+    post:
+      summary: Update recipe via text input
+      operationId: updateRecipeText
+      tags: [recipes, text, llm]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecipeUpdateTextRequest'
+      responses:
+        '200':
+          description: Updated recipe state
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecipeUpdateResponse'
+        '400':
+          description: Invalid request (missing text, invalid recipe state)
+        '500':
+          description: LLM processing error
+
+components:
+  schemas:
+    RecipeState:
+      type: object
+      required: [title, description, ingredients]
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 100
+        description:
+          type: string
+          minLength: 1
+          maxLength: 200
+        ingredients:
+          type: array
+          minItems: 1
+          maxItems: 20
+          items:
+            $ref: '#/components/schemas/RecipeIngredient'
+
+    RecipeIngredient:
+      type: object
+      required: [name, isOptional]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: lowercase, singular form
+        isOptional:
+          type: boolean
+
+    RecipeUpdateVoiceRequest:
+      type: object
+      required: [currentRecipe, audioBase64]
+      properties:
+        currentRecipe:
+          $ref: '#/components/schemas/RecipeState'
+        audioBase64:
+          type: string
+          format: byte
+          description: Base64-encoded audio/webm
+
+    RecipeUpdateTextRequest:
+      type: object
+      required: [currentRecipe, text]
+      properties:
+        currentRecipe:
+          $ref: '#/components/schemas/RecipeState'
+        text:
+          type: string
+          minLength: 1
+          description: User's update instruction
+
+    RecipeUpdateResponse:
+      type: object
+      required: [title, description, ingredients]
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        ingredients:
+          type: array
+          items:
+            $ref: '#/components/schemas/RecipeIngredient'
