@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { redirect } from 'next/navigation'
+import { redirect, RedirectType } from 'next/navigation'
 import { headers } from 'next/headers'
 import { getUserCounts } from '@/app/actions/cooking-log'
 import { AppHeaderContent } from '@/components/app/app-header-content'
@@ -16,7 +16,9 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
       const { recipeCount, inventoryCount } = await getUserCounts()
 
       if (recipeCount === 0 && inventoryCount === 0) {
-        redirect('/app/onboarding')
+        // Use replace to prevent back-button redirect loop
+        // This replaces /app in history so back button goes to login/landing, not /app
+        redirect('/app/onboarding', RedirectType.replace)
       }
     } catch (error) {
       // Re-throw redirect errors (Next.js uses error throwing for redirects)
