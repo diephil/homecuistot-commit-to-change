@@ -22,11 +22,13 @@ interface Recipe {
   recipeIngredients: Array<{
     id: string;
     ingredientType: string;
+    ingredientId: string | null;
+    unrecognizedItemId: string | null;
     ingredient: {
       id: string;
       name: string;
       category: string;
-    };
+    } | null;
   }>;
 }
 

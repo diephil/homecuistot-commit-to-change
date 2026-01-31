@@ -9,10 +9,12 @@ interface RecipeFormProps {
     name: string;
     description: string | null;
     recipeIngredients: Array<{
+      ingredientId: string | null;
+      unrecognizedItemId: string | null;
       ingredient: {
         id: string;
         name: string;
-      };
+      } | null;
       ingredientType: string;
     }>;
   } | null;

@@ -1,8 +1,9 @@
-import { pgTable, uuid, text, timestamp, index, uniqueIndex } from 'drizzle-orm/pg-core'
-import { relations } from 'drizzle-orm'
+import { pgTable, uuid, text, timestamp, index, uniqueIndex, check } from 'drizzle-orm/pg-core'
+import { relations, sql } from 'drizzle-orm'
 import type { IngredientType } from './enums'
 import { ingredients } from './ingredients'
 import { cookingLog } from './cooking-log'
+import { unrecognizedItems } from './unrecognized-items'
 
 export const userRecipes = pgTable('user_recipes', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -18,13 +19,19 @@ export const userRecipes = pgTable('user_recipes', {
 export const recipeIngredients = pgTable('recipe_ingredients', {
   id: uuid('id').primaryKey().defaultRandom(),
   recipeId: uuid('recipe_id').notNull().references(() => userRecipes.id, { onDelete: 'cascade' }),
-  ingredientId: uuid('ingredient_id').notNull().references(() => ingredients.id, { onDelete: 'restrict' }),
+  ingredientId: uuid('ingredient_id').references(() => ingredients.id, { onDelete: 'restrict' }),
+  unrecognizedItemId: uuid('unrecognized_item_id').references(() => unrecognizedItems.id, { onDelete: 'restrict' }),
   ingredientType: text('ingredient_type').$type<IngredientType>().notNull(),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 }, (table) => [
-  uniqueIndex('idx_recipe_ingredients_unique').on(table.recipeId, table.ingredientId),
+  // XOR constraint: exactly one of ingredient_id or unrecognized_item_id must be set
+  check('exactly_one_reference', sql`(${table.ingredientId} IS NOT NULL) != (${table.unrecognizedItemId} IS NOT NULL)`),
+  // Partial unique indexes for each reference type
+  uniqueIndex('idx_recipe_ingredients_ingredient_unique').on(table.recipeId, table.ingredientId).where(sql`${table.ingredientId} IS NOT NULL`),
+  uniqueIndex('idx_recipe_ingredients_unrecognized_unique').on(table.recipeId, table.unrecognizedItemId).where(sql`${table.unrecognizedItemId} IS NOT NULL`),
   index('idx_recipe_ingredients_recipe').on(table.recipeId),
   index('idx_recipe_ingredients_ingredient').on(table.ingredientId),
+  index('idx_recipe_ingredients_unrecognized').on(table.unrecognizedItemId),
   index('idx_recipe_ingredients_type').on(table.ingredientType),
 ])
 
@@ -42,5 +49,9 @@ export const recipeIngredientsRelations = relations(recipeIngredients, ({ one })
   ingredient: one(ingredients, {
     fields: [recipeIngredients.ingredientId],
     references: [ingredients.id],
+  }),
+  unrecognizedItem: one(unrecognizedItems, {
+    fields: [recipeIngredients.unrecognizedItemId],
+    references: [unrecognizedItems.id],
   }),
 }))

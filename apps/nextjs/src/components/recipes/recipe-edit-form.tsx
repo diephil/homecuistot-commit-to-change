@@ -13,10 +13,12 @@ interface RecipeEditFormProps {
     name: string;
     description: string | null;
     recipeIngredients: Array<{
+      ingredientId: string | null;
+      unrecognizedItemId: string | null;
       ingredient: {
         id: string;
         name: string;
-      };
+      } | null;
       ingredientType: string;
     }>;
   };
@@ -28,11 +30,17 @@ type InputMode = "voice" | "text";
 export function RecipeEditForm(props: RecipeEditFormProps) {
   const { recipe, onClose } = props;
 
+  // Filter to only known ingredients (not unrecognized items)
+  const knownIngredients = recipe.recipeIngredients.filter(
+    (ri): ri is typeof ri & { ingredient: NonNullable<typeof ri.ingredient> } =>
+      ri.ingredient !== null
+  );
+
   // Store original state for revert capability
   const [originalState] = useState({
     title: recipe.name,
     description: recipe.description || "",
-    ingredients: recipe.recipeIngredients.map((ri) => ({
+    ingredients: knownIngredients.map((ri) => ({
       id: ri.ingredient.id,
       name: ri.ingredient.name,
       isOptional: ri.ingredientType === "optional",
@@ -43,7 +51,7 @@ export function RecipeEditForm(props: RecipeEditFormProps) {
   const [title, setTitle] = useState(recipe.name);
   const [description, setDescription] = useState(recipe.description || "");
   const [ingredients, setIngredients] = useState(
-    recipe.recipeIngredients.map((ri) => ({
+    knownIngredients.map((ri) => ({
       id: ri.ingredient.id,
       name: ri.ingredient.name,
       isOptional: ri.ingredientType === "optional",
