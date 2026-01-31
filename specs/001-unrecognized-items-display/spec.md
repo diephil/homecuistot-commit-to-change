@@ -5,6 +5,14 @@
 **Status**: Draft
 **Input**: User description: "On the inventory page, I want to see my list of unrecognized items. However, I want them to be listed at the end of the tracked ingredients list. I want unrecognized items to be grayed out so I cannot change their quantities and cannot click on them. I also cannot mark unrecognized items as a pantry staple; the only action available should be to delete them. We need to explain in the help model that the system does not recognize those items yet and might recognize them in the future. deleting them removes them from the user_inventory but do not remove them from the unrecognized_items table. I also want to refactor the star icon and change it to the infinity symbol instead. I also want to put a hint below the pantry staples section that says that a pantry staple is a food that is considered a basic or important food that you have a supply of it in your kitchen and should be considered always available."
 
+## Clarifications
+
+### Session 2026-01-31
+
+- Q: How should help/documentation for unrecognized items be presented to users? → A: Add to existing help modal accessed via "?" button
+- Q: When deleting an unrecognized item fails (network error, server error), what user feedback should be provided? → A: Error message only - Display error toast/notification stating "Failed to delete item" with no action
+- Q: What specific visual styling should distinguish unrecognized items from regular ingredients? → A: Reduced opacity with muted text - Combine reduced opacity with gray/muted text color
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - View Unrecognized Items (Priority: P1)
@@ -18,7 +26,7 @@ Users who added items during onboarding or recipe editing need to see which item
 **Acceptance Scenarios**:
 
 1. **Given** user has both recognized ingredients and unrecognized items in inventory, **When** user views inventory page, **Then** unrecognized items appear at the end of the list, after all recognized ingredients
-2. **Given** user has only unrecognized items in inventory, **When** user views inventory page, **Then** unrecognized items appear in the list with visual distinction (grayed out appearance)
+2. **Given** user has only unrecognized items in inventory, **When** user views inventory page, **Then** unrecognized items appear in the list with visual distinction (reduced opacity and muted text color)
 3. **Given** user has no unrecognized items in inventory, **When** user views inventory page, **Then** only recognized ingredients appear with no special section or visual indicators
 
 ---
@@ -67,10 +75,10 @@ Users who encounter unrecognized items for the first time need contextual help e
 
 **Acceptance Scenarios**:
 
-1. **Given** user views help/info about unrecognized items, **When** help content displays, **Then** explanation states system does not currently recognize these items
-2. **Given** user reads help content, **When** viewing future recognition section, **Then** content explains items might be recognized in future system updates
-3. **Given** user reads deletion help, **When** viewing deletion explanation, **Then** content clarifies deletion removes from visible inventory but preserves unrecognized item record
-4. **Given** user views help for unrecognized items, **When** accessing help content, **Then** help is contextually available on inventory page (tooltip, info icon, or help modal)
+1. **Given** user clicks "?" button to open help modal, **When** help content displays, **Then** explanation states system does not currently recognize these items
+2. **Given** user reads help content in modal, **When** viewing future recognition section, **Then** content explains items might be recognized in future system updates
+3. **Given** user reads deletion help in modal, **When** viewing deletion explanation, **Then** content clarifies deletion removes from visible inventory but preserves unrecognized item record
+4. **Given** user is on inventory page, **When** user clicks "?" button, **Then** help modal opens with section explaining unrecognized items
 
 ---
 
@@ -97,25 +105,26 @@ Users who interact with pantry staples need clear visual indicators and explanat
 - How does the system handle unrecognized items with very long raw text names (display truncation, wrapping)?
 - What happens when an unrecognized item is simultaneously deleted by user (optimistic UI update vs server state)?
 - How does the system behave when unrecognized_items table record is manually deleted or corrupted (orphaned user_inventory reference)?
-- What feedback does user receive when delete action fails (network error, database constraint violation)?
+- What feedback does user receive when delete action fails (network error, database constraint violation)? → Display error toast/notification with failure message, no retry action
 
 ## Requirements *(mandatory)*
 
 ### Functional Requirements
 
 - **FR-001**: System MUST display unrecognized items at the end of the inventory list, after all recognized ingredients
-- **FR-002**: System MUST visually distinguish unrecognized items from recognized ingredients using grayed out or muted styling
+- **FR-002**: System MUST visually distinguish unrecognized items from recognized ingredients using reduced opacity (50-60%) combined with muted text color
 - **FR-003**: System MUST prevent quantity level changes for unrecognized items (controls disabled or not rendered)
 - **FR-004**: System MUST prevent marking unrecognized items as pantry staples (control disabled or not rendered)
 - **FR-005**: System MUST prevent clicking/selecting unrecognized items to view details or edit
 - **FR-006**: System MUST provide delete action for unrecognized items
 - **FR-007**: System MUST remove unrecognized item from user_inventory table when deleted
 - **FR-008**: System MUST preserve unrecognized_items table record when user deletes from inventory
-- **FR-009**: System MUST provide help/documentation explaining unrecognized items, future recognition, and deletion behavior
+- **FR-009**: System MUST provide help/documentation in existing help modal (accessed via "?" button) explaining unrecognized items, future recognition, and deletion behavior
 - **FR-010**: System MUST display unrecognized item's raw text as the display name
 - **FR-011**: System MUST display infinity symbol (∞) icon for pantry staple items instead of star icon
 - **FR-012**: System MUST display hint text below pantry staples section explaining that pantry staples are basic/important foods with regular supply that should be considered always available
 - **FR-013**: System MUST hide pantry staple hint text when no pantry staples exist in inventory
+- **FR-014**: System MUST display error toast/notification when delete action fails, stating failure without retry action
 
 ### Key Entities
 
@@ -143,7 +152,7 @@ Users who interact with pantry staples need clear visual indicators and explanat
 
 - User inventory page already exists and displays recognized ingredients
 - Delete action pattern already exists in the UI (reusable component or established pattern)
-- Help/info modal or tooltip mechanism already exists in the application
+- Help modal accessed via "?" button already exists in the application
 - Unrecognized items are already being created and stored via onboarding or other flows
 - Sorting and ordering logic for inventory list is already implemented
 - Performance is acceptable for up to 500 total inventory items (combined recognized + unrecognized)
