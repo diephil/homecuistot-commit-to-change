@@ -11,6 +11,7 @@
 
 - Q: Where should the user's cooking skill selection be stored? → A: Not stored; used transiently to determine which recipe set (basic vs advanced) to pre-fill during onboarding.
 - Q: How should the LLM detect ingredients? → A: LLM returns structured arrays (ingredients_to_add, ingredients_to_remove); separate helper function handles DB matching and returns {ingredients, unrecognized_items, unrecognized_items_to_create}.
+- Q: What happens after "Complete Setup" during persistence? → A: Keep existing loading/preparation component unchanged; shown while recipes are generated and data is persisted.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -134,7 +135,8 @@ User clicks "Complete Setup" and all ingredients (recognized + unrecognized) plu
 4. **Given** unrecognized item already exists for user, **When** persisting, **Then** existing unrecognized_item ID used in user_inventory (no duplicate created)
 5. **Given** user selected "Basic" skill, **When** "Complete Setup" clicked, **Then** system adds 8 basic recipes: scrambled egg, pasta carbonara, pancake, mushroom omelette, spaghetti aglio e olio, grilled chicken and rice, roasted potato, roasted vegetable
 6. **Given** user selected "Advanced" skill, **When** "Complete Setup" clicked, **Then** system adds all 8 basic recipes PLUS 8 advanced recipes: teriyaki chicken, caesar salad, cheese quesadilla, miso soup, cheeseburger, moussaka, grilled salmon and lemon, veal blanquette
-7. **Given** all items persisted successfully, **When** complete, **Then** user advances to completion screen and onboarding is marked complete
+7. **Given** "Complete Setup" clicked, **When** persistence starts, **Then** existing loading/preparation component is displayed
+8. **Given** all items persisted successfully, **When** complete, **Then** user advances to completion screen and onboarding is marked complete
 
 ---
 
@@ -202,6 +204,7 @@ User clicks "Complete Setup" and all ingredients (recognized + unrecognized) plu
 **Step 3 - Persistence (Recipes based on Skill)**
 - **FR-034**: System MUST add 8 basic recipes for "Basic" skill: scrambled egg, pasta carbonara, pancake, mushroom omelette, spaghetti aglio e olio, grilled chicken and rice, roasted potato, roasted vegetable
 - **FR-035**: System MUST add all 8 basic recipes PLUS 8 advanced recipes for "Advanced" skill: teriyaki chicken, caesar salad, cheese quesadilla, miso soup, cheeseburger, moussaka, grilled salmon and lemon, veal blanquette
+- **FR-036**: System MUST display existing loading/preparation component during persistence (unchanged from current implementation)
 
 ### Key Entities
 
@@ -235,4 +238,4 @@ User clicks "Complete Setup" and all ingredients (recognized + unrecognized) plu
 - Cooking skill selection is transient (not persisted); used only to determine recipe set during onboarding
 - Existing voice input hook (`useVoiceInput`) and component structure will be reused
 - Existing Gemini 2.0 Flash integration will return structured add/remove arrays; separate helper function handles DB matching
-- Step 1 (welcome) and step 4 (completion) remain unchanged
+- Step 1 (welcome), step 4 (completion), and loading/preparation component remain unchanged
