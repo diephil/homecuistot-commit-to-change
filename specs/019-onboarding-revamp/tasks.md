@@ -38,12 +38,12 @@
 
 **CRITICAL**: No user story work (except US1-US3 UI) can begin until this phase is complete
 
-- [ ] T007 Create matchIngredients() helper function in apps/nextjs/src/lib/services/ingredient-matcher.ts
-- [ ] T008 Add IngredientExtractionSchema (Zod) in apps/nextjs/src/types/onboarding.ts
-- [ ] T009 [P] Update voice prompt for ingredient-only extraction (add/remove arrays) in apps/nextjs/src/lib/prompts/onboarding-voice/prompt.ts
-- [ ] T010 [P] Update voice process.ts to use IngredientExtractionSchema in apps/nextjs/src/lib/prompts/onboarding-voice/process.ts
-- [ ] T011 [P] Update text prompt for ingredient-only extraction in apps/nextjs/src/lib/prompts/onboarding-text/prompt.ts
-- [ ] T012 [P] Update text process.ts to use IngredientExtractionSchema in apps/nextjs/src/lib/prompts/onboarding-text/process.ts
+- [X] T007 Create matchIngredients() helper function in apps/nextjs/src/lib/services/ingredient-matcher.ts
+- [X] T008 Add IngredientExtractionSchema (Zod) in apps/nextjs/src/types/onboarding.ts
+- [X] T009 [P] Update voice prompt for ingredient-only extraction (add/remove arrays) in apps/nextjs/src/lib/prompts/onboarding-voice/prompt.ts
+- [X] T010 [P] Update voice process.ts to use IngredientExtractionSchema in apps/nextjs/src/lib/prompts/onboarding-voice/process.ts
+- [X] T011 [P] Update text prompt for ingredient-only extraction in apps/nextjs/src/lib/prompts/onboarding-text/prompt.ts
+- [X] T012 [P] Update text process.ts to use IngredientExtractionSchema in apps/nextjs/src/lib/prompts/onboarding-text/process.ts
 
 **Checkpoint**: Foundation ready - user story implementation can now begin
 

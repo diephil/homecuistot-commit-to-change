@@ -2,10 +2,15 @@ import { z } from "zod";
 import { GoogleGenAI, type Schema } from "@google/genai";
 import { trackGemini } from "opik-gemini";
 import {
-  OnboardingUpdateSchema,
-  type OnboardingUpdate,
+  IngredientExtractionSchema,
+  type IngredientExtractionResponse,
 } from "@/types/onboarding";
 import { ONBOARDING_VOICE_PROMPT } from "./prompt";
+
+/**
+ * T010: Updated process for ingredient-only extraction
+ * Spec: specs/019-onboarding-revamp/contracts/api.md
+ */
 
 const genAI = new GoogleGenAI({
   apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY!,
@@ -19,29 +24,25 @@ const trackedGenAI = trackGemini(genAI, {
   },
 });
 
-const responseSchema = z.toJSONSchema(OnboardingUpdateSchema) as Schema;
+const responseSchema = z.toJSONSchema(IngredientExtractionSchema) as Schema;
 
 interface ProcessVoiceInputParams {
   audioBase64: string;
   currentContext: {
-    dishes: string[];
     ingredients: string[];
   };
 }
 
 export async function processVoiceInput(
   params: ProcessVoiceInputParams,
-): Promise<OnboardingUpdate> {
+): Promise<IngredientExtractionResponse> {
   const { audioBase64, currentContext } = params;
 
-  const systemPrompt = ONBOARDING_VOICE_PROMPT.prompt
-    .replace("{{currentDishes}}", currentContext.dishes.join(", ") || "none")
-    .replace(
-      "{{currentIngredients}}",
-      currentContext.ingredients.join(", ") || "none",
-    );
+  const systemPrompt = ONBOARDING_VOICE_PROMPT.prompt.replace(
+    "{{currentIngredients}}",
+    currentContext.ingredients.join(", ") || "none",
+  );
 
-  // TODO: in week 3, use opik to optmimize latency and compare Gemini / Whisper + cheaper model / etc...
   const response = await trackedGenAI.models.generateContent({
     model: "gemini-2.0-flash",
     contents: [
@@ -72,5 +73,5 @@ export async function processVoiceInput(
   }
 
   const parsed = JSON.parse(text);
-  return OnboardingUpdateSchema.parse(parsed);
+  return IngredientExtractionSchema.parse(parsed);
 }

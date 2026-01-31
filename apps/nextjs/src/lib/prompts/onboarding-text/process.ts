@@ -1,8 +1,16 @@
 import { z } from "zod";
 import { GoogleGenAI, type Schema } from "@google/genai";
 import { trackGemini } from "opik-gemini";
-import { OnboardingUpdateSchema, type OnboardingUpdate } from "@/types/onboarding";
+import {
+  IngredientExtractionSchema,
+  type IngredientExtractionResponse,
+} from "@/types/onboarding";
 import { ONBOARDING_TEXT_PROMPT } from "./prompt";
+
+/**
+ * T012: Updated process for ingredient-only extraction
+ * Spec: specs/019-onboarding-revamp/contracts/api.md
+ */
 
 const genAI = new GoogleGenAI({
   apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY!,
@@ -16,23 +24,21 @@ const trackedGenAI = trackGemini(genAI, {
   },
 });
 
-const responseSchema = z.toJSONSchema(OnboardingUpdateSchema) as Schema;
+const responseSchema = z.toJSONSchema(IngredientExtractionSchema) as Schema;
 
 interface ProcessTextInputParams {
   text: string;
   currentContext: {
-    dishes: string[];
     ingredients: string[];
   };
 }
 
 export async function processTextInput(
   params: ProcessTextInputParams,
-): Promise<OnboardingUpdate> {
+): Promise<IngredientExtractionResponse> {
   const { text, currentContext } = params;
 
   const systemPrompt = ONBOARDING_TEXT_PROMPT.prompt
-    .replace("{{currentDishes}}", currentContext.dishes.join(", ") || "none")
     .replace(
       "{{currentIngredients}}",
       currentContext.ingredients.join(", ") || "none",
@@ -61,5 +67,5 @@ export async function processTextInput(
   }
 
   const parsed = JSON.parse(responseText);
-  return OnboardingUpdateSchema.parse(parsed);
+  return IngredientExtractionSchema.parse(parsed);
 }
