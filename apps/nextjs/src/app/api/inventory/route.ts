@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/utils/supabase/server'
 import { createUserDb, decodeSupabaseToken } from '@/db/client'
 import { userInventory, ingredients } from '@/db/schema'
-import { eq } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm'
 
 export async function GET() {
   try {
@@ -106,7 +106,7 @@ export async function POST(request: Request) {
     const token = decodeSupabaseToken(session.access_token)
     const db = createUserDb(token)
 
-    // Upsert inventory item
+    // Upsert inventory item - use targetWhere for partial unique index
     const [result] = await db((tx) =>
       tx
         .insert(userInventory)
@@ -118,6 +118,7 @@ export async function POST(request: Request) {
         })
         .onConflictDoUpdate({
           target: [userInventory.userId, userInventory.ingredientId],
+          targetWhere: sql`${userInventory.ingredientId} IS NOT NULL`,
           set: {
             quantityLevel,
             updatedAt: new Date(),

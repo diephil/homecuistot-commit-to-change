@@ -242,6 +242,7 @@ export async function POST(request: NextRequest) {
             })
             .onConflictDoUpdate({
               target: [userInventory.userId, userInventory.ingredientId],
+              targetWhere: sql`${userInventory.ingredientId} IS NOT NULL`,
               set: { isPantryStaple: true },
             });
         }

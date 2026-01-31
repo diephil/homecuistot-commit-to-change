@@ -6,7 +6,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { createUserDb, decodeSupabaseToken } from "@/db/client";
 import { userInventory, ingredients } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 
 interface BatchUpdate {
   ingredientId: string;
@@ -64,7 +64,7 @@ export async function POST(request: Request) {
     const token = decodeSupabaseToken(session.access_token);
     const db = createUserDb(token);
 
-    // Batch upsert
+    // Batch upsert - use targetWhere to match partial unique index
     const results = await db((tx) =>
       tx
         .insert(userInventory)
@@ -79,8 +79,9 @@ export async function POST(request: Request) {
         )
         .onConflictDoUpdate({
           target: [userInventory.userId, userInventory.ingredientId],
+          targetWhere: sql`${userInventory.ingredientId} IS NOT NULL`,
           set: {
-            quantityLevel: updates[0].quantityLevel, // This gets overridden by EXCLUDED in Drizzle
+            quantityLevel: sql`EXCLUDED.quantity_level`,
             updatedAt: new Date(),
           },
         })
