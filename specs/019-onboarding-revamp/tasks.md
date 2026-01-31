@@ -179,10 +179,10 @@
 
 **Purpose**: Edge cases, error handling, and validation
 
-- [ ] T048 [P] Handle empty voice/text input: show toast "No updates were detected" when LLM returns empty arrays (FR-037) in apps/nextjs/src/app/(protected)/app/onboarding/page.tsx
-- [ ] T049 [P] Handle LLM timeout with error message and retry option in apps/nextjs/src/app/(protected)/app/onboarding/page.tsx
-- [ ] T050 [P] Preserve skill/ingredient selection when navigating back to step 1 in apps/nextjs/src/app/(protected)/app/onboarding/page.tsx
-- [ ] T051 Run quickstart.md validation checklist
+- [X] T048 [P] Handle empty voice/text input: show toast "No updates were detected" when LLM returns empty arrays (FR-037) in apps/nextjs/src/app/(protected)/app/onboarding/page.tsx
+- [X] T049 [P] Handle LLM timeout with error message and retry option in apps/nextjs/src/app/(protected)/app/onboarding/page.tsx
+- [X] T050 [P] Preserve skill/ingredient selection when navigating back to step 1 in apps/nextjs/src/app/(protected)/app/onboarding/page.tsx
+- [X] T051 Run quickstart.md validation checklist
 
 ---
 
