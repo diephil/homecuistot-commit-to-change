@@ -71,10 +71,11 @@ export interface IngredientMatchResult {
 /**
  * T008: New LLM response schema for ingredient-only extraction
  * Used by process-voice and process-text routes
+ * Uses short field names (add/rm) for LLM token efficiency
  */
 export const IngredientExtractionSchema = z.object({
-  ingredients_to_add: z.array(z.string()),
-  ingredients_to_remove: z.array(z.string()),
+  add: z.array(z.string()).describe("Ingredients user wants to add to their list"),
+  rm: z.array(z.string()).describe("Ingredients user wants to remove from their list"),
 });
 
 export type IngredientExtractionResponse = z.infer<typeof IngredientExtractionSchema>;

@@ -22,7 +22,7 @@ pnpm dev
 ### 1. Static Data (`constants/onboarding.ts`)
 
 Add new exports:
-- `COMMON_INGREDIENTS`: 16-item array
+- `COMMON_INGREDIENTS`: 17-item array
 - `BASIC_RECIPES`: 8 static dishes with ingredients
 - `ADVANCED_RECIPES`: 8 additional static dishes
 

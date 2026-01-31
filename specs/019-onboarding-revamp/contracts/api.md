@@ -21,8 +21,8 @@ interface ProcessVoiceRequest {
 #### Response
 ```typescript
 interface IngredientExtractionResponse {
-  ingredients_to_add: string[];     // new ingredients to add
-  ingredients_to_remove: string[];  // ingredients to remove
+  add: string[];   // ingredients to add (short name for token efficiency)
+  rm: string[];    // ingredients to remove (short name for token efficiency)
 }
 ```
 
@@ -50,8 +50,8 @@ interface ProcessTextRequest {
 #### Response
 ```typescript
 interface IngredientExtractionResponse {
-  ingredients_to_add: string[];
-  ingredients_to_remove: string[];
+  add: string[];   // ingredients to add
+  rm: string[];    // ingredients to remove
 }
 ```
 

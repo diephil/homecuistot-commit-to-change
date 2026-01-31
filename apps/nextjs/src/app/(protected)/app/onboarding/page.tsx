@@ -117,7 +117,7 @@ function OnboardingPageContent() {
         const result: IngredientExtractionResponse = await response.json();
 
         // T048: Handle empty response
-        if (result.ingredients_to_add.length === 0 && result.ingredients_to_remove.length === 0) {
+        if (result.add.length === 0 && result.rm.length === 0) {
           toast("No updates were detected");
           return;
         }
@@ -125,7 +125,7 @@ function OnboardingPageContent() {
         // Apply updates
         setState((prev) => {
           // Add new ingredients (case-insensitive dedupe)
-          const newIngredients = result.ingredients_to_add.filter(
+          const newIngredients = result.add.filter(
             (name) =>
               !prev.selectedIngredients.some(
                 (existing) => existing.toLowerCase() === name.toLowerCase()
@@ -136,7 +136,7 @@ function OnboardingPageContent() {
           // T033: Silently ignore removal of items not in list
           const updatedIngredients = prev.selectedIngredients.filter(
             (existing) =>
-              !result.ingredients_to_remove.some(
+              !result.rm.some(
                 (toRemove) => toRemove.toLowerCase() === existing.toLowerCase()
               )
           );
@@ -246,7 +246,7 @@ function OnboardingPageContent() {
               onClick={handleGetStarted}
               variant="default"
               size="lg"
-              className="mt-4 min-h-[44px] min-w-[44px]"
+              className="mt-4 min-h-[44px] min-w-[44px] cursor-pointer"
             >
               Get Started
             </Button>
@@ -267,7 +267,7 @@ function OnboardingPageContent() {
                   className={`
                     flex items-center gap-3 px-6 py-4 rounded border-4 border-black
                     shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]
-                    transition-all font-bold text-lg
+                    transition-all font-bold text-lg cursor-pointer
                     ${
                       state.cookingSkill === "basic"
                         ? "bg-yellow-400"
@@ -293,7 +293,7 @@ function OnboardingPageContent() {
                   className={`
                     flex items-center gap-3 px-6 py-4 rounded border-4 border-black
                     shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]
-                    transition-all font-bold text-lg
+                    transition-all font-bold text-lg cursor-pointer
                     ${
                       state.cookingSkill === "advanced"
                         ? "bg-cyan-400"
@@ -349,7 +349,7 @@ function OnboardingPageContent() {
                 disabled={!canProceedToStep3}
                 variant="default"
                 size="lg"
-                className="min-h-[44px]"
+                className={`min-h-[44px] ${canProceedToStep3 ? "cursor-pointer" : "cursor-not-allowed opacity-50"}`}
               >
                 Next Step
               </Button>
@@ -415,7 +415,7 @@ function OnboardingPageContent() {
                 disabled={!canCompleteSetup}
                 variant="default"
                 size="lg"
-                className="min-h-[44px]"
+                className={`min-h-[44px] ${canCompleteSetup ? "cursor-pointer" : "cursor-not-allowed opacity-50"}`}
               >
                 Complete Setup
               </Button>

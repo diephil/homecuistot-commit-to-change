@@ -56,12 +56,8 @@ export function VoiceTextInput({
   // Track if we're waiting for audio to be ready after stop
   const pendingProcessRef = useRef(false);
 
-  // Auto-switch to text mode if mic permission denied
-  useEffect(() => {
-    if (permissionDenied) {
-      setInputMode("text");
-    }
-  }, [permissionDenied]);
+  // Derive effective input mode based on permission status
+  const effectiveInputMode = permissionDenied ? "text" : inputMode;
 
   // Process audio when voice state transitions to 'stopped'
   useEffect(() => {
@@ -118,7 +114,7 @@ export function VoiceTextInput({
       )}
 
       {/* Voice Mode */}
-      {inputMode === "voice" && !permissionDenied && (
+      {effectiveInputMode === "voice" && !permissionDenied && (
         <div className="flex flex-col items-center gap-4">
           {/* Hold-to-speak button */}
           <button
@@ -135,9 +131,9 @@ export function VoiceTextInput({
               "shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]",
               "hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px]",
               "active:shadow-none active:translate-x-[4px] active:translate-y-[4px]",
-              "transition-all",
+              "transition-all cursor-pointer",
               showRecordingUI && "animate-pulse ring-4 ring-red-500",
-              isDisabled && "opacity-50 cursor-not-allowed"
+              isDisabled && "opacity-50 !cursor-not-allowed"
             )}
           >
             {processing ? (
@@ -180,7 +176,7 @@ export function VoiceTextInput({
           {/* Toggle to text */}
           <button
             onClick={() => setInputMode("text")}
-            className="text-sm text-gray-600 hover:text-gray-900 underline"
+            className="text-sm text-gray-600 hover:text-gray-900 underline cursor-pointer disabled:cursor-not-allowed"
             disabled={isDisabled}
             aria-label="Switch to text input"
           >
@@ -190,14 +186,14 @@ export function VoiceTextInput({
       )}
 
       {/* Text Mode */}
-      {(inputMode === "text" || permissionDenied) && (
+      {effectiveInputMode === "text" && (
         <div className="space-y-3">
           {/* Toggle back to voice */}
           {!permissionDenied && (
             <div className="text-center">
               <button
                 onClick={() => setInputMode("voice")}
-                className="text-sm text-gray-600 hover:text-gray-900 underline"
+                className="text-sm text-gray-600 hover:text-gray-900 underline cursor-pointer disabled:cursor-not-allowed"
                 disabled={isDisabled}
               >
                 Use voice instead?
@@ -228,7 +224,7 @@ export function VoiceTextInput({
             <Button
               onClick={handleTextSubmit}
               disabled={isDisabled || !textValue.trim()}
-              className="min-h-[44px]"
+              className={cn("min-h-[44px]", isDisabled || !textValue.trim() ? "cursor-not-allowed opacity-50" : "cursor-pointer")}
             >
               {processing ? (
                 <Loader2 className="h-4 w-4 animate-spin" />

@@ -5,7 +5,7 @@
 
 ## Summary
 
-Revamp onboarding steps 2-3 with cooking skill selection (Basic/Advanced), 16-ingredient multi-select, and refined voice/text ingredient detection returning structured add/remove arrays. Static dishes/ingredients with anchor/optional markers enable pre-populated recipe creation on completion.
+Revamp onboarding steps 2-3 with cooking skill selection (Basic/Advanced), 17-ingredient multi-select, and refined voice/text ingredient detection returning structured add/remove arrays. Static dishes/ingredients with anchor/optional markers enable pre-populated recipe creation on completion.
 
 ## Technical Context
 
@@ -16,7 +16,7 @@ Revamp onboarding steps 2-3 with cooking skill selection (Basic/Advanced), 16-in
 **Target Platform**: Web (mobile-first responsive)
 **Project Type**: Web application (monorepo: apps/nextjs/)
 **Performance Goals**: Voice processing <5s, toast <500ms
-**Constraints**: 60s max recording, 16 static ingredients, 8+8 static recipes
+**Constraints**: 60s max recording, 17 static ingredients, 8+8 static recipes
 **Scale/Scope**: Single user onboarding flow, 5931 existing ingredients in DB
 
 ## Constitution Check

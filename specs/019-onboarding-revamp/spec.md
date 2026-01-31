@@ -35,7 +35,7 @@ New user selects their cooking skill level to receive appropriately-matched reci
 
 ### User Story 2 - Select Common Ingredients (Priority: P1)
 
-User multi-selects from a predefined list of 16 common ingredients they have at home.
+User multi-selects from a predefined list of 17 common ingredients they have at home.
 
 **Why this priority**: Essential for populating initial inventory; required before proceeding to step 3.
 
@@ -43,7 +43,7 @@ User multi-selects from a predefined list of 16 common ingredients they have at 
 
 **Acceptance Scenarios**:
 
-1. **Given** cooking skill selected, **When** ingredients section appears, **Then** list displays exactly 16 ingredients: pasta, rice, salt, egg, garlic, bread, tomato, honey, noodle, bacon, milk, cheese, chicken, cream, onion, olive oil
+1. **Given** cooking skill selected, **When** ingredients section appears, **Then** list displays exactly 17 ingredients: pasta, rice, salt, egg, garlic, bread, tomato, honey, noodle, bacon, milk, cheese, chicken, cream, onion, olive oil, butter
 2. **Given** no ingredients selected, **When** user views CTA, **Then** "Next Step" button is disabled and hint is hidden
 3. **Given** user selects 1+ ingredients, **When** selection changes, **Then** "Next Step" becomes enabled and hint appears near CTA
 4. **Given** 3 ingredients selected, **When** user clicks an already-selected ingredient, **Then** it becomes deselected (toggle behavior)
@@ -160,7 +160,7 @@ User clicks "Complete Setup" and all ingredients (recognized + unrecognized) plu
 - **FR-005**: System MUST hide ingredients section until cooking skill is selected
 
 **Step 2 - Ingredients Section**
-- **FR-006**: System MUST display exactly 16 common ingredients: pasta, rice, salt, egg, garlic, bread, tomato, honey, noodle, bacon, milk, cheese, chicken, cream, onion, olive oil (all singular form)
+- **FR-006**: System MUST display exactly 17 common ingredients: pasta, rice, salt, egg, garlic, bread, tomato, honey, noodle, bacon, milk, cheese, chicken, cream, onion, olive oil, butter (all singular form)
 - **FR-007**: System MUST enable "Next Step" CTA only when at least one ingredient is selected
 - **FR-008**: System MUST show hint near CTA only when CTA is enabled (skill + 1+ ingredients)
 - **FR-009**: System MUST preserve selected ingredients when advancing to step 3
@@ -185,7 +185,9 @@ User clicks "Complete Setup" and all ingredients (recognized + unrecognized) plu
 
 **Step 3 - LLM Extraction (Structured Response)**
 - **FR-021**: LLM MUST receive the current ingredient list as input context
-- **FR-022**: LLM MUST return a structured response with two arrays: `ingredients_to_add` (string[]) and `ingredients_to_remove` (string[])
+- **FR-022**: LLM MUST return a structured response with two arrays: `add` (string[], ingredients to add) and `rm` (string[], ingredients to remove) - short field names for token efficiency
+- **FR-038**: System MUST use cursor pointer on all clickable elements during onboarding
+- **FR-039**: Disabled buttons MUST appear visually disabled (reduced opacity, no hover effects)
 - **FR-023**: LLM MUST extract only ingredient names (no dishes)
 - **FR-024**: LLM MUST normalize ingredient names to singular form
 
@@ -210,7 +212,7 @@ User clicks "Complete Setup" and all ingredients (recognized + unrecognized) plu
 ### Key Entities
 
 - **Cooking Skill**: Transient user selection (Basic/Advanced) used only during onboarding to determine which recipe set to pre-fill; not persisted to database
-- **Common Ingredients**: Fixed list of 16 frequently-owned household ingredients (singular form)
+- **Common Ingredients**: Fixed list of 17 frequently-owned household ingredients (singular form)
 - **Recognized Ingredient**: Ingredient name matched against ingredients table (5,931 items)
 - **Unrecognized Ingredient**: Ingredient name not found in ingredients table; stored in unrecognized_items
 - **User Inventory Entry**: Links user to either ingredient_id OR unrecognized_item_id (XOR constraint) with quantity_level
@@ -233,7 +235,7 @@ User clicks "Complete Setup" and all ingredients (recognized + unrecognized) plu
 
 ## Assumptions
 
-- Common ingredients list is finalized (16 items provided by product owner)
+- Common ingredients list is finalized (17 items provided by product owner)
 - Recipe names are finalized (8 basic + 8 advanced provided by product owner)
 - Recipe generation will use existing LLM flow to create recipe_ingredients entries
 - Cooking skill selection is transient (not persisted); used only to determine recipe set during onboarding

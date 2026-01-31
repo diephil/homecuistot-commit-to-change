@@ -6,7 +6,7 @@
 
 ### 1. Static Ingredients Must Exist in DB
 
-**Decision**: All 16 static ingredient names verified against existing naming patterns in codebase.
+**Decision**: All 17 static ingredient names verified against existing naming patterns in codebase.
 
 **Rationale**: Current `SUGGESTED_ITEMS` uses singular form (e.g., "Egg", "Tomato"). DB has 5931 ingredients. Must validate these names exist or use exact DB names.
 

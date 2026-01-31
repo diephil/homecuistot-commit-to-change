@@ -24,7 +24,7 @@
 **Purpose**: Static data, types, and shared components
 
 - [X] T001 [P] Add static types (CookingSkill, StaticDish, StaticDishIngredient, IngredientMatchResult) in apps/nextjs/src/types/onboarding.ts
-- [X] T002 [P] Add COMMON_INGREDIENTS (16 items) constant in apps/nextjs/src/constants/onboarding.ts
+- [X] T002 [P] Add COMMON_INGREDIENTS (17 items) constant in apps/nextjs/src/constants/onboarding.ts
 - [X] T003 [P] Add BASIC_RECIPES (8 static dishes) constant in apps/nextjs/src/constants/onboarding.ts
 - [X] T004 [P] Add ADVANCED_RECIPES (8 static dishes) constant in apps/nextjs/src/constants/onboarding.ts
 - [X] T005 [P] Create IngredientChip shared component with selectable/read-only modes in apps/nextjs/src/components/shared/IngredientChip.tsx
@@ -68,14 +68,14 @@
 
 ## Phase 4: User Story 2 - Select Common Ingredients (Priority: P1)
 
-**Goal**: User multi-selects from 16 common ingredients, enables "Next Step"
+**Goal**: User multi-selects from 17 common ingredients, enables "Next Step"
 
 **Independent Test**: Select multiple ingredients, CTA enables, hint appears
 
 ### Implementation for User Story 2
 
 - [X] T017 [US2] Add selectedIngredients state (string[]) to onboarding page in apps/nextjs/src/app/(protected)/app/onboarding/page.tsx
-- [X] T018 [US2] Render 16 COMMON_INGREDIENTS as IngredientChip grid (selectable mode) in apps/nextjs/src/app/(protected)/app/onboarding/page.tsx
+- [X] T018 [US2] Render 17 COMMON_INGREDIENTS as IngredientChip grid (selectable mode) in apps/nextjs/src/app/(protected)/app/onboarding/page.tsx
 - [X] T019 [US2] Implement toggle selection behavior for ingredients in apps/nextjs/src/app/(protected)/app/onboarding/page.tsx
 - [X] T020 [US2] Enable "Next Step" only when 1+ ingredients selected in apps/nextjs/src/app/(protected)/app/onboarding/page.tsx
 - [X] T021 [US2] Show hint text only when skill + 1+ ingredients selected in apps/nextjs/src/app/(protected)/app/onboarding/page.tsx

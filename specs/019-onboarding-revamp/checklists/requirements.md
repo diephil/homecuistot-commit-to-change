@@ -34,7 +34,7 @@
 - All items pass validation
 - Spec is ready for `/speckit.clarify` or `/speckit.plan`
 - Assumptions documented for planning phase decisions (cooking skill storage)
-- Common ingredients list finalized: 16 items (singular form)
+- Common ingredients list finalized: 17 items (singular form)
 - Recipe sets finalized: 8 basic + 8 advanced dishes
 - Toast notifications added for ingredient list updates
 - "Complete Setup" gated on non-empty ingredients list

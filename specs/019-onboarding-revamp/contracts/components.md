@@ -110,7 +110,7 @@ const [selectedIngredients, setSelectedIngredients] = useState<string[]>([]);
 ```
 
 #### UI Elements
-- Grid of 16 `IngredientChip` components
+- Grid of 17 `IngredientChip` components
 - Multi-select behavior (toggle on click)
 - "Next Step" button: disabled until 1+ selected
 - Hint text: hidden until skill + 1+ ingredients selected

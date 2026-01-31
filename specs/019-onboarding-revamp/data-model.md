@@ -102,7 +102,7 @@ type IngredientExtractionResponse = z.infer<typeof IngredientExtractionSchema>;
 
 ## Static Data Definitions
 
-### COMMON_INGREDIENTS (16 items)
+### COMMON_INGREDIENTS (17 items)
 ```typescript
 const COMMON_INGREDIENTS: StaticIngredient[] = [
   { name: 'pasta' },
@@ -121,6 +121,7 @@ const COMMON_INGREDIENTS: StaticIngredient[] = [
   { name: 'cream' },
   { name: 'onion' },
   { name: 'olive oil' },
+  { name: 'butter' },
 ];
 ```
 
