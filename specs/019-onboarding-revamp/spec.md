@@ -10,6 +10,7 @@
 ### Session 2026-01-31
 
 - Q: Where should the user's cooking skill selection be stored? → A: Not stored; used transiently to determine which recipe set (basic vs advanced) to pre-fill during onboarding.
+- Q: How should the LLM detect ingredients? → A: LLM returns structured arrays (ingredients_to_add, ingredients_to_remove); separate helper function handles DB matching and returns {ingredients, unrecognized_items, unrecognized_items_to_create}.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -75,9 +76,9 @@ User speaks to enumerate additional ingredients they have, and the system detect
 
 **Acceptance Scenarios**:
 
-1. **Given** user on step 3, **When** user activates microphone and says "I have eggs, milk, and flour", **Then** system processes audio and adds detected ingredients to the list
-2. **Given** user spoke ingredients, **When** LLM returns recognized ingredients, **Then** recognized ingredients appear in the list (matched against ingredients DB)
-3. **Given** user spoke an unknown item, **When** LLM returns unrecognized ingredient, **Then** unrecognized item still appears in the list with same visual treatment
+1. **Given** user on step 3, **When** user activates microphone and says "I have eggs, milk, and flour", **Then** system processes audio, LLM extracts ingredient names, and helper function matches them against DB
+2. **Given** LLM returned ingredient names, **When** helper function finds matches in ingredients table, **Then** matched ingredients appear in the list
+3. **Given** LLM returned an unknown item name, **When** helper function finds no match, **Then** item still appears in the list (will become unrecognized_item on persist)
 4. **Given** recording in progress, **When** max duration (60s) reached, **Then** recording auto-stops and processes
 5. **Given** ingredients added successfully, **When** list updates, **Then** toast message appears saying "Ingredient list has been updated"
 
@@ -143,7 +144,7 @@ User clicks "Complete Setup" and all ingredients (recognized + unrecognized) plu
 - How does system handle voice input with no audible speech? Returns empty add/remove lists; no changes to ingredient list; no toast shown.
 - What if user tries to remove all ingredients on step 3? "Complete Setup" button becomes disabled; user must have at least 1 ingredient to complete.
 - What if LLM times out during voice/text processing? Show error message; allow retry; preserve current list.
-- What if same ingredient name exists as both recognized and unrecognized? Prioritize recognized ingredient match.
+- What if same ingredient name exists in both ingredients table and unrecognized_items? Helper function prioritizes ingredients table match (FR-029).
 
 ## Requirements *(mandatory)*
 
@@ -179,24 +180,28 @@ User clicks "Complete Setup" and all ingredients (recognized + unrecognized) plu
 - **FR-019**: Instructions MUST include example: adding ingredients while removing one (e.g., "I bought tomatoes and onions, but I ran out of milk")
 - **FR-020**: System MUST provide "Prefer to type instead?" fallback option
 
-**Step 3 - LLM Detection (detectIngredients tool)**
-- **FR-021**: LLM MUST focus on detecting ingredients to ADD to current list
-- **FR-022**: LLM MUST focus on detecting ingredients to REMOVE from current list
-- **FR-023**: LLM MUST NOT detect dishes (ingredients only)
-- **FR-024**: LLM MUST output both recognized ingredient names and unrecognized ingredient names
-- **FR-025**: System MUST display unrecognized ingredients with same visual treatment as recognized ones
+**Step 3 - LLM Extraction (Structured Response)**
+- **FR-021**: LLM MUST receive the current ingredient list as input context
+- **FR-022**: LLM MUST return a structured response with two arrays: `ingredients_to_add` (string[]) and `ingredients_to_remove` (string[])
+- **FR-023**: LLM MUST extract only ingredient names (no dishes)
+- **FR-024**: LLM MUST normalize ingredient names to singular form
+
+**Step 3 - Ingredient Matching Helper Function**
+- **FR-025**: Helper function MUST accept a list of ingredient names (strings) as input
+- **FR-026**: Helper function MUST match names against the `ingredients` table (case-insensitive)
+- **FR-027**: Helper function MUST match names against the user's `unrecognized_items` table (case-insensitive)
+- **FR-028**: Helper function MUST return structured output: `{ingredients: IngredientSchema[], unrecognized_items: UnrecognizedItemSchema[], unrecognized_items_to_create: string[]}`
+- **FR-029**: Helper function MUST prioritize `ingredients` table match over `unrecognized_items` match when same name exists in both
+- **FR-030**: System MUST display all ingredients (recognized and unrecognized) with same visual treatment
 
 **Step 3 - Persistence (Ingredients)**
-- **FR-026**: System MUST match recognized ingredients against ingredients table (case-insensitive)
-- **FR-027**: System MUST add recognized ingredients to user_inventory with ingredient_id and quantity_level=3
-- **FR-028**: System MUST check if unrecognized ingredient already exists in user's unrecognized_items table
-- **FR-029**: System MUST create new unrecognized_items entry if item does not exist for user
-- **FR-030**: System MUST reuse existing unrecognized_item_id if item already exists for user
-- **FR-031**: System MUST add unrecognized ingredients to user_inventory with unrecognized_item_id and quantity_level=3
+- **FR-031**: System MUST add recognized ingredients to user_inventory with ingredient_id and quantity_level=3
+- **FR-032**: System MUST create new unrecognized_items entries for items in `unrecognized_items_to_create`
+- **FR-033**: System MUST add unrecognized ingredients (existing + newly created) to user_inventory with unrecognized_item_id and quantity_level=3
 
 **Step 3 - Persistence (Recipes based on Skill)**
-- **FR-032**: System MUST add 8 basic recipes for "Basic" skill: scrambled egg, pasta carbonara, pancake, mushroom omelette, spaghetti aglio e olio, grilled chicken and rice, roasted potato, roasted vegetable
-- **FR-033**: System MUST add all 8 basic recipes PLUS 8 advanced recipes for "Advanced" skill: teriyaki chicken, caesar salad, cheese quesadilla, miso soup, cheeseburger, moussaka, grilled salmon and lemon, veal blanquette
+- **FR-034**: System MUST add 8 basic recipes for "Basic" skill: scrambled egg, pasta carbonara, pancake, mushroom omelette, spaghetti aglio e olio, grilled chicken and rice, roasted potato, roasted vegetable
+- **FR-035**: System MUST add all 8 basic recipes PLUS 8 advanced recipes for "Advanced" skill: teriyaki chicken, caesar salad, cheese quesadilla, miso soup, cheeseburger, moussaka, grilled salmon and lemon, veal blanquette
 
 ### Key Entities
 
@@ -205,6 +210,7 @@ User clicks "Complete Setup" and all ingredients (recognized + unrecognized) plu
 - **Recognized Ingredient**: Ingredient name matched against ingredients table (5,931 items)
 - **Unrecognized Ingredient**: Ingredient name not found in ingredients table; stored in unrecognized_items
 - **User Inventory Entry**: Links user to either ingredient_id OR unrecognized_item_id (XOR constraint) with quantity_level
+- **Ingredient Match Result**: Helper function output containing matched ingredients, matched unrecognized_items, and names requiring new unrecognized_items creation
 - **Basic Recipe Set**: 8 beginner-friendly dishes added for all users
 - **Advanced Recipe Set**: 8 additional complex dishes added only for advanced skill users
 
@@ -228,5 +234,5 @@ User clicks "Complete Setup" and all ingredients (recognized + unrecognized) plu
 - Recipe generation will use existing LLM flow to create recipe_ingredients entries
 - Cooking skill selection is transient (not persisted); used only to determine recipe set during onboarding
 - Existing voice input hook (`useVoiceInput`) and component structure will be reused
-- Existing Gemini 2.0 Flash integration will be adapted for ingredient-only detection
+- Existing Gemini 2.0 Flash integration will return structured add/remove arrays; separate helper function handles DB matching
 - Step 1 (welcome) and step 4 (completion) remain unchanged
