@@ -25,12 +25,12 @@
 
 **⚠️ CRITICAL**: This phase must complete before any schema changes
 
-- [ ] T001 Query drizzle migration table to identify migration with hash `a90e3f21b7a263761ad35f1fdb508879c4b3a543e8e9a9bbf8db9cb004058327` and understand what changes it made
-- [ ] T002 Analyze current database state vs expected state from codebase migrations to identify exact differences
-- [ ] T003 Generate SQL commands to revert the rogue migration changes (reverse ALTER TABLE, DROP COLUMN, DROP CONSTRAINT operations)
-- [ ] T004 Execute revert SQL on local database to restore schema to codebase baseline
-- [ ] T005 Delete the rogue migration entry from `drizzle.__drizzle_migrations` table
-- [ ] T006 Verify local database schema matches codebase migrations using `pnpm db:status`
+- [x] T001 Query drizzle migration table to identify migration with hash `a90e3f21b7a263761ad35f1fdb508879c4b3a543e8e9a9bbf8db9cb004058327` and understand what changes it made
+- [x] T002 Analyze current database state vs expected state from codebase migrations to identify exact differences
+- [x] T003 Generate SQL commands to revert the rogue migration changes (reverse ALTER TABLE, DROP COLUMN, DROP CONSTRAINT operations)
+- [x] T004 Execute revert SQL on local database to restore schema to codebase baseline
+- [x] T005 Delete the rogue migration entry from `drizzle.__drizzle_migrations` table
+- [x] T006 Verify local database schema matches codebase migrations using `pnpm db:status`
 
 **Checkpoint**: Local DB now matches codebase migrations - ready for new schema changes
 
