@@ -19,9 +19,9 @@
 
 **Purpose**: Project structure and type definitions
 
-- [ ] T001 Create type definitions with Drizzle schema derivation in src/types/inventory.types.ts
-- [ ] T002 [P] Create service layer directory structure in src/lib/services/
-- [ ] T003 [P] Create server actions directory structure in src/app/actions/
+- [x] T001 Create type definitions with Drizzle schema derivation in src/types/inventory.types.ts
+- [x] T002 [P] Create service layer directory structure in src/lib/services/
+- [x] T003 [P] Create server actions directory structure in src/app/actions/
 
 ---
 
@@ -31,10 +31,10 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T004 Implement unrecognized items service with delete operation in src/lib/services/unrecognized-items.service.ts
-- [ ] T005 Implement deleteUnrecognizedItem server action in src/app/actions/inventory.actions.ts
-- [ ] T006 [P] Create PantryStapleIcon reusable component with Infinity icon in src/components/shared/PantryStapleIcon.tsx
-- [ ] T007 [P] Create UnrecognizedItemRow reusable component with restricted UI in src/components/shared/UnrecognizedItemRow.tsx
+- [x] T004 Implement unrecognized items service with delete operation in src/lib/services/unrecognized-items.service.ts
+- [x] T005 Implement deleteUnrecognizedItem server action in src/app/actions/inventory.actions.ts
+- [x] T006 [P] Create PantryStapleIcon reusable component with Infinity icon in src/components/shared/PantryStapleIcon.tsx
+- [x] T007 [P] Create UnrecognizedItemRow reusable component with restricted UI in src/components/shared/UnrecognizedItemRow.tsx
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -48,9 +48,9 @@
 
 ### Implementation for User Story 1
 
-- [ ] T008 [US1] Modify inventory page to fetch items with unrecognized relations in src/app/(protected)/app/inventory/page.tsx
-- [ ] T009 [US1] Add sorting logic to separate recognized from unrecognized items in src/app/(protected)/app/inventory/page.tsx
-- [ ] T010 [US1] Render unrecognized items section at end of list using UnrecognizedItemRow component in src/app/(protected)/app/inventory/page.tsx
+- [x] T008 [US1] Modify inventory page to fetch items with unrecognized relations in src/app/(protected)/app/inventory/page.tsx
+- [x] T009 [US1] Add sorting logic to separate recognized from unrecognized items in src/app/(protected)/app/inventory/page.tsx
+- [x] T010 [US1] Render unrecognized items section at end of list using UnrecognizedItemRow component in src/app/(protected)/app/inventory/page.tsx
 
 **Checkpoint**: User Story 1 fully functional - unrecognized items visible with visual distinction
 
@@ -64,9 +64,9 @@
 
 ### Implementation for User Story 2
 
-- [ ] T011 [US2] Add disabled state styling to UnrecognizedItemRow (no click handlers, pointer-events-none) in src/components/shared/UnrecognizedItemRow.tsx
-- [ ] T012 [US2] Verify quantity controls not rendered for unrecognized items in UnrecognizedItemRow component in src/components/shared/UnrecognizedItemRow.tsx
-- [ ] T013 [US2] Verify pantry staple control not rendered for unrecognized items in UnrecognizedItemRow component in src/components/shared/UnrecognizedItemRow.tsx
+- [x] T011 [US2] Add disabled state styling to UnrecognizedItemRow (no click handlers, pointer-events-none) in src/components/shared/UnrecognizedItemRow.tsx
+- [x] T012 [US2] Verify quantity controls not rendered for unrecognized items in UnrecognizedItemRow component in src/components/shared/UnrecognizedItemRow.tsx
+- [x] T013 [US2] Verify pantry staple control not rendered for unrecognized items in UnrecognizedItemRow component in src/components/shared/UnrecognizedItemRow.tsx
 
 **Checkpoint**: User Stories 1 AND 2 functional - unrecognized items visible and non-interactive except delete
 
@@ -80,10 +80,10 @@
 
 ### Implementation for User Story 3
 
-- [ ] T014 [US3] Add delete button with Trash2 icon to UnrecognizedItemRow component in src/components/shared/UnrecognizedItemRow.tsx
-- [ ] T015 [US3] Implement client-side delete handler with optimistic UI update in src/components/shared/UnrecognizedItemRow.tsx
-- [ ] T016 [US3] Add error handling with toast notifications (success and failure) in src/components/shared/UnrecognizedItemRow.tsx
-- [ ] T017 [US3] Add rollback logic for failed delete operations in src/components/shared/UnrecognizedItemRow.tsx
+- [x] T014 [US3] Add delete button with Trash2 icon to UnrecognizedItemRow component in src/components/shared/UnrecognizedItemRow.tsx
+- [x] T015 [US3] Implement client-side delete handler with optimistic UI update in src/components/shared/UnrecognizedItemRow.tsx
+- [x] T016 [US3] Add error handling with toast notifications (success and failure) in src/components/shared/UnrecognizedItemRow.tsx
+- [x] T017 [US3] Add rollback logic for failed delete operations in src/components/shared/UnrecognizedItemRow.tsx
 
 **Checkpoint**: User Stories 1, 2, AND 3 functional - users can view, understand restrictions, and delete unrecognized items
 
@@ -97,10 +97,10 @@
 
 ### Implementation for User Story 4
 
-- [ ] T018 [US4] Locate existing HelpModal component in src/components/ directory (search for help, modal, or "?" related files)
-- [ ] T019 [US4] Add unrecognized items section to HelpModal with explanation of limited recognition in [HelpModal file path from T018]
-- [ ] T020 [US4] Add future recognition explanation to HelpModal section in [HelpModal file path from T018]
-- [ ] T021 [US4] Add deletion behavior explanation (removes from inventory, preserves record) to HelpModal in [HelpModal file path from T018]
+- [x] T018 [US4] Locate existing HelpModal component in src/components/ directory (search for help, modal, or "?" related files)
+- [x] T019 [US4] Add unrecognized items section to HelpModal with explanation of limited recognition in src/components/inventory/help-modal.tsx
+- [x] T020 [US4] Add future recognition explanation to HelpModal section in src/components/inventory/help-modal.tsx
+- [x] T021 [US4] Add deletion behavior explanation (removes from inventory, preserves record) to HelpModal in src/components/inventory/help-modal.tsx
 
 **Checkpoint**: User Stories 1-4 functional - users have contextual help for understanding unrecognized items
 
@@ -114,10 +114,10 @@
 
 ### Implementation for User Story 5
 
-- [ ] T022 [US5] Locate existing pantry staple icon usage in inventory components (search for Star icon or pantry staple rendering)
-- [ ] T023 [US5] Replace Star icon imports with PantryStapleIcon component in [component files from T022]
-- [ ] T024 [US5] Add pantry staple hint text below pantry staples section header in src/app/(protected)/app/inventory/page.tsx
-- [ ] T025 [US5] Add conditional rendering to hide hint text when no pantry staples exist in src/app/(protected)/app/inventory/page.tsx
+- [x] T022 [US5] Locate existing pantry staple icon usage in inventory components (search for Star icon or pantry staple rendering)
+- [x] T023 [US5] Replace Star icon imports with Infinity icon in src/components/inventory/inventory-section.tsx
+- [x] T024 [US5] Add pantry staple hint text below pantry staples section header in src/app/(protected)/app/inventory/page.tsx
+- [x] T025 [US5] Add conditional rendering to hide hint text when no pantry staples exist in src/app/(protected)/app/inventory/page.tsx
 
 **Checkpoint**: All user stories functional - pantry staple UI improved with infinity icon and explanatory hint
 
@@ -127,8 +127,8 @@
 
 **Purpose**: Final validation and quality improvements
 
-- [ ] T026 [P] Verify TypeScript compilation succeeds (pnpm build from apps/nextjs/)
-- [ ] T027 [P] Run linting and format check (pnpm lint from apps/nextjs/)
+- [x] T026 [P] Verify TypeScript compilation succeeds (pnpm build from apps/nextjs/)
+- [x] T027 [P] Run linting and format check (pnpm lint from apps/nextjs/)
 - [ ] T028 Run quickstart.md manual testing checklist validation
 - [ ] T029 Verify performance criteria: inventory loads <2s with unrecognized items (SC-001)
 - [ ] T030 [P] Test with seed data: verify page loads <3s with 500 total items (SC-005)

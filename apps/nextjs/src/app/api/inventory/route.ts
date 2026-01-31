@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/utils/supabase/server'
 import { createUserDb, decodeSupabaseToken } from '@/db/client'
-import { userInventory, ingredients } from '@/db/schema'
+import { userInventory, ingredients, unrecognizedItems } from '@/db/schema'
 import { eq, sql } from 'drizzle-orm'
 
 export async function GET() {
@@ -33,19 +33,23 @@ export async function GET() {
     const db = createUserDb(token)
 
     // Type-safe query with RLS enforcement
+    // Feature 021: Fetch both recognized and unrecognized items
     const inventory = await db((tx) =>
       tx
         .select({
           id: userInventory.id,
           ingredientId: userInventory.ingredientId,
+          unrecognizedItemId: userInventory.unrecognizedItemId,
           ingredientName: ingredients.name,
           ingredientCategory: ingredients.category,
+          unrecognizedRawText: unrecognizedItems.rawText,
           quantityLevel: userInventory.quantityLevel,
           isPantryStaple: userInventory.isPantryStaple,
           updatedAt: userInventory.updatedAt,
         })
         .from(userInventory)
-        .innerJoin(ingredients, eq(userInventory.ingredientId, ingredients.id))
+        .leftJoin(ingredients, eq(userInventory.ingredientId, ingredients.id))
+        .leftJoin(unrecognizedItems, eq(userInventory.unrecognizedItemId, unrecognizedItems.id))
     )
 
     return NextResponse.json({

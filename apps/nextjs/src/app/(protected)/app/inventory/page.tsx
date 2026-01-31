@@ -8,15 +8,25 @@ import { HelpModal } from "@/components/inventory/help-modal";
 import { NeoHelpButton } from "@/components/shared/neo-help-button";
 import { InventoryUpdateModal } from "@/components/inventory/inventory-update-modal";
 import { DeleteConfirmationModal } from "@/components/shared/delete-confirmation-modal";
+import { UnrecognizedItemRow } from "@/components/shared/UnrecognizedItemRow";
 import { InventoryDisplayItem, QuantityLevel, InventoryGroups } from "@/types/inventory";
+import { deleteUnrecognizedItem } from "@/app/actions/inventory";
+import { createClient } from "@/utils/supabase/client";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
+
+// Feature 021: Unrecognized item type
+type UnrecognizedItem = {
+  id: string;
+  rawText: string;
+};
 
 export default function InventoryPage() {
   const [inventory, setInventory] = useState<InventoryGroups>({
     available: [],
     pantryStaples: [],
   });
+  const [unrecognizedItems, setUnrecognizedItems] = useState<UnrecognizedItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<InventoryDisplayItem | null>(null);
@@ -36,32 +46,50 @@ export default function InventoryPage() {
 
         const data = await response.json();
 
-        // Transform API response to InventoryDisplayItem[]
-        const items: InventoryDisplayItem[] = data.inventory.map((item: {
+        // Feature 021: Separate recognized and unrecognized items
+        const recognizedItems: InventoryDisplayItem[] = [];
+        const unrecognized: UnrecognizedItem[] = [];
+
+        data.inventory.forEach((item: {
           id: string;
-          ingredientId: string;
-          ingredientName: string;
-          ingredientCategory: string;
+          ingredientId: string | null;
+          unrecognizedItemId: string | null;
+          ingredientName: string | null;
+          ingredientCategory: string | null;
+          unrecognizedRawText: string | null;
           quantityLevel: number;
           isPantryStaple?: boolean;
           updatedAt: string;
-        }) => ({
-          id: item.id,
-          ingredientId: item.ingredientId,
-          name: item.ingredientName,
-          category: item.ingredientCategory,
-          quantityLevel: item.quantityLevel as QuantityLevel,
-          isPantryStaple: item.isPantryStaple ?? false,
-          updatedAt: new Date(item.updatedAt),
-        }));
+        }) => {
+          // FR-001: Separate recognized from unrecognized
+          if (item.ingredientId && item.ingredientName && item.ingredientCategory) {
+            // Recognized ingredient
+            recognizedItems.push({
+              id: item.id,
+              ingredientId: item.ingredientId,
+              name: item.ingredientName,
+              category: item.ingredientCategory,
+              quantityLevel: item.quantityLevel as QuantityLevel,
+              isPantryStaple: item.isPantryStaple ?? false,
+              updatedAt: new Date(item.updatedAt),
+            });
+          } else if (item.unrecognizedItemId && item.unrecognizedRawText) {
+            // Unrecognized item (FR-010: use rawText as display name)
+            unrecognized.push({
+              id: item.id,
+              rawText: item.unrecognizedRawText,
+            });
+          }
+        });
 
-        // Group by isPantryStaple and sort alphabetically
+        // Group recognized items by isPantryStaple and sort alphabetically
         const grouped: InventoryGroups = {
-          available: sortByName(items.filter((item) => !item.isPantryStaple)),
-          pantryStaples: sortByName(items.filter((item) => item.isPantryStaple)),
+          available: sortByName(recognizedItems.filter((item) => !item.isPantryStaple)),
+          pantryStaples: sortByName(recognizedItems.filter((item) => item.isPantryStaple)),
         };
 
         setInventory(grouped);
+        setUnrecognizedItems(unrecognized);
       } catch (error) {
         console.error("Error fetching inventory:", error);
         toast.error("Failed to load inventory");
@@ -203,6 +231,42 @@ export default function InventoryPage() {
     }
   };
 
+  // Feature 021: Handle unrecognized item deletion
+  // FR-007, FR-008, FR-014
+  const handleDeleteUnrecognized = async (itemId: string) => {
+    // Find item for optimistic update and rollback
+    const item = unrecognizedItems.find((i) => i.id === itemId);
+    if (!item) return;
+
+    // Optimistic update - remove from UI immediately
+    const previousUnrecognized = unrecognizedItems;
+    setUnrecognizedItems(unrecognizedItems.filter((i) => i.id !== itemId));
+
+    try {
+      // Get user ID from Supabase client
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (!user) {
+        throw new Error('Not authenticated');
+      }
+
+      // Call server action with named parameters
+      const result = await deleteUnrecognizedItem({ userId: user.id, inventoryId: itemId });
+
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to delete item');
+      }
+
+      toast.success('Item deleted');
+    } catch (error) {
+      console.error('Error deleting unrecognized item:', error);
+      toast.error('Failed to delete item'); // FR-014: Error toast only
+      // Rollback on error
+      setUnrecognizedItems(previousUnrecognized);
+    }
+  };
+
   if (isLoading) {
     return (
       <PageContainer
@@ -220,8 +284,8 @@ export default function InventoryPage() {
     );
   }
 
-  // Empty state
-  const totalItems = inventory.available.length + inventory.pantryStaples.length;
+  // Empty state - Feature 021: include unrecognized items in total count
+  const totalItems = inventory.available.length + inventory.pantryStaples.length + unrecognizedItems.length;
   if (totalItems === 0) {
     return (
       <PageContainer
@@ -312,15 +376,59 @@ export default function InventoryPage() {
         />
 
         {/* Pantry Staples */}
-        <InventorySection
-          title="Pantry Staples"
-          description="Items here are always available in recipe matching."
-          items={inventory.pantryStaples}
-          isPantrySection={true}
-          onQuantityChange={handleQuantityChange}
-          onToggleStaple={handleToggleStaple}
-          onDelete={handleDelete}
-        />
+        <div className="space-y-2">
+          <InventorySection
+            title="Pantry Staples"
+            description="Items here are always available in recipe matching."
+            items={inventory.pantryStaples}
+            isPantrySection={true}
+            onQuantityChange={handleQuantityChange}
+            onToggleStaple={handleToggleStaple}
+            onDelete={handleDelete}
+          />
+
+          {/* Feature 021: FR-012, FR-013 - Hint text for pantry staples */}
+          {inventory.pantryStaples.length > 0 && (
+            <p className="text-sm font-bold text-gray-700 mt-2">
+              💡 Pantry staples are basic or important foods you have a supply of in your kitchen and should be considered always available.
+            </p>
+          )}
+        </div>
+
+        {/* Feature 021: Unrecognized Items Section (FR-001: appears at end of list) */}
+        {unrecognizedItems.length > 0 && (
+          <section className="mt-8 border-t-4 border-black pt-8">
+            <h2 className="text-2xl font-black uppercase mb-4">
+              Unrecognized Items
+            </h2>
+            <div className="space-y-2">
+              {unrecognizedItems.map((item) => (
+                <UnrecognizedItemRow
+                  key={item.id}
+                  item={{
+                    id: item.id,
+                    userId: '',
+                    ingredientId: null,
+                    unrecognizedItemId: item.id,
+                    quantityLevel: 0,
+                    isPantryStaple: false,
+                    updatedAt: new Date(),
+                    ingredient: null,
+                    unrecognizedItem: {
+                      id: item.id,
+                      userId: '',
+                      rawText: item.rawText,
+                      context: null,
+                      resolvedAt: null,
+                      createdAt: new Date(),
+                    },
+                  }}
+                  onDelete={handleDeleteUnrecognized}
+                />
+              ))}
+            </div>
+          </section>
+        )}
       </div>
 
       <InventoryUpdateModal

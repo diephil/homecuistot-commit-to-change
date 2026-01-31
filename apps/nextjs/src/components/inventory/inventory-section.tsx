@@ -3,7 +3,7 @@
 import { IngredientBadge } from "@/components/retroui/IngredientBadge";
 import { SmallActionButton } from "@/components/retroui/SmallActionButton";
 import { InventoryDisplayItem, QuantityLevel } from "@/types/inventory";
-import { Star, StarOff, X } from "lucide-react";
+import { Infinity, X } from "lucide-react";
 
 interface InventorySectionProps {
   title: string;
@@ -62,8 +62,9 @@ export function InventorySection({
               }}
             />
             <div className="absolute -top-1 -right-1 flex gap-0.5">
+              {/* Feature 021: FR-011 - Infinity icon for pantry staples */}
               <SmallActionButton
-                icon={isPantrySection ? StarOff : Star}
+                icon={Infinity}
                 variant="yellow"
                 onClick={(e) => {
                   e.stopPropagation();

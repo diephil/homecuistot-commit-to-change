@@ -91,6 +91,27 @@ export function InventoryHelpModal({ isOpen, onClose }: InventoryHelpModalProps)
           Prefer typing? Switch to text mode and enter inventory updates the same way.
         </p>
       </HelpSection>
+
+      {/* Feature 021: Unrecognized Items Section (FR-009) */}
+      <HelpSection emoji="❓" title="Unrecognized Items" bgColor="bg-gray-100">
+        <div className="space-y-3">
+          <p className="text-sm font-medium">
+            <strong className="text-black">What are these?</strong> These are items the system doesn&apos;t recognize yet. They appear grayed out at the bottom of your inventory.
+          </p>
+          <p className="text-sm font-medium">
+            <strong className="text-black">What you can do:</strong> Delete unrecognized items to clean up your inventory.
+          </p>
+          <p className="text-sm font-medium">
+            <strong className="text-black">What you can&apos;t do:</strong> Change quantities or mark as pantry staples (these features only work for recognized ingredients).
+          </p>
+          <p className="text-sm font-medium">
+            <strong className="text-black">Future updates:</strong> We&apos;re constantly improving recognition. These items might be automatically recognized in future updates!
+          </p>
+          <p className="text-xs font-medium text-gray-700">
+            Note: Deleting removes them from your visible inventory but preserves the record for future matching.
+          </p>
+        </div>
+      </HelpSection>
     </HelpModal>
   );
 }
