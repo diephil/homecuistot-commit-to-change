@@ -143,7 +143,7 @@ User clicks "Complete Setup" and all ingredients (recognized + unrecognized) plu
 ### Edge Cases
 
 - What happens when user selects a cooking skill then navigates back to step 1? Selection preserved when returning to step 2.
-- How does system handle voice input with no audible speech? Returns empty add/remove lists; no changes to ingredient list; no toast shown.
+- How does system handle voice/text input with no detected ingredients? Returns empty add/remove lists; no changes to ingredient list; toast shown saying "No updates were detected".
 - What if user tries to remove all ingredients on step 3? "Complete Setup" button becomes disabled; user must have at least 1 ingredient to complete.
 - What if LLM times out during voice/text processing? Show error message; allow retry; preserve current list.
 - What if same ingredient name exists in both ingredients table and unrecognized_items? Helper function prioritizes ingredients table match (FR-029).
@@ -175,6 +175,7 @@ User clicks "Complete Setup" and all ingredients (recognized + unrecognized) plu
 **Step 3 - Toast Notifications**
 - **FR-015**: System MUST display toast message "Ingredient list has been updated" when ingredients are added
 - **FR-016**: System MUST display toast message "Ingredient list has been updated" when ingredients are removed
+- **FR-037**: System MUST display toast message "No updates were detected" when LLM returns empty add/remove arrays
 
 **Step 3 - Voice/Text Instructions**
 - **FR-017**: System MUST display updated instructions with examples for adding ingredients
