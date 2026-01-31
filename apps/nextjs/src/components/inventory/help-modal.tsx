@@ -15,7 +15,7 @@ export function InventoryHelpModal({ isOpen, onClose }: InventoryHelpModalProps)
       {/* Quantity Badges Section */}
       <HelpSection emoji="📊" title="Quantity Badges" bgColor="bg-purple-100">
         <p className="text-sm font-medium mb-3">
-          Each dot represents one recipe you can cook with that ingredient:
+          Tap the ingredient to update its quantity level. Each dot represents one recipe you can cook with that ingredient:
         </p>
         <div className="space-y-3">
           <div className="flex items-center gap-3 p-3 bg-white border-2 border-black rounded">
