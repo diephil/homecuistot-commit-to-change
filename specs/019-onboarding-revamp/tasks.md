@@ -57,10 +57,10 @@
 
 ### Implementation for User Story 1
 
-- [ ] T013 [US1] Add cookingSkill state (null | 'basic' | 'advanced') to onboarding page in apps/nextjs/src/app/(protected)/app/onboarding/page.tsx
-- [ ] T014 [US1] Create CookingSkillSelector UI section with radio-style buttons in apps/nextjs/src/app/(protected)/app/onboarding/page.tsx
-- [ ] T015 [US1] Implement skill selection visual states (selected = bright + checkmark, unselected = grayed) in apps/nextjs/src/app/(protected)/app/onboarding/page.tsx
-- [ ] T016 [US1] Conditionally hide ingredients section until skill selected in apps/nextjs/src/app/(protected)/app/onboarding/page.tsx
+- [X] T013 [US1] Add cookingSkill state (null | 'basic' | 'advanced') to onboarding page in apps/nextjs/src/app/(protected)/app/onboarding/page.tsx
+- [X] T014 [US1] Create CookingSkillSelector UI section with radio-style buttons in apps/nextjs/src/app/(protected)/app/onboarding/page.tsx
+- [X] T015 [US1] Implement skill selection visual states (selected = bright + checkmark, unselected = grayed) in apps/nextjs/src/app/(protected)/app/onboarding/page.tsx
+- [X] T016 [US1] Conditionally hide ingredients section until skill selected in apps/nextjs/src/app/(protected)/app/onboarding/page.tsx
 
 **Checkpoint**: User Story 1 complete - skill selection works independently
 
@@ -74,12 +74,12 @@
 
 ### Implementation for User Story 2
 
-- [ ] T017 [US2] Add selectedIngredients state (string[]) to onboarding page in apps/nextjs/src/app/(protected)/app/onboarding/page.tsx
-- [ ] T018 [US2] Render 16 COMMON_INGREDIENTS as IngredientChip grid (selectable mode) in apps/nextjs/src/app/(protected)/app/onboarding/page.tsx
-- [ ] T019 [US2] Implement toggle selection behavior for ingredients in apps/nextjs/src/app/(protected)/app/onboarding/page.tsx
-- [ ] T020 [US2] Enable "Next Step" only when 1+ ingredients selected in apps/nextjs/src/app/(protected)/app/onboarding/page.tsx
-- [ ] T021 [US2] Show hint text only when skill + 1+ ingredients selected in apps/nextjs/src/app/(protected)/app/onboarding/page.tsx
-- [ ] T022 [US2] Preserve selectedIngredients when advancing to step 3 in apps/nextjs/src/app/(protected)/app/onboarding/page.tsx
+- [X] T017 [US2] Add selectedIngredients state (string[]) to onboarding page in apps/nextjs/src/app/(protected)/app/onboarding/page.tsx
+- [X] T018 [US2] Render 16 COMMON_INGREDIENTS as IngredientChip grid (selectable mode) in apps/nextjs/src/app/(protected)/app/onboarding/page.tsx
+- [X] T019 [US2] Implement toggle selection behavior for ingredients in apps/nextjs/src/app/(protected)/app/onboarding/page.tsx
+- [X] T020 [US2] Enable "Next Step" only when 1+ ingredients selected in apps/nextjs/src/app/(protected)/app/onboarding/page.tsx
+- [X] T021 [US2] Show hint text only when skill + 1+ ingredients selected in apps/nextjs/src/app/(protected)/app/onboarding/page.tsx
+- [X] T022 [US2] Preserve selectedIngredients when advancing to step 3 in apps/nextjs/src/app/(protected)/app/onboarding/page.tsx
 
 **Checkpoint**: User Stories 1 AND 2 complete - step 2 fully functional
 
@@ -93,9 +93,9 @@
 
 ### Implementation for User Story 3
 
-- [ ] T023 [US3] Change step 3 title to "Add more ingredients" in apps/nextjs/src/app/(protected)/app/onboarding/page.tsx
-- [ ] T024 [US3] Display step 2 ingredients as IngredientChip grid (readOnly mode) in apps/nextjs/src/app/(protected)/app/onboarding/page.tsx
-- [ ] T025 [US3] Enable "Complete Setup" only when 1+ ingredients in list in apps/nextjs/src/app/(protected)/app/onboarding/page.tsx
+- [X] T023 [US3] Change step 3 title to "Add more ingredients" in apps/nextjs/src/app/(protected)/app/onboarding/page.tsx
+- [X] T024 [US3] Display step 2 ingredients as IngredientChip grid (readOnly mode) in apps/nextjs/src/app/(protected)/app/onboarding/page.tsx
+- [X] T025 [US3] Enable "Complete Setup" only when 1+ ingredients in list in apps/nextjs/src/app/(protected)/app/onboarding/page.tsx
 
 **Checkpoint**: User Stories 1-3 complete - core step 2→3 flow works
 
@@ -109,12 +109,12 @@
 
 ### Implementation for User Story 4
 
-- [ ] T026 [US4] Update process-voice route request to include currentContext.ingredients in apps/nextjs/src/app/api/onboarding/process-voice/route.ts
-- [ ] T027 [US4] Update process-voice route response to return IngredientExtractionResponse in apps/nextjs/src/app/api/onboarding/process-voice/route.ts
-- [ ] T028 [US4] Integrate VoiceTextInput component on step 3 with onSubmit handler in apps/nextjs/src/app/(protected)/app/onboarding/page.tsx
-- [ ] T029 [US4] Handle voice submission: send audio to API, add ingredients_to_add to list in apps/nextjs/src/app/(protected)/app/onboarding/page.tsx
-- [ ] T030 [US4] Show toast "Ingredient list has been updated" on successful add in apps/nextjs/src/app/(protected)/app/onboarding/page.tsx
-- [ ] T031 [US4] Pass instructions prop to VoiceTextInput with add example in apps/nextjs/src/app/(protected)/app/onboarding/page.tsx
+- [X] T026 [US4] Update process-voice route request to include currentContext.ingredients in apps/nextjs/src/app/api/onboarding/process-voice/route.ts
+- [X] T027 [US4] Update process-voice route response to return IngredientExtractionResponse in apps/nextjs/src/app/api/onboarding/process-voice/route.ts
+- [X] T028 [US4] Integrate VoiceTextInput component on step 3 with onSubmit handler in apps/nextjs/src/app/(protected)/app/onboarding/page.tsx
+- [X] T029 [US4] Handle voice submission: send audio to API, add ingredients_to_add to list in apps/nextjs/src/app/(protected)/app/onboarding/page.tsx
+- [X] T030 [US4] Show toast "Ingredient list has been updated" on successful add in apps/nextjs/src/app/(protected)/app/onboarding/page.tsx
+- [X] T031 [US4] Pass instructions prop to VoiceTextInput with add example in apps/nextjs/src/app/(protected)/app/onboarding/page.tsx
 
 **Checkpoint**: User Story 4 complete - voice add works independently
 
@@ -128,9 +128,9 @@
 
 ### Implementation for User Story 5
 
-- [ ] T032 [US5] Handle voice response: remove ingredients_to_remove from list state in apps/nextjs/src/app/(protected)/app/onboarding/page.tsx
-- [ ] T033 [US5] Silently ignore removal of items not in list in apps/nextjs/src/app/(protected)/app/onboarding/page.tsx
-- [ ] T034 [US5] Update instructions to include add/remove example in apps/nextjs/src/app/(protected)/app/onboarding/page.tsx
+- [X] T032 [US5] Handle voice response: remove ingredients_to_remove from list state in apps/nextjs/src/app/(protected)/app/onboarding/page.tsx
+- [X] T033 [US5] Silently ignore removal of items not in list in apps/nextjs/src/app/(protected)/app/onboarding/page.tsx
+- [X] T034 [US5] Update instructions to include add/remove example in apps/nextjs/src/app/(protected)/app/onboarding/page.tsx
 
 **Checkpoint**: User Stories 4 AND 5 complete - full voice add/remove works
 
@@ -144,9 +144,9 @@
 
 ### Implementation for User Story 6
 
-- [ ] T035 [US6] Update process-text route request/response to match process-voice in apps/nextjs/src/app/api/onboarding/process-text/route.ts
-- [ ] T036 [US6] Handle text submission from VoiceTextInput: send to API, update list in apps/nextjs/src/app/(protected)/app/onboarding/page.tsx
-- [ ] T037 [US6] Show toast on successful text processing in apps/nextjs/src/app/(protected)/app/onboarding/page.tsx
+- [X] T035 [US6] Update process-text route request/response to match process-voice in apps/nextjs/src/app/api/onboarding/process-text/route.ts
+- [X] T036 [US6] Handle text submission from VoiceTextInput: send to API, update list in apps/nextjs/src/app/(protected)/app/onboarding/page.tsx
+- [X] T037 [US6] Show toast on successful text processing in apps/nextjs/src/app/(protected)/app/onboarding/page.tsx
 
 **Checkpoint**: User Stories 4-6 complete - all input methods work
 
