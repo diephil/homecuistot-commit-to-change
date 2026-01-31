@@ -416,7 +416,7 @@ function OnboardingPageContent() {
             </div>
 
             {/* T031, T034: Instructions with add/remove examples */}
-            <InfoCard variant="cyan" emoji="💬" heading="Speak or type to update your list">
+            <InfoCard variant="cyan" emoji="💬" heading="Speak to update the list">
               <div className="space-y-1 text-sm">
                 <p>&quot;Add eggs, butter, and mushrooms&quot;</p>
                 <p>&quot;I ran out of bacon, remove it&quot;</p>
