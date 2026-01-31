@@ -4,6 +4,51 @@
 
 ## Shared Components
 
+### VoiceTextInput
+
+**Location**: `components/shared/VoiceTextInput.tsx`
+
+**Purpose**: Reusable input component with microphone recording and text fallback. Designed for reuse across pages (onboarding, recipe editing, inventory management).
+
+#### Props
+```typescript
+interface VoiceTextInputProps {
+  onSubmit: (input: { type: 'voice'; audioBlob: Blob } | { type: 'text'; text: string }) => void;
+  disabled?: boolean;           // disable all interactions (e.g., during processing)
+  processing?: boolean;         // show processing state
+  voiceLabel?: string;          // custom label for voice button (default: "Record")
+  textPlaceholder?: string;     // placeholder for text input
+  textFallbackLabel?: string;   // label for toggle (default: "Prefer to type instead?")
+  instructions?: React.ReactNode;  // optional instructions above input
+  className?: string;
+}
+```
+
+#### Internal State
+```typescript
+const [inputMode, setInputMode] = useState<'voice' | 'text'>('voice');
+const [textValue, setTextValue] = useState('');
+```
+
+#### Composition
+- Uses existing `useVoiceInput` hook internally
+- Voice mode: Microphone button with duration display (reuses VoiceInput patterns)
+- Text mode: Text input with submit button
+- Toggle link to switch between modes
+
+#### Visual States (Neobrutalism)
+- **Voice mode**: Large mic button, duration display when recording
+- **Text mode**: Input field with thick border, submit button
+- **Processing**: Disabled state with spinner/loading indicator
+- **Error**: Red border with error message
+
+#### Accessibility
+- `aria-label` on mode toggle
+- Form submission via Enter key in text mode
+- Focus management when switching modes
+
+---
+
 ### IngredientChip
 
 **Location**: `components/shared/IngredientChip.tsx`

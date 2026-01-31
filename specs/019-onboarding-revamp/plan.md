@@ -61,7 +61,8 @@ apps/nextjs/src/
 │       └── persist/route.ts        # MODIFY: Use static recipes, ingredient matching
 ├── components/
 │   └── shared/                   # NEW: Reusable onboarding components
-│       └── IngredientChip.tsx    # NEW: Shared ingredient display
+│       ├── IngredientChip.tsx    # NEW: Shared ingredient display
+│       └── VoiceTextInput.tsx    # NEW: Mic + text fallback input (reusable)
 ├── constants/
 │   └── onboarding.ts             # MODIFY: Add static ingredients, static dishes with ingredients
 ├── hooks/

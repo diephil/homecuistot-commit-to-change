@@ -33,12 +33,19 @@ Add new types:
 - `IngredientExtractionSchema` (Zod)
 - `CookingSkill` type
 
-### 3. Shared Component (`components/shared/IngredientChip.tsx`)
+### 3. Shared Components
 
-Create reusable chip with:
+**IngredientChip** (`components/shared/IngredientChip.tsx`):
 - Selectable mode (step 2)
 - Read-only mode (step 3)
 - Neobrutalism styling
+
+**VoiceTextInput** (`components/shared/VoiceTextInput.tsx`):
+- Mic recording with duration display (uses existing `useVoiceInput` hook)
+- "Prefer to type instead?" toggle for text mode
+- Text input with submit button
+- `onSubmit` callback for voice blob or text string
+- Reusable on other pages (recipe editing, inventory)
 
 ### 4. Ingredient Matcher (`lib/services/ingredient-matcher.ts`)
 
@@ -74,6 +81,8 @@ Major updates:
 - [ ] Select cooking skill, see ingredients section appear
 - [ ] Select multiple ingredients, "Next Step" enables
 - [ ] Step 3 shows step 2 ingredients as read-only
+- [ ] VoiceTextInput: Mic button starts recording, shows duration
+- [ ] VoiceTextInput: "Prefer to type instead?" toggles to text input
 - [ ] Voice input adds/removes ingredients
 - [ ] Text input adds/removes ingredients
 - [ ] Toast appears on list changes
