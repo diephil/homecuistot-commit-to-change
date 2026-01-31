@@ -94,8 +94,9 @@ export async function POST(request: NextRequest) {
       let inventoryCreated = 0;
 
       // T040: Create new unrecognized_items for unrecognizedItemsToCreate
+      // FR-040: Query back inserted IDs so they can be used for recipe_ingredients and inventory
       if (matchResult.unrecognizedItemsToCreate.length > 0) {
-        await tx
+        const insertedUnrecognized = await tx
           .insert(unrecognizedItems)
           .values(
             matchResult.unrecognizedItemsToCreate.map((rawText) => ({
@@ -104,7 +105,16 @@ export async function POST(request: NextRequest) {
               context: 'ingredient',
             }))
           )
-          .onConflictDoNothing();
+          .onConflictDoNothing()
+          .returning();
+
+        // Add newly created items to the map for recipe_ingredients and inventory lookups
+        for (const item of insertedUnrecognized) {
+          unrecognizedMap.set(item.rawText.toLowerCase(), {
+            id: item.id,
+            rawText: item.rawText,
+          });
+        }
       }
 
       // T042: Insert user_recipes from static dishes
@@ -183,6 +193,7 @@ export async function POST(request: NextRequest) {
             inventoryCreated++;
           }
         } else if (unrecognized) {
+          // FR-033: Add unrecognized items (existing + newly created) to inventory
           const inserted = await tx
             .insert(userInventory)
             .values({
@@ -197,9 +208,6 @@ export async function POST(request: NextRequest) {
             inventoryCreated++;
           }
         }
-        // Note: Newly created unrecognized items are handled by querying after insert
-        // For simplicity, we skip adding them to inventory during onboarding
-        // They can be added later via the inventory management UI
       }
 
       return {

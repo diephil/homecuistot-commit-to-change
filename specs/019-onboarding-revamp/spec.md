@@ -202,7 +202,8 @@ User clicks "Complete Setup" and all ingredients (recognized + unrecognized) plu
 **Step 3 - Persistence (Ingredients)**
 - **FR-031**: System MUST add recognized ingredients to user_inventory with ingredient_id and quantity_level=3
 - **FR-032**: System MUST create new unrecognized_items entries for items in `unrecognized_items_to_create`
-- **FR-033**: System MUST add unrecognized ingredients (existing + newly created) to user_inventory with unrecognized_item_id and quantity_level=3
+- **FR-033**: System MUST add ALL unrecognized ingredients (existing + newly created) to user_inventory with unrecognized_item_id and quantity_level=3
+- **FR-040**: System MUST include newly created unrecognized items in recipe_ingredients if they appear in static recipe definitions
 
 **Step 3 - Persistence (Recipes based on Skill)**
 - **FR-034**: System MUST add 8 basic recipes for "Basic" skill: scrambled egg, pasta carbonara, pancake, mushroom omelette, spaghetti aglio e olio, grilled chicken and rice, roasted potato, roasted vegetable

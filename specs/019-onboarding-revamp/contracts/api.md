@@ -82,12 +82,12 @@ interface PersistResponse {
 #### Flow
 1. Match ingredient names against `ingredients` table (case-insensitive)
 2. Match remaining against user's `unrecognized_items` table
-3. Create new `unrecognized_items` for unmatched names
+3. Create new `unrecognized_items` for unmatched names (return IDs)
 4. Select recipe set based on cookingSkill
 5. Transaction:
    - Insert `user_recipes` from static dishes
-   - Insert `recipe_ingredients` with anchor/optional types
-   - Insert `user_inventory` entries (quantity_level=3)
+   - Insert `recipe_ingredients` with anchor/optional types (includes newly created unrecognized items)
+   - Insert `user_inventory` entries (quantity_level=3) for ALL ingredients including newly created unrecognized items
 
 ---
 
