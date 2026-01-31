@@ -1,360 +1,215 @@
 "use client";
 
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Badge } from "@/components/retroui/Badge";
 import { Button } from "@/components/retroui/Button";
 import { InfoCard } from "@/components/retroui/InfoCard";
 import { PageContainer } from "@/components/PageContainer";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { Mic, Loader2 } from "lucide-react";
-import { useVoiceInput } from "@/hooks/useVoiceInput";
-import { SUGGESTED_ITEMS } from "@/constants/onboarding";
-import type { OnboardingState, OnboardingUpdate } from "@/types/onboarding";
-import { initialOnboardingState } from "@/types/onboarding";
+import { Loader2, Check, HelpCircle } from "lucide-react";
+import { IngredientChip, VoiceTextInput, HelpModal, HelpSection } from "@/components/shared";
+import { COMMON_INGREDIENTS } from "@/constants/onboarding";
+import { toast } from "sonner";
+import type { CookingSkill, IngredientExtractionResponse } from "@/types/onboarding";
 
 /**
- * Voice-Enabled Kitchen Onboarding Flow
- * Spec: specs/004-onboarding-flow/spec.md
- * Tasks: T007-T067 (Phases 3-9)
+ * Voice-Enabled Kitchen Onboarding Flow (Revamped)
+ * Spec: specs/019-onboarding-revamp/spec.md
+ * Tasks: T013-T051
  */
+
+interface OnboardingState {
+  currentStep: 1 | 2 | 3 | 4;
+  cookingSkill: CookingSkill | null;
+  selectedIngredients: string[];
+  hasVoiceChanges: boolean;
+}
+
+const initialState: OnboardingState = {
+  currentStep: 1,
+  cookingSkill: null,
+  selectedIngredients: [],
+  hasVoiceChanges: false,
+};
 
 function OnboardingPageContent() {
   const router = useRouter();
-  const [state, setState] = useState<OnboardingState>(initialOnboardingState);
+  const [state, setState] = useState<OnboardingState>(initialState);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [textInput, setTextInput] = useState("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [inputMode, setInputMode] = useState<'voice' | 'text'>('voice');
-
-  const {
-    state: voiceState,
-    duration,
-    error: voiceError,
-    permissionDenied,
-    start,
-    stop,
-    consumeAudio,
-  } = useVoiceInput();
-
-  // Track if we're waiting for audio to be ready after stop
-  const pendingProcessRef = useRef(false);
-
-  // T037-T039: Handle microphone permission denied
-  useEffect(() => {
-    if (permissionDenied) {
-      setInputMode('text');
-    }
-  }, [permissionDenied]);
-
-  // Process audio when voice state transitions to 'stopped'
-  useEffect(() => {
-    if (voiceState === "stopped" && pendingProcessRef.current) {
-      pendingProcessRef.current = false;
-      const blob = consumeAudio();
-      if (blob) {
-        processAudioBlob(blob);
-      }
-    }
-  }, [voiceState, consumeAudio]);
+  const [isHelpOpen, setIsHelpOpen] = useState(false);
 
   // T009: Advance to step 2
   const handleGetStarted = () => {
     setState((prev) => ({ ...prev, currentStep: 2 }));
   };
 
-  // T017: Toggle badge selection
-  const toggleItem = (item: string, category: "dishes" | "fridge" | "pantry") => {
-    setState((prev) => {
-      const currentList = prev[category];
-      const isSelected = currentList.includes(item);
+  // T014: Select cooking skill
+  const handleSkillSelect = (skill: CookingSkill) => {
+    setState((prev) => ({ ...prev, cookingSkill: skill }));
+  };
 
+  // T019: Toggle ingredient selection
+  const toggleIngredient = (name: string) => {
+    setState((prev) => {
+      const isSelected = prev.selectedIngredients.includes(name);
       return {
         ...prev,
-        [category]: isSelected
-          ? currentList.filter((i) => i !== item)
-          : [...currentList, item],
+        selectedIngredients: isSelected
+          ? prev.selectedIngredients.filter((n) => n !== name)
+          : [...prev.selectedIngredients, name],
       };
     });
   };
 
-  // T018: Clear all selections
-  const handleClearAll = () => {
-    setState((prev) => ({
-      ...prev,
-      dishes: [],
-      fridge: [],
-      pantry: [],
-    }));
-  };
-
-  // T019-T020: Continue to step 3, merge fridge+pantry
+  // T022: Continue to step 3, preserving selections
   const handleContinueToStep3 = () => {
-    setState((prev) => ({
-      ...prev,
-      currentStep: 3,
-      ingredients: [...prev.fridge, ...prev.pantry],
-    }));
+    setState((prev) => ({ ...prev, currentStep: 3 }));
   };
 
-  // Handle recording start
-  const handleRecordStart = useCallback(() => {
-    if (isProcessing) return;
-    setErrorMessage(null);
-    start();
-  }, [isProcessing, start]);
+  // T028-T037: Handle voice/text submission
+  const handleVoiceTextSubmit = useCallback(
+    async (input: { type: "voice"; audioBlob: Blob } | { type: "text"; text: string }) => {
+      setIsProcessing(true);
+      setErrorMessage(null);
 
-  // Handle recording stop - mark pending process
-  const handleRecordStop = useCallback(() => {
-    if (voiceState === "recording") {
-      pendingProcessRef.current = true;
-      stop();
-    }
-  }, [voiceState, stop]);
+      try {
+        let response: Response;
 
-  // Process audio blob
-  const processAudioBlob = async (blob: Blob) => {
-    setIsProcessing(true);
-    setErrorMessage(null);
+        if (input.type === "voice") {
+          // Convert blob to base64
+          const arrayBuffer = await input.audioBlob.arrayBuffer();
+          const base64 = Buffer.from(arrayBuffer).toString("base64");
 
-    try {
-      // Convert blob to base64
-      const arrayBuffer = await blob.arrayBuffer();
-      const base64 = Buffer.from(arrayBuffer).toString("base64");
-
-      // T048: 15s timeout enforced by API maxDuration
-      const response = await fetch("/api/onboarding/process-voice", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          audioBase64: base64,
-          text: undefined,
-          currentContext: {
-            dishes: state.dishes,
-            ingredients: state.ingredients,
-          },
-        }),
-      });
-
-      // T049-T051: Enhanced error handling with specific messages
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ error: "Unknown error" }));
-
-        if (response.status === 408) {
-          throw new Error("timeout:Connection issue. Try again.");
+          response = await fetch("/api/onboarding/process-voice", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              audioBase64: base64,
+              currentContext: {
+                ingredients: state.selectedIngredients,
+              },
+            }),
+          });
+        } else {
+          response = await fetch("/api/onboarding/process-text", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              text: input.text,
+              currentContext: {
+                ingredients: state.selectedIngredients,
+              },
+            }),
+          });
         }
 
-        if (response.status === 500 && errorData.error?.includes("Invalid response format")) {
-          throw new Error("parse:Couldn't understand. Try again.");
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({ error: "Unknown error" }));
+          if (response.status === 408) {
+            throw new Error("timeout:Connection issue. Try again.");
+          }
+          if (response.status === 500 && errorData.error?.includes("Invalid response format")) {
+            throw new Error("parse:Couldn't understand. Try again.");
+          }
+          throw new Error(errorData.error || "Failed to process input");
         }
 
-        throw new Error(errorData.error || "Failed to process input");
-      }
+        const result: IngredientExtractionResponse = await response.json();
 
-      const result: OnboardingUpdate = await response.json();
-
-      // T030: Apply voice update
-      applyOnboardingUpdate(result);
-
-      // T035: Reset failure count on success
-      setState((prev) => ({ ...prev, voiceFailureCount: 0 }));
-
-    } catch (error) {
-      console.error("[onboarding] Voice processing error:", error);
-      handleProcessingError(error);
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  // T028: Process text input
-  const handleProcessText = async () => {
-    if (!textInput.trim() || isProcessing) return;
-
-    setIsProcessing(true);
-    setErrorMessage(null);
-
-    try {
-      const response = await fetch("/api/onboarding/process-text", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          text: textInput.trim(),
-          currentContext: {
-            dishes: state.dishes,
-            ingredients: state.ingredients,
-          },
-        }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ error: "Unknown error" }));
-
-        if (response.status === 408) {
-          throw new Error("timeout:Connection issue. Try again.");
+        // T048: Handle empty response
+        if (result.add.length === 0 && result.rm.length === 0) {
+          toast("No updates were detected");
+          return;
         }
 
-        if (response.status === 500 && errorData.error?.includes("Invalid response format")) {
-          throw new Error("parse:Couldn't understand. Try again.");
+        // Apply updates
+        setState((prev) => {
+          // Add new ingredients (case-insensitive dedupe)
+          const newIngredients = result.add.filter(
+            (name) =>
+              !prev.selectedIngredients.some(
+                (existing) => existing.toLowerCase() === name.toLowerCase()
+              )
+          );
+
+          // Remove ingredients (case-insensitive match)
+          // T033: Silently ignore removal of items not in list
+          const updatedIngredients = prev.selectedIngredients.filter(
+            (existing) =>
+              !result.rm.some(
+                (toRemove) => toRemove.toLowerCase() === existing.toLowerCase()
+              )
+          );
+
+          return {
+            ...prev,
+            selectedIngredients: [...updatedIngredients, ...newIngredients],
+            hasVoiceChanges: true,
+          };
+        });
+
+        // T030, T037: Show toast
+        toast("Ingredient list has been updated");
+      } catch (error) {
+        console.error("[onboarding] Processing error:", error);
+
+        if (error instanceof Error) {
+          const isTimeout = error.message.startsWith("timeout:");
+          const isParseFail = error.message.startsWith("parse:");
+
+          if (isTimeout) {
+            setErrorMessage(error.message.replace("timeout:", ""));
+          } else if (isParseFail) {
+            setErrorMessage(error.message.replace("parse:", ""));
+          } else {
+            setErrorMessage("Couldn't understand. Try again.");
+          }
+        } else {
+          setErrorMessage("Something went wrong. Please try again.");
         }
-
-        throw new Error(errorData.error || "Failed to process input");
+      } finally {
+        setIsProcessing(false);
       }
+    },
+    [state.selectedIngredients]
+  );
 
-      const result: OnboardingUpdate = await response.json();
-      applyOnboardingUpdate(result);
-      setState((prev) => ({ ...prev, voiceFailureCount: 0 }));
-      setTextInput("");
-
-    } catch (error) {
-      console.error("[onboarding] Text processing error:", error);
-      handleProcessingError(error);
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  // Handle processing errors
-  const handleProcessingError = (error: unknown) => {
-    const isTimeout = error instanceof Error && error.message.startsWith("timeout:");
-    const isParseFail = error instanceof Error && error.message.startsWith("parse:");
-
-    // T040-T042: Voice failure tracking
-    setState((prev) => {
-      const newCount = prev.voiceFailureCount + 1;
-      return {
-        ...prev,
-        voiceFailureCount: newCount,
-      };
-    });
-
-    // T049-T050: Display appropriate error messages
-    if (error instanceof Error) {
-      if (isTimeout) {
-        setErrorMessage(error.message.replace("timeout:", ""));
-      } else if (isParseFail) {
-        setErrorMessage(error.message.replace("parse:", ""));
-      } else if (state.voiceFailureCount === 0) {
-        setErrorMessage("Couldn't understand. Try again.");
-      } else if (state.voiceFailureCount === 1) {
-        setErrorMessage("Still having trouble. Would you like to type instead?");
-      } else {
-        setErrorMessage("Please use text input below.");
-      }
-    } else {
-      setErrorMessage("Something went wrong. Please try again.");
-    }
-  };
-
-  // T030-T032: Apply onboarding update with duplicate detection
-  const applyOnboardingUpdate = (update: OnboardingUpdate) => {
-    setState((prev) => {
-      // T031: Duplicate detection (case-insensitive)
-      const newDishes = update.add.dishes.filter(
-        (dish) =>
-          !prev.dishes.some((existing) => existing.toLowerCase() === dish.toLowerCase())
-      );
-      const newIngredients = update.add.ingredients.filter(
-        (ingredient) =>
-          !prev.ingredients.some(
-            (existing) => existing.toLowerCase() === ingredient.toLowerCase()
-          )
-      );
-
-      // T032: Log duplicates
-      const duplicates = [
-        ...update.add.dishes.filter((dish) =>
-          prev.dishes.some((existing) => existing.toLowerCase() === dish.toLowerCase())
-        ),
-        ...update.add.ingredients.filter((ingredient) =>
-          prev.ingredients.some(
-            (existing) => existing.toLowerCase() === ingredient.toLowerCase()
-          )
-        ),
-      ];
-
-      if (duplicates.length > 0) {
-        console.log(`Duplicates detected: ${duplicates.join(", ")}`);
-      }
-
-      // Remove items (case-insensitive)
-      const updatedDishes = prev.dishes.filter(
-        (dish) =>
-          !update.remove.dishes.some(
-            (remove) => remove.toLowerCase() === dish.toLowerCase()
-          )
-      );
-      const updatedIngredients = prev.ingredients.filter(
-        (ingredient) =>
-          !update.remove.ingredients.some(
-            (remove) => remove.toLowerCase() === ingredient.toLowerCase()
-          )
-      );
-
-      // T033: Mark has voice changes
-      const hasChanges =
-        newDishes.length > 0 ||
-        newIngredients.length > 0 ||
-        update.remove.dishes.length > 0 ||
-        update.remove.ingredients.length > 0;
-
-      return {
-        ...prev,
-        dishes: [...updatedDishes, ...newDishes],
-        ingredients: [...updatedIngredients, ...newIngredients],
-        hasVoiceChanges: hasChanges || prev.hasVoiceChanges,
-      };
-    });
-  };
-
-  // T021-T025: Complete setup with Step 4 and persistence
+  // T046: Complete setup with persistence
   const handleCompleteSetup = async () => {
-    // T021: Transition to Step 4
     setState((prev) => ({ ...prev, currentStep: 4 }));
     const startTime = Date.now();
 
     try {
-      // T023: Call persist API
-      const response = await fetch('/api/onboarding/persist', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/onboarding/persist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          dishes: state.dishes,
-          ingredients: state.ingredients,
-          pantryItems: state.pantry,
+          cookingSkill: state.cookingSkill,
+          ingredients: state.selectedIngredients,
         }),
       });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
-        console.error('[onboarding] Persist error:', errorData);
-        // T029: Don't crash Step 4 on error, still redirect
+        const errorData = await response.json().catch(() => ({ error: "Unknown error" }));
+        console.error("[onboarding] Persist error:", errorData);
       }
     } catch (error) {
-      // T029: Graceful error handling - log but continue
-      console.error('[onboarding] Persist failed:', error);
+      console.error("[onboarding] Persist failed:", error);
     }
 
-    // T021: Ensure minimum 4-second display
+    // Ensure minimum 4-second display
     const elapsed = Date.now() - startTime;
     if (elapsed < 4000) {
       await new Promise((r) => setTimeout(r, 4000 - elapsed));
     }
 
-    // T024: Redirect to /app
-    router.push('/app');
+    router.push("/app");
   };
 
-  // T065: Format recording duration
-  const formatDuration = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
-  };
-
-  // Derived state for UI
-  const isRecording = voiceState === "recording";
-  const showRecordingUI = isRecording && !isProcessing;
+  // Derived state
+  const canProceedToStep3 = state.cookingSkill !== null && state.selectedIngredients.length >= 1;
+  const canCompleteSetup = state.selectedIngredients.length >= 1;
 
   return (
     <PageContainer
@@ -363,228 +218,220 @@ function OnboardingPageContent() {
       gradientVia="via-yellow-50"
       gradientTo="to-cyan-50"
     >
-      {/* T054-T061: Neobrutalism design system */}
+      {/* FR-041-043: Help modal rendered outside transform container */}
+      <HelpModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} title="Choosing Your Level">
+        <HelpSection emoji="🍳" title="Basic" bgColor="bg-yellow-100">
+          <p className="text-sm">
+            We&apos;ll seed your account with <strong>8 simple recipes</strong> that are
+            quick and easy to prepare—perfect for everyday cooking.
+          </p>
+        </HelpSection>
+
+        <HelpSection emoji="👨‍🍳" title="Advanced" bgColor="bg-cyan-100">
+          <p className="text-sm">
+            We&apos;ll seed your account with <strong>16 recipes</strong>, including
+            more complex dishes that take a bit more time and technique.
+          </p>
+        </HelpSection>
+
+        <HelpSection emoji="✨" title="Don't Worry!" bgColor="bg-pink-100">
+          <p className="text-sm">
+            <strong>Everything can be changed later.</strong> You can add, edit, or
+            remove recipes anytime after onboarding. There&apos;s no wrong choice here!
+          </p>
+        </HelpSection>
+      </HelpModal>
+
       <div className="border-4 md:border-6 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
-        {/* T011: Progress indicator with T068 ARIA label */}
+        {/* Progress indicator */}
         <div className="bg-gradient-to-r from-yellow-300 via-orange-400 to-pink-400 border-b-4 md:border-b-6 border-black px-6 py-3">
-          <p className="text-sm font-black uppercase text-center" role="status" aria-live="polite" aria-label={`Step ${state.currentStep} of ${state.currentStep === 4 ? 4 : 3}`}>
-            {state.currentStep === 4 ? 'Finishing up...' : `Step ${state.currentStep} of 3`}
+          <p
+            className="text-sm font-black uppercase text-center"
+            role="status"
+            aria-live="polite"
+            aria-label={`Step ${state.currentStep} of ${state.currentStep === 4 ? 4 : 3}`}
+          >
+            {state.currentStep === 4 ? "Finishing up..." : `Step ${state.currentStep} of 3`}
           </p>
         </div>
 
-        {/* T065: Sliding transition */}
+        {/* Sliding transition */}
         <div
           className="flex transition-transform duration-300 ease-in-out"
           style={{ transform: `translateX(-${(state.currentStep - 1) * 100}%)` }}
         >
-          {/* T007-T011: Step 1 - Welcome Screen */}
+          {/* Step 1 - Welcome Screen */}
           <div className="min-w-full p-8 flex flex-col items-center gap-6 text-center">
-            <h1 className="text-3xl md:text-4xl font-black uppercase">
-              Welcome to HomeCuistot!
-            </h1>
+            <h1 className="text-3xl md:text-4xl font-black uppercase">Welcome to HomeCuistot!</h1>
             <p className="text-lg text-gray-700 max-w-md">
-              Let&apos;s set up your kitchen profile. This helps us suggest recipes
-              based on what you have and what you like to cook.
+              Let&apos;s set up your kitchen profile. This helps us suggest recipes based on what
+              you have and what you like to cook.
             </p>
-
-            {/* T009: Get Started button */}
             <Button
               onClick={handleGetStarted}
               variant="default"
               size="lg"
-              className="mt-4 min-h-[44px] min-w-[44px]"
+              className="mt-4 min-h-[44px] min-w-[44px] cursor-pointer"
             >
               Get Started
             </Button>
           </div>
 
-          {/* T012-T020: Step 2 - Badge Selection */}
-          <div className="min-w-full p-8 flex flex-col gap-6 overflow-x-hidden">
-            <div className="flex justify-between items-center">
+          {/* Step 2 - Skill + Ingredient Selection */}
+          <div className="min-w-full p-8 flex flex-col gap-6 overflow-x-hidden relative">
+            {/* FR-041: Help button (top-right, Step 2 only) */}
+            <button
+              onClick={() => setIsHelpOpen(true)}
+              className="absolute top-4 right-4 border-4 border-black bg-yellow-300 p-3 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all duration-150 hover:translate-x-[-2px] hover:translate-y-[-2px] active:translate-x-[2px] active:translate-y-[2px] cursor-pointer hover:bg-yellow-400"
+              aria-label="Open help"
+            >
+              <HelpCircle className="h-6 w-6 stroke-[3px]" />
+            </button>
+
+            {/* T014-T015: Cooking Skill Selection */}
+            <div className="space-y-4">
               <h2 className="text-2xl md:text-3xl font-black uppercase">
-                What do you have?
+                What&apos;s your cooking level?
               </h2>
-              {/* T018: Clear All button */}
-              <Button onClick={handleClearAll} variant="outline" size="sm">
-                Clear All
-              </Button>
-            </div>
 
-            {/* T014: Dishes section */}
-            <div className="space-y-3 md:rotate-1 md:origin-top-left">
-              <h3 className="text-lg font-black uppercase">Dishes You Can Cook</h3>
-              <div className="flex flex-wrap gap-2">
-                {SUGGESTED_ITEMS.dishes.map((dish) => (
-                  <Badge
-                    key={dish.id}
-                    variant={state.dishes.includes(dish.name) ? "solid" : "outline"}
-                    className="cursor-pointer min-h-[44px] min-w-[44px] border-4 md:border-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
-                    onClick={() => toggleItem(dish.name, "dishes")}
-                  >
-                    {dish.name}
-                  </Badge>
-                ))}
+              <div className="flex flex-wrap gap-4">
+                {/* Basic Skill Button */}
+                <button
+                  onClick={() => handleSkillSelect("basic")}
+                  className={`
+                    flex items-center gap-3 px-6 py-4 rounded border-4 border-black
+                    shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]
+                    transition-all font-bold text-lg cursor-pointer
+                    ${
+                      state.cookingSkill === "basic"
+                        ? "bg-yellow-400"
+                        : state.cookingSkill === "advanced"
+                          ? "bg-gray-200 opacity-60"
+                          : "bg-white hover:bg-yellow-100"
+                    }
+                    ${
+                      state.cookingSkill === null || state.cookingSkill === "basic"
+                        ? "hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px]"
+                        : ""
+                    }
+                  `}
+                  aria-pressed={state.cookingSkill === "basic"}
+                >
+                  {state.cookingSkill === "basic" && <Check className="h-5 w-5" />}
+                  Basic
+                </button>
+
+                {/* Advanced Skill Button */}
+                <button
+                  onClick={() => handleSkillSelect("advanced")}
+                  className={`
+                    flex items-center gap-3 px-6 py-4 rounded border-4 border-black
+                    shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]
+                    transition-all font-bold text-lg cursor-pointer
+                    ${
+                      state.cookingSkill === "advanced"
+                        ? "bg-cyan-400"
+                        : state.cookingSkill === "basic"
+                          ? "bg-gray-200 opacity-60"
+                          : "bg-white hover:bg-cyan-100"
+                    }
+                    ${
+                      state.cookingSkill === null || state.cookingSkill === "advanced"
+                        ? "hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px]"
+                        : ""
+                    }
+                  `}
+                  aria-pressed={state.cookingSkill === "advanced"}
+                >
+                  {state.cookingSkill === "advanced" && <Check className="h-5 w-5" />}
+                  Advanced
+                </button>
               </div>
             </div>
 
-                        {/* T016: Pantry section */}
-            <div className="space-y-3 md:rotate-1">
-              <h3 className="text-lg font-black uppercase">Pantry Items</h3>
-              <div className="flex flex-wrap gap-2">
-                {SUGGESTED_ITEMS.pantryItems.map((item) => (
-                  <Badge
-                    key={item.id}
-                    variant={state.pantry.includes(item.name) ? "solid" : "outline"}
-                    className="cursor-pointer min-h-[44px] min-w-[44px] border-4 md:border-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
-                    onClick={() => toggleItem(item.name, "pantry")}
-                  >
-                    {item.name}
-                  </Badge>
-                ))}
+            {/* T016-T021: Ingredients Section (appears after skill selection) */}
+            {state.cookingSkill && (
+              <div className="space-y-4 mt-4 animate-in fade-in slide-in-from-bottom-4 duration-300">
+                <h3 className="text-lg font-black uppercase">What ingredients do you usually have?</h3>
+                <p className="text-sm text-gray-600">Select all that apply</p>
+
+                {/* T018: 16 COMMON_INGREDIENTS as IngredientChip grid */}
+                <div className="flex flex-wrap gap-2">
+                  {COMMON_INGREDIENTS.map((ingredient) => (
+                    <IngredientChip
+                      key={ingredient.name}
+                      name={ingredient.name}
+                      selected={state.selectedIngredients.includes(ingredient.name)}
+                      onToggle={() => toggleIngredient(ingredient.name)}
+                    />
+                  ))}
+                </div>
+
+                {/* T021: Hint text (only when skill + 1+ ingredients selected) */}
+                {canProceedToStep3 && (
+                  <p className="text-sm text-gray-500 italic animate-in fade-in duration-200">
+                    You can add more ingredients in the next step using voice or text
+                  </p>
+                )}
               </div>
-            </div>
+            )}
 
-            {/* T015: Fridge section */}
-            <div className="space-y-3 md:-rotate-1">
-              <h3 className="text-lg font-black uppercase">Fridge Items</h3>
-              <div className="flex flex-wrap gap-2">
-                {SUGGESTED_ITEMS.fridgeItems.map((item) => (
-                  <Badge
-                    key={item.id}
-                    variant={state.fridge.includes(item.name) ? "solid" : "outline"}
-                    className="cursor-pointer min-h-[44px] min-w-[44px] border-4 md:border-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
-                    onClick={() => toggleItem(item.name, "fridge")}
-                  >
-                    {item.name}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-
-
-
-            {/* T019: Continue button (no back button - forward-only) */}
+            {/* T020: Next Step button (enabled when skill + 1+ ingredients) */}
             <div className="flex justify-end mt-4">
               <Button
                 onClick={handleContinueToStep3}
+                disabled={!canProceedToStep3}
                 variant="default"
                 size="lg"
-                className="min-h-[44px]"
+                className={`min-h-[44px] ${canProceedToStep3 ? "cursor-pointer" : "cursor-not-allowed opacity-50"}`}
               >
-                Continue
+                Next Step
               </Button>
             </div>
           </div>
 
-          {/* T021-T047: Step 3 - Voice Input & Review */}
+          {/* Step 3 - Add More Ingredients */}
           <div className="min-w-full p-8 flex flex-col gap-6 overflow-x-hidden">
+            {/* T023: Title */}
             <h2 className="text-2xl md:text-3xl font-black uppercase text-center">
-              Review & Refine
+              Add more ingredients
             </h2>
 
             <p className="text-sm text-gray-600 text-center -mt-2">
               Don&apos;t worry—everything can be modified later
             </p>
 
-            {/* Example sentences */}
-            <InfoCard variant="cyan" emoji="💬" heading="Hold the button and speak naturally: Try reading this">
-              <div className="space-y-1">
-                <p>&quot;I can cook Mushroom omelette. I just bought eggs, mushrooms, butter and bacon</p>
-                <p>&quot;I know how to make fried rice and a peanut butter sandwich. I also have rice, chicken, peanut butter and... oh no... I ran out of bacon!&quot;</p>
+            {/* T024: Step 2 ingredients as read-only display */}
+            <div className="md:rotate-1">
+              <h3 className="text-lg font-black uppercase mb-2">Your ingredients</h3>
+              {state.selectedIngredients.length === 0 ? (
+                <p className="text-gray-500 italic">No ingredients selected</p>
+              ) : (
+                <div className="flex flex-wrap gap-2">
+                  {state.selectedIngredients.map((name) => (
+                    <IngredientChip key={name} name={name} readOnly />
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* T031, T034: Instructions with add/remove examples */}
+            <InfoCard variant="cyan" emoji="💬" heading="Speak to update the list">
+              <div className="space-y-1 text-sm">
+                <p>&quot;Add eggs, butter, and mushrooms&quot;</p>
+                <p>&quot;I ran out of bacon, remove it&quot;</p>
               </div>
             </InfoCard>
 
-            {/* T021: Display current selections */}
-            <div className="space-y-4">
-              <div className="md:-rotate-1">
-                <h3 className="text-lg font-black uppercase mb-2">Dishes you can cook</h3>
-                {state.dishes.length === 0 ? (
-                  <p className="text-gray-500 italic">No dishes selected</p>
-                ) : (
-                  <div className="flex flex-wrap gap-2">
-                    {state.dishes.map((dish, idx) => (
-                      <Badge key={idx} variant="solid" className="border-4 md:border-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-                        {dish}
-                      </Badge>
-                    ))}
-                  </div>
-                )}
-              </div>
+            {/* T028-T036: Voice/Text Input */}
+            <VoiceTextInput
+              onSubmit={handleVoiceTextSubmit}
+              disabled={isProcessing}
+              processing={isProcessing}
+              textPlaceholder="Add eggs and butter, remove bacon..."
+            />
 
-              <div className="md:rotate-1">
-                <h3 className="text-lg font-black uppercase mb-2">Tracked ingredients</h3>
-                {state.ingredients.length === 0 ? (
-                  <p className="text-gray-500 italic">No ingredients selected</p>
-                ) : (
-                  <div className="flex flex-wrap gap-2">
-                    {state.ingredients.map((ingredient, idx) => (
-                      <Badge key={idx} variant="solid" className="border-4 md:border-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-                        {ingredient}
-                      </Badge>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* T022-T029: Voice input button (if permission not denied and voice mode active) */}
-            {inputMode === 'voice' && !permissionDenied && (
-              <div className="flex flex-col items-center gap-4 mt-6">
-                {/* T022-T024: Hold-to-speak button */}
-                <button
-                  onMouseDown={handleRecordStart}
-                  onMouseUp={handleRecordStop}
-                  onTouchStart={handleRecordStart}
-                  onTouchEnd={handleRecordStop}
-                  disabled={isProcessing}
-                  className={`
-                    relative rounded-full p-6 min-h-[80px] min-w-[80px]
-                    border-4 md:border-6 border-black bg-pink-400
-                    shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]
-                    hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px]
-                    active:shadow-none active:translate-x-[4px] active:translate-y-[4px]
-                    transition-all
-                    ${showRecordingUI ? "animate-pulse ring-4 ring-red-500" : ""}
-                    ${isProcessing ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
-                  `}
-                >
-                  {isProcessing ? (
-                    <Loader2 className="h-8 w-8 animate-spin" />
-                  ) : (
-                    <Mic className="h-8 w-8" />
-                  )}
-
-                  {/* T024: Recording duration display */}
-                  {showRecordingUI && (
-                    <span className="absolute -top-8 left-1/2 -translate-x-1/2 text-sm font-bold bg-red-500 text-white px-2 py-1 rounded">
-                      {formatDuration(duration)}
-                    </span>
-                  )}
-                </button>
-
-                {/* T068: ARIA live regions for status updates */}
-                {showRecordingUI && (
-                  <p className="text-sm font-bold text-red-600" role="status" aria-live="polite">
-                    Recording...
-                  </p>
-                )}
-                {isProcessing && (
-                  <p className="text-sm font-bold text-blue-600" role="status" aria-live="polite">
-                    Processing...
-                  </p>
-                )}
-
-                {/* Toggle to text input */}
-                <button
-                  onClick={() => setInputMode('text')}
-                  className="text-sm text-gray-600 hover:text-gray-900 underline mt-2"
-                >
-                  Prefer to type instead?
-                </button>
-              </div>
-            )}
-
-            {/* T039-T042: Error messages with T068 ARIA live region */}
+            {/* Error message */}
             {errorMessage && (
               <div
                 className="bg-red-100 border-2 border-red-500 p-3 rounded text-sm text-red-700 text-center"
@@ -595,88 +442,48 @@ function OnboardingPageContent() {
               </div>
             )}
 
-            {/* T036-T047: Text input */}
-            {(inputMode === 'text' || permissionDenied) && (
-              <div className="space-y-3">
-                {/* Toggle back to voice (if permission granted) */}
-                {!permissionDenied && (
-                  <div className="text-center">
-                    <button
-                      onClick={() => setInputMode('voice')}
-                      className="text-sm text-gray-600 hover:text-gray-900 underline"
-                    >
-                      Use voice instead?
-                    </button>
-                  </div>
-                )}
-
-                {permissionDenied && (
-                  <p className="text-sm text-gray-600 text-center">
-                    Microphone access denied. Please use text input below.
-                  </p>
-                )}
-
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={textInput}
-                    onChange={(e) => setTextInput(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" && !isProcessing) {
-                        handleProcessText();
-                      }
-                    }}
-                    placeholder="Add eggs and butter"
-                    className="flex-1 px-4 py-3 border-4 border-black rounded focus:outline-none focus:ring-2 focus:ring-pink-500 min-h-[44px]"
-                    disabled={isProcessing}
-                  />
-                  <Button
-                    onClick={handleProcessText}
-                    disabled={isProcessing || !textInput.trim()}
-                    className="min-h-[44px]"
-                  >
-                    {isProcessing ? <Loader2 className="h-4 w-4 animate-spin" /> : "Send"}
-                  </Button>
-                </div>
-              </div>
-            )}
-
-            {/* T062-T064: Complete Setup button */}
+            {/* T025: Complete Setup button (enabled when 1+ ingredients) */}
             <div className="flex justify-end mt-6">
               <Button
                 onClick={handleCompleteSetup}
-                disabled={state.dishes.length < 1 && state.ingredients.length < 1}
+                disabled={!canCompleteSetup}
                 variant="default"
                 size="lg"
-                className="min-h-[44px]"
+                className={`min-h-[44px] ${canCompleteSetup ? "cursor-pointer" : "cursor-not-allowed opacity-50"}`}
               >
                 Complete Setup
               </Button>
             </div>
 
-            {/* T068: ARIA live region for completion status */}
-            {(state.dishes.length < 1 && state.ingredients.length < 1) && (
+            {!canCompleteSetup && (
               <p className="text-sm text-gray-500 text-center" role="status" aria-live="polite">
-                Add at least one dish or ingredient to continue
+                Add at least one ingredient to continue
               </p>
             )}
           </div>
 
-          {/* T020-T022: Step 4 - Completion Screen */}
+          {/* Step 4 - Completion Screen */}
           <div className="min-w-full p-8 flex flex-col items-center justify-center gap-6 min-h-[400px]">
-            <h2 className="text-3xl md:text-4xl font-black uppercase text-center">
-              Congrats!
-            </h2>
+            <h2 className="text-3xl md:text-4xl font-black uppercase text-center">Congrats!</h2>
             <p className="text-lg text-gray-700 text-center max-w-md">
               We&apos;re preparing your Home cook gears, one moment please.
             </p>
-            {/* T022: Neobrutalism animation */}
             <div className="flex gap-4 mt-4">
-              <div className="w-12 h-12 bg-pink-400 border-4 border-black rotate-12 animate-bounce" style={{ animationDelay: '0ms' }} />
-              <div className="w-12 h-12 bg-yellow-400 border-4 border-black -rotate-12 animate-bounce" style={{ animationDelay: '150ms' }} />
-              <div className="w-12 h-12 bg-cyan-400 border-4 border-black rotate-6 animate-bounce" style={{ animationDelay: '300ms' }} />
+              <div
+                className="w-12 h-12 bg-pink-400 border-4 border-black rotate-12 animate-bounce"
+                style={{ animationDelay: "0ms" }}
+              />
+              <div
+                className="w-12 h-12 bg-yellow-400 border-4 border-black -rotate-12 animate-bounce"
+                style={{ animationDelay: "150ms" }}
+              />
+              <div
+                className="w-12 h-12 bg-cyan-400 border-4 border-black rotate-6 animate-bounce"
+                style={{ animationDelay: "300ms" }}
+              />
             </div>
             <p className="text-sm text-gray-500 mt-4" role="status" aria-live="polite">
+              <Loader2 className="inline h-4 w-4 animate-spin mr-2" />
               Saving your preferences...
             </p>
           </div>
@@ -686,9 +493,6 @@ function OnboardingPageContent() {
   );
 }
 
-/**
- * T052: Wrapped with ErrorBoundary for unexpected React errors
- */
 export default function OnboardingPage() {
   return (
     <ErrorBoundary>

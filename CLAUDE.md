@@ -35,6 +35,7 @@
   - `docs(readme): add setup instructions`
 
 ## Active Technologies
+
 - TypeScript 5+ (strict mode) + React 19, Next.js 16, Drizzle ORM 0.45.1, Zod, @google/genai (Gemini) (010-user-pantry-staples)
 - Supabase PostgreSQL via Drizzle (010-user-pantry-staples)
 - TypeScript 5+ (strict mode) + React 19, Next.js 16, Drizzle ORM 0.45.1, @google/genai (Gemini), Zod (011-onboarding-data-persist)
@@ -49,12 +50,15 @@
 - Supabase PostgreSQL via Drizzle (existing recipes, ingredients tables) (016-voice-recipe-editor)
 - TypeScript 5+ (strict mode) + React 19, Next.js 16, Drizzle ORM 0.45.1, Supabase Auth (017-demo-data-reset)
 - Supabase PostgreSQL (user_inventory, user_recipes, recipe_ingredients, ingredients tables) (017-demo-data-reset)
+- TypeScript 5+ (strict mode) + React 19, Next.js 16, Drizzle ORM 0.45.1, @google/genai (Gemini 2.0 Flash), Zod, opik-gemini (019-onboarding-revamp)
+- Supabase PostgreSQL via Drizzle (user_inventory, ingredients, unrecognized_items, user_recipes, recipe_ingredients) (019-onboarding-revamp)
 
 **Frontend**: TypeScript 5+ (strict), React 19, Next.js 16 App Router, Tailwind CSS v4, RetroUI + shadcn/ui, lucide-react icons
 
 **Backend**: Vercel AI SDK + `@ai-sdk/google` (Gemini), Supabase Auth (@supabase/ssr, @supabase/supabase-js)
 
 **Database**: Supabase PostgreSQL, Drizzle ORM
+
 - Schema: `apps/nextjs/src/db/schema/`
 - Migrations: `apps/nextjs/src/db/migrations/` (Drizzle-managed, tracked in `drizzle` schema)
 - Deps: drizzle-orm 0.45.1, drizzle-kit 0.31.8, postgres 3.4.8, @supabase/supabase-js, @supabase/ssr
@@ -81,6 +85,7 @@ pnpm db:studio            # Open Drizzle Studio GUI
 ```
 
 **Migration Notes**:
+
 - Migrations tracked in `drizzle.__drizzle_migrations` table
 - Schema-first approach: modify `src/db/schema/` → generate → migrate
 - Use baseline script for existing production databases
@@ -95,27 +100,33 @@ pnpm db:studio            # Open Drizzle Studio GUI
 ## Next.js Patterns
 
 **Authentication & Route Protection**:
+
 - Next.js v16: `middleware.ts` → `proxy.ts` (file and function renamed)
 - File: `src/proxy.ts` (NOT `src/middleware.ts`)
 - Function: `export default async function proxy(request: NextRequest)` (NOT `middleware`)
 - Migration: `npx @next/codemod@latest middleware-to-proxy .`
 - Pattern: Define protected/public routes arrays, use Supabase `getSession()` for auth checks
+- When implementing a new React component, we first think about reusability and ensure the component is shared and reusable whenever it makes sense
+- Same principle for the code logic that reaches out to our database. We want to make those pieces of code reusable and place them into a shared folder that can be used by other components later on
 
 ## Project Scripts
 
 **Ingredient Extraction** (from `apps/nextjs/`):
+
 - Script: `apps/nextjs/scripts/extract-ingredients.ts`
 - Usage: `pnpm tsx scripts/extract-ingredients.ts <langCode>`
 - Output: `research/<langCode>-ingredient-names.csv`
 - Purpose: Extract ingredient names from taxonomy file
 
 **Migration Generation** (from `apps/nextjs/`):
+
 - Script: `apps/nextjs/scripts/generate-ingredient-migration.ts`
 - Usage: `pnpm tsx scripts/generate-ingredient-migration.ts`
 - Output: `src/db/migrations/NNNN_insert_ingredients.sql`
 - Purpose: Generate SQL migration from CSV data
 
 ## Recent Changes
+
+- 019-onboarding-revamp: Added TypeScript 5+ (strict mode) + React 19, Next.js 16, Drizzle ORM 0.45.1, @google/genai (Gemini 2.0 Flash), Zod, opik-gemini
 - 018-unrecognized-items-schema: Added TypeScript 5+ (strict mode) + Drizzle ORM 0.45.1, postgres 3.4.8, Next.js 16
 - 017-demo-data-reset: Added TypeScript 5+ (strict mode) + React 19, Next.js 16, Drizzle ORM 0.45.1, Supabase Auth
-- 016-voice-recipe-editor: Added TypeScript 5+ (strict mode) + React 19, Next.js 16, @google/genai (Gemini 2.0 Flash), Zod, opik-gemini

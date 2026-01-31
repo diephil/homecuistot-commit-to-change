@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { processVoiceInput } from '@/lib/prompts/onboarding-voice/process';
-import { OnboardingUpdateSchema } from '@/types/onboarding';
+import { IngredientExtractionSchema } from '@/types/onboarding';
 
 /**
- * T005: API route for voice processing
- * Spec: specs/004-onboarding-flow/contracts/process-voice.openapi.yaml
+ * T026-T027: API route for voice processing
+ * Spec: specs/019-onboarding-revamp/contracts/api.md
  *
  * POST /api/onboarding/process-voice
- * Accepts audio (base64) input and returns structured add/remove operations
+ * Accepts audio (base64) input and returns ingredient add/remove arrays
  */
 
 export const maxDuration = 15; // 15 second timeout per spec
@@ -32,7 +32,6 @@ export async function POST(request: NextRequest) {
     }
 
     const currentContext = {
-      dishes: body.currentContext.dishes || [],
       ingredients: body.currentContext.ingredients || [],
     };
 
@@ -43,7 +42,7 @@ export async function POST(request: NextRequest) {
     });
 
     // Validate response schema
-    const validated = OnboardingUpdateSchema.parse(result);
+    const validated = IngredientExtractionSchema.parse(result);
 
     return NextResponse.json(validated);
   } catch (error) {

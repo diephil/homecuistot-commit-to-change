@@ -48,7 +48,7 @@ export function AppHelpModal({ isOpen, onClose }: AppHelpModalProps) {
             <span className="font-black">3.</span> Check this page to see what you can cook
           </p>
           <p className="flex items-center gap-2">
-            <span className="font-black">4.</span> Mark recipes as cooked to update inventory
+            <span className="font-black">4.</span> Mark recipes as cooked to automatically update your inventory
           </p>
         </div>
       </HelpSection>

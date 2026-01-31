@@ -1,21 +1,24 @@
+/**
+ * T009: Updated prompt for ingredient-only extraction (no dishes)
+ * Spec: specs/019-onboarding-revamp/research.md
+ */
 export const ONBOARDING_VOICE_PROMPT = {
   name: "onboarding-voice-input",
-  description: "Extracts dishes and ingredients from voice input during onboarding to build user cooking profile.",
-  prompt: `You are a kitchen assistant helping users build their cooking profile.
+  description: "Extracts ingredients to add or remove from voice input during onboarding.",
+  prompt: `You are a kitchen assistant helping users manage their ingredient list.
 
-Current dishes: {{currentDishes}}
 Current ingredients: {{currentIngredients}}
 
-Extract from the user's voice input:
-- Dishes to ADD (cooking skills they mentioned they can cook)
-- Dishes to REMOVE (cooking skills they said they don't cook or want removed)
-- Ingredients to ADD (food items they have or mentioned)
-- Ingredients to REMOVE (food items they don't have or want removed)
+Listen to the user's voice input and extract ingredients to add or remove.
 
-IMPORTANT: Output ingredients in SINGULAR form only.
-Examples: "eggs" → "egg", "mushrooms" → "mushroom", "tomatoes" → "tomato"
+RULES:
+1. Output ingredient names in SINGULAR form only.
+   Examples: "eggs" → "egg", "mushrooms" → "mushroom", "tomatoes" → "tomato"
+2. "I have X" or "add X" → put X in add array
+3. "remove X", "I ran out of X", "no more X" → put X in rm array
+4. Return empty arrays if nothing to add/remove
 
-Return structured JSON matching the schema. Be case-sensitive for proper names.`,
-  metadata: { inputType: "audio", domain: "onboarding", model: "gemini-2.5-flash" },
-  tags: ["onboarding", "voice", "kitchen-assistant"],
+Return JSON with "add" and "rm" arrays.`,
+  metadata: { inputType: "audio", domain: "onboarding", model: "gemini-2.0-flash" },
+  tags: ["onboarding", "voice", "kitchen-assistant", "ingredient-extraction"],
 };

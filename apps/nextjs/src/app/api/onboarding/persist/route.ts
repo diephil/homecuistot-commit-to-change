@@ -2,24 +2,28 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
 import { createUserDb, decodeSupabaseToken } from '@/db/client';
 import {
-  ingredients,
   userRecipes,
   recipeIngredients,
   userInventory,
   unrecognizedItems,
 } from '@/db/schema';
-import { sql } from 'drizzle-orm';
 import { PersistRequestSchema, type PersistResponse } from '@/types/onboarding';
-import { generateRecipeDetails } from '@/lib/prompts/recipe-generation/process';
+import { BASIC_RECIPES, ADVANCED_RECIPES } from '@/constants/onboarding';
+import { matchIngredients } from '@/lib/services/ingredient-matcher';
+
+/**
+ * T038-T047: Persist route for 019-onboarding-revamp
+ * Spec: specs/019-onboarding-revamp/contracts/api.md
+ *
+ * Uses static recipes based on cookingSkill instead of LLM generation.
+ */
 
 export const maxDuration = 30;
 
 export async function POST(request: NextRequest) {
   try {
-    // T007: Auth validation
+    // Auth validation
     const supabase = await createClient();
-
-    // Verify user authenticity
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -28,7 +32,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get session for JWT token
     const {
       data: { session },
     } = await supabase.auth.getSession();
@@ -41,7 +44,7 @@ export async function POST(request: NextRequest) {
     const token = decodeSupabaseToken(session.access_token);
     const db = createUserDb(token);
 
-    // Parse and validate request body
+    // T038: Parse request with cookingSkill
     const body = await request.json();
     const parseResult = PersistRequestSchema.safeParse(body);
 
@@ -52,131 +55,74 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { dishes, ingredients: userIngredients, pantryItems } = parseResult.data;
+    const { cookingSkill, ingredients: userIngredientNames } = parseResult.data;
 
-    // T019: Deduplicate ingredient names
-    const uniqueUserIngredients = [...new Set(userIngredients.map((i) => i.toLowerCase()))];
-    const uniquePantryItems = [...new Set(pantryItems.map((i) => i.toLowerCase()))];
+    // T041: Select recipe set based on skill
+    const selectedRecipes =
+      cookingSkill === 'basic'
+        ? BASIC_RECIPES
+        : [...BASIC_RECIPES, ...ADVANCED_RECIPES];
 
-    // T008: Match user ingredients with case-insensitive WHERE LOWER(name) IN clause
-    const matchedUserIngredients = await db(async (tx) => {
-      if (uniqueUserIngredients.length === 0) return [];
-
-      return await tx
-        .select()
-        .from(ingredients)
-        .where(
-          sql`LOWER(${ingredients.name}) IN (${sql.join(
-            uniqueUserIngredients.map((n) => sql`${n}`),
-            sql`, `
-          )})`
-        );
-    });
-
-    const matchedUserIngredientSet = new Set(
-      matchedUserIngredients.map((i) => i.name.toLowerCase())
-    );
-
-    // T009: Log unrecognized user ingredients
-    const unmatchedUserIngredients = uniqueUserIngredients.filter(
-      (n) => !matchedUserIngredientSet.has(n)
-    );
-
-    if (unmatchedUserIngredients.length > 0) {
-      console.log(
-        `unrecognized ingredients, will be added to annotation queue: ${unmatchedUserIngredients.join(', ')}`
-      );
-    }
-
-    // T010 + T017: Call LLM for recipe generation (with retry logic)
-    let recipeDetails: Awaited<ReturnType<typeof generateRecipeDetails>> = [];
-
-    // T018: Handle 0 dishes edge case
-    if (dishes.length > 0) {
-      try {
-        recipeDetails = await generateRecipeDetails({ dishes });
-      } catch (error) {
-        console.error('[persist] LLM first attempt failed:', error);
-        // T017: Retry once
-        try {
-          recipeDetails = await generateRecipeDetails({ dishes });
-        } catch (retryError) {
-          console.error('[persist] LLM retry failed:', retryError);
-          // Create name-only recipes on second failure
-          recipeDetails = dishes.map((d) => ({
-            dishName: d,
-            description: '',
-            ingredients: [],
-          }));
-        }
-      }
-    }
-
-    // Collect all LLM-returned ingredient names and dedupe
-    const llmIngredientNames = [
-      ...new Set(recipeDetails.flatMap((r) => r.ingredients.map((i) => i.toLowerCase()))),
+    // Collect all unique ingredient names from user input and static recipes
+    const allIngredientNames = [
+      ...new Set([
+        ...userIngredientNames.map((n) => n.toLowerCase()),
+        ...selectedRecipes.flatMap((r) =>
+          r.ingredients.map((i) => i.name.toLowerCase())
+        ),
+      ]),
     ];
 
-    // Match LLM ingredients against DB
-    const matchedLlmIngredients = await db(async (tx) => {
-      if (llmIngredientNames.length === 0) return [];
-
-      return await tx
-        .select()
-        .from(ingredients)
-        .where(
-          sql`LOWER(${ingredients.name}) IN (${sql.join(
-            llmIngredientNames.map((n) => sql`${n}`),
-            sql`, `
-          )})`
-        );
-    });
-
-    const matchedLlmIngredientMap = new Map(
-      matchedLlmIngredients.map((i) => [i.name.toLowerCase(), i])
-    );
-
-    // T009: Log unrecognized LLM ingredients
-    const unmatchedLlmIngredients = llmIngredientNames.filter(
-      (n) => !matchedLlmIngredientMap.has(n)
-    );
-
-    if (unmatchedLlmIngredients.length > 0) {
-      console.log(
-        `unrecognized ingredients, will be added to annotation queue: ${unmatchedLlmIngredients.join(', ')}`
-      );
-    }
-
-    // All unrecognized items combined
-    const allUnrecognized = [...unmatchedUserIngredients, ...unmatchedLlmIngredients];
-
-    // Execute all inserts in a transaction
+    // T045: Execute all operations in a transaction
     const result = await db(async (tx) => {
+      // T039: Match ingredient names against DB
+      const matchResult = await matchIngredients({
+        names: allIngredientNames,
+        userId,
+        tx,
+      });
+
+      // Create map for quick lookup
+      const ingredientMap = new Map(
+        matchResult.ingredients.map((i) => [i.name.toLowerCase(), i])
+      );
+      const unrecognizedMap = new Map(
+        matchResult.unrecognizedItems.map((u) => [u.rawText.toLowerCase(), u])
+      );
+
       let recipesCreated = 0;
       let inventoryCreated = 0;
-      let pantryStaplesCreated = 0;
 
-      // T009: Insert unrecognized items (context='ingredient')
-      if (allUnrecognized.length > 0) {
-        await tx
+      // T040: Create new unrecognized_items for unrecognizedItemsToCreate
+      // FR-040: Query back inserted IDs so they can be used for recipe_ingredients and inventory
+      if (matchResult.unrecognizedItemsToCreate.length > 0) {
+        const insertedUnrecognized = await tx
           .insert(unrecognizedItems)
           .values(
-            allUnrecognized.map((rawText) => ({
+            matchResult.unrecognizedItemsToCreate.map((rawText) => ({
               userId,
               rawText,
               context: 'ingredient',
             }))
           )
-          .onConflictDoNothing();
+          .onConflictDoNothing()
+          .returning();
+
+        // Add newly created items to the map for recipe_ingredients and inventory lookups
+        for (const item of insertedUnrecognized) {
+          unrecognizedMap.set(item.rawText.toLowerCase(), {
+            id: item.id,
+            rawText: item.rawText,
+          });
+        }
       }
 
-      // T011-T013: Insert recipes (user_recipes table)
-      for (const recipe of recipeDetails) {
-        // T011: Insert recipe with ON CONFLICT DO NOTHING
+      // T042: Insert user_recipes from static dishes
+      for (const recipe of selectedRecipes) {
         const insertedRecipes = await tx
           .insert(userRecipes)
           .values({
-            name: recipe.dishName,
+            name: recipe.title,
             description: recipe.description || null,
             userId,
           })
@@ -187,77 +133,91 @@ export async function POST(request: NextRequest) {
           const insertedRecipe = insertedRecipes[0];
           recipesCreated++;
 
-          // T013: Insert recipe_ingredients for matched LLM ingredients
-          const matchedRecipeIngredients = recipe.ingredients
-            .map((name) => matchedLlmIngredientMap.get(name.toLowerCase()))
-            .filter((i): i is NonNullable<typeof i> => i !== undefined);
+          // T043: Insert recipe_ingredients with anchor/optional types
+          const ingredientsToInsert: Array<{
+            recipeId: string;
+            ingredientId?: string;
+            unrecognizedItemId?: string;
+            ingredientType: 'anchor' | 'optional';
+          }> = [];
 
-          if (matchedRecipeIngredients.length > 0) {
+          for (const ing of recipe.ingredients) {
+            const lowerName = ing.name.toLowerCase();
+            const matched = ingredientMap.get(lowerName);
+            const unrecognized = unrecognizedMap.get(lowerName);
+
+            if (matched) {
+              ingredientsToInsert.push({
+                recipeId: insertedRecipe.id,
+                ingredientId: matched.id,
+                ingredientType: ing.type,
+              });
+            } else if (unrecognized) {
+              ingredientsToInsert.push({
+                recipeId: insertedRecipe.id,
+                unrecognizedItemId: unrecognized.id,
+                ingredientType: ing.type,
+              });
+            }
+            // Skip ingredients that couldn't be matched (shouldn't happen for static data)
+          }
+
+          if (ingredientsToInsert.length > 0) {
             await tx
               .insert(recipeIngredients)
-              .values(
-                matchedRecipeIngredients.map((ing) => ({
-                  recipeId: insertedRecipe.id,
-                  ingredientId: ing.id,
-                  ingredientType: 'anchor' as const,
-                }))
-              )
+              .values(ingredientsToInsert)
               .onConflictDoNothing();
           }
         }
       }
 
-      // T014: Insert user_inventory for all matched user ingredients
-      if (matchedUserIngredients.length > 0) {
-        const inventoryInserts = await tx
-          .insert(userInventory)
-          .values(
-            matchedUserIngredients.map((ing) => ({
-              userId,
-              ingredientId: ing.id,
-              quantityLevel: 3,
-            }))
-          )
-          .onConflictDoNothing()
-          .returning();
+      // T044: Insert user_inventory entries (quantity_level=3) for user ingredients
+      const userIngredientLower = userIngredientNames.map((n) => n.toLowerCase());
 
-        inventoryCreated = inventoryInserts.length;
-      }
+      for (const name of userIngredientLower) {
+        const matched = ingredientMap.get(name);
+        const unrecognized = unrecognizedMap.get(name);
 
-      // T015: Mark pantry staples in user_inventory (isPantryStaple flag)
-      const pantryIngredientIds = matchedUserIngredients
-        .filter((ing) => uniquePantryItems.includes(ing.name.toLowerCase()))
-        .map((ing) => ing.id);
-
-      if (pantryIngredientIds.length > 0) {
-        // Update existing inventory items to mark as pantry staples
-        for (const ingredientId of pantryIngredientIds) {
-          await tx
+        if (matched) {
+          const inserted = await tx
             .insert(userInventory)
             .values({
               userId,
-              ingredientId,
+              ingredientId: matched.id,
               quantityLevel: 3,
-              isPantryStaple: true,
             })
-            .onConflictDoUpdate({
-              target: [userInventory.userId, userInventory.ingredientId],
-              targetWhere: sql`${userInventory.ingredientId} IS NOT NULL`,
-              set: { isPantryStaple: true },
-            });
+            .onConflictDoNothing()
+            .returning();
+
+          if (inserted.length > 0) {
+            inventoryCreated++;
+          }
+        } else if (unrecognized) {
+          // FR-033: Add unrecognized items (existing + newly created) to inventory
+          const inserted = await tx
+            .insert(userInventory)
+            .values({
+              userId,
+              unrecognizedItemId: unrecognized.id,
+              quantityLevel: 3,
+            })
+            .onConflictDoNothing()
+            .returning();
+
+          if (inserted.length > 0) {
+            inventoryCreated++;
+          }
         }
-        pantryStaplesCreated = pantryIngredientIds.length;
       }
 
       return {
         recipesCreated,
         inventoryCreated,
-        pantryStaplesCreated,
-        unrecognizedCount: allUnrecognized.length,
+        unrecognizedCount: matchResult.unrecognizedItemsToCreate.length,
       };
     });
 
-    // T016: Return PersistResponse
+    // T047: Return PersistResponse with counts
     const response: PersistResponse = {
       success: true,
       ...result,

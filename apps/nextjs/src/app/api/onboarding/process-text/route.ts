@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { processTextInput } from '@/lib/prompts/onboarding-text/process';
-import { OnboardingUpdateSchema } from '@/types/onboarding';
+import { IngredientExtractionSchema } from '@/types/onboarding';
 
 /**
- * API route for text-based onboarding input processing
+ * T035: API route for text-based onboarding input processing
+ * Spec: specs/019-onboarding-revamp/contracts/api.md
+ *
  * POST /api/onboarding/process-text
- * Accepts text input and returns structured add/remove operations
+ * Accepts text input and returns ingredient add/remove arrays
  */
 
 export const maxDuration = 15; // 15 second timeout
@@ -30,7 +32,6 @@ export async function POST(request: NextRequest) {
     }
 
     const currentContext = {
-      dishes: body.currentContext.dishes || [],
       ingredients: body.currentContext.ingredients || [],
     };
 
@@ -38,7 +39,7 @@ export async function POST(request: NextRequest) {
     const result = await processTextInput({ text: body.text, currentContext });
 
     // Validate response schema
-    const validated = OnboardingUpdateSchema.parse(result);
+    const validated = IngredientExtractionSchema.parse(result);
 
     return NextResponse.json(validated);
   } catch (error) {
