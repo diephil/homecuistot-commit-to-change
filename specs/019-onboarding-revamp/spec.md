@@ -158,6 +158,9 @@ User clicks "Complete Setup" and all ingredients (recognized + unrecognized) plu
 - **FR-003**: System MUST gray out unselected option after user makes a choice
 - **FR-004**: System MUST hide hint text until BOTH cooking skill is selected AND at least one ingredient is selected
 - **FR-005**: System MUST hide ingredients section until cooking skill is selected
+- **FR-041**: System MUST display a help button (top-right) on Step 2 only
+- **FR-042**: Help modal MUST explain: Basic = 8 simple recipes, Advanced = 16 recipes including complex ones
+- **FR-043**: Help modal MUST emphasize all choices can be modified after onboarding
 
 **Step 2 - Ingredients Section**
 - **FR-006**: System MUST display exactly 17 common ingredients: pasta, rice, salt, egg, garlic, bread, tomato, honey, noodle, bacon, milk, cheese, chicken, cream, onion, olive oil, butter (all singular form)

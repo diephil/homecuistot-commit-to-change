@@ -6,8 +6,8 @@ import { Button } from "@/components/retroui/Button";
 import { InfoCard } from "@/components/retroui/InfoCard";
 import { PageContainer } from "@/components/PageContainer";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { Loader2, Check } from "lucide-react";
-import { IngredientChip, VoiceTextInput } from "@/components/shared";
+import { Loader2, Check, HelpCircle } from "lucide-react";
+import { IngredientChip, VoiceTextInput, HelpModal, HelpSection } from "@/components/shared";
 import { COMMON_INGREDIENTS } from "@/constants/onboarding";
 import { toast } from "sonner";
 import type { CookingSkill, IngredientExtractionResponse } from "@/types/onboarding";
@@ -37,6 +37,7 @@ function OnboardingPageContent() {
   const [state, setState] = useState<OnboardingState>(initialState);
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isHelpOpen, setIsHelpOpen] = useState(false);
 
   // T009: Advance to step 2
   const handleGetStarted = () => {
@@ -217,6 +218,30 @@ function OnboardingPageContent() {
       gradientVia="via-yellow-50"
       gradientTo="to-cyan-50"
     >
+      {/* FR-041-043: Help modal rendered outside transform container */}
+      <HelpModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} title="Choosing Your Level">
+        <HelpSection emoji="🍳" title="Basic" bgColor="bg-yellow-100">
+          <p className="text-sm">
+            We&apos;ll seed your account with <strong>8 simple recipes</strong> that are
+            quick and easy to prepare—perfect for everyday cooking.
+          </p>
+        </HelpSection>
+
+        <HelpSection emoji="👨‍🍳" title="Advanced" bgColor="bg-cyan-100">
+          <p className="text-sm">
+            We&apos;ll seed your account with <strong>16 recipes</strong>, including
+            more complex dishes that take a bit more time and technique.
+          </p>
+        </HelpSection>
+
+        <HelpSection emoji="✨" title="Don't Worry!" bgColor="bg-pink-100">
+          <p className="text-sm">
+            <strong>Everything can be changed later.</strong> You can add, edit, or
+            remove recipes anytime after onboarding. There&apos;s no wrong choice here!
+          </p>
+        </HelpSection>
+      </HelpModal>
+
       <div className="border-4 md:border-6 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
         {/* Progress indicator */}
         <div className="bg-gradient-to-r from-yellow-300 via-orange-400 to-pink-400 border-b-4 md:border-b-6 border-black px-6 py-3">
@@ -253,7 +278,16 @@ function OnboardingPageContent() {
           </div>
 
           {/* Step 2 - Skill + Ingredient Selection */}
-          <div className="min-w-full p-8 flex flex-col gap-6 overflow-x-hidden">
+          <div className="min-w-full p-8 flex flex-col gap-6 overflow-x-hidden relative">
+            {/* FR-041: Help button (top-right, Step 2 only) */}
+            <button
+              onClick={() => setIsHelpOpen(true)}
+              className="absolute top-4 right-4 border-4 border-black bg-yellow-300 p-3 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all duration-150 hover:translate-x-[-2px] hover:translate-y-[-2px] active:translate-x-[2px] active:translate-y-[2px] cursor-pointer hover:bg-yellow-400"
+              aria-label="Open help"
+            >
+              <HelpCircle className="h-6 w-6 stroke-[3px]" />
+            </button>
+
             {/* T014-T015: Cooking Skill Selection */}
             <div className="space-y-4">
               <h2 className="text-2xl md:text-3xl font-black uppercase">
