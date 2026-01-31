@@ -120,7 +120,6 @@ export function VoiceTextInput({
           <button
             onMouseDown={handleRecordStart}
             onMouseUp={handleRecordStop}
-            onMouseLeave={handleRecordStop}
             onTouchStart={handleRecordStart}
             onTouchEnd={handleRecordStop}
             disabled={isDisabled}
