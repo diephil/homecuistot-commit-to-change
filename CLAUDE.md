@@ -116,6 +116,6 @@ pnpm db:studio            # Open Drizzle Studio GUI
 - Purpose: Generate SQL migration from CSV data
 
 ## Recent Changes
+- 018-unrecognized-items-schema: Added TypeScript 5+ (strict mode) + Drizzle ORM 0.45.1, postgres 3.4.8, Next.js 16
 - 017-demo-data-reset: Added TypeScript 5+ (strict mode) + React 19, Next.js 16, Drizzle ORM 0.45.1, Supabase Auth
 - 016-voice-recipe-editor: Added TypeScript 5+ (strict mode) + React 19, Next.js 16, @google/genai (Gemini 2.0 Flash), Zod, opik-gemini
-- 015-app-page-revamp: Added TypeScript 5+ (strict mode) + React 19, Next.js 16 App Router, Tailwind CSS v4, RetroUI components, Drizzle ORM 0.45.1
