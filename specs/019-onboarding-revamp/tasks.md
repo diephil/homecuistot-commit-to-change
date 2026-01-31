@@ -23,12 +23,12 @@
 
 **Purpose**: Static data, types, and shared components
 
-- [ ] T001 [P] Add static types (CookingSkill, StaticDish, StaticDishIngredient, IngredientMatchResult) in apps/nextjs/src/types/onboarding.ts
-- [ ] T002 [P] Add COMMON_INGREDIENTS (16 items) constant in apps/nextjs/src/constants/onboarding.ts
-- [ ] T003 [P] Add BASIC_RECIPES (8 static dishes) constant in apps/nextjs/src/constants/onboarding.ts
-- [ ] T004 [P] Add ADVANCED_RECIPES (8 static dishes) constant in apps/nextjs/src/constants/onboarding.ts
-- [ ] T005 [P] Create IngredientChip shared component with selectable/read-only modes in apps/nextjs/src/components/shared/IngredientChip.tsx
-- [ ] T006 Create VoiceTextInput shared component with mic recording + text fallback in apps/nextjs/src/components/shared/VoiceTextInput.tsx
+- [X] T001 [P] Add static types (CookingSkill, StaticDish, StaticDishIngredient, IngredientMatchResult) in apps/nextjs/src/types/onboarding.ts
+- [X] T002 [P] Add COMMON_INGREDIENTS (16 items) constant in apps/nextjs/src/constants/onboarding.ts
+- [X] T003 [P] Add BASIC_RECIPES (8 static dishes) constant in apps/nextjs/src/constants/onboarding.ts
+- [X] T004 [P] Add ADVANCED_RECIPES (8 static dishes) constant in apps/nextjs/src/constants/onboarding.ts
+- [X] T005 [P] Create IngredientChip shared component with selectable/read-only modes in apps/nextjs/src/components/shared/IngredientChip.tsx
+- [X] T006 Create VoiceTextInput shared component with mic recording + text fallback in apps/nextjs/src/components/shared/VoiceTextInput.tsx
 
 ---
 
