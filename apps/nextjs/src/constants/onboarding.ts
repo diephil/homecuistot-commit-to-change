@@ -84,10 +84,11 @@ export const SUGGESTED_ITEMS: SuggestedItems = {
  * All names in singular form, verified to exist in ingredients table
  */
 export const COMMON_INGREDIENTS: StaticIngredient[] = [
+  { name: "egg" },
+  { name: "butter" },
+  { name: "salt" },
   { name: "pasta" },
   { name: "rice" },
-  { name: "salt" },
-  { name: "egg" },
   { name: "garlic" },
   { name: "bread" },
   { name: "tomato" },
@@ -100,7 +101,6 @@ export const COMMON_INGREDIENTS: StaticIngredient[] = [
   { name: "cream" },
   { name: "onion" },
   { name: "olive oil" },
-  { name: "butter" },
 ];
 
 /**
