@@ -1,7 +1,7 @@
 # Data Model: Unrecognized Items Display
 
 **Date**: 2026-01-31
-**Feature**: 001-unrecognized-items-display
+**Feature**: 021-unrecognized-items-display
 
 ## Entity Overview
 

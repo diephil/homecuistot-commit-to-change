@@ -1,7 +1,7 @@
 /**
  * API Contract: Delete Unrecognized Item Server Action
  *
- * Feature: 001-unrecognized-items-display
+ * Feature: 021-unrecognized-items-display
  * Functional Requirement: FR-007, FR-008, FR-014
  *
  * Purpose: Remove unrecognized item from user's inventory while preserving

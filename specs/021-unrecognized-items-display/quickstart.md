@@ -1,6 +1,6 @@
 # Quickstart: Unrecognized Items Display
 
-**Feature**: 001-unrecognized-items-display
+**Feature**: 021-unrecognized-items-display
 **Date**: 2026-01-31
 
 ## Prerequisites

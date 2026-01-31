@@ -1,6 +1,6 @@
 # Feature Specification: Unrecognized Items Display
 
-**Feature Branch**: `001-unrecognized-items-display`
+**Feature Branch**: `021-unrecognized-items-display`
 **Created**: 2026-01-31
 **Status**: Draft
 **Input**: User description: "On the inventory page, I want to see my list of unrecognized items. However, I want them to be listed at the end of the tracked ingredients list. I want unrecognized items to be grayed out so I cannot change their quantities and cannot click on them. I also cannot mark unrecognized items as a pantry staple; the only action available should be to delete them. We need to explain in the help model that the system does not recognize those items yet and might recognize them in the future. deleting them removes them from the user_inventory but do not remove them from the unrecognized_items table. I also want to refactor the star icon and change it to the infinity symbol instead. I also want to put a hint below the pantry staples section that says that a pantry staple is a food that is considered a basic or important food that you have a supply of it in your kitchen and should be considered always available."

@@ -1,7 +1,7 @@
 # Implementation Plan: Unrecognized Items Display
 
-**Branch**: `001-unrecognized-items-display` | **Date**: 2026-01-31 | **Spec**: [spec.md](./spec.md)
-**Input**: Feature specification from `/specs/001-unrecognized-items-display/spec.md`
+**Branch**: `021-unrecognized-items-display` | **Date**: 2026-01-31 | **Spec**: [spec.md](./spec.md)
+**Input**: Feature specification from `/specs/021-unrecognized-items-display/spec.md`
 
 **Note**: This template is filled in by the `/speckit.plan` command. See `.specify/templates/commands/plan.md` for the execution workflow.
 
@@ -185,7 +185,7 @@ This will generate `tasks.md` with actionable, dependency-ordered implementation
 ### New Files Created (7 total)
 
 ```
-specs/001-unrecognized-items-display/
+specs/021-unrecognized-items-display/
 ├── research.md                       # Phase 0 output
 ├── data-model.md                     # Phase 1 output
 ├── quickstart.md                     # Phase 1 output
