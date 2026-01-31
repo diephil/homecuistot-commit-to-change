@@ -160,16 +160,16 @@
 
 ### Implementation for User Story 7
 
-- [ ] T038 [US7] Update persist route to accept cookingSkill parameter in apps/nextjs/src/app/api/onboarding/persist/route.ts
-- [ ] T039 [US7] Call matchIngredients() to categorize ingredient names in apps/nextjs/src/app/api/onboarding/persist/route.ts
-- [ ] T040 [US7] Create new unrecognized_items for unrecognizedItemsToCreate in apps/nextjs/src/app/api/onboarding/persist/route.ts
-- [ ] T041 [US7] Select BASIC_RECIPES or BASIC_RECIPES + ADVANCED_RECIPES based on skill in apps/nextjs/src/app/api/onboarding/persist/route.ts
-- [ ] T042 [US7] Insert user_recipes from static dishes in apps/nextjs/src/app/api/onboarding/persist/route.ts
-- [ ] T043 [US7] Insert recipe_ingredients with anchor/optional types via matchIngredients in apps/nextjs/src/app/api/onboarding/persist/route.ts
-- [ ] T044 [US7] Insert user_inventory entries (quantity_level=3) for all ingredients in apps/nextjs/src/app/api/onboarding/persist/route.ts
-- [ ] T045 [US7] Wrap all DB operations in transaction in apps/nextjs/src/app/api/onboarding/persist/route.ts
-- [ ] T046 [US7] Pass cookingSkill to persist API from onboarding page in apps/nextjs/src/app/(protected)/app/onboarding/page.tsx
-- [ ] T047 [US7] Return PersistResponse with counts in apps/nextjs/src/app/api/onboarding/persist/route.ts
+- [X] T038 [US7] Update persist route to accept cookingSkill parameter in apps/nextjs/src/app/api/onboarding/persist/route.ts
+- [X] T039 [US7] Call matchIngredients() to categorize ingredient names in apps/nextjs/src/app/api/onboarding/persist/route.ts
+- [X] T040 [US7] Create new unrecognized_items for unrecognizedItemsToCreate in apps/nextjs/src/app/api/onboarding/persist/route.ts
+- [X] T041 [US7] Select BASIC_RECIPES or BASIC_RECIPES + ADVANCED_RECIPES based on skill in apps/nextjs/src/app/api/onboarding/persist/route.ts
+- [X] T042 [US7] Insert user_recipes from static dishes in apps/nextjs/src/app/api/onboarding/persist/route.ts
+- [X] T043 [US7] Insert recipe_ingredients with anchor/optional types via matchIngredients in apps/nextjs/src/app/api/onboarding/persist/route.ts
+- [X] T044 [US7] Insert user_inventory entries (quantity_level=3) for all ingredients in apps/nextjs/src/app/api/onboarding/persist/route.ts
+- [X] T045 [US7] Wrap all DB operations in transaction in apps/nextjs/src/app/api/onboarding/persist/route.ts
+- [X] T046 [US7] Pass cookingSkill to persist API from onboarding page in apps/nextjs/src/app/(protected)/app/onboarding/page.tsx
+- [X] T047 [US7] Return PersistResponse with counts in apps/nextjs/src/app/api/onboarding/persist/route.ts
 
 **Checkpoint**: User Story 7 complete - full onboarding flow works end-to-end
 

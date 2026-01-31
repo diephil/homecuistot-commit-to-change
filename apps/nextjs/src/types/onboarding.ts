@@ -90,21 +90,31 @@ export interface OnboardingState {
   voiceFailureCount: number;
 }
 
-// T002: Zod validation schema for PersistRequest
-export const PersistRequestSchema = z.object({
+// Legacy PersistRequest schema (kept for backward compatibility)
+export const LegacyPersistRequestSchema = z.object({
   dishes: z.array(z.string().min(1).max(100)).max(20),
   ingredients: z.array(z.string().min(1).max(100)).max(100),
   pantryItems: z.array(z.string().min(1).max(100)).max(50),
 });
 
+/**
+ * T038: New PersistRequest schema for 019-onboarding-revamp
+ * Accepts cookingSkill and ingredients only (no dishes - uses static recipes)
+ */
+export const PersistRequestSchema = z.object({
+  cookingSkill: z.enum(['basic', 'advanced']),
+  ingredients: z.array(z.string().min(1).max(100)).max(100),
+});
+
 export type PersistRequest = z.infer<typeof PersistRequestSchema>;
 
-// PersistResponse type
+/**
+ * T047: PersistResponse with counts
+ */
 export interface PersistResponse {
   success: boolean;
   recipesCreated: number;
   inventoryCreated: number;
-  pantryStaplesCreated: number;
   unrecognizedCount: number;
 }
 
