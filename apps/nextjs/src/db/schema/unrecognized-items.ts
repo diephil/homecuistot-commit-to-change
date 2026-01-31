@@ -1,4 +1,7 @@
 import { pgTable, uuid, text, timestamp } from 'drizzle-orm/pg-core'
+import { relations } from 'drizzle-orm'
+import { userInventory } from './user-inventory'
+import { recipeIngredients } from './user-recipes'
 
 export const unrecognizedItems = pgTable('unrecognized_items', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -8,3 +11,9 @@ export const unrecognizedItems = pgTable('unrecognized_items', {
   resolvedAt: timestamp('resolved_at', { withTimezone: true }),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 })
+
+// Relations
+export const unrecognizedItemsRelations = relations(unrecognizedItems, ({ many }) => ({
+  inventoryItems: many(userInventory),
+  recipeIngredients: many(recipeIngredients),
+}))

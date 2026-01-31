@@ -46,17 +46,17 @@
 
 ### Implementation for User Story 3
 
-- [ ] T007 [P] [US3] Update `apps/nextjs/src/db/schema/user-recipes.ts`: add nullable `unrecognized_item_id` column to `recipeIngredients` table with FK to `unrecognizedItems.id`
-- [ ] T008 [P] [US3] Update `apps/nextjs/src/db/schema/user-recipes.ts`: change `ingredient_id` from `.notNull()` to nullable
-- [ ] T009 [P] [US3] Update `apps/nextjs/src/db/schema/user-recipes.ts`: add XOR check constraint `(ingredient_id IS NOT NULL) != (unrecognized_item_id IS NOT NULL)`
-- [ ] T010 [P] [US3] Update `apps/nextjs/src/db/schema/user-recipes.ts`: replace `idx_recipe_ingredients_unique` with two partial unique indexes
-- [ ] T011 [P] [US3] Update `apps/nextjs/src/db/schema/user-recipes.ts`: update `recipeIngredientsRelations` to include `unrecognizedItem` relation
-- [ ] T012 [P] [US3] Update `apps/nextjs/src/db/schema/user-inventory.ts`: add nullable `unrecognized_item_id` column with FK to `unrecognizedItems.id`
-- [ ] T013 [P] [US3] Update `apps/nextjs/src/db/schema/user-inventory.ts`: change `ingredient_id` from `.notNull()` to nullable
-- [ ] T014 [P] [US3] Update `apps/nextjs/src/db/schema/user-inventory.ts`: add XOR check constraint `(ingredient_id IS NOT NULL) != (unrecognized_item_id IS NOT NULL)`
-- [ ] T015 [P] [US3] Update `apps/nextjs/src/db/schema/user-inventory.ts`: replace `idx_user_inventory_unique` with two partial unique indexes
-- [ ] T016 [P] [US3] Update `apps/nextjs/src/db/schema/user-inventory.ts`: update `userInventoryRelations` to include `unrecognizedItem` relation
-- [ ] T017 [US3] Update `apps/nextjs/src/db/schema/unrecognized-items.ts`: add `unrecognizedItemsRelations` with `many(userInventory)` and `many(recipeIngredients)`
+- [x] T007 [P] [US3] Update `apps/nextjs/src/db/schema/user-recipes.ts`: add nullable `unrecognized_item_id` column to `recipeIngredients` table with FK to `unrecognizedItems.id`
+- [x] T008 [P] [US3] Update `apps/nextjs/src/db/schema/user-recipes.ts`: change `ingredient_id` from `.notNull()` to nullable
+- [x] T009 [P] [US3] Update `apps/nextjs/src/db/schema/user-recipes.ts`: add XOR check constraint `(ingredient_id IS NOT NULL) != (unrecognized_item_id IS NOT NULL)`
+- [x] T010 [P] [US3] Update `apps/nextjs/src/db/schema/user-recipes.ts`: replace `idx_recipe_ingredients_unique` with two partial unique indexes
+- [x] T011 [P] [US3] Update `apps/nextjs/src/db/schema/user-recipes.ts`: update `recipeIngredientsRelations` to include `unrecognizedItem` relation
+- [x] T012 [P] [US3] Update `apps/nextjs/src/db/schema/user-inventory.ts`: add nullable `unrecognized_item_id` column with FK to `unrecognizedItems.id`
+- [x] T013 [P] [US3] Update `apps/nextjs/src/db/schema/user-inventory.ts`: change `ingredient_id` from `.notNull()` to nullable
+- [x] T014 [P] [US3] Update `apps/nextjs/src/db/schema/user-inventory.ts`: add XOR check constraint `(ingredient_id IS NOT NULL) != (unrecognized_item_id IS NOT NULL)`
+- [x] T015 [P] [US3] Update `apps/nextjs/src/db/schema/user-inventory.ts`: replace `idx_user_inventory_unique` with two partial unique indexes
+- [x] T016 [P] [US3] Update `apps/nextjs/src/db/schema/user-inventory.ts`: update `userInventoryRelations` to include `unrecognizedItem` relation
+- [x] T017 [US3] Update `apps/nextjs/src/db/schema/unrecognized-items.ts`: add `unrecognizedItemsRelations` with `many(userInventory)` and `many(recipeIngredients)`
 
 **Checkpoint**: TypeScript schemas define new structure - ready for migration generation
 
@@ -72,17 +72,17 @@
 
 ### Implementation for User Stories 1 & 2
 
-- [ ] T018 [US1] [US2] Run `pnpm db:generate` from `apps/nextjs/` to generate new migration
-- [ ] T019 [US1] [US2] Review generated migration SQL in `apps/nextjs/src/db/migrations/` for correctness
-- [ ] T020 [US1] [US2] Run `pnpm db:migrate` to apply migration to local database
-- [ ] T021 [US1] Validate `recipe_ingredients` table: insert with only `unrecognized_item_id` succeeds
-- [ ] T022 [US1] Validate `recipe_ingredients` table: insert with only `ingredient_id` succeeds
-- [ ] T023 [US1] Validate `recipe_ingredients` table: insert with both NULL fails (XOR constraint)
-- [ ] T024 [US1] Validate `recipe_ingredients` table: insert with both set fails (XOR constraint)
-- [ ] T025 [US2] Validate `user_inventory` table: insert with only `unrecognized_item_id` succeeds
-- [ ] T026 [US2] Validate `user_inventory` table: insert with only `ingredient_id` succeeds
-- [ ] T027 [US2] Validate `user_inventory` table: insert with both NULL fails (XOR constraint)
-- [ ] T028 [US2] Validate `user_inventory` table: insert with both set fails (XOR constraint)
+- [x] T018 [US1] [US2] Run `pnpm db:generate` from `apps/nextjs/` to generate new migration
+- [x] T019 [US1] [US2] Review generated migration SQL in `apps/nextjs/src/db/migrations/` for correctness
+- [x] T020 [US1] [US2] Run `pnpm db:migrate` to apply migration to local database
+- [x] T021 [US1] Validate `recipe_ingredients` table: insert with only `unrecognized_item_id` succeeds
+- [x] T022 [US1] Validate `recipe_ingredients` table: insert with only `ingredient_id` succeeds
+- [x] T023 [US1] Validate `recipe_ingredients` table: insert with both NULL fails (XOR constraint)
+- [x] T024 [US1] Validate `recipe_ingredients` table: insert with both set fails (XOR constraint)
+- [x] T025 [US2] Validate `user_inventory` table: insert with only `unrecognized_item_id` succeeds
+- [x] T026 [US2] Validate `user_inventory` table: insert with only `ingredient_id` succeeds
+- [x] T027 [US2] Validate `user_inventory` table: insert with both NULL fails (XOR constraint)
+- [x] T028 [US2] Validate `user_inventory` table: insert with both set fails (XOR constraint)
 
 **Checkpoint**: Database schema updated and validated - XOR constraints working
 
@@ -94,14 +94,14 @@
 
 **Goal**: `pnpm build` succeeds with no errors
 
-- [ ] T029 Run `pnpm build` and identify TypeScript errors related to schema changes
-- [ ] T030 [P] Fix type errors in `apps/nextjs/src/app/actions/inventory.ts` if any (handle nullable `ingredientId`)
-- [ ] T031 [P] Fix type errors in `apps/nextjs/src/app/actions/recipes.ts` if any (handle nullable `ingredientId`)
-- [ ] T032 [P] Fix type errors in `apps/nextjs/src/app/actions/cooking-log.ts` if any
-- [ ] T033 [P] Fix type errors in `apps/nextjs/src/app/actions/user-data.ts` if any
-- [ ] T034 [P] Fix type errors in `apps/nextjs/src/app/api/inventory/` route files if any
-- [ ] T035 [P] Fix type errors in `apps/nextjs/src/components/recipes/` components if any
-- [ ] T036 Run `pnpm build` to verify all TypeScript errors resolved
+- [x] T029 Run `pnpm build` and identify TypeScript errors related to schema changes
+- [x] T030 [P] Fix type errors in `apps/nextjs/src/app/actions/inventory.ts` if any (handle nullable `ingredientId`)
+- [x] T031 [P] Fix type errors in `apps/nextjs/src/app/actions/recipes.ts` if any (handle nullable `ingredientId`)
+- [x] T032 [P] Fix type errors in `apps/nextjs/src/app/actions/cooking-log.ts` if any
+- [x] T033 [P] Fix type errors in `apps/nextjs/src/app/actions/user-data.ts` if any
+- [x] T034 [P] Fix type errors in `apps/nextjs/src/app/api/inventory/` route files if any
+- [x] T035 [P] Fix type errors in `apps/nextjs/src/components/recipes/` components if any
+- [x] T036 Run `pnpm build` to verify all TypeScript errors resolved
 
 **Checkpoint**: Project builds successfully - all TypeScript code compatible with new schema
 

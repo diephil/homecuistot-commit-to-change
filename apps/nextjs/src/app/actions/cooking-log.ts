@@ -56,14 +56,22 @@ export async function getRecipesWithAvailability(): Promise<RecipeWithAvailabili
       .where(eq(userInventory.userId, userId))
   )
 
-  // Create inventory lookup map
+  // Create inventory lookup map (only for known ingredients)
   const inventoryMap = new Map(
-    inventory.map((i) => [i.ingredientId, i])
+    inventory
+      .filter((i): i is typeof i & { ingredientId: string } => i.ingredientId !== null)
+      .map((i) => [i.ingredientId, i])
   )
 
   // Compute availability for each recipe
   return recipes.map((recipe) => {
-    const ingredientsWithAvailability = recipe.recipeIngredients.map((ri) => {
+    // Filter to only known ingredients (not unrecognized items) for availability calculation
+    const knownIngredients = recipe.recipeIngredients.filter(
+      (ri): ri is typeof ri & { ingredientId: string; ingredient: NonNullable<typeof ri.ingredient> } =>
+        ri.ingredientId !== null && ri.ingredient !== null
+    )
+
+    const ingredientsWithAvailability = knownIngredients.map((ri) => {
       const inv = inventoryMap.get(ri.ingredientId)
       const inInventory = inv
         ? (inv.quantityLevel > 0 || inv.isPantryStaple)
