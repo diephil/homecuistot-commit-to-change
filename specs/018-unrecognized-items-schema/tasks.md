@@ -111,10 +111,10 @@
 
 **Purpose**: Final validation and cleanup
 
-- [ ] T037 Verify existing data preserved: check row counts in `user_inventory` and `recipe_ingredients` tables
-- [ ] T038 Run `pnpm db:status` to confirm migration logged correctly
-- [ ] T039 Test application: verify existing inventory and recipe features still work
-- [ ] T040 Commit all changes with message: `feat(db): add unrecognized_item_id to recipe_ingredients and user_inventory`
+- [x] T037 Verify existing data preserved: check row counts in `user_inventory` and `recipe_ingredients` tables
+- [x] T038 Run `pnpm db:status` to confirm migration logged correctly
+- [x] T039 Test application: verify existing inventory and recipe features still work
+- [x] T040 Commit all changes with message: `feat(db): add unrecognized_item_id to recipe_ingredients and user_inventory`
 
 ---
 
