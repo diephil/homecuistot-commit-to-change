@@ -1,6 +1,6 @@
 {
-  "id": "b6ec6189-7264-49fd-b69b-c2d201fca876",
-  "prevId": "39ae5459-5853-4052-bab2-4bcd9779a3ba",
+  "id": "d7d1bf77-4d7b-41e5-833e-1812ac3acb5c",
+  "prevId": "b6ec6189-7264-49fd-b69b-c2d201fca876",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -173,10 +173,10 @@
         }
       },
       "foreignKeys": {
-        "recipe_ingredients_recipe_id_recipes_id_fk": {
-          "name": "recipe_ingredients_recipe_id_recipes_id_fk",
+        "recipe_ingredients_recipe_id_user_recipes_id_fk": {
+          "name": "recipe_ingredients_recipe_id_user_recipes_id_fk",
           "tableFrom": "recipe_ingredients",
-          "tableTo": "recipes",
+          "tableTo": "user_recipes",
           "columnsFrom": [
             "recipe_id"
           ],
@@ -206,8 +206,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.recipes": {
-      "name": "recipes",
+    "public.user_recipes": {
+      "name": "user_recipes",
       "schema": "",
       "columns": {
         "id": {
@@ -229,18 +229,11 @@
           "primaryKey": false,
           "notNull": false
         },
-        "is_seeded": {
-          "name": "is_seeded",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": true,
-          "default": false
-        },
         "user_id": {
           "name": "user_id",
           "type": "uuid",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "created_at": {
           "name": "created_at",
@@ -258,32 +251,11 @@
         }
       },
       "indexes": {
-        "idx_recipes_user": {
-          "name": "idx_recipes_user",
+        "idx_user_recipes_user": {
+          "name": "idx_user_recipes_user",
           "columns": [
             {
               "expression": "user_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "idx_recipes_user_seeded": {
-          "name": "idx_recipes_user_seeded",
-          "columns": [
-            {
-              "expression": "user_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "is_seeded",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -299,12 +271,7 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
-      "checkConstraints": {
-        "recipe_ownership": {
-          "name": "recipe_ownership",
-          "value": "(\"recipes\".\"is_seeded\" = true AND \"recipes\".\"user_id\" IS NULL) OR (\"recipes\".\"is_seeded\" = false AND \"recipes\".\"user_id\" IS NOT NULL)"
-        }
-      },
+      "checkConstraints": {},
       "isRLSEnabled": false
     },
     "public.user_inventory": {
@@ -336,6 +303,13 @@
           "primaryKey": false,
           "notNull": true,
           "default": 3
+        },
+        "is_pantry_staple": {
+          "name": "is_pantry_staple",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
         },
         "updated_at": {
           "name": "updated_at",
@@ -431,6 +405,28 @@
           "concurrently": false,
           "method": "btree",
           "with": {}
+        },
+        "idx_user_inventory_pantry": {
+          "name": "idx_user_inventory_pantry",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "is_pantry_staple",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "where": "\"user_inventory\".\"is_pantry_staple\" = true",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
         }
       },
       "foreignKeys": {
@@ -457,117 +453,6 @@
           "value": "\"user_inventory\".\"quantity_level\" BETWEEN 0 AND 3"
         }
       },
-      "isRLSEnabled": false
-    },
-    "public.user_recipes": {
-      "name": "user_recipes",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true,
-          "default": "gen_random_uuid()"
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "recipe_id": {
-          "name": "recipe_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "source": {
-          "name": "source",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {
-        "idx_user_recipes_unique": {
-          "name": "idx_user_recipes_unique",
-          "columns": [
-            {
-              "expression": "user_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "recipe_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": true,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "idx_user_recipes_user": {
-          "name": "idx_user_recipes_user",
-          "columns": [
-            {
-              "expression": "user_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "idx_user_recipes_source": {
-          "name": "idx_user_recipes_source",
-          "columns": [
-            {
-              "expression": "source",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {
-        "user_recipes_recipe_id_recipes_id_fk": {
-          "name": "user_recipes_recipe_id_recipes_id_fk",
-          "tableFrom": "user_recipes",
-          "tableTo": "recipes",
-          "columnsFrom": [
-            "recipe_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
       "isRLSEnabled": false
     },
     "public.cooking_log": {
@@ -646,10 +531,10 @@
         }
       },
       "foreignKeys": {
-        "cooking_log_recipe_id_recipes_id_fk": {
-          "name": "cooking_log_recipe_id_recipes_id_fk",
+        "cooking_log_recipe_id_user_recipes_id_fk": {
+          "name": "cooking_log_recipe_id_user_recipes_id_fk",
           "tableFrom": "cooking_log",
-          "tableTo": "recipes",
+          "tableTo": "user_recipes",
           "columnsFrom": [
             "recipe_id"
           ],
@@ -711,96 +596,6 @@
       },
       "indexes": {},
       "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.user_pantry_staples": {
-      "name": "user_pantry_staples",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true,
-          "default": "gen_random_uuid()"
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "ingredient_id": {
-          "name": "ingredient_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {
-        "idx_user_pantry_staples_unique": {
-          "name": "idx_user_pantry_staples_unique",
-          "columns": [
-            {
-              "expression": "user_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "ingredient_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": true,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "idx_user_pantry_staples_user": {
-          "name": "idx_user_pantry_staples_user",
-          "columns": [
-            {
-              "expression": "user_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {
-        "user_pantry_staples_ingredient_id_ingredients_id_fk": {
-          "name": "user_pantry_staples_ingredient_id_ingredients_id_fk",
-          "tableFrom": "user_pantry_staples",
-          "tableTo": "ingredients",
-          "columnsFrom": [
-            "ingredient_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},

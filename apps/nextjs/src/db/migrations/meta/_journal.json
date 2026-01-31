@@ -57,6 +57,13 @@
       "when": 1769562042000,
       "tag": "0007_add_cooking_log_delete_policy",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1769854208419,
+      "tag": "0008_tough_felicia_hardy",
+      "breakpoints": true
     }
   ]
 }
