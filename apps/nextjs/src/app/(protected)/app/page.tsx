@@ -1,4 +1,5 @@
-import { getRecipesWithAvailability, getCookingHistory } from '@/app/actions/cooking-log'
+import { redirect, RedirectType } from 'next/navigation'
+import { getRecipesWithAvailability, getCookingHistory, getUserCounts } from '@/app/actions/cooking-log'
 import { RecipeSection } from './recipe-section'
 import { CookingHistoryTable } from '@/components/app/cooking-history-table'
 import { ResetUserDataButton } from '@/components/app/reset-user-data-button'
@@ -6,6 +7,22 @@ import { StartDemoButton } from '@/components/app/start-demo-button'
 import { AppPageHeader } from '@/components/app/app-page-header'
 
 export default async function AppPage() {
+  // T005-T006: Check recipe/inventory count and redirect if both are zero
+  try {
+    const { recipeCount, inventoryCount } = await getUserCounts()
+    if (recipeCount === 0 && inventoryCount === 0) {
+      redirect('/app/onboarding', RedirectType.replace)
+    }
+  } catch (error) {
+    // Re-throw redirect errors (Next.js uses error throwing for redirects)
+    const isRedirect = error instanceof Error &&
+      (error.message.includes('NEXT_REDIRECT') || (error as { digest?: string }).digest?.startsWith('NEXT_REDIRECT'))
+    if (isRedirect) {
+      throw error
+    }
+    console.error('[app/page] Failed to get user counts:', error)
+  }
+
   const recipes = await getRecipesWithAvailability()
   const cookingHistory = await getCookingHistory()
 

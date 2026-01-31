@@ -4,7 +4,8 @@ import { revalidatePath } from 'next/cache'
 import { createClient } from '@/utils/supabase/server'
 import { createUserDb, decodeSupabaseToken } from '@/db/client'
 import { userInventory } from '@/db/schema'
-import { eq, and, sql } from 'drizzle-orm'
+import { eq, and, sql, isNotNull } from 'drizzle-orm'
+import type { DeleteUnrecognizedItemParams, DeleteUnrecognizedItemResult } from '@/types/inventory.types'
 
 export async function updateInventoryQuantity(params: {
   ingredientId: string
@@ -139,4 +140,95 @@ export async function deleteInventoryItem(params: { ingredientId: string }) {
   )
 
   revalidatePath('/inventory')
+}
+
+/**
+ * Delete an unrecognized item from user's inventory
+ * Feature: 021-unrecognized-items-display
+ * FR-007: Remove from user_inventory table
+ * FR-008: Preserve unrecognized_items table record
+ * FR-014: Return error message on failure
+ *
+ * Named parameters per Constitution Principle VI
+ * Security: Only deletes items with unrecognizedItemId NOT NULL
+ */
+export async function deleteUnrecognizedItem(
+  params: DeleteUnrecognizedItemParams
+): Promise<DeleteUnrecognizedItemResult> {
+  try {
+    const supabase = await createClient()
+
+    // Verify user authenticity
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) {
+      return {
+        success: false,
+        error: 'Not authorized',
+        code: 'UNAUTHORIZED',
+      }
+    }
+
+    // Get session for JWT token
+    const { data: { session } } = await supabase.auth.getSession()
+
+    if (!session) {
+      return {
+        success: false,
+        error: 'Not authorized',
+        code: 'UNAUTHORIZED',
+      }
+    }
+
+    // Validate userId matches authenticated user
+    if (params.userId !== session.user.id) {
+      return {
+        success: false,
+        error: 'Not authorized',
+        code: 'UNAUTHORIZED',
+      }
+    }
+
+    // Decode JWT token for Drizzle RLS
+    const token = decodeSupabaseToken(session.access_token)
+    const db = createUserDb(token)
+
+    // Safety: only delete if unrecognizedItemId IS NOT NULL
+    // This prevents accidental deletion of recognized ingredients
+    const result = await db((tx) =>
+      tx
+        .delete(userInventory)
+        .where(
+          and(
+            eq(userInventory.id, params.inventoryId),
+            eq(userInventory.userId, params.userId),
+            isNotNull(userInventory.unrecognizedItemId)
+          )
+        )
+        .returning({ id: userInventory.id })
+    )
+
+    if (result.length === 0) {
+      return {
+        success: false,
+        error: 'Item not found',
+        code: 'NOT_FOUND',
+      }
+    }
+
+    // Revalidate inventory page to refresh server component data
+    revalidatePath('/app/inventory')
+
+    return {
+      success: true,
+      deletedInventoryId: result[0].id,
+    }
+  } catch (error) {
+    console.error('Delete unrecognized item failed:', error)
+    return {
+      success: false,
+      error: 'Failed to delete item',
+      code: 'DATABASE_ERROR',
+    }
+  }
 }
