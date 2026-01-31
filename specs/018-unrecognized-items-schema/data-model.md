@@ -112,3 +112,26 @@ export const unrecognizedItemsRelations = relations(unrecognizedItems, ({ many }
 | No duplicate (recipe, ingredient) pairs | Partial unique index |
 | No duplicate (recipe, unrecognized_item) pairs | Partial unique index |
 | Referential integrity | Foreign key constraints |
+
+---
+
+## ⚠️ Drizzle ORM Upsert Requirement
+
+**Critical**: Partial unique indexes require `targetWhere` in `onConflictDoUpdate` calls.
+
+```typescript
+// ❌ BROKEN - PostgreSQL can't resolve partial index
+.onConflictDoUpdate({
+  target: [userInventory.userId, userInventory.ingredientId],
+  set: { quantityLevel },
+})
+
+// ✅ CORRECT - matches partial index condition
+.onConflictDoUpdate({
+  target: [userInventory.userId, userInventory.ingredientId],
+  targetWhere: sql`${userInventory.ingredientId} IS NOT NULL`,
+  set: { quantityLevel },
+})
+```
+
+**Affected operations**: Any upsert on `user_inventory` or `recipe_ingredients` targeting the `(user_id, ingredient_id)` or `(recipe_id, ingredient_id)` columns.

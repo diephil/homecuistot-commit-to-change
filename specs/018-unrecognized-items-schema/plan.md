@@ -90,3 +90,39 @@ Files using `userInventory` or `recipeIngredients`:
 ## Complexity Tracking
 
 No constitution violations. Simple schema migration within existing patterns.
+
+---
+
+## Technical Notes
+
+### Partial Unique Indexes & Drizzle ORM Upserts
+
+**Issue**: When replacing a regular unique index with a partial unique index (e.g., `WHERE ingredient_id IS NOT NULL`), existing `onConflictDoUpdate` calls will fail at runtime.
+
+**Root Cause**: PostgreSQL's `ON CONFLICT (columns)` requires an exact match to a unique constraint/index. Partial indexes have an additional WHERE condition that must be specified.
+
+**Solution**: Add `targetWhere` parameter to match the partial index condition:
+
+```typescript
+import { sql } from 'drizzle-orm'
+
+// Partial unique index definition:
+uniqueIndex('idx_user_inventory_ingredient_unique')
+  .on(table.userId, table.ingredientId)
+  .where(sql`${table.ingredientId} IS NOT NULL`)
+
+// Corresponding upsert must include targetWhere:
+.onConflictDoUpdate({
+  target: [userInventory.userId, userInventory.ingredientId],
+  targetWhere: sql`${userInventory.ingredientId} IS NOT NULL`,
+  set: { quantityLevel: sql`EXCLUDED.quantity_level` },
+})
+```
+
+**Files requiring this fix**:
+- `src/app/api/inventory/batch/route.ts`
+- `src/app/actions/inventory.ts`
+- `src/app/api/inventory/route.ts`
+- `src/app/api/onboarding/persist/route.ts`
+
+**Lesson**: When adding partial unique indexes, audit all `onConflictDoUpdate` calls targeting those columns.

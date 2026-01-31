@@ -118,6 +118,40 @@
 
 ---
 
+## Phase 6: Runtime Compatibility Fixes
+
+**Purpose**: Fix Drizzle ORM upsert operations that break with partial unique indexes
+
+**Context**: Partial unique indexes (e.g., `WHERE ingredient_id IS NOT NULL`) require `targetWhere` in `onConflictDoUpdate` calls. Without this, PostgreSQL cannot resolve which constraint to use for conflict detection.
+
+**Goal**: All upsert operations work correctly with partial unique indexes
+
+- [x] T041 [P] Fix `apps/nextjs/src/app/api/inventory/batch/route.ts`: add `targetWhere` to `onConflictDoUpdate`
+- [x] T042 [P] Fix `apps/nextjs/src/app/actions/inventory.ts`: add `targetWhere` to `onConflictDoUpdate`
+- [x] T043 [P] Fix `apps/nextjs/src/app/api/inventory/route.ts`: add `targetWhere` to `onConflictDoUpdate`
+- [x] T044 [P] Fix `apps/nextjs/src/app/api/onboarding/persist/route.ts`: add `targetWhere` to `onConflictDoUpdate`
+- [x] T045 Verify build passes and inventory updates work
+
+**Technical Pattern**:
+```typescript
+// Before (broken with partial unique index):
+.onConflictDoUpdate({
+  target: [userInventory.userId, userInventory.ingredientId],
+  set: { ... },
+})
+
+// After (works with partial unique index):
+.onConflictDoUpdate({
+  target: [userInventory.userId, userInventory.ingredientId],
+  targetWhere: sql`${userInventory.ingredientId} IS NOT NULL`,
+  set: { ... },
+})
+```
+
+**Checkpoint**: All inventory operations work correctly
+
+---
+
 ## Dependencies & Execution Order
 
 ### Phase Dependencies
