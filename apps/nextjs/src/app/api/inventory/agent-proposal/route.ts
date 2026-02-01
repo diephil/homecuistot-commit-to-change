@@ -19,8 +19,7 @@ import type { InventoryUpdateProposal } from "@/types/inventory";
 
 export async function POST(request: Request) {
   // Request-unique identifier for session tracking
-  const requestId =
-    request.headers.get("x-request-id") ?? crypto.randomUUID();
+  const requestId = request.headers.get("x-request-id") ?? crypto.randomUUID();
 
   try {
     const body = await request.json();
@@ -63,21 +62,6 @@ export async function POST(request: Request) {
     const db = createUserDb(token);
     const inventoryRows = await getUserInventory({ db });
 
-    // Transcribe audio if provided, otherwise use text input
-    let textInput: string;
-
-    if (audioBase64) {
-      textInput = await transcribeAudio({ audioBase64 });
-      if (!textInput) {
-        return NextResponse.json(
-          { error: "Could not transcribe audio" },
-          { status: 400 },
-        );
-      }
-    } else {
-      textInput = input!.trim();
-    }
-
     // Map to minimal session state
     const currentInventory: InventorySessionItem[] = inventoryRows.map(
       (row) => ({
@@ -103,6 +87,20 @@ export async function POST(request: Request) {
 
     // Run agent
     let proposal: InventoryUpdateProposal | null = null;
+    // Transcribe audio if provided, otherwise use text input
+    let textInput: string;
+
+    if (audioBase64) {
+      textInput = await transcribeAudio({ audioBase64 });
+      if (!textInput) {
+        return NextResponse.json(
+          { error: "Could not transcribe audio" },
+          { status: 400 },
+        );
+      }
+    } else {
+      textInput = input!.trim();
+    }
 
     for await (const event of runner.runAsync({
       userId: user.id,
