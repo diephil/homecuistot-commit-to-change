@@ -20,13 +20,15 @@ export function RecipeAvailabilityCard(props: RecipeAvailabilityCardProps) {
     ? 'bg-gradient-to-br from-green-200 to-green-300'
     : 'bg-gradient-to-br from-yellow-200 to-orange-200'
 
-  // Get anchor ingredients only for display
-  const anchorIngredients = recipe.ingredients.filter((i) => i.type === 'anchor')
+  // Get anchor ingredients only for display, available first
+  const anchorIngredients = recipe.ingredients
+    .filter((i) => i.type === 'anchor')
+    .sort((a, b) => (b.inInventory ? 1 : 0) - (a.inInventory ? 1 : 0))
 
   return (
     <div
       className={cn(
-        'border-4 border-black p-4 overflow-hidden',
+        'border-4 border-black p-4 overflow-hidden flex flex-col h-full',
         'sm:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]',
         gradientClass
       )}
@@ -48,10 +50,10 @@ export function RecipeAvailabilityCard(props: RecipeAvailabilityCardProps) {
             size="sm"
             className={cn(
               'bg-white/50',
+              variant === 'almost-available' && ing.inInventory && 'bg-green-200 border-green-400',
               !ing.inInventory && 'bg-red-500 border-red-700 text-white font-black'
             )}
           >
-            {!ing.inInventory && <X className="w-3 h-3 mr-1 inline-block" />}
             {ing.name}
           </Badge>
         ))}
@@ -59,7 +61,7 @@ export function RecipeAvailabilityCard(props: RecipeAvailabilityCardProps) {
 
       {/* Missing ingredients count for almost-available */}
       {variant === 'almost-available' && recipe.missingAnchorCount > 0 && (
-        <div className="p-2 bg-white/50 border-2 border-black mb-3">
+        <div className="p-2 bg-white/50 border-2 border-black mt-auto">
           <span className="text-sm font-black">
             Missing {recipe.missingAnchorCount} ingredient{recipe.missingAnchorCount !== 1 ? 's' : ''}
           </span>
