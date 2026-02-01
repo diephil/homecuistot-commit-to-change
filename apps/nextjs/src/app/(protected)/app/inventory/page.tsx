@@ -8,7 +8,7 @@ import { NeoHelpButton } from "@/components/shared/neo-help-button";
 import { ProposalConfirmationModal } from "@/components/inventory/proposal-confirmation-modal";
 import { DeleteConfirmationModal } from "@/components/shared/delete-confirmation-modal";
 import { UnrecognizedItemRow } from "@/components/shared/UnrecognizedItemRow";
-import { InfoCard } from "@/components/retroui/InfoCard";
+import { VoiceGuidanceCard } from "@/components/inventory/voice-guidance-card";
 import { VoiceTextInput } from "@/components/shared";
 import { InventoryDisplayItem, QuantityLevel, InventoryGroups, InventoryUpdateProposal } from "@/types/inventory";
 import { deleteUnrecognizedItem } from "@/app/actions/inventory";
@@ -357,19 +357,23 @@ export default function InventoryPage() {
             />
           </div>
 
-          <div className="text-center py-8 space-y-4">
+          <div className="space-y-4">
+            <VoiceGuidanceCard />
+
+            <VoiceTextInput
+              onSubmit={handleVoiceTextSubmit}
+              disabled={isProcessing}
+              processing={isProcessing}
+              textPlaceholder="I have eggs, milk, and butter..."
+            />
+          </div>
+
+          <div className="text-center py-4 space-y-2">
             <p className="text-lg text-gray-600">Your inventory is empty</p>
             <p className="text-sm text-gray-500">
               Speak or type to add ingredients
             </p>
           </div>
-
-          <VoiceTextInput
-            onSubmit={handleVoiceTextSubmit}
-            disabled={isProcessing}
-            processing={isProcessing}
-            textPlaceholder="I have eggs, milk, and butter..."
-          />
         </div>
 
         {proposal && (
@@ -407,14 +411,7 @@ export default function InventoryPage() {
 
         {/* Voice Input Section */}
         <div className="space-y-4">
-          <InfoCard variant="cyan" emoji="💬" heading="Speak to update the list">
-            <ul className="list-disc list-inside space-y-1 text-sm">
-              <li>&quot;I just bought milk and eggs&quot;</li>
-              <li>&quot;I have enough onions for at least 2 meals&quot;</li>
-              <li>&quot;Running low on tomatoes&quot;</li>
-              <li>&quot;I always have pasta in my pantry.&quot;</li>
-            </ul>
-          </InfoCard>
+          <VoiceGuidanceCard />
 
           <VoiceTextInput
             onSubmit={handleVoiceTextSubmit}

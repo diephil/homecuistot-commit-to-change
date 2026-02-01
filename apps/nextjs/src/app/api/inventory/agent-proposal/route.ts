@@ -10,16 +10,13 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { createUserDb, decodeSupabaseToken } from "@/db/client";
-import { InMemoryRunner, isFinalResponse } from "@google/adk";
-import { createInventoryAgent } from "@/lib/agents/inventory";
+import { createInventoryManagerAgentProposal } from "@/lib/agents/inventory";
 import { getUserInventory } from "@/lib/services/user-inventory";
-import { transcribeAudio } from "@/lib/services/audio-transcription";
 import type { InventorySessionItem } from "@/lib/agents/inventory/tools/validate-ingredients";
-import type { InventoryUpdateProposal } from "@/types/inventory";
 
 export async function POST(request: Request) {
-  // Request-unique identifier for session tracking
-  const requestId = request.headers.get("x-request-id") ?? crypto.randomUUID();
+  const requestId =
+    request.headers.get("x-request-id") ?? crypto.randomUUID();
 
   try {
     const body = await request.json();
@@ -28,14 +25,14 @@ export async function POST(request: Request) {
       audioBase64?: string;
     };
 
-    // Validate input presence (actual processing after auth)
+    // Validate input presence
     if (
       !audioBase64 &&
       (!input || typeof input !== "string" || input.trim().length === 0)
     ) {
       return NextResponse.json(
         { error: "Input text or audio is required" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -70,82 +67,23 @@ export async function POST(request: Request) {
         quantityLevel: row.quantityLevel,
         isPantryStaple: row.isPantryStaple,
         name: row.ingredientName,
-      }),
+      })
     );
 
-    // Create agent and runner
-    const appName = "inventory_manager";
-    const agent = createInventoryAgent({ userId: user.id });
-    const runner = new InMemoryRunner({ agent, appName });
-
-    // Create session with inventory state
-    const agentSession = await runner.sessionService.createSession({
+    // Process via traced agent
+    const result = await createInventoryManagerAgentProposal({
       userId: user.id,
-      appName,
-      state: { currentInventory },
+      input,
+      audioBase64,
+      currentInventory,
     });
 
-    // Run agent
-    let proposal: InventoryUpdateProposal | null = null;
-    // Transcribe audio if provided, otherwise use text input
-    let textInput: string;
-
-    if (audioBase64) {
-      textInput = await transcribeAudio({ audioBase64 });
-      if (!textInput) {
-        return NextResponse.json(
-          { error: "Could not transcribe audio" },
-          { status: 400 },
-        );
-      }
-    } else {
-      textInput = input!.trim();
-    }
-
-    for await (const event of runner.runAsync({
-      userId: user.id,
-      sessionId: agentSession.id,
-      newMessage: {
-        role: "user",
-        parts: [{ text: textInput }],
-      },
-    })) {
-      if (event.content?.parts) {
-        for (const part of event.content.parts) {
-          // Tool result contains proposal
-          if ("functionResponse" in part && part.functionResponse) {
-            const response = part.functionResponse.response;
-            if (
-              response &&
-              typeof response === "object" &&
-              "recognized" in response
-            ) {
-              proposal = response as unknown as InventoryUpdateProposal;
-            }
-          }
-          // Fallback: parse JSON from text
-          if ("text" in part && part.text && isFinalResponse(event)) {
-            try {
-              const parsed = JSON.parse(part.text);
-              if (parsed.recognized !== undefined) {
-                proposal = parsed as InventoryUpdateProposal;
-              }
-            } catch {
-              // Not JSON
-            }
-          }
-        }
-      }
-    }
-
-    return NextResponse.json({
-      proposal: proposal ?? { recognized: [], unrecognized: [] },
-    });
+    return NextResponse.json({ proposal: result.proposal });
   } catch (error) {
     console.error(`Agent proposal error [${requestId}]:`, error);
     return NextResponse.json(
       { error: "Could not process your request" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
