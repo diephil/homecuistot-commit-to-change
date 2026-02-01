@@ -83,10 +83,21 @@ export function InventoryHelpModal({ isOpen, onClose }: InventoryHelpModalProps)
 
       {/* Pantry Staples Section */}
       <HelpSection emoji="🏪" title="Pantry Staples" bgColor="bg-yellow-100">
-        <p className="text-sm font-medium">
+        <p className="text-sm font-medium mb-3">
           Items marked as pantry staples are always considered available for recipe matching,
           regardless of quantity level. Perfect for basics like salt, oil, or flour.
         </p>
+        <div className="flex items-center gap-3 p-3 bg-white border-2 border-black rounded">
+          <IngredientBadge
+            name="salt"
+            level={0 as QuantityLevel}
+            variant="dots"
+            size="md"
+            interactive={false}
+            isStaple={true}
+          />
+          <span className="text-sm font-black text-blue-600">= Always available (∞)</span>
+        </div>
       </HelpSection>
 
       {/* Feature 021: Unrecognized Items Section (FR-009) */}

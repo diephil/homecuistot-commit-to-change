@@ -1,6 +1,8 @@
 "use client";
 
 import { HelpModal, HelpSection, HelpExampleList } from "@/components/shared/HelpModal";
+import { Badge } from "@/components/shared/Badge";
+import { cn } from "@/lib/utils";
 
 interface RecipeHelpModalProps {
   isOpen: boolean;
@@ -57,19 +59,21 @@ export function RecipeHelpModal({ isOpen, onClose }: RecipeHelpModalProps) {
       {/* Ingredients Section */}
       <HelpSection emoji="🥗" title="Ingredients" bgColor="bg-yellow-100">
         <p className="text-sm font-medium mb-3">
-          After extracting, you can mark ingredients as:
+          You can mark ingredients as:
         </p>
         <div className="space-y-2">
           <div className="flex items-center gap-3 p-3 bg-white border-2 border-black rounded">
-            <span className="text-xs font-bold px-3 py-1 rounded border-2 border-black bg-primary text-primary-foreground">
-              Required
-            </span>
+            <Badge variant="outline" size="sm" className="bg-white/50">
+              <span className={cn('mr-1', 'text-amber-500')}>★</span>
+              pasta
+            </Badge>
             <span className="text-sm font-medium">Essential ingredients you must have to cook the recipe</span>
           </div>
           <div className="flex items-center gap-3 p-3 bg-white border-2 border-black rounded">
-            <span className="text-xs font-bold px-3 py-1 rounded border-2 border-black bg-gray-200">
-              Optional
-            </span>
+            <Badge variant="outline" size="sm" className="bg-white/50">
+              <span className={cn('mr-1', 'text-gray-300')}>★</span>
+              basil
+            </Badge>
             <span className="text-sm font-medium">Nice-to-have ingredients, can be skipped in the recipe</span>
           </div>
         </div>

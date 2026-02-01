@@ -15,6 +15,7 @@ export { Toaster } from "./SonnerToaster";
 
 // Shared Components
 export { DeleteConfirmationModal } from "./DeleteConfirmationModal";
+export { Footer } from "./Footer";
 export { FormModal } from "./FormModal";
 export { HelpModal, HelpSection, HelpExampleList } from "./HelpModal";
 export { IngredientChip } from "./IngredientChip";
