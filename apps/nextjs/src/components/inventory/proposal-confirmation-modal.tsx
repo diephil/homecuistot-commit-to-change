@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/retroui/Button";
 import { Alert } from "@/components/retroui/Alert";
 import { FormModal } from "@/components/shared/form-modal";
+import { LastHeardDisplay } from "@/components/shared/LastHeardDisplay";
 import { InventoryItemBadge } from "./inventory-item-badge";
 import { InventoryUpdateProposal, QuantityLevel } from "@/types/inventory";
 import { toast } from "sonner";
@@ -13,6 +14,8 @@ interface ProposalConfirmationModalProps {
   proposal: InventoryUpdateProposal;
   onClose: () => void;
   onUpdatesApplied: () => void;
+  /** Transcription from voice input to display above detected ingredients */
+  transcription?: string;
 }
 
 export function ProposalConfirmationModal({
@@ -20,6 +23,7 @@ export function ProposalConfirmationModal({
   proposal: initialProposal,
   onClose,
   onUpdatesApplied,
+  transcription,
 }: ProposalConfirmationModalProps) {
   const [proposal, setProposal] = useState(initialProposal);
   const [isSaving, setIsSaving] = useState(false);
@@ -89,6 +93,9 @@ export function ProposalConfirmationModal({
   return (
     <FormModal isOpen={isOpen} onClose={handleClose} title="Confirm Updates">
       <div className="space-y-6">
+        {/* Transcription display */}
+        {transcription && <LastHeardDisplay transcription={transcription} />}
+
         {/* Detected Ingredients */}
         {proposal.recognized.length > 0 && (
           <div className="space-y-3">

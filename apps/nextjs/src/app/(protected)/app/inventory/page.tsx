@@ -31,6 +31,7 @@ export default function InventoryPage() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [proposal, setProposal] = useState<InventoryUpdateProposal | null>(null);
   const [itemToDelete, setItemToDelete] = useState<InventoryDisplayItem | null>(null);
+  const [lastTranscription, setLastTranscription] = useState<string | undefined>();
 
   // Sort items alphabetically by name
   const sortByName = (items: InventoryDisplayItem[]) =>
@@ -305,6 +306,11 @@ export default function InventoryPage() {
         return;
       }
 
+      // Store transcription if voice input was used
+      if (data.transcribedText) {
+        setLastTranscription(data.transcribedText);
+      }
+
       const resultProposal = data.proposal as InventoryUpdateProposal;
 
       if (resultProposal.recognized.length === 0) {
@@ -365,6 +371,7 @@ export default function InventoryPage() {
               disabled={isProcessing}
               processing={isProcessing}
               textPlaceholder="I have eggs, milk, and butter..."
+              lastTranscription={lastTranscription}
             />
           </div>
 
@@ -385,6 +392,7 @@ export default function InventoryPage() {
               setProposal(null);
               window.location.reload();
             }}
+            transcription={lastTranscription}
           />
         )}
       </PageContainer>
@@ -418,6 +426,7 @@ export default function InventoryPage() {
             disabled={isProcessing}
             processing={isProcessing}
             textPlaceholder="Add eggs and butter, remove bacon..."
+            lastTranscription={lastTranscription}
           />
         </div>
 
@@ -491,6 +500,7 @@ export default function InventoryPage() {
             setProposal(null);
             window.location.reload();
           }}
+          transcription={lastTranscription}
         />
       )}
       <DeleteConfirmationModal
