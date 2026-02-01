@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { Mic, Loader2, Send } from "lucide-react";
 import { useVoiceInput } from "@/hooks/useVoiceInput";
-import { Button } from "@/components/retroui/Button";
+import { Button } from "@/components/shared/Button";
 import { LastHeardDisplay } from "./LastHeardDisplay";
 import { cn } from "@/lib/utils";
 

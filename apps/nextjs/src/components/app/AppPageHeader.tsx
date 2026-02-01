@@ -1,7 +1,7 @@
 "use client";
 
-import { NeoHelpButton } from "@/components/shared/neo-help-button";
-import { AppHelpModal } from "./help-modal";
+import { NeoHelpButton } from "@/components/shared/NeoHelpButton";
+import { AppHelpModal } from "./HelpModal";
 
 export function AppPageHeader() {
   return (

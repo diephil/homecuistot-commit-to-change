@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { resetUserData } from '@/app/actions/user-data'
-import { ConfirmationModal } from './confirmation-modal'
+import { ConfirmationModal } from './ConfirmationModal'
 
 export function ResetUserDataButton() {
   const [isModalOpen, setIsModalOpen] = useState(false)

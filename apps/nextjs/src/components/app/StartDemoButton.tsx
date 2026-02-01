@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { startDemoData } from '@/app/actions/user-data'
-import { ConfirmationModal } from './confirmation-modal'
+import { ConfirmationModal } from './ConfirmationModal'
 
 export function StartDemoButton() {
   const [isModalOpen, setIsModalOpen] = useState(false)

@@ -1,4 +1,4 @@
-import { RecipeCard } from "./recipe-card";
+import { RecipeCard } from "./RecipeCard";
 
 interface Recipe {
   id: string;

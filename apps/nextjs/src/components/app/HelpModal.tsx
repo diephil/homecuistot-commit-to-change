@@ -1,6 +1,6 @@
 "use client";
 
-import { HelpModal, HelpSection } from "@/components/shared/help-modal";
+import { HelpModal, HelpSection } from "@/components/shared/HelpModal";
 
 interface AppHelpModalProps {
   isOpen: boolean;

@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/retroui/Button";
-import { Alert } from "@/components/retroui/Alert";
-import { FormModal } from "@/components/shared/form-modal";
+import { Button } from "@/components/shared/Button";
+import { Alert } from "@/components/shared/Alert";
+import { FormModal } from "@/components/shared/FormModal";
 import { LastHeardDisplay } from "@/components/shared/LastHeardDisplay";
-import { InventoryItemBadge } from "./inventory-item-badge";
+import { InventoryItemBadge } from "./InventoryItemBadge";
 import { InventoryUpdateProposal, QuantityLevel } from "@/types/inventory";
 import { toast } from "sonner";
 

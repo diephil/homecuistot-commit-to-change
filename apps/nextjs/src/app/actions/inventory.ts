@@ -5,7 +5,7 @@ import { createClient } from '@/utils/supabase/server'
 import { createUserDb, decodeSupabaseToken } from '@/db/client'
 import { userInventory } from '@/db/schema'
 import { eq, and, sql, isNotNull } from 'drizzle-orm'
-import type { DeleteUnrecognizedItemParams, DeleteUnrecognizedItemResult } from '@/types/inventory.types'
+import type { DeleteUnrecognizedItemParams, DeleteUnrecognizedItemResult } from '@/types/inventory'
 
 export async function updateInventoryQuantity(params: {
   ingredientId: string

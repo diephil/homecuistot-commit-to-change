@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { Button } from '@/components/retroui/Button'
-import { IngredientBadge } from '@/components/retroui/IngredientBadge'
+import { Button } from '@/components/shared/Button'
+import { IngredientBadge } from '@/components/shared/IngredientBadge'
 import { markRecipeAsCooked } from '@/app/actions/cooking-log'
 import type { RecipeWithAvailability, QuantityLevel, IngredientDiff } from '@/types/cooking'
 import { cn } from '@/lib/utils'

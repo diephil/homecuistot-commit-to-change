@@ -1,5 +1,5 @@
-import { Text } from "@/components/retroui/Text";
-import { Button } from "@/components/retroui/Button";
+import { Text } from "@/components/shared/Text";
+import { Button } from "@/components/shared/Button";
 import Link from "next/link";
 
 export default function Home() {

@@ -1,6 +1,6 @@
 "use client";
 
-import { InventoryItemBadge } from "./inventory-item-badge";
+import { InventoryItemBadge } from "./InventoryItemBadge";
 import { InventoryDisplayItem, QuantityLevel } from "@/types/inventory";
 
 interface InventorySectionProps {
