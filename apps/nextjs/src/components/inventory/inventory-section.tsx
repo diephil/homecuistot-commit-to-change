@@ -31,7 +31,7 @@ export function InventorySection({
         <div>
           <h2 className="text-2xl font-bold">{title}</h2>
           {description && (
-            <p className="text-sm text-gray-600">{description}</p>
+            <p className="mt-1 text-sm text-gray-600">{description}</p>
           )}
         </div>
         <p className="text-sm text-gray-500 italic">No items yet</p>
@@ -43,8 +43,8 @@ export function InventorySection({
     <section className="space-y-4 pb-8">
       <div>
         <h2 className="text-2xl font-bold">{title}</h2>
-        {description && isPantrySection && (
-          <p className="text-sm text-gray-600">{description}</p>
+        {description && (
+          <p className="mt-1 text-sm text-gray-600">{description}</p>
         )}
       </div>
 

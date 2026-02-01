@@ -368,6 +368,7 @@ export default function InventoryPage() {
         {/* Tracked Ingredients */}
         <InventorySection
           title="Tracked Ingredients"
+          description="Tap the ingredient to adjust its quantity level to match what you have at home!"
           items={inventory.available}
           isPantrySection={false}
           onQuantityChange={handleQuantityChange}
