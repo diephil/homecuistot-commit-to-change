@@ -4,9 +4,11 @@ import { useState } from "react";
 import { Button } from "@/components/shared/Button";
 import { Card } from "@/components/shared/Card";
 import { Badge } from "@/components/shared/Badge";
+import { SmallActionButton } from "@/components/shared/SmallActionButton";
 import { updateRecipe, deleteRecipe } from "@/app/actions/recipes";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { X } from "lucide-react";
 
 interface RecipeEditFormProps {
   recipe: {
@@ -164,7 +166,7 @@ export function RecipeEditForm(props: RecipeEditFormProps) {
                 <div className="space-y-3">
                   <div className="flex flex-wrap gap-2">
                     {ingredients.map((ing, index) => (
-                      <div key={ing.id} className="flex items-center gap-1">
+                      <div key={ing.id} className="relative inline-flex">
                         <Badge
                           variant="outline"
                           size="sm"
@@ -177,14 +179,16 @@ export function RecipeEditForm(props: RecipeEditFormProps) {
                           <span className={cn("mr-1", !ing.isOptional ? "text-amber-500" : "text-gray-300")}>★</span>
                           {ing.name}
                         </Badge>
-                        <button
-                          type="button"
-                          onClick={() => removeIngredient(index)}
-                          className="text-sm text-gray-400 hover:text-red-600 w-5 h-5 flex items-center justify-center rounded hover:bg-red-50 transition-all cursor-pointer"
-                          aria-label="Remove ingredient"
-                        >
-                          ✕
-                        </button>
+                        <SmallActionButton
+                          icon={X}
+                          variant="red"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            removeIngredient(index);
+                          }}
+                          title="Remove ingredient"
+                          className="absolute -top-3 -right-2"
+                        />
                       </div>
                     ))}
                   </div>

@@ -298,7 +298,7 @@ export default function RecipesPage() {
       <div className="space-y-8">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold">My Recipes</h1>
+          <h1 className="text-3xl font-bold">My Cookbook</h1>
           <NeoHelpButton
             renderModal={({ isOpen, onClose }) => (
               <RecipeHelpModal isOpen={isOpen} onClose={onClose} />
