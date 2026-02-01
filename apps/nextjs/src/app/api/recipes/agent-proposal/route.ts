@@ -10,16 +10,15 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { createUserDb, decodeSupabaseToken } from "@/db/client";
-import { createRecipeManagerAgentProposal } from "@/lib/agents/recipe";
-import { userRecipes, recipeIngredients, ingredients } from "@/db/schema";
+import { createRecipeManagerAgentProposal } from "@/lib/agents/recipe-manager/seq-agents-recipe-manager-proposal";
+import { userRecipes } from "@/db/schema";
 import { eq, desc } from "drizzle-orm";
 import type { RecipeSessionItem } from "@/types/recipe-agent";
 
 export const maxDuration = 30; // 30 second timeout for voice processing
 
 export async function POST(request: Request) {
-  const requestId =
-    request.headers.get("x-request-id") ?? crypto.randomUUID();
+  const requestId = request.headers.get("x-request-id") ?? crypto.randomUUID();
 
   try {
     const body = await request.json();
@@ -35,7 +34,7 @@ export async function POST(request: Request) {
     ) {
       return NextResponse.json(
         { error: "Input text or audio is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -70,7 +69,7 @@ export async function POST(request: Request) {
           },
         },
         orderBy: [desc(userRecipes.createdAt)],
-      })
+      }),
     );
 
     // Map to minimal session state
@@ -103,7 +102,7 @@ export async function POST(request: Request) {
     console.error(`Recipe agent proposal error [${requestId}]:`, error);
     return NextResponse.json(
       { error: "Could not process your request" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

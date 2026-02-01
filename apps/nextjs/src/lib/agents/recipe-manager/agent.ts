@@ -9,7 +9,8 @@ import { LlmAgent } from "@google/adk";
 import { createCreateRecipeTool } from "./tools/create-recipe";
 import { createUpdateRecipeTool } from "./tools/update-recipe";
 import { createDeleteRecipeTool } from "./tools/delete-recipe";
-import { Trace } from "opik";
+import { Trace, Prompt } from "opik";
+import { getOpikClient } from "@/lib/tracing/opik-agent";
 
 const AGENT_INSTRUCTION = `You are a recipe assistant. Parse user input to create new recipes or update existing ones.
 
@@ -108,13 +109,28 @@ Each recipe has: id, title, description, ingredients (with name and isRequired).
     reason: "User no longer makes this recipe"
   })`;
 
+const client = getOpikClient();
+
+export const RECIPE_MANAGER_AGENT_PROMPT: Prompt = new Prompt(
+  {
+    name: "recipe_manager",
+    prompt: AGENT_INSTRUCTION,
+    description:
+      "Process natural language to create, update, and delete recipes based on user voice or text input.",
+    versionId: "1.0.0",
+    promptId: "1.0.0",
+    tags: ["recipe", "agent", "adk-js"],
+    type: "mustache",
+  },
+  client,
+);
+
 export function createRecipeManagerAgent(params: { opikTrace: Trace }) {
   return new LlmAgent({
-    name: "recipe_manager",
-    description:
-      "Processes natural language to create, update, and delete recipes",
+    name: RECIPE_MANAGER_AGENT_PROMPT.name,
+    description: RECIPE_MANAGER_AGENT_PROMPT.description,
     model: "gemini-2.0-flash",
-    instruction: AGENT_INSTRUCTION,
+    instruction: RECIPE_MANAGER_AGENT_PROMPT.prompt,
     tools: [
       createCreateRecipeTool(params),
       createUpdateRecipeTool(params),

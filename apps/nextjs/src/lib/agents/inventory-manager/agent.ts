@@ -7,7 +7,8 @@
 
 import { LlmAgent } from "@google/adk";
 import { createValidateIngredientsTool } from "./tools/validate-ingredients";
-import { Trace } from "opik";
+import { Trace, Prompt } from "opik";
+import { getOpikClient } from "@/lib/tracing/opik-agent";
 
 const AGENT_INSTRUCTION = `You are an inventory assistant. Extract ingredients, quantity levels, and pantry staple intent from user text.
 
@@ -50,14 +51,30 @@ export interface CreateInventoryAgentParams {
   opikTrace: Trace;
 }
 
+const client = getOpikClient();
+
+export const INVENTORY_MANAGER_AGENT_PROMPT: Prompt = new Prompt(
+  {
+    name: "inventory_manager",
+    prompt: AGENT_INSTRUCTION,
+    description:
+      "Process natural language to update kitchen inventory based on the user's voice or text input, then validate against the database.",
+    versionId: "1.0.0",
+    promptId: "1.0.0",
+    tags: ["inventory", "agent", "adk-js"],
+    type: "mustache",
+  },
+  client,
+);
+
 export function createInventoryAgent(params: CreateInventoryAgentParams) {
   const { userId, model = "gemini-2.0-flash" } = params ?? {};
 
   return new LlmAgent({
-    name: "inventory_manager",
-    description: "Processes natural language to update kitchen inventory",
+    name: INVENTORY_MANAGER_AGENT_PROMPT.name,
+    description: INVENTORY_MANAGER_AGENT_PROMPT.description,
     model,
-    instruction: AGENT_INSTRUCTION,
+    instruction: INVENTORY_MANAGER_AGENT_PROMPT.prompt,
     tools: [
       createValidateIngredientsTool({ userId, opikTrace: params.opikTrace }),
     ],

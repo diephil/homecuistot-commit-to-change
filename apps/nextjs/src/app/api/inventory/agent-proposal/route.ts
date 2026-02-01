@@ -10,13 +10,12 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { createUserDb, decodeSupabaseToken } from "@/db/client";
-import { createInventoryManagerAgentProposal } from "@/lib/agents/inventory";
+import { createInventoryManagerAgentProposal } from "@/lib/agents/inventory-manager/seq-agents-inventory-update-proposal";
 import { getUserInventory } from "@/lib/services/user-inventory";
-import type { InventorySessionItem } from "@/lib/agents/inventory/tools/validate-ingredients";
+import type { InventorySessionItem } from "@/lib/agents/inventory-manager/tools/validate-ingredients";
 
 export async function POST(request: Request) {
-  const requestId =
-    request.headers.get("x-request-id") ?? crypto.randomUUID();
+  const requestId = request.headers.get("x-request-id") ?? crypto.randomUUID();
 
   try {
     const body = await request.json();
@@ -32,7 +31,7 @@ export async function POST(request: Request) {
     ) {
       return NextResponse.json(
         { error: "Input text or audio is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -67,7 +66,7 @@ export async function POST(request: Request) {
         quantityLevel: row.quantityLevel,
         isPantryStaple: row.isPantryStaple,
         name: row.ingredientName,
-      })
+      }),
     );
 
     // Process via traced agent
@@ -86,7 +85,7 @@ export async function POST(request: Request) {
     console.error(`Agent proposal error [${requestId}]:`, error);
     return NextResponse.json(
       { error: "Could not process your request" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
