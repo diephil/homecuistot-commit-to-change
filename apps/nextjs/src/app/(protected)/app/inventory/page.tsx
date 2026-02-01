@@ -412,7 +412,7 @@ export default function InventoryPage() {
               <li>&quot;I just bought milk and eggs&quot;</li>
               <li>&quot;I have enough onions for at least 2 meals&quot;</li>
               <li>&quot;Running low on tomatoes&quot;</li>
-              <li>&quot;Have plenty of pasta&quot;</li>
+              <li>&quot;I always have pasta in my pantry.&quot;</li>
             </ul>
           </InfoCard>
 

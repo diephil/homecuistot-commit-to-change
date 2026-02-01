@@ -22,7 +22,7 @@ export function InventoryHelpModal({ isOpen, onClose }: InventoryHelpModalProps)
             "I just bought milk and eggs",
             "I have enough onions for at least 2 meals",
             "Running low on tomatoes",
-            "Have plenty of pasta",
+            "I always have pasta in my pantry",
           ]}
           bulletColor="text-black"
         />
