@@ -2,9 +2,9 @@
 "use client";
 
 import { PageContainer } from "@/components/PageContainer";
-import { IngredientBadge } from "@/components/retroui/IngredientBadge";
-import { Button } from "@/components/retroui/Button";
-import { InfoCard } from "@/components/retroui/InfoCard";
+import { IngredientBadge } from "@/components/shared/IngredientBadge";
+import { Button } from "@/components/shared/Button";
+import { InfoCard } from "@/components/shared/InfoCard";
 import { useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";

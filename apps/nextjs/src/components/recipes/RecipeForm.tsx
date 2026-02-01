@@ -1,7 +1,7 @@
 "use client";
 
-import { RecipeCreateForm } from "./recipe-create-form";
-import { RecipeEditForm } from "./recipe-edit-form";
+import { RecipeCreateForm } from "./RecipeCreateForm";
+import { RecipeEditForm } from "./RecipeEditForm";
 
 interface RecipeFormProps {
   recipe?: {

@@ -1,7 +1,7 @@
 "use client";
 
-import { Card } from "@/components/retroui/Card";
-import { Button } from "@/components/retroui/Button";
+import { Card } from "@/components/shared/Card";
+import { Button } from "@/components/shared/Button";
 import { ReactNode } from "react";
 
 interface FormModalProps {

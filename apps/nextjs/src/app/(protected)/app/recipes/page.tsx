@@ -2,12 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { PageContainer } from "@/components/PageContainer";
-import { Button } from "@/components/retroui/Button";
-import { RecipeList } from "@/components/recipes/recipe-list";
-import { RecipeForm } from "@/components/recipes/recipe-form";
-import { RecipeHelpModal } from "@/components/recipes/help-modal";
-import { NeoHelpButton } from "@/components/shared/neo-help-button";
-import { DeleteConfirmationModal } from "@/components/shared/delete-confirmation-modal";
+import { Button } from "@/components/shared/Button";
+import { RecipeList } from "@/components/recipes/RecipeList";
+import { RecipeForm } from "@/components/recipes/RecipeForm";
+import { RecipeHelpModal } from "@/components/recipes/HelpModal";
+import { NeoHelpButton } from "@/components/shared/NeoHelpButton";
+import { DeleteConfirmationModal } from "@/components/shared/DeleteConfirmationModal";
 import { getRecipes, deleteRecipe } from "@/app/actions/recipes";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";

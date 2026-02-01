@@ -2,8 +2,8 @@
 
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/retroui/Button";
-import { InfoCard } from "@/components/retroui/InfoCard";
+import { Button } from "@/components/shared/Button";
+import { InfoCard } from "@/components/shared/InfoCard";
 import { PageContainer } from "@/components/PageContainer";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { Loader2, Check, HelpCircle } from "lucide-react";

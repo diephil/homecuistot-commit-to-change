@@ -1,7 +1,7 @@
 import { HTMLAttributes, ReactNode } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
-import { Text } from "@/components/retroui/Text";
+import { Text } from "@/components/shared/Text";
 
 const infoCardVariants = cva(
   "border-3 md:border-4 border-black p-4 md:p-5 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]",

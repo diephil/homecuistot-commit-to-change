@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useVoiceInput } from "@/hooks/useVoiceInput";
-import { Button } from "@/components/retroui/Button";
+import { Button } from "@/components/shared/Button";
 
 interface VoiceInputProps {
   onRecordingComplete: (audioBlob: Blob) => void;

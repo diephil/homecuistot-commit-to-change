@@ -1,5 +1,5 @@
 import { PageContainer } from '@/components/PageContainer'
-import { InfoCard } from '@/components/retroui/InfoCard'
+import { InfoCard } from '@/components/shared/InfoCard'
 
 export default function AdminDashboardPage() {
   return (

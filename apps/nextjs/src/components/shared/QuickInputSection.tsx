@@ -1,8 +1,8 @@
 "use client";
 
-import { VoiceInput } from "@/components/recipes/voice-input";
-import { Button } from "@/components/retroui/Button";
-import { VoiceGuidance } from "./voice-guidance";
+import { VoiceInput } from "@/components/shared/VoiceInput";
+import { Button } from "@/components/shared/Button";
+import { VoiceGuidance } from "./VoiceGuidance";
 
 type InputMode = "voice" | "text";
 type VoiceGuidanceContext = "inventory" | "recipe" | "recipe-update";

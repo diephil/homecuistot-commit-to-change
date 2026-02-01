@@ -1,7 +1,7 @@
 "use client";
 
-import { HelpModal, HelpSection, HelpExampleList } from "@/components/shared/help-modal";
-import { IngredientBadge } from "@/components/retroui/IngredientBadge";
+import { HelpModal, HelpSection, HelpExampleList } from "@/components/shared/HelpModal";
+import { IngredientBadge } from "@/components/shared/IngredientBadge";
 import { QuantityLevel } from "@/types/inventory";
 
 interface InventoryHelpModalProps {

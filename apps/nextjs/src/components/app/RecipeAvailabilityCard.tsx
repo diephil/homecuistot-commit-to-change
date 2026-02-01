@@ -1,8 +1,8 @@
 'use client'
 
 import { cn } from '@/lib/utils'
-import { Badge } from '@/components/retroui/Badge'
-import { Button } from '@/components/retroui/Button'
+import { Badge } from '@/components/shared/Badge'
+import { Button } from '@/components/shared/Button'
 import { Check } from 'lucide-react'
 import type { RecipeWithAvailability } from '@/types/cooking'
 

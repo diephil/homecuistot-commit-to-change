@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { AppHeaderContent } from '@/components/app/app-header-content'
+import { AppHeaderContent } from '@/components/app/AppHeaderContent'
 
 export default async function AppLayout({ children }: { children: ReactNode }) {
   // Note: Redirect logic moved to page.tsx to avoid infinite loop on /app/onboarding

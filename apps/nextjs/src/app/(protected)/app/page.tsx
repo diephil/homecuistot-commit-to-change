@@ -1,10 +1,10 @@
 import { redirect, RedirectType } from 'next/navigation'
 import { getRecipesWithAvailability, getCookingHistory, getUserCounts } from '@/app/actions/cooking-log'
 import { RecipeSection } from './recipe-section'
-import { CookingHistoryTable } from '@/components/app/cooking-history-table'
-import { ResetUserDataButton } from '@/components/app/reset-user-data-button'
-import { StartDemoButton } from '@/components/app/start-demo-button'
-import { AppPageHeader } from '@/components/app/app-page-header'
+import { CookingHistoryTable } from '@/components/app/CookingHistoryTable'
+import { ResetUserDataButton } from '@/components/app/ResetUserDataButton'
+import { StartDemoButton } from '@/components/app/StartDemoButton'
+import { AppPageHeader } from '@/components/app/AppPageHeader'
 
 export default async function AppPage() {
   // T005-T006: Check recipe/inventory count and redirect if both are zero

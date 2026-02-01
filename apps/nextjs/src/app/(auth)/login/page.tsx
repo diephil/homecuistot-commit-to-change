@@ -1,11 +1,11 @@
 "use client";
 
 import { createClient } from "@/utils/supabase/client";
-import { Button } from "@/components/retroui/Button";
-import { Text } from "@/components/retroui/Text";
-import { Badge } from "@/components/retroui/Badge";
+import { Button } from "@/components/shared/Button";
+import { Text } from "@/components/shared/Text";
+import { Badge } from "@/components/shared/Badge";
 import { PageContainer } from "@/components/PageContainer";
-import { InfoCard } from "@/components/retroui/InfoCard";
+import { InfoCard } from "@/components/shared/InfoCard";
 import { cn } from "@/lib/utils";
 
 const getURL = () => {

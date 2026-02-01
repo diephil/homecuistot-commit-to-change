@@ -2,8 +2,8 @@
 
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
-import { LogoutButton } from '@/components/LogoutButton'
-import { AppNavigation } from '@/components/app/app-navigation'
+import { LogoutButton } from '@/components/app/LogoutButton'
+import { AppNavigation } from '@/components/app/AppNavigation'
 
 export function AppHeaderContent() {
   const pathname = usePathname()

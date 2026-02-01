@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { LogoutButton } from '@/components/LogoutButton'
+import { LogoutButton } from '@/components/app/LogoutButton'
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
   return (

@@ -4,7 +4,7 @@
  * Shows example sentences for voice input in the inventory page.
  */
 
-import { InfoCard } from "@/components/retroui/InfoCard";
+import { InfoCard } from "@/components/shared/InfoCard";
 
 export function VoiceGuidanceCard() {
   return (

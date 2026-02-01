@@ -2,8 +2,8 @@
 
 import { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { RecipeAvailabilityCard } from '@/components/app/recipe-availability-card'
-import { MarkCookedModal } from '@/components/app/mark-cooked-modal'
+import { RecipeAvailabilityCard } from '@/components/app/RecipeAvailabilityCard'
+import { MarkCookedModal } from '@/components/app/MarkCookedModal'
 import type { RecipeWithAvailability } from '@/types/cooking'
 
 export interface RecipeSectionProps {

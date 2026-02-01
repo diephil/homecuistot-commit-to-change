@@ -1,8 +1,26 @@
-export { FormModal } from "./form-modal";
-export { QuickInputSection } from "./quick-input-section";
-export { LoadingState } from "./loading-state";
-export { VoiceGuidance } from "./voice-guidance";
+// RetroUI Components (merged from retroui/)
+export { Alert } from "./Alert";
+export { Avatar } from "./Avatar";
+export { Badge } from "./Badge";
+export { Button } from "./Button";
+export { Card } from "./Card";
+export { InfoCard } from "./InfoCard";
+export { IngredientBadge } from "./IngredientBadge";
+export { SmallActionButton } from "./SmallActionButton";
+export { Text } from "./Text";
+
+// UI Components (merged from ui/)
+export { Toaster } from "./SonnerToaster";
+
+// Shared Components
+export { DeleteConfirmationModal } from "./DeleteConfirmationModal";
+export { FormModal } from "./FormModal";
+export { HelpModal, HelpSection, HelpExampleList } from "./HelpModal";
 export { IngredientChip } from "./IngredientChip";
+export { LastHeardDisplay } from "./LastHeardDisplay";
+export { NeoHelpButton } from "./NeoHelpButton";
+export { QuickInputSection } from "./QuickInputSection";
+export { UnrecognizedItemRow } from "./UnrecognizedItemRow";
+export { VoiceGuidance } from "./VoiceGuidance";
+export { VoiceInput } from "./VoiceInput";
 export { VoiceTextInput } from "./VoiceTextInput";
-export { NeoHelpButton } from "./neo-help-button";
-export { HelpModal, HelpSection } from "./help-modal";

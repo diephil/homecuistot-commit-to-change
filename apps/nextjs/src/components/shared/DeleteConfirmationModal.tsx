@@ -1,7 +1,7 @@
 "use client";
 
-import { Button } from "@/components/retroui/Button";
-import { Card } from "@/components/retroui/Card";
+import { Button } from "@/components/shared/Button";
+import { Card } from "@/components/shared/Card";
 import { AlertTriangle } from "lucide-react";
 
 interface DeleteConfirmationModalProps {

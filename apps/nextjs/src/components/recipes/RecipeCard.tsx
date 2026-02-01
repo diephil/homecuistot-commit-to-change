@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { SmallActionButton } from "@/components/retroui/SmallActionButton";
+import { SmallActionButton } from "@/components/shared/SmallActionButton";
 import { Pencil, X } from "lucide-react";
 
 interface RecipeCardProps {

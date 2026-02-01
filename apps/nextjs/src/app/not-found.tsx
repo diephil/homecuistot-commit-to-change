@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Button } from '@/components/retroui/Button'
+import { Button } from '@/components/shared/Button'
 import { PageContainer } from '@/components/PageContainer'
 
 export default function NotFound() {

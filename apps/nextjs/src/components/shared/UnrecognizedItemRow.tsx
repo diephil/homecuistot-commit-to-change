@@ -14,7 +14,7 @@
 
 import { Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import type { UnrecognizedInventoryItem } from '@/types/inventory.types';
+import type { UnrecognizedInventoryItem } from '@/types/inventory';
 
 interface UnrecognizedItemRowProps {
   item: UnrecognizedInventoryItem;

@@ -2,13 +2,13 @@
 
 import { useState, useEffect } from "react";
 import { PageContainer } from "@/components/PageContainer";
-import { InventorySection } from "@/components/inventory/inventory-section";
-import { HelpModal } from "@/components/inventory/help-modal";
-import { NeoHelpButton } from "@/components/shared/neo-help-button";
-import { ProposalConfirmationModal } from "@/components/inventory/proposal-confirmation-modal";
-import { DeleteConfirmationModal } from "@/components/shared/delete-confirmation-modal";
+import { InventorySection } from "@/components/inventory/InventorySection";
+import { HelpModal } from "@/components/inventory/HelpModal";
+import { NeoHelpButton } from "@/components/shared/NeoHelpButton";
+import { ProposalConfirmationModal } from "@/components/inventory/ProposalConfirmationModal";
+import { DeleteConfirmationModal } from "@/components/shared/DeleteConfirmationModal";
 import { UnrecognizedItemRow } from "@/components/shared/UnrecognizedItemRow";
-import { VoiceGuidanceCard } from "@/components/inventory/voice-guidance-card";
+import { VoiceGuidanceCard } from "@/components/inventory/VoiceGuidanceCard";
 import { VoiceTextInput } from "@/components/shared";
 import { InventoryDisplayItem, QuantityLevel, InventoryGroups, InventoryUpdateProposal } from "@/types/inventory";
 import { deleteUnrecognizedItem } from "@/app/actions/inventory";

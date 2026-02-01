@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/retroui/Button";
-import { Card } from "@/components/retroui/Card";
+import { Button } from "@/components/shared/Button";
+import { Card } from "@/components/shared/Card";
 import { createRecipe, validateIngredients } from "@/app/actions/recipes";
-import { QuickInputSection } from "@/components/shared/quick-input-section";
+import { QuickInputSection } from "@/components/shared/QuickInputSection";
 import { toast } from "sonner";
 
 interface RecipeCreateFormProps {

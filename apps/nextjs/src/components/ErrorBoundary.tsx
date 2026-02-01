@@ -1,7 +1,7 @@
 "use client";
 
 import { Component, type ReactNode } from "react";
-import { Button } from "@/components/retroui/Button";
+import { Button } from "@/components/shared/Button";
 
 /**
  * T052: Error Boundary for unexpected React errors

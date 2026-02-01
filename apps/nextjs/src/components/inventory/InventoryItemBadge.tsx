@@ -1,7 +1,7 @@
 "use client";
 
-import { IngredientBadge } from "@/components/retroui/IngredientBadge";
-import { SmallActionButton } from "@/components/retroui/SmallActionButton";
+import { IngredientBadge } from "@/components/shared/IngredientBadge";
+import { SmallActionButton } from "@/components/shared/SmallActionButton";
 import { QuantityLevel } from "@/types/inventory";
 import { Infinity, X } from "lucide-react";
 
