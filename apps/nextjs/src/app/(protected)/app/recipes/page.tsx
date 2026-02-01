@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { PageContainer } from "@/components/PageContainer";
-import { RecipeAvailabilityCard } from "@/components/app/RecipeAvailabilityCard";
+import { RecipeCard } from "@/components/recipes/RecipeCard";
 import { RecipeForm } from "@/components/recipes/RecipeForm";
 import { RecipeHelpModal } from "@/components/recipes/HelpModal";
 import { RecipeVoiceGuidanceCard } from "@/components/recipes/VoiceGuidanceCard";
@@ -172,7 +172,7 @@ export default function RecipesPage() {
         <section className="space-y-4">
           <SectionHeader
             title="Tracked Recipes"
-            description="Matched against your inventory to show what you can cook right now"
+            description="★ marks required ingredients for each recipe"
           />
 
           {recipesWithAvailability.length === 0 ? (
@@ -185,13 +185,12 @@ export default function RecipesPage() {
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
             {recipesWithAvailability.map((recipe) => (
-              <RecipeAvailabilityCard
+              <RecipeCard
                 key={recipe.id}
                 recipe={recipe}
                 variant={recipe.availability}
                 onEdit={() => handleRecipeEdit(recipe.id)}
                 onDelete={() => handleRecipeDeleteClick(recipe)}
-                showMissingCount={false}
               />
             ))}
           </div>

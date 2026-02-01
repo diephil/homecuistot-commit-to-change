@@ -98,7 +98,7 @@ export function RecipeAvailabilityCard(props: RecipeAvailabilityCardProps) {
       {showMissingCount && variant === 'almost-available' && recipe.missingAnchorCount > 0 && (
         <div className="p-2 bg-white/50 border-2 border-black">
           <span className="text-sm font-black">
-            Missing {recipe.missingAnchorCount} ingredient{recipe.missingAnchorCount !== 1 ? 's' : ''}
+            Requires {recipe.missingAnchorCount} more ingredient{recipe.missingAnchorCount !== 1 ? 's' : ''}
           </span>
         </div>
       )}
