@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import { Mic, Loader2, Send } from "lucide-react";
 import { useVoiceInput } from "@/hooks/useVoiceInput";
 import { Button } from "@/components/retroui/Button";
+import { LastHeardDisplay } from "./LastHeardDisplay";
 import { cn } from "@/lib/utils";
 
 /**
@@ -28,6 +29,8 @@ interface VoiceTextInputProps {
   textFallbackLabel?: string;
   instructions?: React.ReactNode;
   className?: string;
+  /** Last transcription from voice input - displayed above the mic */
+  lastTranscription?: string;
 }
 
 export function VoiceTextInput({
@@ -39,6 +42,7 @@ export function VoiceTextInput({
   textFallbackLabel = "Prefer to type instead?",
   instructions,
   className,
+  lastTranscription,
 }: VoiceTextInputProps) {
   const [inputMode, setInputMode] = useState<"voice" | "text">("voice");
   const [textValue, setTextValue] = useState("");
@@ -116,6 +120,14 @@ export function VoiceTextInput({
       {/* Voice Mode */}
       {effectiveInputMode === "voice" && !permissionDenied && (
         <div className="flex flex-col items-center gap-4">
+          {/* Last transcription display */}
+          {lastTranscription && !showRecordingUI && !processing && (
+            <LastHeardDisplay
+              transcription={lastTranscription}
+              className="w-full max-w-md"
+            />
+          )}
+
           {/* Hold-to-speak button */}
           <button
             onMouseDown={handleRecordStart}

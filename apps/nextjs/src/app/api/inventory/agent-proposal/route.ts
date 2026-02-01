@@ -78,7 +78,10 @@ export async function POST(request: Request) {
       currentInventory,
     });
 
-    return NextResponse.json({ proposal: result.proposal });
+    return NextResponse.json({
+      proposal: result.proposal,
+      transcribedText: result.transcribedText,
+    });
   } catch (error) {
     console.error(`Agent proposal error [${requestId}]:`, error);
     return NextResponse.json(
