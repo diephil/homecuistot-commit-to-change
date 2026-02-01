@@ -3,7 +3,9 @@
 import { useState } from "react";
 import { Button } from "@/components/retroui/Button";
 import { IngredientBadge } from "@/components/retroui/IngredientBadge";
+import { SmallActionButton } from "@/components/retroui/SmallActionButton";
 import { Alert } from "@/components/retroui/Alert";
+import { X } from "lucide-react";
 import { FormModal } from "@/components/shared/form-modal";
 import { QuickInputSection } from "@/components/shared/quick-input-section";
 import { LoadingState } from "@/components/shared/loading-state";
@@ -198,6 +200,15 @@ export function InventoryUpdateModal({
     }
   };
 
+  // Dismiss a detected ingredient
+  const handleDismissIngredient = (index: number) => {
+    if (!proposal) return;
+    setProposal({
+      ...proposal,
+      recognized: proposal.recognized.filter((_, i) => i !== index),
+    });
+  };
+
   return (
     <FormModal isOpen={isOpen} onClose={handleClose} title="Update Inventory">
       {/* Input Stage */}
@@ -231,9 +242,9 @@ export function InventoryUpdateModal({
               <p className="text-xs text-gray-600">
                 Tap badges to adjust quantity before saving
               </p>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-3">
                 {proposal.recognized.map((item, index) => (
-                  <div key={index} className="relative">
+                  <div key={index} className="relative inline-flex">
                     <IngredientBadge
                       name={item.ingredientName}
                       level={item.proposedQuantity as QuantityLevel}
@@ -249,8 +260,18 @@ export function InventoryUpdateModal({
                         });
                       }}
                     />
+                    <SmallActionButton
+                      icon={X}
+                      variant="red"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDismissIngredient(index);
+                      }}
+                      title="Dismiss ingredient"
+                      className="absolute -top-1 -right-1"
+                    />
                     {item.previousQuantity !== null && item.previousQuantity !== item.proposedQuantity && (
-                      <span className="absolute -top-2 -right-2 bg-blue-400 border-2 border-black text-xs px-2 py-0.5 rounded-full font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                      <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-400 border-2 border-black text-xs px-2 py-0.5 rounded-full font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                         {item.previousQuantity} → {item.proposedQuantity}
                       </span>
                     )}
