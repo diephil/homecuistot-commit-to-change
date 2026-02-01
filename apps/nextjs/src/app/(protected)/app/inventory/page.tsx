@@ -379,7 +379,7 @@ export default function InventoryPage() {
         <div className="space-y-2">
           <InventorySection
             title="Pantry Staples"
-            description="Items here are always available in recipe matching."
+            description="Basic or important foods you have a supply of. They are always considered available in recipe matching"
             items={inventory.pantryStaples}
             isPantrySection={true}
             onQuantityChange={handleQuantityChange}
@@ -387,12 +387,6 @@ export default function InventoryPage() {
             onDelete={handleDelete}
           />
 
-          {/* Feature 021: FR-012, FR-013 - Hint text for pantry staples */}
-          {inventory.pantryStaples.length > 0 && (
-            <p className="text-sm font-bold text-gray-700 mt-2">
-              💡 Pantry staples are basic or important foods you have a supply of in your kitchen and should be considered always available.
-            </p>
-          )}
         </div>
 
         {/* Feature 021: Unrecognized Items Section (FR-001: appears at end of list) */}
