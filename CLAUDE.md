@@ -111,6 +111,31 @@ pnpm db:studio            # Open Drizzle Studio GUI
 - When implementing a new React component, we first think about reusability and ensure the component is shared and reusable whenever it makes sense
 - Same principle for the code logic that reaches out to our database. We want to make those pieces of code reusable and place them into a shared folder that can be used by other components later on
 
+## Component Organization
+
+**Structure** (`apps/nextjs/src/components/`):
+```
+components/
+├── ErrorBoundary.tsx    (global - error handling)
+├── PageContainer.tsx    (global - layout wrapper)
+├── app/                 (app page domain - header, nav, modals)
+├── inventory/           (inventory page domain)
+├── recipes/             (recipes page domain)
+└── shared/              (cross-domain reusable components)
+```
+
+**Rules**:
+- **PascalCase filenames**: `RecipeCard.tsx`, not `recipe-card.tsx`
+- **Domain folders**: page-specific components go in their domain folder
+- **shared/**: UI primitives (Button, Card, Badge), cross-domain components (HelpModal, VoiceInput)
+- **Root level**: only truly global components (ErrorBoundary, PageContainer)
+- **Barrel exports**: `shared/index.ts` exports all shared components
+
+**Placement decision**:
+- Used by 1 page → domain folder (`app/`, `inventory/`, `recipes/`)
+- Used by 2+ pages → `shared/`
+- Global wrapper/utility → root level
+
 ## Project Scripts
 
 **Ingredient Extraction** (from `apps/nextjs/`):
