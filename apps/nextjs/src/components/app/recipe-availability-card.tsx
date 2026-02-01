@@ -3,7 +3,7 @@
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/retroui/Badge'
 import { Button } from '@/components/retroui/Button'
-import { X } from 'lucide-react'
+import { Check } from 'lucide-react'
 import type { RecipeWithAvailability } from '@/types/cooking'
 
 export interface RecipeAvailabilityCardProps {
@@ -42,7 +42,7 @@ export function RecipeAvailabilityCard(props: RecipeAvailabilityCardProps) {
       )}
 
       {/* Ingredients list */}
-      <div className="flex flex-wrap gap-2 mb-3">
+      <div className="flex flex-wrap gap-2">
         {anchorIngredients.map((ing) => (
           <Badge
             key={ing.id}
@@ -59,9 +59,12 @@ export function RecipeAvailabilityCard(props: RecipeAvailabilityCardProps) {
         ))}
       </div>
 
+      {/* Spacer to push bottom content down */}
+      <div className="flex-grow min-h-3" />
+
       {/* Missing ingredients count for almost-available */}
       {variant === 'almost-available' && recipe.missingAnchorCount > 0 && (
-        <div className="p-2 bg-white/50 border-2 border-black mt-auto">
+        <div className="p-2 bg-white/50 border-2 border-black">
           <span className="text-sm font-black">
             Missing {recipe.missingAnchorCount} ingredient{recipe.missingAnchorCount !== 1 ? 's' : ''}
           </span>
@@ -72,10 +75,11 @@ export function RecipeAvailabilityCard(props: RecipeAvailabilityCardProps) {
       {variant === 'available' && onMarkAsCooked && (
         <Button
           variant="default"
-          size="sm"
-          className="w-full"
+          size="md"
+          className="w-full justify-center gap-2"
           onClick={() => onMarkAsCooked(recipe)}
         >
+          <Check className="w-5 h-5" />
           Mark as Cooked
         </Button>
       )}
