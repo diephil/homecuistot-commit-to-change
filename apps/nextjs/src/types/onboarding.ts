@@ -2,32 +2,8 @@ import { z } from 'zod';
 
 /**
  * T001: Onboarding type definitions
- * Spec: specs/004-onboarding-flow/data-model.md
- * Updated: specs/019-onboarding-revamp/data-model.md
+ * Spec: specs/019-onboarding-revamp/data-model.md
  */
-
-// =============================================================================
-// Legacy Schema (kept for backward compatibility during migration)
-// =============================================================================
-
-// Onboarding Input Update Schema (NLP response from Gemini for voice or text)
-export const OnboardingUpdateSchema = z.object({
-  add: z.object({
-    dishes: z.array(z.string()),
-    ingredients: z.array(z.string()),
-  }),
-  remove: z.object({
-    dishes: z.array(z.string()),
-    ingredients: z.array(z.string()),
-  }),
-});
-
-// Derived type from schema
-export type OnboardingUpdate = z.infer<typeof OnboardingUpdateSchema>;
-
-// =============================================================================
-// New Types for 019-onboarding-revamp
-// =============================================================================
 
 /**
  * T001: Cooking skill level (transient, not stored in DB)
@@ -80,27 +56,9 @@ export const IngredientExtractionSchema = z.object({
 
 export type IngredientExtractionResponse = z.infer<typeof IngredientExtractionSchema>;
 
-// Onboarding state interface
-export interface OnboardingState {
-  currentStep: 1 | 2 | 3 | 4;
-  dishes: string[];
-  fridge: string[];
-  pantry: string[];
-  ingredients: string[];
-  hasVoiceChanges: boolean;
-  voiceFailureCount: number;
-}
-
-// Legacy PersistRequest schema (kept for backward compatibility)
-export const LegacyPersistRequestSchema = z.object({
-  dishes: z.array(z.string().min(1).max(100)).max(20),
-  ingredients: z.array(z.string().min(1).max(100)).max(100),
-  pantryItems: z.array(z.string().min(1).max(100)).max(50),
-});
-
 /**
- * T038: New PersistRequest schema for 019-onboarding-revamp
- * Accepts cookingSkill and ingredients only (no dishes - uses static recipes)
+ * T038: PersistRequest schema for onboarding
+ * Accepts cookingSkill and ingredients only (uses static recipes)
  */
 export const PersistRequestSchema = z.object({
   cookingSkill: z.enum(['basic', 'advanced']),
@@ -117,27 +75,4 @@ export interface PersistResponse {
   recipesCreated: number;
   inventoryCreated: number;
   unrecognizedCount: number;
-}
-
-// Initial state
-export const initialOnboardingState: OnboardingState = {
-  currentStep: 1,
-  dishes: [],
-  fridge: [],
-  pantry: [],
-  ingredients: [],
-  hasVoiceChanges: false,
-  voiceFailureCount: 0,
-};
-
-// Suggested item structure
-export interface SuggestedItem {
-  id: string;
-  name: string;
-}
-
-export interface SuggestedItems {
-  dishes: SuggestedItem[];
-  fridgeItems: SuggestedItem[];
-  pantryItems: SuggestedItem[];
 }
