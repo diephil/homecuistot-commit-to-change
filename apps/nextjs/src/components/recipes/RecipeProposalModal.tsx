@@ -302,28 +302,29 @@ function RecipeProposalCard({
       {/* Ingredients */}
       <div className="flex flex-wrap gap-2">
         {validIngredients.map((ing, idx) => (
-          <Badge
-            key={idx}
-            variant="outline"
-            size="sm"
-            className="bg-white/50 cursor-pointer hover:bg-white/80 transition-colors group"
-            onClick={() => onToggleRequired(ingredients.indexOf(ing))}
-          >
-            <span className={cn("mr-1", ing.isRequired ? "text-amber-500" : "text-gray-300")}>
-              ★
-            </span>
-            {ing.name}
-            <button
+          <div key={idx} className="relative inline-flex">
+            <Badge
+              variant="outline"
+              size="sm"
+              className="bg-white/50 cursor-pointer hover:bg-white/80 transition-colors"
+              onClick={() => onToggleRequired(ingredients.indexOf(ing))}
+            >
+              <span className={cn("mr-1", ing.isRequired ? "text-amber-500" : "text-gray-300")}>
+                ★
+              </span>
+              {ing.name}
+            </Badge>
+            <SmallActionButton
+              icon={X}
+              variant="red"
               onClick={(e) => {
                 e.stopPropagation();
                 onRemoveIngredient(ingredients.indexOf(ing));
               }}
-              className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity"
               title="Remove ingredient"
-            >
-              <X className="w-3 h-3" />
-            </button>
-          </Badge>
+              className="absolute -top-3 -right-2"
+            />
+          </div>
         ))}
       </div>
 
