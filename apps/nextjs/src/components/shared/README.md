@@ -96,8 +96,7 @@ Centered loading spinner with message.
 
 ## Used In
 
-- ✅ `InventoryUpdateModal` - inventory updates with voice/text
-- ⏳ `RecipeForm` - recipe creation/editing (can be migrated)
+- ✅ `RecipeForm` - recipe creation/editing
 
 ---
 
