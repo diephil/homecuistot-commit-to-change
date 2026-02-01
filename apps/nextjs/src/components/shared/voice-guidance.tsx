@@ -13,7 +13,7 @@ const GUIDANCE_CONFIG = {
       "I just bought milk and eggs",
       "Running low on tomatoes",
       "Ran out of cheese and onions",
-      "Have plenty of pasta",
+      "I always have pasta in my pantry",
     ],
   },
   recipe: {
