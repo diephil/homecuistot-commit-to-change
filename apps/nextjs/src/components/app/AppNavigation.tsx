@@ -8,7 +8,7 @@ import { Home, Book, Package, Menu, X } from 'lucide-react'
 
 const navItems = [
   { href: '/app', label: 'Home', icon: Home },
-  { href: '/app/recipes', label: 'Recipes', icon: Book },
+  { href: '/app/recipes', label: 'My Cookbook', icon: Book },
   { href: '/app/inventory', label: 'Inventory', icon: Package },
 ]
 
@@ -42,7 +42,7 @@ export function AppNavigation() {
 
       {/* Mobile: Dropdown menu */}
       {isOpen && (
-        <div className="md:hidden mt-2 flex flex-col gap-2">
+        <div className="md:hidden mt-2 flex flex-col gap-2 ">
           {navItems.map((item) => {
             const active = isActive({ pathname, href: item.href })
             const Icon = item.icon
@@ -54,7 +54,7 @@ export function AppNavigation() {
                 onClick={() => setIsOpen(false)}
                 className={cn(
                   'inline-flex items-center gap-2 px-4 py-3 font-bold border-2 border-black transition-all',
-                  'shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]',
+                  'shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] ',
                   active
                     ? 'bg-pink-400 text-black'
                     : 'bg-white hover:bg-pink-100'

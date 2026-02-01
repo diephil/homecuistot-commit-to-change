@@ -324,7 +324,7 @@ export default function RecipesPage() {
         {/* Tracked Recipes Section */}
         <section className="space-y-4">
           <SectionHeader
-            title="Tracked Recipes"
+            title="My go-to recipes"
             description={
               <>
                 <span className="text-amber-500">★</span> marks mandatory ingredients, others are optional and the recipe can still be made without them.

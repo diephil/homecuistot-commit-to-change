@@ -41,6 +41,7 @@ export default async function AppPage() {
 
         <RecipeSection
           title="Ready To Cook Recipes"
+          subtitle="You have all the ingredients in your inventory for these recipes, start cooking!"
           recipes={availableRecipes}
           variant="available"
           emptyMessage="No recipes available with your current inventory."
@@ -48,7 +49,7 @@ export default async function AppPage() {
 
         <RecipeSection
           title="Almost Available Recipes"
-          subtitle="You're missing just a few ingredients for these recipes"
+          subtitle="You're missing a few ingredients for these recipes, add them to your inventory to cook them!"
           recipes={almostAvailableRecipes}
           variant="almost-available"
           emptyMessage="No recipes are almost available right now."
