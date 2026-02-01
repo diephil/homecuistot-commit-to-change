@@ -20,6 +20,7 @@ export { IngredientChip } from "./IngredientChip";
 export { LastHeardDisplay } from "./LastHeardDisplay";
 export { NeoHelpButton } from "./NeoHelpButton";
 export { QuickInputSection } from "./QuickInputSection";
+export { SectionHeader } from "./SectionHeader";
 export { Separator } from "./Separator";
 export { UnrecognizedItemRow } from "./UnrecognizedItemRow";
 export { VoiceGuidance } from "./VoiceGuidance";

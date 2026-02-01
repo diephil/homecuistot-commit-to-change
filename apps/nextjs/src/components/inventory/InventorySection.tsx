@@ -1,6 +1,7 @@
 "use client";
 
 import { InventoryItemBadge } from "./InventoryItemBadge";
+import { SectionHeader } from "@/components/shared/SectionHeader";
 import { InventoryDisplayItem, QuantityLevel } from "@/types/inventory";
 
 interface InventorySectionProps {
@@ -26,12 +27,7 @@ export function InventorySection({
   if (items.length === 0) {
     return (
       <section className="space-y-4 pb-8">
-        <div>
-          <h2 className="text-2xl font-bold">{title}</h2>
-          {description && (
-            <p className="mt-1 text-sm text-gray-600">{description}</p>
-          )}
-        </div>
+        <SectionHeader title={title} description={description} />
         <p className="text-sm text-gray-500 italic">No items yet</p>
       </section>
     );
@@ -39,12 +35,7 @@ export function InventorySection({
 
   return (
     <section className="space-y-4 pb-8">
-      <div>
-        <h2 className="text-2xl font-bold">{title}</h2>
-        {description && (
-          <p className="mt-1 text-sm text-gray-600">{description}</p>
-        )}
-      </div>
+      <SectionHeader title={title} description={description} />
 
       <div className="flex flex-wrap gap-2">
         {items.map((item) => (

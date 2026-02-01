@@ -2,15 +2,15 @@
 
 import { useState, useEffect } from "react";
 import { PageContainer } from "@/components/PageContainer";
-import { Button } from "@/components/shared/Button";
 import { RecipeAvailabilityCard } from "@/components/app/RecipeAvailabilityCard";
 import { RecipeForm } from "@/components/recipes/RecipeForm";
 import { RecipeHelpModal } from "@/components/recipes/HelpModal";
+import { RecipeVoiceGuidanceCard } from "@/components/recipes/VoiceGuidanceCard";
 import { NeoHelpButton } from "@/components/shared/NeoHelpButton";
 import { DeleteConfirmationModal } from "@/components/shared/DeleteConfirmationModal";
+import { VoiceTextInput, Separator, SectionHeader } from "@/components/shared";
 import { getRecipes, deleteRecipe } from "@/app/actions/recipes";
 import { getRecipesWithAvailabilitySorted } from "@/app/actions/cooking-log";
-import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import type { RecipeWithAvailability } from "@/types/cooking";
 
@@ -66,11 +66,6 @@ export default function RecipesPage() {
     }
   }
 
-  function handleAddRecipe() {
-    setSelectedRecipeId(null);
-    setIsFormOpen(true);
-  }
-
   function handleRecipeEdit(recipeId: string) {
     setSelectedRecipeId(recipeId);
     setIsFormOpen(true);
@@ -112,41 +107,81 @@ export default function RecipesPage() {
     }
   }
 
+  // Voice/text input handler (non-functional for now)
+  const handleVoiceTextSubmit = async (
+    _result: { type: "voice"; audioBlob: Blob } | { type: "text"; text: string }
+  ) => {
+    // TODO: Implement voice/text recipe creation
+    toast.info("Voice recipe creation coming soon!");
+  };
+
   const selectedRecipe = selectedRecipeId
     ? recipes.find((r) => r.id === selectedRecipeId)
     : null;
 
+  if (isLoading) {
+    return (
+      <PageContainer
+        maxWidth="4xl"
+        gradientFrom="from-yellow-50"
+        gradientVia="via-amber-50"
+        gradientTo="to-orange-50"
+      >
+        <div className="animate-pulse space-y-8">
+          <div className="h-8 bg-gray-200 rounded w-1/3"></div>
+          <div className="h-32 bg-gray-200 rounded"></div>
+          <div className="h-32 bg-gray-200 rounded"></div>
+        </div>
+      </PageContainer>
+    );
+  }
+
   return (
-    <PageContainer maxWidth="4xl">
-      <div className="space-y-6">
+    <PageContainer
+      maxWidth="4xl"
+      gradientFrom="from-yellow-50"
+      gradientVia="via-amber-50"
+      gradientTo="to-orange-50"
+    >
+      <div className="space-y-8">
+        {/* Header */}
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold">My Recipes</h1>
-          <div className="flex gap-2">
-            <NeoHelpButton
-              renderModal={({ isOpen, onClose }) => (
-                <RecipeHelpModal isOpen={isOpen} onClose={onClose} />
-              )}
-            />
-            <Button
-              variant="default"
-              size="md"
-              className="gap-2 bg-black text-white hover:bg-gray-800 border-black"
-              onClick={handleAddRecipe}
-            >
-              <Plus className="h-5 w-5" />
-              Add Recipe
-            </Button>
-          </div>
+          <NeoHelpButton
+            renderModal={({ isOpen, onClose }) => (
+              <RecipeHelpModal isOpen={isOpen} onClose={onClose} />
+            )}
+          />
         </div>
 
-        {isLoading ? (
-          <p className="text-center py-8 text-muted-foreground">
-            Loading recipes...
-          </p>
-        ) : recipesWithAvailability.length === 0 ? (
-          <p className="text-sm text-muted-foreground text-center py-8">
-            No recipes yet. Add your first recipe to get started!
-          </p>
+        {/* Voice Input Section */}
+        <div className="space-y-4">
+          <RecipeVoiceGuidanceCard />
+
+          <VoiceTextInput
+            onSubmit={handleVoiceTextSubmit}
+            disabled={false}
+            processing={false}
+            textPlaceholder="Describe your recipe with ingredients..."
+          />
+        </div>
+
+        <Separator />
+
+        {/* Tracked Recipes Section */}
+        <section className="space-y-4">
+          <SectionHeader
+            title="Tracked Recipes"
+            description="Matched against your inventory to show what you can cook right now"
+          />
+
+          {recipesWithAvailability.length === 0 ? (
+          <div className="text-center py-4 space-y-2">
+            <p className="text-lg text-gray-600">No recipes yet</p>
+            <p className="text-sm text-gray-500">
+              Speak or type to add your first recipe
+            </p>
+          </div>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
             {recipesWithAvailability.map((recipe) => (
@@ -160,6 +195,7 @@ export default function RecipesPage() {
             ))}
           </div>
         )}
+        </section>
 
         {isFormOpen && (
           <RecipeForm

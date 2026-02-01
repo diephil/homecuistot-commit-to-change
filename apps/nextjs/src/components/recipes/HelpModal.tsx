@@ -10,19 +10,15 @@ interface RecipeHelpModalProps {
 export function RecipeHelpModal({ isOpen, onClose }: RecipeHelpModalProps) {
   return (
     <HelpModal isOpen={isOpen} onClose={onClose} title="How to Add Recipes">
-      {/* Voice/Text Input Section */}
-      <HelpSection emoji="🎙️" title="Voice Input Examples" bgColor="bg-blue-100">
-        <p className="text-sm font-medium mb-3">
-          Describe recipes you know how to cook using natural language. Examples:
-        </p>
+      {/* Speak to Add Recipe Section */}
+      <HelpSection emoji="💬" title="SPEAK TO ADD A RECIPE" bgColor="bg-cyan-100">
         <HelpExampleList
           examples={[
             "I can cook pasta carbonara. I use eggs, bacon, and Parmesan.",
             "My go-to is chicken stir-fry with broccoli, soy sauce, and garlic.",
             "I make a simple tomato soup with onions, garlic, tomatoes, and basil.",
-            "For breakfast I often make scrambled eggs with cheese and chives.",
           ]}
-          bulletColor="text-blue-600"
+          bulletColor="text-black"
         />
       </HelpSection>
 
