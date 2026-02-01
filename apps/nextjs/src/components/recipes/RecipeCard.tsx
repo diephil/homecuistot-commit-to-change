@@ -5,14 +5,14 @@ import { Badge } from '@/components/shared/Badge'
 import { SmallActionButton } from '@/components/shared/SmallActionButton'
 import { Pencil, X } from 'lucide-react'
 
-interface RecipeIngredient {
+export interface RecipeIngredient {
   id: string
   ingredientType: string
   ingredientId: string | null
   ingredient: { id: string; name: string; category: string } | null
 }
 
-interface Recipe {
+export interface Recipe {
   id: string
   name: string
   description: string | null
@@ -23,20 +23,18 @@ export interface RecipeCardProps {
   recipe: Recipe
   onEdit?: () => void
   onDelete?: () => void
+  onIngredientToggle?: (params: { recipeIngredientId: string; recipeId: string }) => void
 }
 
 export function RecipeCard(props: RecipeCardProps) {
-  const { recipe, onEdit, onDelete } = props
+  const { recipe, onEdit, onDelete, onIngredientToggle } = props
 
-  // Get all ingredients, required (anchor) first, then optional
+  // Get all ingredients sorted alphabetically
   const sortedIngredients = [...recipe.recipeIngredients]
     .filter((ri): ri is RecipeIngredient & { ingredient: NonNullable<RecipeIngredient['ingredient']> } =>
       ri.ingredient !== null
     )
-    .sort((a, b) => {
-      if (a.ingredientType === b.ingredientType) return 0
-      return a.ingredientType === 'anchor' ? -1 : 1
-    })
+    .sort((a, b) => a.ingredient.name.localeCompare(b.ingredient.name))
 
   return (
     <div
@@ -89,7 +87,18 @@ export function RecipeCard(props: RecipeCardProps) {
               key={ing.id}
               variant="outline"
               size="sm"
-              className="bg-white/50"
+              className={cn(
+                'bg-white/50',
+                onIngredientToggle && 'cursor-pointer hover:bg-white/80 transition-colors'
+              )}
+              onClick={
+                onIngredientToggle
+                  ? (e) => {
+                      e.stopPropagation()
+                      onIngredientToggle({ recipeIngredientId: ing.id, recipeId: recipe.id })
+                    }
+                  : undefined
+              }
             >
               <span className={cn('mr-1', isRequired ? 'text-amber-500' : 'text-gray-300')}>★</span>
               {ing.ingredient.name}

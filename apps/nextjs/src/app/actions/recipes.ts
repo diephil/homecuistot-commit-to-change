@@ -175,6 +175,71 @@ export async function updateRecipe(params: {
   revalidatePath("/app/recipes");
 }
 
+// Toggle ingredient type between anchor and optional
+export async function toggleIngredientType(params: {
+  recipeIngredientId: string;
+  recipeId: string;
+}) {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("Unauthorized");
+  }
+
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  if (!session) {
+    throw new Error("Unauthorized");
+  }
+
+  const token = decodeSupabaseToken(session.access_token);
+  const db = createUserDb(token);
+
+  // Verify recipe belongs to user and get current ingredient type
+  const [existing] = await db((tx) =>
+    tx
+      .select({
+        ingredientType: recipeIngredients.ingredientType,
+        userId: userRecipes.userId,
+      })
+      .from(recipeIngredients)
+      .innerJoin(userRecipes, eq(recipeIngredients.recipeId, userRecipes.id))
+      .where(
+        and(
+          eq(recipeIngredients.id, params.recipeIngredientId),
+          eq(recipeIngredients.recipeId, params.recipeId),
+          eq(userRecipes.userId, session.user.id)
+        )
+      )
+      .limit(1)
+  );
+
+  if (!existing) {
+    throw new Error("Ingredient not found");
+  }
+
+  const newType: IngredientType =
+    existing.ingredientType === "anchor" ? "optional" : "anchor";
+
+  await db((tx) =>
+    tx
+      .update(recipeIngredients)
+      .set({ ingredientType: newType })
+      .where(eq(recipeIngredients.id, params.recipeIngredientId))
+  );
+
+  revalidatePath("/app");
+  revalidatePath("/app/recipes");
+
+  return { newType };
+}
+
 // Delete recipe
 export async function deleteRecipe(params: { recipeId: string }) {
   const supabase = await createClient();

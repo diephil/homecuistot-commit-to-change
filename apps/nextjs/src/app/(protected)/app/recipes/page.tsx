@@ -9,7 +9,7 @@ import { RecipeVoiceGuidanceCard } from "@/components/recipes/VoiceGuidanceCard"
 import { NeoHelpButton } from "@/components/shared/NeoHelpButton";
 import { DeleteConfirmationModal } from "@/components/shared/DeleteConfirmationModal";
 import { VoiceTextInput, Separator, SectionHeader } from "@/components/shared";
-import { getRecipes, deleteRecipe } from "@/app/actions/recipes";
+import { getRecipes, deleteRecipe, toggleIngredientType } from "@/app/actions/recipes";
 import { toast } from "sonner";
 
 interface Recipe {
@@ -100,6 +100,34 @@ export default function RecipesPage() {
     }
   }
 
+  async function handleIngredientToggle(params: {
+    recipeIngredientId: string;
+    recipeId: string;
+  }) {
+    try {
+      const { newType } = await toggleIngredientType(params);
+
+      // Update local state for the specific ingredient
+      setRecipes((prev) =>
+        prev.map((recipe) =>
+          recipe.id === params.recipeId
+            ? {
+                ...recipe,
+                recipeIngredients: recipe.recipeIngredients.map((ing) =>
+                  ing.id === params.recipeIngredientId
+                    ? { ...ing, ingredientType: newType }
+                    : ing
+                ),
+              }
+            : recipe
+        )
+      );
+    } catch (error) {
+      console.error("Failed to toggle ingredient:", error);
+      toast.error("Failed to update ingredient");
+    }
+  }
+
   // Voice/text input handler (non-functional for now)
   const handleVoiceTextSubmit = async (
     _result: { type: "voice"; audioBlob: Blob } | { type: "text"; text: string }
@@ -187,6 +215,7 @@ export default function RecipesPage() {
                 recipe={recipe}
                 onEdit={() => handleRecipeEdit(recipe.id)}
                 onDelete={() => handleRecipeDeleteClick(recipe)}
+                onIngredientToggle={handleIngredientToggle}
               />
             ))}
           </div>
