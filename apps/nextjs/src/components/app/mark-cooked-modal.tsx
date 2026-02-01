@@ -138,7 +138,7 @@ export function MarkCookedModal(props: MarkCookedModalProps) {
               {ingredientDiffs.length > 0 ? (
                 <>
                   <p className="text-sm font-semibold mb-3">
-                    Adjust inventory levels (tap to change):
+                    Marking this as cooked will update your inventory as shown below (tap to change):
                   </p>
                   <div className="flex flex-wrap gap-2 mb-4">
                     {ingredientDiffs.map((diff) => (
