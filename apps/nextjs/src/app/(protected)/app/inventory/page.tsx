@@ -9,6 +9,8 @@ import { NeoHelpButton } from "@/components/shared/neo-help-button";
 import { InventoryUpdateModal } from "@/components/inventory/inventory-update-modal";
 import { DeleteConfirmationModal } from "@/components/shared/delete-confirmation-modal";
 import { UnrecognizedItemRow } from "@/components/shared/UnrecognizedItemRow";
+import { InfoCard } from "@/components/retroui/InfoCard";
+import { VoiceTextInput } from "@/components/shared";
 import { InventoryDisplayItem, QuantityLevel, InventoryGroups } from "@/types/inventory";
 import { deleteUnrecognizedItem } from "@/app/actions/inventory";
 import { createClient } from "@/utils/supabase/client";
@@ -363,6 +365,26 @@ export default function InventoryPage() {
               Update Inventory
             </Button>
           </div>
+        </div>
+
+        {/* Voice Input Section */}
+        <div className="space-y-4">
+          <InfoCard variant="cyan" emoji="💬" heading="Speak to update the list">
+            <ul className="list-disc list-inside space-y-1 text-sm">
+              <li>&quot;I just bought milk and eggs&quot;</li>
+              <li>&quot;I have enough onions for at least 2 meals&quot;</li>
+              <li>&quot;Running low on tomatoes&quot;</li>
+              <li>&quot;Have plenty of pasta&quot;</li>
+            </ul>
+          </InfoCard>
+
+          <VoiceTextInput
+            onSubmit={(input) => {
+              // TODO: Implement voice/text processing logic
+              console.log("Voice/text input received:", input);
+            }}
+            textPlaceholder="Add eggs and butter, remove bacon..."
+          />
         </div>
 
         {/* Tracked Ingredients */}
