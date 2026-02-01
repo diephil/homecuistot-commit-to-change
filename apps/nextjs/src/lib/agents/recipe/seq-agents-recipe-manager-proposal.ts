@@ -1,28 +1,33 @@
 /**
- * Inventory Manager Agent Proposal with Opik Tracing
+ * Recipe Manager Agent Proposal with Opik Tracing
  *
- * Processes voice/text input via ADK InventoryAgent with full observability.
+ * Processes voice/text input via ADK RecipeAgent with full observability.
  * Creates traces with spans for audio transcription, model calls, and tool calls.
+ * Adds "unrecognized_item" tag if any ingredient names don't match database.
  */
 
 import { GoogleGenAI } from "@google/genai";
 import { trackGemini } from "opik-gemini";
-import { InMemoryRunner, isFinalResponse } from "@google/adk";
+import { InMemoryRunner, createEvent } from "@google/adk";
 import type { Span } from "opik";
+import YAML from "yaml";
 import { createAgentTrace, extractAdkUsage } from "@/lib/tracing/opik-agent";
-import { createInventoryAgent } from "./agent";
-import type { InventorySessionItem } from "./tools/validate-ingredients";
-import type { InventoryUpdateProposal } from "@/types/inventory";
+import { createRecipeManagerAgent } from "./agent";
+import type {
+  RecipeSessionItem,
+  RecipeManagerProposal,
+  RecipeToolResult,
+} from "@/types/recipe-agent";
 
-interface CreateProposalParams {
+interface CreateRecipeProposalParams {
   userId: string;
   input?: string;
   audioBase64?: string;
-  currentInventory: InventorySessionItem[];
+  trackedRecipes: RecipeSessionItem[];
 }
 
-interface CreateProposalResult {
-  proposal: InventoryUpdateProposal;
+interface CreateRecipeProposalResult {
+  proposal: RecipeManagerProposal;
   transcribedText?: string;
   usage: {
     promptTokens: number;
@@ -31,44 +36,46 @@ interface CreateProposalResult {
   };
 }
 
-export async function createInventoryManagerAgentProposal(
-  params: CreateProposalParams,
-): Promise<CreateProposalResult> {
-  const { userId, input, audioBase64, currentInventory } = params;
+export async function createRecipeManagerAgentProposal(
+  params: CreateRecipeProposalParams
+): Promise<CreateRecipeProposalResult> {
+  const { userId, input, audioBase64, trackedRecipes } = params;
   const inputType = audioBase64 ? "voice" : "text";
 
   // Base tags for trace (mutable for enrichment)
   const traceTags = [
-    "inventory",
+    "recipe",
     "agent",
     inputType,
     "gemini-2.0-flash",
     `user:${userId}`,
   ];
 
-  // 1. Create parent trace with full inventory in metadata
+  // 1. Create parent trace
   const traceCtx = createAgentTrace({
-    name: "inventory-manager-agent",
-    input: { inputType, inventorySize: currentInventory.length },
+    name: "recipe-manager-agent",
+    input: { inputType, trackedRecipesCount: trackedRecipes.length },
     tags: traceTags,
     metadata: {
       userId,
       model: "gemini-2.0-flash",
       provider: "google",
-      currentInventory,
+      trackedRecipes,
     },
   });
+
+  // Track if we find unrecognized items
+  let hasUnrecognizedItems = false;
 
   try {
     let textInput: string;
 
-    // 2. Audio transcription using opik-gemini with parent linking
+    // 2. Audio transcription with opik-gemini tracking
     if (audioBase64) {
       const genAI = new GoogleGenAI({
         apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY!,
       });
 
-      // trackGemini with parent trace - auto-links span + tracks usage
       const trackedGenAI = trackGemini(genAI, {
         parent: traceCtx.trace,
         client: traceCtx.client,
@@ -85,7 +92,7 @@ export async function createInventoryManagerAgentProposal(
             role: "user",
             parts: [
               {
-                text: "Transcribe this audio exactly as spoken. Return only the transcription, no additional text. The user should be speaking about food. If they speak another language than English, translate what they say into english. Remove filling words, hesitations, while preserving the initial intent of the user. \nIMPORTANT NOTE: If nothing is heard in the audio, return an empty string. PRESERVE THE ORIGINAL INTENT OF THE USER, if nothing is heard, DO NOT INVENT CONTENT AND RETURN AN EMPTY STRING.",
+                text: "Transcribe this audio exactly as spoken. Return only the transcription, no additional text. The user should be speaking about food or recipes. If they speak another language than English, translate what they say into english. Remove filling words, hesitations, while preserving the initial intent of the user. \nIMPORTANT NOTE: If nothing is heard in the audio, return an empty string. PRESERVE THE ORIGINAL INTENT OF THE USER, if nothing is heard, DO NOT INVENT CONTENT AND RETURN AN EMPTY STRING.",
               },
               { inlineData: { mimeType: "audio/webm", data: audioBase64 } },
             ],
@@ -104,16 +111,33 @@ export async function createInventoryManagerAgentProposal(
     }
 
     // 3. Create agent + session
-    const agent = createInventoryAgent({ userId });
-    const runner = new InMemoryRunner({ agent, appName: "inventory_manager" });
+    const agent = createRecipeManagerAgent();
+    const runner = new InMemoryRunner({ agent, appName: "recipe_manager" });
     const session = await runner.sessionService.createSession({
       userId,
-      appName: "inventory_manager",
-      state: { currentInventory },
+      appName: "recipe_manager",
+      state: { trackedRecipes },
+    });
+
+    // Inject tracked recipes context as YAML into conversation
+    const recipesYaml = YAML.stringify({ trackedRecipes });
+    await runner.sessionService.appendEvent({
+      session,
+      event: createEvent({
+        author: "user",
+        content: {
+          role: "user",
+          parts: [
+            {
+              text: `Here are the user's current tracked recipes:\n\n${recipesYaml}`,
+            },
+          ],
+        },
+      }),
     });
 
     // 4. Run agent with model and tool spans
-    let proposal: InventoryUpdateProposal | null = null;
+    const recipes: RecipeToolResult[] = [];
     const usage = { promptTokens: 0, completionTokens: 0, totalTokens: 0 };
     // Track pending tool spans by call ID (supports parallel tool calls to same function)
     // Also track by function name as fallback when ADK doesn't provide IDs
@@ -151,18 +175,17 @@ export async function createInventoryManagerAgentProposal(
                 ? { text: p.text }
                 : "functionCall" in p
                   ? { functionCall: { name: p.functionCall?.name, args: p.functionCall?.args } }
-                  : {},
+                  : {}
             ),
           },
           usage: eventUsage,
         });
-        // Don't end model span yet - wait for tool execution if there's a functionCall
       }
 
-      // Process parts for tool spans and proposal extraction
+      // Process parts for tool spans and result extraction
       if (event.content?.parts) {
         for (const part of event.content.parts) {
-          // Tool call span - starts on functionCall (child of model span)
+          // Tool call span - starts on functionCall
           // Use call ID to uniquely identify each tool invocation
           if ("functionCall" in part && part.functionCall && part.functionCall.name) {
             // End model span before starting tool spans
@@ -223,39 +246,37 @@ export async function createInventoryManagerAgentProposal(
               toolSpan.end();
             }
 
-            // Extract proposal from response
+            // Extract recipe result from response
             const response = part.functionResponse.response;
             if (
               response &&
               typeof response === "object" &&
-              "recognized" in response
+              "operation" in response
             ) {
-              proposal = response as unknown as InventoryUpdateProposal;
-            }
-          }
+              const result = response as unknown as RecipeToolResult;
+              recipes.push(result);
 
-          // Fallback: parse JSON from text
-          if ("text" in part && part.text && isFinalResponse(event)) {
-            try {
-              const parsed = JSON.parse(part.text);
-              if (parsed.recognized !== undefined) {
-                proposal = parsed as InventoryUpdateProposal;
+              // Check for unrecognized items (delete operations don't have unrecognized)
+              if (
+                "unrecognized" in result &&
+                result.unrecognized &&
+                result.unrecognized.length > 0
+              ) {
+                hasUnrecognizedItems = true;
               }
-            } catch {
-              // Not JSON
             }
           }
         }
       }
 
-      // End model span if no functionCall was triggered in this event
+      // End model span if no functionCall was triggered
       if (currentModelSpan && pendingToolSpansById.size === 0 && pendingToolSpansByName.size === 0) {
         currentModelSpan.end();
         currentModelSpan = null;
       }
     }
 
-    // Clean up any remaining spans
+    // Clean up remaining spans
     if (currentModelSpan) {
       currentModelSpan.end();
     }
@@ -271,19 +292,39 @@ export async function createInventoryManagerAgentProposal(
     pendingToolSpansById.clear();
     pendingToolSpansByName.clear();
 
-    // 5. Set output and end trace
-    const finalProposal = proposal ?? { recognized: [], unrecognized: [] };
+    // 5. Build final proposal
+    const proposal: RecipeManagerProposal = {
+      recipes,
+      noChangesDetected: recipes.length === 0,
+    };
+
+    // Collect all unrecognized items (delete operations don't have unrecognized)
+    const allUnrecognizedItems = recipes.flatMap((r) =>
+      "unrecognized" in r ? r.unrecognized : []
+    );
+    const uniqueUnrecognizedItems = [...new Set(allUnrecognizedItems)];
+
+    // 6. Add unrecognized_item tag if needed
+    if (hasUnrecognizedItems) {
+      traceTags.push("unrecognized_item");
+      traceCtx.trace.update({
+        tags: traceTags,
+        metadata: { unrecognizedItems: uniqueUnrecognizedItems },
+      });
+    }
+
+    // 7. Set output and end trace
     traceCtx.trace.update({
       output: {
-        recognized: finalProposal.recognized,
-        unrecognized: finalProposal.unrecognized,
+        recipes: proposal.recipes,
+        noChangesDetected: proposal.noChangesDetected,
       },
     });
     traceCtx.end();
     await traceCtx.flush();
 
     return {
-      proposal: finalProposal,
+      proposal,
       transcribedText: audioBase64 ? textInput : undefined,
       usage,
     };

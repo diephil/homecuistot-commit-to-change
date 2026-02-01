@@ -8,12 +8,27 @@ import { InfoCard } from "@/components/shared/InfoCard";
 
 export function RecipeVoiceGuidanceCard() {
   return (
-    <InfoCard variant="cyan" emoji="💬" heading="Speak to add a recipe">
-      <ul className="list-disc list-inside space-y-1 text-sm">
-        <li>&quot;I can cook pasta carbonara. I use eggs, bacon, and Parmesan.&quot;</li>
-        <li>&quot;My go-to is chicken stir-fry with broccoli, soy sauce, and garlic.&quot;</li>
-        <li>&quot;I make a simple tomato soup with onions, garlic, tomatoes, and basil.&quot;</li>
-      </ul>
+    <InfoCard variant="cyan" emoji="💬" heading="Speak to manage recipes">
+      <div className="space-y-3 text-sm">
+        <div>
+          <p className="font-bold mb-1">Create:</p>
+          <ul className="list-disc list-inside space-y-1">
+            <li>&quot;Add a pasta carbonara with eggs, bacon, and parmesan.&quot;</li>
+          </ul>
+        </div>
+        <div>
+          <p className="font-bold mb-1">Update:</p>
+          <ul className="list-disc list-inside space-y-1">
+            <li>&quot;Add mushrooms to my carbonara as optional.&quot;</li>
+          </ul>
+        </div>
+        <div>
+          <p className="font-bold mb-1">Delete:</p>
+          <ul className="list-disc list-inside space-y-1">
+            <li>&quot;Delete my carbonara recipe.&quot;</li>
+          </ul>
+        </div>
+      </div>
     </InfoCard>
   );
 }

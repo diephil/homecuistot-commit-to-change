@@ -9,14 +9,38 @@ interface RecipeHelpModalProps {
 
 export function RecipeHelpModal({ isOpen, onClose }: RecipeHelpModalProps) {
   return (
-    <HelpModal isOpen={isOpen} onClose={onClose} title="How to Add Recipes">
-      {/* Speak to Add Recipe Section */}
-      <HelpSection emoji="💬" title="SPEAK TO ADD A RECIPE" bgColor="bg-cyan-100">
+    <HelpModal isOpen={isOpen} onClose={onClose} title="How to Manage Recipes">
+      {/* Create Recipe Section */}
+      <HelpSection emoji="➕" title="CREATE A NEW RECIPE" bgColor="bg-cyan-100">
         <HelpExampleList
           examples={[
-            "I can cook pasta carbonara. I use eggs, bacon, and Parmesan.",
-            "My go-to is chicken stir-fry with broccoli, soy sauce, and garlic.",
-            "I make a simple tomato soup with onions, garlic, tomatoes, and basil.",
+            "Add a pasta carbonara with eggs, bacon, and parmesan.",
+            "I want to track my chicken stir-fry recipe.",
+            "Create a tomato soup with onions, garlic, and basil.",
+          ]}
+          bulletColor="text-black"
+        />
+      </HelpSection>
+
+      {/* Update Recipe Section */}
+      <HelpSection emoji="✏️" title="UPDATE AN EXISTING RECIPE" bgColor="bg-blue-100">
+        <HelpExampleList
+          examples={[
+            "Add mushrooms to my carbonara as optional.",
+            "Remove bacon from the stir-fry.",
+            "Make parmesan optional in carbonara.",
+          ]}
+          bulletColor="text-black"
+        />
+      </HelpSection>
+
+      {/* Delete Recipe Section */}
+      <HelpSection emoji="🗑️" title="DELETE A RECIPE" bgColor="bg-red-100">
+        <HelpExampleList
+          examples={[
+            "Delete my carbonara recipe.",
+            "Remove the scrambled eggs from my list.",
+            "I don't want to track the stir-fry anymore.",
           ]}
           bulletColor="text-black"
         />
