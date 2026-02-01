@@ -191,6 +191,7 @@ export default function RecipesPage() {
                 variant={recipe.availability}
                 onEdit={() => handleRecipeEdit(recipe.id)}
                 onDelete={() => handleRecipeDeleteClick(recipe)}
+                showMissingCount={false}
               />
             ))}
           </div>

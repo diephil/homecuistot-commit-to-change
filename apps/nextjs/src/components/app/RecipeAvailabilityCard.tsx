@@ -13,10 +13,11 @@ export interface RecipeAvailabilityCardProps {
   onMarkAsCooked?: (recipe: RecipeWithAvailability) => void
   onEdit?: () => void
   onDelete?: () => void
+  showMissingCount?: boolean
 }
 
 export function RecipeAvailabilityCard(props: RecipeAvailabilityCardProps) {
-  const { recipe, variant, onMarkAsCooked, onEdit, onDelete } = props
+  const { recipe, variant, onMarkAsCooked, onEdit, onDelete, showMissingCount = true } = props
 
   // T007: Green gradient for available, yellow/orange for almost-available, gray for unavailable
   const gradientClass = {
@@ -94,7 +95,7 @@ export function RecipeAvailabilityCard(props: RecipeAvailabilityCardProps) {
       <div className="flex-grow min-h-3" />
 
       {/* Missing ingredients count for almost-available */}
-      {variant === 'almost-available' && recipe.missingAnchorCount > 0 && (
+      {showMissingCount && variant === 'almost-available' && recipe.missingAnchorCount > 0 && (
         <div className="p-2 bg-white/50 border-2 border-black">
           <span className="text-sm font-black">
             Missing {recipe.missingAnchorCount} ingredient{recipe.missingAnchorCount !== 1 ? 's' : ''}
