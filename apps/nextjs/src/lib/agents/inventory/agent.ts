@@ -7,6 +7,7 @@
 
 import { LlmAgent } from "@google/adk";
 import { createValidateIngredientsTool } from "./tools/validate-ingredients";
+import { Trace } from "opik";
 
 const AGENT_INSTRUCTION = `You are an inventory assistant. Extract ingredients, quantity levels, and pantry staple intent from user text.
 
@@ -46,9 +47,10 @@ A Pantry staple is a Basic or important foods you have a supply of.
 export interface CreateInventoryAgentParams {
   userId?: string;
   model?: string;
+  opikTrace: Trace;
 }
 
-export function createInventoryAgent(params?: CreateInventoryAgentParams) {
+export function createInventoryAgent(params: CreateInventoryAgentParams) {
   const { userId, model = "gemini-2.0-flash" } = params ?? {};
 
   return new LlmAgent({
@@ -56,6 +58,8 @@ export function createInventoryAgent(params?: CreateInventoryAgentParams) {
     description: "Processes natural language to update kitchen inventory",
     model,
     instruction: AGENT_INSTRUCTION,
-    tools: [createValidateIngredientsTool({ userId })],
+    tools: [
+      createValidateIngredientsTool({ userId, opikTrace: params.opikTrace }),
+    ],
   });
 }

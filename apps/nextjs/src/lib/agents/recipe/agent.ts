@@ -9,6 +9,7 @@ import { LlmAgent } from "@google/adk";
 import { createCreateRecipeTool } from "./tools/create-recipe";
 import { createUpdateRecipeTool } from "./tools/update-recipe";
 import { createDeleteRecipeTool } from "./tools/delete-recipe";
+import { Trace } from "opik";
 
 const AGENT_INSTRUCTION = `You are a recipe assistant. Parse user input to create new recipes or update existing ones.
 
@@ -107,12 +108,17 @@ Each recipe has: id, title, description, ingredients (with name and isRequired).
     reason: "User no longer makes this recipe"
   })`;
 
-export function createRecipeManagerAgent() {
+export function createRecipeManagerAgent(params: { opikTrace: Trace }) {
   return new LlmAgent({
     name: "recipe_manager",
-    description: "Processes natural language to create, update, and delete recipes",
+    description:
+      "Processes natural language to create, update, and delete recipes",
     model: "gemini-2.0-flash",
     instruction: AGENT_INSTRUCTION,
-    tools: [createCreateRecipeTool(), createUpdateRecipeTool(), createDeleteRecipeTool()],
+    tools: [
+      createCreateRecipeTool(params),
+      createUpdateRecipeTool(params),
+      createDeleteRecipeTool(params),
+    ],
   });
 }

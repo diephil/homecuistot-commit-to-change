@@ -20,6 +20,7 @@ import type {
   MatchedRecipeIngredient,
   ProposedRecipeIngredient,
 } from "@/types/recipe-agent";
+import { Trace } from "opik";
 
 // Input schema
 const CreateRecipeInput = z.object({
@@ -36,7 +37,7 @@ const CreateRecipeInput = z.object({
         isRequired: z
           .boolean()
           .describe("true = required/anchor, false = optional"),
-      })
+      }),
     )
     .min(1)
     .max(6)
@@ -45,7 +46,7 @@ const CreateRecipeInput = z.object({
 
 type CreateInput = z.infer<typeof CreateRecipeInput>;
 
-export function createCreateRecipeTool() {
+export function createCreateRecipeTool(params: { opikTrace: Trace }) {
   return new FunctionTool({
     name: "create_recipe",
     description: `Create a new recipe with validated ingredients.
@@ -54,6 +55,11 @@ If user doesn't specify ingredients, generate sensible defaults for the recipe t
     parameters: CreateRecipeInput,
     execute: async (input: CreateInput, toolContext?: ToolContext) => {
       const { title, description, ingredients: inputIngredients } = input;
+      const span = params.opikTrace.span({
+        name: "create_recipe",
+        type: "tool",
+        input,
+      });
 
       if (!inputIngredients || inputIngredients.length === 0) {
         const result: CreateRecipeResult = {
@@ -72,12 +78,15 @@ If user doesn't specify ingredients, generate sensible defaults for the recipe t
 
       // Create lookup map for isRequired by normalized name
       const requiredMap = new Map(
-        inputIngredients.map((i) => [i.name.toLowerCase().trim(), i.isRequired])
+        inputIngredients.map((i) => [
+          i.name.toLowerCase().trim(),
+          i.isRequired,
+        ]),
       );
 
       // Normalize names for matching
       const normalizedNames = inputIngredients.map((i) =>
-        i.name.toLowerCase().trim()
+        i.name.toLowerCase().trim(),
       );
       const uniqueNames = [...new Set(normalizedNames)];
 
@@ -88,13 +97,13 @@ If user doesn't specify ingredients, generate sensible defaults for the recipe t
         .where(
           sql`LOWER(${ingredients.name}) IN (${sql.join(
             uniqueNames.map((n) => sql`${n}`),
-            sql`, `
-          )})`
+            sql`, `,
+          )})`,
         );
 
       // Track matched names
       const matchedNames = new Set(
-        matchedIngredients.map((i) => i.name.toLowerCase())
+        matchedIngredients.map((i) => i.name.toLowerCase()),
       );
 
       // Build matched results with isRequired from input
@@ -103,7 +112,7 @@ If user doesn't specify ingredients, generate sensible defaults for the recipe t
           ingredientId: ing.id,
           name: ing.name,
           isRequired: requiredMap.get(ing.name.toLowerCase()) ?? true,
-        })
+        }),
       );
 
       // Build proposed ingredients (all inputs with matched IDs where available)
@@ -111,7 +120,7 @@ If user doesn't specify ingredients, generate sensible defaults for the recipe t
         inputIngredients.map((ing) => {
           const nameLower = ing.name.toLowerCase().trim();
           const matchedIng = matchedIngredients.find(
-            (m) => m.name.toLowerCase() === nameLower
+            (m) => m.name.toLowerCase() === nameLower,
           );
           return {
             ingredientId: matchedIng?.id,
@@ -136,6 +145,14 @@ If user doesn't specify ingredients, generate sensible defaults for the recipe t
       if (toolContext) {
         toolContext.invocationContext.endInvocation = true;
       }
+
+      span.update({
+        output: result as unknown as Record<string, unknown>,
+        metadata: unrecognized.length > 0 ? { unrecognized } : {},
+        tags:
+          unrecognized.length > 0 ? ["unrecognized_items"] : ["all_recognized"],
+      });
+      span.end();
 
       return result;
     },

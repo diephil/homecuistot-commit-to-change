@@ -7,22 +7,23 @@
 
 import { FunctionTool, type ToolContext } from "@google/adk";
 import { z } from "zod";
-import type { DeleteRecipeResult, RecipeSessionItem } from "@/types/recipe-agent";
+import type {
+  DeleteRecipeResult,
+  RecipeSessionItem,
+} from "@/types/recipe-agent";
+import { Trace } from "opik";
 
 const DeleteRecipeInput = z.object({
   recipeId: z
     .string()
     .uuid()
     .describe("Recipe UUID from session state (LLM determines from context)"),
-  reason: z
-    .string()
-    .optional()
-    .describe("Optional reason for deletion"),
+  reason: z.string().optional().describe("Optional reason for deletion"),
 });
 
 type DeleteInput = z.infer<typeof DeleteRecipeInput>;
 
-export function createDeleteRecipeTool() {
+export function createDeleteRecipeTool(params: { opikTrace: Trace }) {
   return new FunctionTool({
     name: "delete_recipe",
     description: `Delete an existing recipe from the tracked recipes.
@@ -31,6 +32,11 @@ Use the recipe ID from the session state context.`,
     parameters: DeleteRecipeInput,
     execute: async (input: DeleteInput, toolContext?: ToolContext) => {
       const { recipeId, reason } = input;
+      const span = params.opikTrace.span({
+        name: "delete_recipe",
+        type: "tool",
+        input,
+      });
 
       // Get tracked recipes from session state
       const trackedRecipes =
@@ -64,6 +70,11 @@ Use the recipe ID from the session state context.`,
       if (toolContext) {
         toolContext.invocationContext.endInvocation = true;
       }
+
+      span.update({
+        output: result as unknown as Record<string, unknown>,
+      });
+      span.end();
 
       return result;
     },

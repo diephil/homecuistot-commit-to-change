@@ -15,10 +15,11 @@ import type {
   InventoryUpdateProposal,
   ValidatedInventoryUpdate,
 } from "@/types/inventory";
+import { Trace } from "opik";
 
 /** Minimal inventory item for session state lookup */
 export interface InventorySessionItem {
-  id: string;           // user_inventory.id
+  id: string; // user_inventory.id
   ingredientId: string; // ingredients.id
   quantityLevel: number;
   isPantryStaple: boolean;
@@ -52,7 +53,10 @@ type ValidateInput = z.infer<typeof ValidateIngredientsInput>;
 // Demo user ID for standalone script testing
 const DEMO_USER_ID = "00000000-0000-0000-0000-000000000001";
 
-export function createValidateIngredientsTool(params?: { userId?: string }) {
+export function createValidateIngredientsTool(params: {
+  userId?: string;
+  opikTrace: Trace;
+}) {
   const userId = params?.userId ?? DEMO_USER_ID;
 
   return new FunctionTool({
@@ -62,21 +66,37 @@ Call with extracted ingredients and quantity levels from user input.`,
     parameters: ValidateIngredientsInput,
     execute: async (input: ValidateInput, toolContext?: ToolContext) => {
       const { up: updates } = input;
+      const span = params.opikTrace.span({
+        name: "validate_ingredients",
+        type: "tool",
+        input,
+      });
 
       if (!updates || updates.length === 0) {
-        return { recognized: [], unrecognized: [] };
+        const result = { recognized: [], unrecognized: [] };
+        span.update({
+          output: result as unknown as Record<string, unknown>,
+          tags: ["nothing_to_validate"],
+        });
+        span.end();
+        return result;
       }
 
       // Get currentInventory from session state for previousQuantity lookup
       const currentInventory =
-        (toolContext?.state?.get("currentInventory") as InventorySessionItem[]) ?? [];
+        (toolContext?.state?.get(
+          "currentInventory",
+        ) as InventorySessionItem[]) ?? [];
 
       // Build previous state lookups from session (by ingredientId)
       const prevQtyMap = new Map(
         currentInventory.map((item) => [item.ingredientId, item.quantityLevel]),
       );
       const prevStapleMap = new Map(
-        currentInventory.map((item) => [item.ingredientId, item.isPantryStaple]),
+        currentInventory.map((item) => [
+          item.ingredientId,
+          item.isPantryStaple,
+        ]),
       );
 
       // Create proposed state lookup maps (by lowercase name)
@@ -116,16 +136,30 @@ Call with extracted ingredients and quantity levels from user input.`,
           };
         });
 
-      // Agent only returns recognized items (unrecognized hardcoded empty)
+      // Build unrecognized from match result (existing + new)
+      const unrecognized: string[] = [
+        ...matchResult.unrecognizedItems.map((item) => item.rawText),
+        ...matchResult.unrecognizedItemsToCreate,
+      ];
+
       const proposal: InventoryUpdateProposal = {
         recognized,
-        unrecognized: [],
+        unrecognized,
       };
 
       // End invocation - return proposal as agent's final answer
       if (toolContext) {
         toolContext.invocationContext.endInvocation = true;
       }
+
+      span.update({
+        output: { proposal } as unknown as Record<string, unknown>,
+        tags:
+          unrecognized.length > 0
+            ? ["unrecognized_items"]
+            : ["all_recognized"],
+      });
+      span.end();
 
       return proposal;
     },
