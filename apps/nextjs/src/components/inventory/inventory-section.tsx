@@ -28,10 +28,10 @@ export function InventorySection({
   if (items.length === 0) {
     return (
       <section className="space-y-4 pb-8">
-        <div className="flex items-center justify-between">
+        <div>
           <h2 className="text-2xl font-bold">{title}</h2>
           {description && (
-            <p className="text-sm text-gray-600 max-w-md">{description}</p>
+            <p className="text-sm text-gray-600">{description}</p>
           )}
         </div>
         <p className="text-sm text-gray-500 italic">No items yet</p>
@@ -41,10 +41,10 @@ export function InventorySection({
 
   return (
     <section className="space-y-4 pb-8">
-      <div className="flex items-center justify-between">
+      <div>
         <h2 className="text-2xl font-bold">{title}</h2>
         {description && isPantrySection && (
-          <p className="text-sm text-gray-600 max-w-md">{description}</p>
+          <p className="text-sm text-gray-600">{description}</p>
         )}
       </div>
 
@@ -57,6 +57,7 @@ export function InventorySection({
               variant="dots"
               size="md"
               interactive={!isPantrySection}
+              isStaple={isPantrySection}
               onLevelChange={(newLevel) => {
                 onQuantityChange({ itemId: item.id, quantity: newLevel });
               }}
@@ -65,7 +66,7 @@ export function InventorySection({
               {/* Feature 021: FR-011 - Infinity icon for pantry staples */}
               <SmallActionButton
                 icon={Infinity}
-                variant="yellow"
+                variant={isPantrySection ? "gray" : "blue"}
                 onClick={(e) => {
                   e.stopPropagation();
                   onToggleStaple(item.id);

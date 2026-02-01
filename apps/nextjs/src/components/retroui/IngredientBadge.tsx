@@ -44,6 +44,7 @@ export interface IngredientBadgeProps
   onLevelChange?: (newLevel: QuantityLevel) => void;
   interactive?: boolean;
   variant: "battery" | "dots" | "fill";
+  isStaple?: boolean;
 }
 
 // Battery Bar Variant (Option 1)
@@ -85,14 +86,16 @@ function BatteryBars({ level }: { level: QuantityLevel }) {
 }
 
 // Dot Matrix Variant (Option 2)
-function DotMatrix({ level }: { level: QuantityLevel }) {
+function DotMatrix({ level, isStaple }: { level: QuantityLevel; isStaple?: boolean }) {
   const dots = [1, 2, 3];
 
-  const colorScheme = {
-    0: { bg: "bg-red-100", dotBorder: "border-red-600", dotFill: "bg-red-600" },
-    1: { bg: "bg-orange-100", dotBorder: "border-orange-600", dotFill: "bg-orange-600" },
-    2: { bg: "bg-yellow-100", dotBorder: "border-yellow-600", dotFill: "bg-yellow-600" },
-    3: { bg: "bg-green-100", dotBorder: "border-green-600", dotFill: "bg-green-600" },
+  const stapleColorScheme = { dotBorder: "border-blue-600", dotFill: "bg-blue-600" };
+
+  const colorScheme = isStaple ? stapleColorScheme : {
+    0: { dotBorder: "border-red-600", dotFill: "bg-red-600" },
+    1: { dotBorder: "border-orange-600", dotFill: "bg-orange-600" },
+    2: { dotBorder: "border-yellow-600", dotFill: "bg-yellow-600" },
+    3: { dotBorder: "border-green-600", dotFill: "bg-green-600" },
   }[level];
 
   return (
@@ -152,6 +155,7 @@ export const IngredientBadge = React.forwardRef<HTMLButtonElement, IngredientBad
       interactive = true,
       variant = "battery",
       size = "md",
+      isStaple = false,
       className = "",
       onClick,
       ...props
@@ -168,6 +172,9 @@ export const IngredientBadge = React.forwardRef<HTMLButtonElement, IngredientBad
 
     // Background color based on variant and level
     const getBgColor = () => {
+      if (isStaple) {
+        return variant === "battery" ? "bg-blue-400" : "bg-blue-100";
+      }
       if (variant === "battery") {
         return {
           0: "bg-red-400",
@@ -213,7 +220,7 @@ export const IngredientBadge = React.forwardRef<HTMLButtonElement, IngredientBad
         <span className="font-semibold truncate max-w-[120px]">{name}</span>
 
         {variant === "battery" && <BatteryBars level={level} />}
-        {variant === "dots" && <DotMatrix level={level} />}
+        {variant === "dots" && <DotMatrix level={level} isStaple={isStaple} />}
         {variant === "fill" && <FillGauge level={level} />}
       </button>
     );
