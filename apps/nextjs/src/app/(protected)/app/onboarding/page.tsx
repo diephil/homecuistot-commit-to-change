@@ -204,7 +204,7 @@ function OnboardingPageContent() {
       await new Promise((r) => setTimeout(r, 4000 - elapsed));
     }
 
-    router.push("/app");
+    router.push("/app/inventory");
   };
 
   // Derived state
