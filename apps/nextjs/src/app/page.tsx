@@ -17,9 +17,6 @@ export default function Home() {
                 <Text as="h1" className="text-xl md:text-4xl font-black uppercase tracking-tight md:transform md:-rotate-1">
                   HomeCuistot
                 </Text>
-                <span className="text-xs md:text-sm font-bold lowercase opacity-80">
-                  (French: &ldquo;Home Chef&rdquo;)
-                </span>
               </div>
             </div>
             <div className="flex items-center gap-2 md:gap-4">
@@ -48,7 +45,7 @@ export default function Home() {
               From &ldquo;What&rsquo;s in my fridge?&rdquo; to &ldquo;What&rsquo;s for dinner?&rdquo;
             </Text>
             <Text as="p" className="text-lg md:text-3xl font-black text-zinc-800 md:transform md:rotate-1">
-              Just talk to the app. 🎤
+              See what you can cook tonight — instantly. No browsing, no guessing, no mental math.
             </Text>
             <div className="pt-4 md:pt-8 flex flex-col sm:flex-row gap-3 md:gap-4 justify-center items-stretch sm:items-center px-4">
               <Button asChild size="lg" className="text-lg md:text-3xl px-8 md:px-16 py-5 md:py-8 bg-pink-400 hover:bg-pink-500 border-4 md:border-6 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] md:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] md:hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[3px] hover:translate-y-[3px] md:hover:translate-x-[4px] md:hover:translate-y-[4px] transition-all font-black uppercase md:transform md:-rotate-2">
@@ -69,18 +66,15 @@ export default function Home() {
         <div className="max-w-5xl mx-auto px-4 md:px-8 relative">
           <div className="bg-white border-4 md:border-8 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] md:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] p-6 md:p-16 md:transform md:-rotate-1">
             <Text as="h3" className="text-3xl md:text-6xl font-black uppercase text-center mb-6 md:mb-10 md:transform md:rotate-1">
-              😩 The Problem
+              The problem isn&rsquo;t cooking — it&rsquo;s deciding what to cook
             </Text>
-            <div className="space-y-4 md:space-y-6 text-center text-base md:text-2xl font-bold">
+            <div className="space-y-4 md:space-y-6 text-center text-lg md:text-3xl font-bold">
               <Text as="p" className="leading-relaxed">
-                You come home hungry. You stare at your fridge. You have ingredients, some cooking skills, but no idea what to make.
-                You don&rsquo;t want to meal plan. You just want to eat and move on.
+                You come home tired and hungry. You open the fridge, stare at the shelves, and draw a blank. You <em>know</em> you have food in there. You <em>know</em> how to cook. But figuring out what you can actually make with what you have? That&rsquo;s exhausting. So you order takeout — again.
               </Text>
-              <div className="bg-yellow-200 border-2 border-black p-4 md:p-6 inline-block md:transform md:rotate-2">
-                <Text as="p" className="text-2xl md:text-4xl font-black">
-                  Sound familiar? 🤔
-                </Text>
-              </div>
+              <Text as="p" className="leading-relaxed">
+                That decision fatigue is the real enemy. Not the cooking itself.
+              </Text>
             </div>
           </div>
         </div>
@@ -92,28 +86,11 @@ export default function Home() {
         <div className="absolute bottom-0 right-0 w-32 h-32 md:w-48 md:h-48 bg-yellow-400 border-3 md:border-4 border-black -rotate-45 translate-x-16 translate-y-16 md:translate-x-24 md:translate-y-24 opacity-30" />
         <div className="max-w-7xl mx-auto px-4 md:px-8 relative">
           <Text as="h3" className="text-3xl md:text-6xl font-black uppercase text-center mb-4 md:mb-6 md:transform md:-rotate-1">
-            ✨ How It Works
+            Three steps. Zero typing.
           </Text>
-          <Text as="p" className="text-base md:text-2xl font-bold text-center mb-8 md:mb-14 max-w-3xl mx-auto px-4">
-            Voice-powered meal planning. Just talk. Three simple steps, zero typing.
+          <Text as="p" className="text-lg md:text-3xl font-bold text-center mb-8 md:mb-14 max-w-3xl mx-auto px-4">
+            Voice-powered because your hands are full and your brain is tired.
           </Text>
-
-          {/* Demo Video Placeholder */}
-          <div className="mb-10 md:mb-16 max-w-5xl mx-auto px-4">
-            <div className="bg-zinc-900 border-4 md:border-8 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] md:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] aspect-video flex items-center justify-center md:transform md:-rotate-1">
-              <div className="text-center space-y-3 md:space-y-4">
-                <div className="text-5xl md:text-8xl">🎬</div>
-                <Text as="p" className="text-white text-lg md:text-2xl font-black uppercase px-4">
-                  Demo Video Coming Soon
-                </Text>
-                <div className="flex gap-2 md:gap-3 justify-center">
-                  <div className="w-12 h-12 md:w-16 md:h-16 bg-pink-400 border-3 md:border-4 border-black rounded-full flex items-center justify-center">
-                    <div className="w-0 h-0 border-l-[8px] md:border-l-[12px] border-l-black border-t-[6px] md:border-t-[8px] border-t-transparent border-b-[6px] md:border-b-[8px] border-b-transparent ml-1" />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-10 px-4">
             <div className="border-4 md:border-6 border-black bg-gradient-to-br from-pink-200 to-pink-300 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] md:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-6 md:p-10 md:transform md:hover:-rotate-2 transition-transform">
@@ -121,10 +98,10 @@ export default function Home() {
                 <div className="text-4xl md:text-5xl font-black font-head">01</div>
               </div>
               <Text as="h4" className="text-xl md:text-3xl font-black uppercase mb-3 md:mb-4 leading-tight">
-                📦 Collect Ingredients
+                🎤 Say what you have
               </Text>
-              <Text as="p" className="text-base md:text-xl font-bold leading-relaxed">
-                Tell us what&rsquo;s in your fridge. &ldquo;Chicken, eggs, pasta, tomatoes&hellip;&rdquo;
+              <Text as="p" className="text-lg md:text-2xl font-bold leading-relaxed">
+                Just got back from the store? Tap the mic: &ldquo;I got chicken, eggs, pasta, and some tomatoes.&rdquo; Done. Your inventory is updated before you&rsquo;ve put the bags away. No typing, no scanning barcodes.
               </Text>
             </div>
 
@@ -133,10 +110,10 @@ export default function Home() {
                 <div className="text-4xl md:text-5xl font-black font-head">02</div>
               </div>
               <Text as="h4" className="text-xl md:text-3xl font-black uppercase mb-3 md:mb-4 leading-tight">
-                📖 Build Your Cookbook
+                🍽️ Add your dishes
               </Text>
-              <Text as="p" className="text-base md:text-xl font-bold leading-relaxed">
-                Tell us what dishes you can cook. &ldquo;Pasta carbonara, chicken stir-fry&hellip;&rdquo; We&rsquo;ll remember.
+              <Text as="p" className="text-lg md:text-2xl font-bold leading-relaxed">
+                Tell us the recipes you&rsquo;ve already mastered — the ones you could cook in your sleep. &ldquo;I can make carbonara, stir-fry, shakshuka&hellip;&rdquo; You know the steps. We just need to know what&rsquo;s in your repertoire.
               </Text>
             </div>
 
@@ -145,10 +122,31 @@ export default function Home() {
                 <div className="text-4xl md:text-5xl font-black font-head">03</div>
               </div>
               <Text as="h4" className="text-xl md:text-3xl font-black uppercase mb-3 md:mb-4 leading-tight">
-                🍳 Cook More
+                ✅ See what&rsquo;s cookable
               </Text>
-              <Text as="p" className="text-base md:text-xl font-bold leading-relaxed">
-                We tell you what to cook right now via instant recipe matching, zero thinking.
+              <Text as="p" className="text-lg md:text-2xl font-bold leading-relaxed">
+                Open the app → see which of your dishes you can make right now with what&rsquo;s in your kitchen. Pick one and start cooking. The thinking is done.
+              </Text>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* This isn't a recipe app Section */}
+      <section className="py-12 md:py-28 border-b-4 md:border-b-8 border-black bg-gradient-to-br from-orange-300 via-orange-400 to-orange-300 relative overflow-hidden">
+        <div className="absolute top-8 left-8 w-16 h-16 md:w-24 md:h-24 bg-cyan-400 border-3 md:border-4 border-black -rotate-12 opacity-50" />
+        <div className="absolute bottom-8 right-8 w-20 h-20 md:w-32 md:h-32 bg-yellow-400 border-3 md:border-4 border-black rotate-12 opacity-50" />
+        <div className="max-w-5xl mx-auto px-4 md:px-8 relative">
+          <div className="bg-white border-4 md:border-8 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] md:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] p-6 md:p-16 md:transform md:-rotate-1">
+            <Text as="h3" className="text-3xl md:text-6xl font-black uppercase text-center mb-4 md:mb-6 md:transform md:rotate-1">
+              👨‍🍳 You know your recipes. We track what&rsquo;s possible.
+            </Text>
+            <div className="space-y-4 md:space-y-6 text-center text-lg md:text-3xl font-bold">
+              <Text as="p" className="leading-relaxed">
+                You don&rsquo;t need step-by-step instructions for the carbonara you&rsquo;ve made a hundred times. You don&rsquo;t need precise measurements — you know what &ldquo;some garlic&rdquo; means.
+              </Text>
+              <Text as="p" className="leading-relaxed">
+                What you need is a quick answer to one question: <em>Can I make it tonight with what I have?</em> That&rsquo;s all we do. You&rsquo;re the chef. We&rsquo;re just the inventory clerk.
               </Text>
             </div>
           </div>
@@ -160,13 +158,13 @@ export default function Home() {
         <div className="max-w-5xl mx-auto px-4 md:px-8">
           <div className="text-center space-y-6 md:space-y-8">
             <Text as="h3" className="text-4xl md:text-7xl font-black uppercase leading-tight md:transform md:-rotate-2 px-4">
-              Ready to stop ordering takeout? 🚀
+              Cook more. Order less.
             </Text>
             <Text as="p" className="text-xl md:text-3xl font-black">
-              Start cooking smarter after a rapid onboarding
+              Every meal you cook instead of ordering is a win. We&rsquo;re here to remove the one barrier that makes takeout feel easier: the thinking.
             </Text>
             <Button asChild size="lg" className="text-2xl md:text-4xl px-10 md:px-20 py-6 md:py-10 bg-pink-400 hover:bg-pink-500 border-4 md:border-6 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] md:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[4px] hover:translate-y-[4px] md:hover:translate-x-[6px] md:hover:translate-y-[6px] transition-all font-black uppercase md:transform md:rotate-2">
-              <Link href="/login">Let&rsquo;s Go! 🍳</Link>
+              <Link href="/login">Get Started — It Takes 2 Minutes</Link>
             </Button>
           </div>
         </div>
@@ -177,7 +175,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 md:px-8">
           <div className="text-center">
             <Text as="p" className="font-black text-base md:text-lg">
-              Made with ❤️ for home cooks everywhere
+              Made with ❤️ for Commit To Change 2026 by Encode Club & Comet Opik
             </Text>
           </div>
         </div>

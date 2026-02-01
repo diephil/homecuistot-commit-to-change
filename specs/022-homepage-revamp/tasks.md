@@ -24,10 +24,10 @@
 
 **Purpose**: Validate environment and understand current state
 
-- [ ] T001 Verify Next.js dev server runs successfully: `cd apps/nextjs && pnpm dev`
-- [ ] T002 Verify TypeScript compilation passes: `cd apps/nextjs && pnpm tsc --noEmit`
-- [ ] T003 [P] Create backup branch of current homepage for comparison: `git branch 022-homepage-backup`
-- [ ] T004 [P] Review research.md findings on messaging hierarchy and content strategy
+- [X] T001 Verify Next.js dev server runs successfully: `cd apps/nextjs && pnpm dev`
+- [X] T002 Verify TypeScript compilation passes: `cd apps/nextjs && pnpm tsc --noEmit`
+- [X] T003 [P] Create backup branch of current homepage for comparison: `git branch 022-homepage-backup`
+- [X] T004 [P] Review research.md findings on messaging hierarchy and content strategy
 
 **Checkpoint**: Development environment ready, baseline established
 
@@ -51,11 +51,11 @@
 
 ### Implementation for User Story 1
 
-- [ ] T005 [US1] Update hero section subheadline to "See what you can cook tonight — instantly. No browsing, no guessing, no mental math." in apps/nextjs/src/app/page.tsx (line ~50)
-- [ ] T006 [US1] Update problem section headline to "The problem isn't cooking — it's deciding what to cook" in apps/nextjs/src/app/page.tsx (line ~71)
-- [ ] T007 [US1] Update problem section body with emotional decision fatigue narrative in apps/nextjs/src/app/page.tsx (lines ~74-84): Paragraph 1: "You come home tired and hungry. You open the fridge, stare at the shelves, and draw a blank. You *know* you have food in there. You *know* how to cook. But figuring out what you can actually make with what you have? That's exhausting. So you order takeout — again." Paragraph 2: "That decision fatigue is the real enemy. Not the cooking itself."
-- [ ] T008 [US1] Remove "Sound familiar?" button/callout from problem section in apps/nextjs/src/app/page.tsx (lines ~79-82)
-- [ ] T009 [US1] Verify hero headline "From 'What's in my fridge?' to 'What's for dinner?'" remains unchanged in apps/nextjs/src/app/page.tsx (line ~47-48)
+- [X] T005 [US1] Update hero section subheadline to "See what you can cook tonight — instantly. No browsing, no guessing, no mental math." in apps/nextjs/src/app/page.tsx (line ~50)
+- [X] T006 [US1] Update problem section headline to "The problem isn't cooking — it's deciding what to cook" in apps/nextjs/src/app/page.tsx (line ~71)
+- [X] T007 [US1] Update problem section body with emotional decision fatigue narrative in apps/nextjs/src/app/page.tsx (lines ~74-84): Paragraph 1: "You come home tired and hungry. You open the fridge, stare at the shelves, and draw a blank. You *know* you have food in there. You *know* how to cook. But figuring out what you can actually make with what you have? That's exhausting. So you order takeout — again." Paragraph 2: "That decision fatigue is the real enemy. Not the cooking itself."
+- [X] T008 [US1] Remove "Sound familiar?" button/callout from problem section in apps/nextjs/src/app/page.tsx (lines ~79-82)
+- [X] T009 [US1] Verify hero headline "From 'What's in my fridge?' to 'What's for dinner?'" remains unchanged in apps/nextjs/src/app/page.tsx (line ~47-48)
 
 **Manual Testing** (from quickstart.md):
 - [ ] T010 [US1] Load homepage on mobile (375px) and desktop (1440px), verify subheadline visible above fold
@@ -75,11 +75,11 @@
 
 ### Implementation for User Story 2
 
-- [ ] T014 [US2] Add new section "This isn't a recipe app" between "How It Works" and final CTA in apps/nextjs/src/app/page.tsx (after line ~156, before line ~159): Use same section structure pattern (border-4/6/8, gradient background, py-12/28, relative overflow-hidden)
-- [ ] T015 [US2] Add section headline "You know your recipes. We track what's possible." in new section: Use Text component with "text-3xl md:text-6xl font-black uppercase text-center mb-4 md:mb-6 md:transform md:-rotate-1" classes
-- [ ] T016 [US2] Add section body with two paragraphs in new section: Paragraph 1: "You don't need step-by-step instructions for the carbonara you've made a hundred times. You don't need precise measurements — you know what 'some garlic' means." Paragraph 2: "What you need is a quick answer to one question: *Can I make it tonight with what I have?* That's all we do. You're the chef. We're just the inventory clerk."
-- [ ] T017 [US2] Style new section with gradient background (choose from: pink-to-yellow, cyan-to-blue, or orange gradient to maintain variety) and decorative shapes in apps/nextjs/src/app/page.tsx
-- [ ] T018 [US2] Update "How It Works" Card 2 copy to "Tell us the recipes you've already mastered — the ones you could cook in your sleep. 'I can make carbonara, stir-fry, shakshuka...' You know the steps. We just need to know what's in your repertoire." in apps/nextjs/src/app/page.tsx (lines ~138-140)
+- [X] T014 [US2] Add new section "This isn't a recipe app" between "How It Works" and final CTA in apps/nextjs/src/app/page.tsx (after line ~156, before line ~159): Use same section structure pattern (border-4/6/8, gradient background, py-12/28, relative overflow-hidden)
+- [X] T015 [US2] Add section headline "You know your recipes. We track what's possible." in new section: Use Text component with "text-3xl md:text-6xl font-black uppercase text-center mb-4 md:mb-6 md:transform md:-rotate-1" classes
+- [X] T016 [US2] Add section body with two paragraphs in new section: Paragraph 1: "You don't need step-by-step instructions for the carbonara you've made a hundred times. You don't need precise measurements — you know what 'some garlic' means." Paragraph 2: "What you need is a quick answer to one question: *Can I make it tonight with what I have?* That's all we do. You're the chef. We're just the inventory clerk."
+- [X] T017 [US2] Style new section with gradient background (choose from: pink-to-yellow, cyan-to-blue, or orange gradient to maintain variety) and decorative shapes in apps/nextjs/src/app/page.tsx
+- [X] T018 [US2] Update "How It Works" Card 2 copy to "Tell us the recipes you've already mastered — the ones you could cook in your sleep. 'I can make carbonara, stir-fry, shakshuka...' You know the steps. We just need to know what's in your repertoire." in apps/nextjs/src/app/page.tsx (lines ~138-140)
 
 **Manual Testing** (from quickstart.md):
 - [ ] T019 [US2] Verify new section exists and renders correctly between "How It Works" and final CTA
@@ -100,13 +100,13 @@
 
 ### Implementation for User Story 3
 
-- [ ] T024 [US3] Update "How It Works" headline to "Three steps. Zero typing." in apps/nextjs/src/app/page.tsx (line ~94-95)
-- [ ] T025 [US3] Update "How It Works" subheadline to "Voice-powered because your hands are full and your brain is tired." in apps/nextjs/src/app/page.tsx (line ~97-98)
-- [ ] T026 [US3] Update Card 1 headline to "Say what you have" in apps/nextjs/src/app/page.tsx (line ~123-125)
-- [ ] T027 [US3] Update Card 1 body to "Just got back from the store? Tap the mic: 'I got chicken, eggs, pasta, and some tomatoes.' Done. Your inventory is updated before you've put the bags away. No typing, no scanning barcodes." in apps/nextjs/src/app/page.tsx (lines ~126-128)
-- [ ] T028 [US3] Update Card 2 headline to "Add your dishes" in apps/nextjs/src/app/page.tsx (line ~135-137) (already done in T018, verify only)
-- [ ] T029 [US3] Update Card 3 headline to "See what's cookable" in apps/nextjs/src/app/page.tsx (line ~147-149)
-- [ ] T030 [US3] Update Card 3 body to "Open the app → see which of your dishes you can make right now with what's in your kitchen. Pick one and start cooking. The thinking is done." in apps/nextjs/src/app/page.tsx (lines ~150-152)
+- [X] T024 [US3] Update "How It Works" headline to "Three steps. Zero typing." in apps/nextjs/src/app/page.tsx (line ~94-95)
+- [X] T025 [US3] Update "How It Works" subheadline to "Voice-powered because your hands are full and your brain is tired." in apps/nextjs/src/app/page.tsx (line ~97-98)
+- [X] T026 [US3] Update Card 1 headline to "Say what you have" in apps/nextjs/src/app/page.tsx (line ~123-125)
+- [X] T027 [US3] Update Card 1 body to "Just got back from the store? Tap the mic: 'I got chicken, eggs, pasta, and some tomatoes.' Done. Your inventory is updated before you've put the bags away. No typing, no scanning barcodes." in apps/nextjs/src/app/page.tsx (lines ~126-128)
+- [X] T028 [US3] Update Card 2 headline to "Add your dishes" in apps/nextjs/src/app/page.tsx (line ~135-137) (already done in T018, verify only)
+- [X] T029 [US3] Update Card 3 headline to "See what's cookable" in apps/nextjs/src/app/page.tsx (line ~147-149)
+- [X] T030 [US3] Update Card 3 body to "Open the app → see which of your dishes you can make right now with what's in your kitchen. Pick one and start cooking. The thinking is done." in apps/nextjs/src/app/page.tsx (lines ~150-152)
 
 **Manual Testing** (from quickstart.md):
 - [ ] T031 [US3] Verify "How It Works" headline reads "Three steps. Zero typing."
@@ -124,14 +124,14 @@
 **Purpose**: Cleanup, removals, and final validation across all user stories
 
 ### Content Removals
-- [ ] T036 Remove demo video placeholder section (black box with "Demo Video Coming Soon") from apps/nextjs/src/app/page.tsx (lines ~101-116)
-- [ ] T037 Remove header logo subtitle "(French: 'Home Chef')" from apps/nextjs/src/app/page.tsx (lines ~20-22)
-- [ ] T038 Verify removing video placeholder didn't break layout (check section spacing, no empty gaps)
+- [X] T036 Remove demo video placeholder section (black box with "Demo Video Coming Soon") from apps/nextjs/src/app/page.tsx (lines ~101-116)
+- [X] T037 Remove header logo subtitle "(French: 'Home Chef')" from apps/nextjs/src/app/page.tsx (lines ~20-22)
+- [X] T038 Verify removing video placeholder didn't break layout (check section spacing, no empty gaps)
 
 ### Final CTA Updates
-- [ ] T039 Update final CTA headline to "Cook more. Order less." in apps/nextjs/src/app/page.tsx (line ~162-163)
-- [ ] T040 Update final CTA subheadline to "Every meal you cook instead of ordering is a win. We're here to remove the one barrier that makes takeout feel easier: the thinking." in apps/nextjs/src/app/page.tsx (line ~165-166)
-- [ ] T041 Update final CTA button text to "Get Started — It Takes 2 Minutes" in apps/nextjs/src/app/page.tsx (line ~169)
+- [X] T039 Update final CTA headline to "Cook more. Order less." in apps/nextjs/src/app/page.tsx (line ~162-163)
+- [X] T040 Update final CTA subheadline to "Every meal you cook instead of ordering is a win. We're here to remove the one barrier that makes takeout feel easier: the thinking." in apps/nextjs/src/app/page.tsx (line ~165-166)
+- [X] T041 Update final CTA button text to "Get Started — It Takes 2 Minutes" in apps/nextjs/src/app/page.tsx (line ~169)
 
 ### Visual Preservation Validation
 - [ ] T042 [P] Verify all gradients preserved (header, hero, problem, how-it-works, new section, final CTA) across all breakpoints
@@ -153,8 +153,8 @@
 - [ ] T054 Verify DOM size reduced by ~10-15 nodes (video placeholder removal)
 
 ### Final Validation
-- [ ] T055 Run TypeScript compilation: `cd apps/nextjs && pnpm tsc --noEmit` (expect exit code 0)
-- [ ] T056 Run build: `cd apps/nextjs && pnpm build` (expect success)
+- [X] T055 Run TypeScript compilation: `cd apps/nextjs && pnpm tsc --noEmit` (expect exit code 0)
+- [X] T056 Run build: `cd apps/nextjs && pnpm build` (expect success)
 - [ ] T057 Run linting (optional): `cd apps/nextjs && pnpm lint` (warnings OK per constitution)
 - [ ] T058 Execute all manual test scenarios from quickstart.md across all user stories (P1-P3)
 - [ ] T059 Take before/after screenshots for visual regression comparison (mobile, tablet, desktop)
