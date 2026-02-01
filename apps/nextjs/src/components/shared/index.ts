@@ -6,6 +6,7 @@ export { Button } from "./Button";
 export { Card } from "./Card";
 export { InfoCard } from "./InfoCard";
 export { IngredientBadge } from "./IngredientBadge";
+export { InventoryItemBadge } from "./InventoryItemBadge";
 export { SmallActionButton } from "./SmallActionButton";
 export { Text } from "./Text";
 

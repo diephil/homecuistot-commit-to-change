@@ -1,6 +1,6 @@
 "use client";
 
-import { InventoryItemBadge } from "./InventoryItemBadge";
+import { InventoryItemBadge } from "@/components/shared/InventoryItemBadge";
 import { SectionHeader } from "@/components/shared/SectionHeader";
 import { InventoryDisplayItem, QuantityLevel } from "@/types/inventory";
 

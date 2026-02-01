@@ -5,7 +5,7 @@ import { Button } from "@/components/shared/Button";
 import { Alert } from "@/components/shared/Alert";
 import { FormModal } from "@/components/shared/FormModal";
 import { LastHeardDisplay } from "@/components/shared/LastHeardDisplay";
-import { InventoryItemBadge } from "./InventoryItemBadge";
+import { InventoryItemBadge } from "@/components/shared/InventoryItemBadge";
 import { InventoryUpdateProposal, QuantityLevel } from "@/types/inventory";
 import { toast } from "sonner";
 

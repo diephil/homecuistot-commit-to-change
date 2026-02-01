@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react'
 import { Button } from '@/components/shared/Button'
-import { IngredientBadge } from '@/components/shared/IngredientBadge'
+import { InventoryItemBadge } from '@/components/shared/InventoryItemBadge'
 import { markRecipeAsCooked } from '@/app/actions/cooking-log'
 import type { RecipeWithAvailability, QuantityLevel, IngredientDiff } from '@/types/cooking'
 import { cn } from '@/lib/utils'
@@ -29,7 +29,12 @@ export function MarkCookedModal(props: MarkCookedModalProps) {
   // Initialize diffs when modal opens
   const initializeDiffs = useCallback((r: RecipeWithAvailability) => {
     const diffs = r.ingredients
-      .filter((i) => i.type === 'anchor' && i.inInventory)
+      .filter((i) =>
+        // Include anchor ingredients in inventory
+        (i.type === 'anchor' && i.inInventory) ||
+        // Include optional ingredients in inventory with quantity >= 1
+        (i.type === 'optional' && i.inInventory && i.currentQuantity >= 1)
+      )
       .map((i) => ({
         ingredientId: i.id,
         name: i.name,
@@ -138,31 +143,36 @@ export function MarkCookedModal(props: MarkCookedModalProps) {
               {ingredientDiffs.length > 0 ? (
                 <>
                   <p className="text-sm font-semibold mb-3">
-                    Marking this as cooked will update your inventory as shown below (tap to change):
+                    Your inventory will be updated as shown below (tap to change):
                   </p>
-                  <div className="flex flex-wrap gap-2 mb-4">
+                  <div className="flex flex-wrap gap-3 mb-4 pt-2">
                     {ingredientDiffs.map((diff) => (
-                      <div key={diff.ingredientId} className="flex flex-col items-center gap-1">
-                        <IngredientBadge
-                          name={diff.name}
-                          level={diff.isPantryStaple ? 3 : diff.proposedQuantity}
-                          variant="dots"
-                          interactive={!diff.isPantryStaple}
-                          onLevelChange={(newLevel) =>
-                            handleQuantityChange({
-                              ingredientId: diff.ingredientId,
-                              newQuantity: newLevel,
-                            })
-                          }
-                        />
-                        {diff.isPantryStaple ? (
-                          <span className="text-xs text-green-600 font-medium">∞</span>
-                        ) : diff.proposedQuantity !== diff.currentQuantity ? (
-                          <span className="text-xs text-gray-500">
-                            {diff.currentQuantity} → {diff.proposedQuantity}
-                          </span>
-                        ) : null}
-                      </div>
+                      <InventoryItemBadge
+                        key={diff.ingredientId}
+                        name={diff.name}
+                        level={diff.isPantryStaple ? 3 : diff.proposedQuantity}
+                        isStaple={diff.isPantryStaple}
+                        onLevelChange={
+                          diff.isPantryStaple
+                            ? undefined
+                            : (newLevel) =>
+                                handleQuantityChange({
+                                  ingredientId: diff.ingredientId,
+                                  newQuantity: newLevel,
+                                })
+                        }
+                        changeIndicator={
+                          diff.isPantryStaple
+                            ? undefined
+                            : diff.proposedQuantity !== diff.currentQuantity
+                              ? {
+                                  type: 'quantity',
+                                  previousQuantity: diff.currentQuantity,
+                                  proposedQuantity: diff.proposedQuantity,
+                                }
+                              : undefined
+                        }
+                      />
                     ))}
                   </div>
                 </>
