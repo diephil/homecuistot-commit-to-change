@@ -9,7 +9,7 @@ import { ProposalConfirmationModal } from "@/components/inventory/ProposalConfir
 import { DeleteConfirmationModal } from "@/components/shared/DeleteConfirmationModal";
 import { UnrecognizedItemRow } from "@/components/shared/UnrecognizedItemRow";
 import { VoiceGuidanceCard } from "@/components/inventory/VoiceGuidanceCard";
-import { VoiceTextInput } from "@/components/shared";
+import { VoiceTextInput, Separator } from "@/components/shared";
 import { InventoryDisplayItem, QuantityLevel, InventoryGroups, InventoryUpdateProposal } from "@/types/inventory";
 import { deleteUnrecognizedItem } from "@/app/actions/inventory";
 import { createClient } from "@/utils/supabase/client";
@@ -37,70 +37,72 @@ export default function InventoryPage() {
   const sortByName = (items: InventoryDisplayItem[]) =>
     items.sort((a, b) => a.name.localeCompare(b.name));
 
-  // Fetch inventory data
-  useEffect(() => {
-    async function fetchInventory() {
-      try {
-        const response = await fetch("/api/inventory");
-        if (!response.ok) {
-          throw new Error("Failed to fetch inventory");
-        }
-
-        const data = await response.json();
-
-        // Feature 021: Separate recognized and unrecognized items
-        const recognizedItems: InventoryDisplayItem[] = [];
-        const unrecognized: UnrecognizedItem[] = [];
-
-        data.inventory.forEach((item: {
-          id: string;
-          ingredientId: string | null;
-          unrecognizedItemId: string | null;
-          ingredientName: string | null;
-          ingredientCategory: string | null;
-          unrecognizedRawText: string | null;
-          quantityLevel: number;
-          isPantryStaple?: boolean;
-          updatedAt: string;
-        }) => {
-          // FR-001: Separate recognized from unrecognized
-          if (item.ingredientId && item.ingredientName && item.ingredientCategory) {
-            // Recognized ingredient
-            recognizedItems.push({
-              id: item.id,
-              ingredientId: item.ingredientId,
-              name: item.ingredientName,
-              category: item.ingredientCategory,
-              quantityLevel: item.quantityLevel as QuantityLevel,
-              isPantryStaple: item.isPantryStaple ?? false,
-              updatedAt: new Date(item.updatedAt),
-            });
-          } else if (item.unrecognizedItemId && item.unrecognizedRawText) {
-            // Unrecognized item (FR-010: use rawText as display name)
-            unrecognized.push({
-              id: item.id,
-              rawText: item.unrecognizedRawText,
-            });
-          }
-        });
-
-        // Group recognized items by isPantryStaple and sort alphabetically
-        const grouped: InventoryGroups = {
-          available: sortByName(recognizedItems.filter((item) => !item.isPantryStaple)),
-          pantryStaples: sortByName(recognizedItems.filter((item) => item.isPantryStaple)),
-        };
-
-        setInventory(grouped);
-        setUnrecognizedItems(unrecognized);
-      } catch (error) {
-        console.error("Error fetching inventory:", error);
-        toast.error("Failed to load inventory");
-      } finally {
-        setIsLoading(false);
+  // Fetch inventory data - extracted so it can be called after updates
+  async function fetchInventory() {
+    try {
+      const response = await fetch("/api/inventory");
+      if (!response.ok) {
+        throw new Error("Failed to fetch inventory");
       }
-    }
 
+      const data = await response.json();
+
+      // Feature 021: Separate recognized and unrecognized items
+      const recognizedItems: InventoryDisplayItem[] = [];
+      const unrecognized: UnrecognizedItem[] = [];
+
+      data.inventory.forEach((item: {
+        id: string;
+        ingredientId: string | null;
+        unrecognizedItemId: string | null;
+        ingredientName: string | null;
+        ingredientCategory: string | null;
+        unrecognizedRawText: string | null;
+        quantityLevel: number;
+        isPantryStaple?: boolean;
+        updatedAt: string;
+      }) => {
+        // FR-001: Separate recognized from unrecognized
+        if (item.ingredientId && item.ingredientName && item.ingredientCategory) {
+          // Recognized ingredient
+          recognizedItems.push({
+            id: item.id,
+            ingredientId: item.ingredientId,
+            name: item.ingredientName,
+            category: item.ingredientCategory,
+            quantityLevel: item.quantityLevel as QuantityLevel,
+            isPantryStaple: item.isPantryStaple ?? false,
+            updatedAt: new Date(item.updatedAt),
+          });
+        } else if (item.unrecognizedItemId && item.unrecognizedRawText) {
+          // Unrecognized item (FR-010: use rawText as display name)
+          unrecognized.push({
+            id: item.id,
+            rawText: item.unrecognizedRawText,
+          });
+        }
+      });
+
+      // Group recognized items by isPantryStaple and sort alphabetically
+      const grouped: InventoryGroups = {
+        available: sortByName(recognizedItems.filter((item) => !item.isPantryStaple)),
+        pantryStaples: sortByName(recognizedItems.filter((item) => item.isPantryStaple)),
+      };
+
+      setInventory(grouped);
+      setUnrecognizedItems(unrecognized);
+    } catch (error) {
+      console.error("Error fetching inventory:", error);
+      toast.error("Failed to load inventory");
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  // Initial fetch on mount
+  useEffect(() => {
     fetchInventory();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Handle quantity change (manual adjustment)
@@ -390,7 +392,7 @@ export default function InventoryPage() {
             onClose={() => setProposal(null)}
             onUpdatesApplied={() => {
               setProposal(null);
-              window.location.reload();
+              fetchInventory();
             }}
             transcription={lastTranscription}
           />
@@ -429,6 +431,8 @@ export default function InventoryPage() {
             lastTranscription={lastTranscription}
           />
         </div>
+
+        <Separator />
 
         {/* Tracked Ingredients */}
         <InventorySection
@@ -498,7 +502,7 @@ export default function InventoryPage() {
           onClose={() => setProposal(null)}
           onUpdatesApplied={() => {
             setProposal(null);
-            window.location.reload();
+            fetchInventory();
           }}
           transcription={lastTranscription}
         />
