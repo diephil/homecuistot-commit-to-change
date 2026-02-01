@@ -220,7 +220,8 @@ export const IngredientBadge = React.forwardRef<HTMLButtonElement, IngredientBad
         <span className="font-semibold truncate max-w-[120px]">{name}</span>
 
         {variant === "battery" && <BatteryBars level={level} />}
-        {variant === "dots" && <DotMatrix level={level} isStaple={isStaple} />}
+        {variant === "dots" && !isStaple && <DotMatrix level={level} isStaple={isStaple} />}
+        {variant === "dots" && isStaple && <span className="text-blue-600 font-bold">∞</span>}
         {variant === "fill" && <FillGauge level={level} />}
       </button>
     );

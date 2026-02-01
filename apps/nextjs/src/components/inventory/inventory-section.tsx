@@ -56,23 +56,26 @@ export function InventorySection({
               level={isPantrySection ? 3 : item.quantityLevel}
               variant="dots"
               size="md"
-              interactive={!isPantrySection}
+              interactive
               isStaple={isPantrySection}
               onLevelChange={(newLevel) => {
                 onQuantityChange({ itemId: item.id, quantity: newLevel });
               }}
+              onClick={isPantrySection ? () => onToggleStaple(item.id) : undefined}
             />
             <div className="absolute -top-1 -right-1 flex gap-0.5">
               {/* Feature 021: FR-011 - Infinity icon for pantry staples */}
-              <SmallActionButton
-                icon={Infinity}
-                variant={isPantrySection ? "gray" : "blue"}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onToggleStaple(item.id);
-                }}
-                title={isPantrySection ? "Move to Available" : "Move to Pantry Staples"}
-              />
+              {!isPantrySection && (
+                <SmallActionButton
+                  icon={Infinity}
+                  variant="blue"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onToggleStaple(item.id);
+                  }}
+                  title="Move to Pantry Staples"
+                />
+              )}
               <SmallActionButton
                 icon={X}
                 variant="red"
