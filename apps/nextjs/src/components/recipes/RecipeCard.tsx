@@ -4,36 +4,46 @@ import { cn } from '@/lib/utils'
 import { Badge } from '@/components/shared/Badge'
 import { SmallActionButton } from '@/components/shared/SmallActionButton'
 import { Pencil, X } from 'lucide-react'
-import type { RecipeWithAvailability } from '@/types/cooking'
+
+interface RecipeIngredient {
+  id: string
+  ingredientType: string
+  ingredientId: string | null
+  ingredient: { id: string; name: string; category: string } | null
+}
+
+interface Recipe {
+  id: string
+  name: string
+  description: string | null
+  recipeIngredients: RecipeIngredient[]
+}
 
 export interface RecipeCardProps {
-  recipe: RecipeWithAvailability
-  variant: 'available' | 'almost-available' | 'unavailable'
+  recipe: Recipe
   onEdit?: () => void
   onDelete?: () => void
 }
 
 export function RecipeCard(props: RecipeCardProps) {
-  const { recipe, variant, onEdit, onDelete } = props
-
-  const gradientClass = {
-    available: 'bg-gradient-to-br from-green-200 to-green-300',
-    'almost-available': 'bg-gradient-to-br from-yellow-200 to-orange-200',
-    unavailable: 'bg-gradient-to-br from-gray-200 to-gray-300',
-  }[variant]
+  const { recipe, onEdit, onDelete } = props
 
   // Get all ingredients, required (anchor) first, then optional
-  const sortedIngredients = [...recipe.ingredients].sort((a, b) => {
-    if (a.type === b.type) return 0
-    return a.type === 'anchor' ? -1 : 1
-  })
+  const sortedIngredients = [...recipe.recipeIngredients]
+    .filter((ri): ri is RecipeIngredient & { ingredient: NonNullable<RecipeIngredient['ingredient']> } =>
+      ri.ingredient !== null
+    )
+    .sort((a, b) => {
+      if (a.ingredientType === b.ingredientType) return 0
+      return a.ingredientType === 'anchor' ? -1 : 1
+    })
 
   return (
     <div
       className={cn(
         'relative border-4 border-black p-4 flex flex-col h-full',
         'sm:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]',
-        gradientClass
+        'bg-gradient-to-br from-green-200 to-green-300'
       )}
     >
       {/* Action buttons on top-right card border */}
@@ -73,7 +83,7 @@ export function RecipeCard(props: RecipeCardProps) {
       {/* Ingredients list with star system */}
       <div className="flex flex-wrap gap-2">
         {sortedIngredients.map((ing) => {
-          const isRequired = ing.type === 'anchor'
+          const isRequired = ing.ingredientType === 'anchor'
           return (
             <Badge
               key={ing.id}
@@ -82,7 +92,7 @@ export function RecipeCard(props: RecipeCardProps) {
               className="bg-white/50"
             >
               <span className={cn('mr-1', isRequired ? 'text-amber-500' : 'text-gray-300')}>★</span>
-              {ing.name}
+              {ing.ingredient.name}
             </Badge>
           )
         })}

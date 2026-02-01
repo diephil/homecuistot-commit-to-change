@@ -10,9 +10,7 @@ import { NeoHelpButton } from "@/components/shared/NeoHelpButton";
 import { DeleteConfirmationModal } from "@/components/shared/DeleteConfirmationModal";
 import { VoiceTextInput, Separator, SectionHeader } from "@/components/shared";
 import { getRecipes, deleteRecipe } from "@/app/actions/recipes";
-import { getRecipesWithAvailabilitySorted } from "@/app/actions/cooking-log";
 import { toast } from "sonner";
-import type { RecipeWithAvailability } from "@/types/cooking";
 
 interface Recipe {
   id: string;
@@ -35,7 +33,6 @@ interface Recipe {
 }
 
 export default function RecipesPage() {
-  const [recipesWithAvailability, setRecipesWithAvailability] = useState<RecipeWithAvailability[]>([]);
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [selectedRecipeId, setSelectedRecipeId] = useState<string | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -43,7 +40,7 @@ export default function RecipesPage() {
 
   // Delete modal state
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [recipeToDelete, setRecipeToDelete] = useState<RecipeWithAvailability | null>(null);
+  const [recipeToDelete, setRecipeToDelete] = useState<Recipe | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
@@ -53,12 +50,8 @@ export default function RecipesPage() {
   async function loadRecipes() {
     try {
       setIsLoading(true);
-      const [availabilityData, fullRecipes] = await Promise.all([
-        getRecipesWithAvailabilitySorted(),
-        getRecipes(),
-      ]);
-      setRecipesWithAvailability(availabilityData);
-      setRecipes(fullRecipes);
+      const data = await getRecipes();
+      setRecipes(data);
     } catch (error) {
       console.error("Failed to load recipes:", error);
     } finally {
@@ -71,7 +64,7 @@ export default function RecipesPage() {
     setIsFormOpen(true);
   }
 
-  function handleRecipeDeleteClick(recipe: RecipeWithAvailability) {
+  function handleRecipeDeleteClick(recipe: Recipe) {
     setRecipeToDelete(recipe);
     setDeleteModalOpen(true);
   }
@@ -172,10 +165,14 @@ export default function RecipesPage() {
         <section className="space-y-4">
           <SectionHeader
             title="Tracked Recipes"
-            description="★ marks required ingredients for each recipe"
+            description={
+              <>
+                <span className="text-amber-500">★</span> marks mandatory ingredients, others are optional and the recipe can still be made without them.
+              </>
+            }
           />
 
-          {recipesWithAvailability.length === 0 ? (
+          {recipes.length === 0 ? (
           <div className="text-center py-4 space-y-2">
             <p className="text-lg text-gray-600">No recipes yet</p>
             <p className="text-sm text-gray-500">
@@ -184,11 +181,10 @@ export default function RecipesPage() {
           </div>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
-            {recipesWithAvailability.map((recipe) => (
+            {recipes.map((recipe) => (
               <RecipeCard
                 key={recipe.id}
                 recipe={recipe}
-                variant={recipe.availability}
                 onEdit={() => handleRecipeEdit(recipe.id)}
                 onDelete={() => handleRecipeDeleteClick(recipe)}
               />

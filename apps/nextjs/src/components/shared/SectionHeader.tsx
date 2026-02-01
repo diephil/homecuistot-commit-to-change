@@ -1,6 +1,8 @@
+import type { ReactNode } from "react";
+
 interface SectionHeaderProps {
   title: string;
-  description?: string;
+  description?: ReactNode;
 }
 
 export function SectionHeader({ title, description }: SectionHeaderProps) {
