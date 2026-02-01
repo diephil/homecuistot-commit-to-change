@@ -1,9 +1,7 @@
 "use client";
 
-import { IngredientBadge } from "@/components/retroui/IngredientBadge";
-import { SmallActionButton } from "@/components/retroui/SmallActionButton";
+import { InventoryItemBadge } from "./inventory-item-badge";
 import { InventoryDisplayItem, QuantityLevel } from "@/types/inventory";
-import { Infinity, X } from "lucide-react";
 
 interface InventorySectionProps {
   title: string;
@@ -50,43 +48,17 @@ export function InventorySection({
 
       <div className="flex flex-wrap gap-2">
         {items.map((item) => (
-          <div key={item.id} className="relative inline-flex">
-            <IngredientBadge
-              name={item.name}
-              level={isPantrySection ? 3 : item.quantityLevel}
-              variant="dots"
-              size="md"
-              interactive
-              isStaple={isPantrySection}
-              onLevelChange={(newLevel) => {
-                onQuantityChange({ itemId: item.id, quantity: newLevel });
-              }}
-              onClick={isPantrySection ? () => onToggleStaple(item.id) : undefined}
-            />
-            <div className="absolute -top-1 -right-1 flex gap-0.5">
-              {/* Feature 021: FR-011 - Infinity icon for pantry staples */}
-              {!isPantrySection && (
-                <SmallActionButton
-                  icon={Infinity}
-                  variant="blue"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onToggleStaple(item.id);
-                  }}
-                  title="Move to Pantry Staples"
-                />
-              )}
-              <SmallActionButton
-                icon={X}
-                variant="red"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onDelete(item.id);
-                }}
-                title="Delete ingredient"
-              />
-            </div>
-          </div>
+          <InventoryItemBadge
+            key={item.id}
+            name={item.name}
+            level={isPantrySection ? 3 : item.quantityLevel}
+            isStaple={isPantrySection}
+            onLevelChange={(newLevel) => {
+              onQuantityChange({ itemId: item.id, quantity: newLevel });
+            }}
+            onToggleStaple={() => onToggleStaple(item.id)}
+            onDismiss={() => onDelete(item.id)}
+          />
         ))}
       </div>
     </section>

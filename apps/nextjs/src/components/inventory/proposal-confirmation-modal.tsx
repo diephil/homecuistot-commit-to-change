@@ -2,11 +2,9 @@
 
 import { useState } from "react";
 import { Button } from "@/components/retroui/Button";
-import { IngredientBadge } from "@/components/retroui/IngredientBadge";
-import { SmallActionButton } from "@/components/retroui/SmallActionButton";
 import { Alert } from "@/components/retroui/Alert";
-import { X } from "lucide-react";
 import { FormModal } from "@/components/shared/form-modal";
+import { InventoryItemBadge } from "./inventory-item-badge";
 import { InventoryUpdateProposal, QuantityLevel } from "@/types/inventory";
 import { toast } from "sonner";
 
@@ -67,6 +65,27 @@ export function ProposalConfirmationModal({
     });
   };
 
+  const handleToggleStaple = (index: number) => {
+    setProposal({
+      ...proposal,
+      recognized: proposal.recognized.map((r, i) => {
+        if (i !== index) return r;
+        // Toggle: false/undefined → true, true → false
+        const isCurrentlyStaple = r.proposedPantryStaple === true;
+        return { ...r, proposedPantryStaple: !isCurrentlyStaple };
+      }),
+    });
+  };
+
+  const handleLevelChange = (index: number, newLevel: QuantityLevel) => {
+    setProposal({
+      ...proposal,
+      recognized: proposal.recognized.map((r, i) =>
+        i === index ? { ...r, proposedQuantity: newLevel } : r
+      ),
+    });
+  };
+
   return (
     <FormModal isOpen={isOpen} onClose={handleClose} title="Confirm Updates">
       <div className="space-y-6">
@@ -77,43 +96,57 @@ export function ProposalConfirmationModal({
               Detected Ingredients ({proposal.recognized.length})
             </p>
             <p className="text-xs text-gray-600">
-              Tap badges to adjust quantity before saving
+              Tap badges to adjust quantity. Use ∞ to toggle pantry staple.
             </p>
             <div className="flex flex-wrap gap-3 pt-4">
-              {proposal.recognized.map((item, index) => (
-                <div key={index} className="relative inline-flex min-w-28">
-                  <IngredientBadge
+              {proposal.recognized.map((item, index) => {
+                const isStaple = item.proposedPantryStaple === true;
+                const wasStaple = item.previousPantryStaple === true;
+                const isAddingToStaples = isStaple && !wasStaple;
+                const isRemovingFromStaples = !isStaple && wasStaple;
+                const hasQuantityChange =
+                  item.previousQuantity !== null &&
+                  item.previousQuantity !== item.proposedQuantity &&
+                  !isAddingToStaples;
+
+                // Determine change indicator
+                let changeIndicator: {
+                  type: "quantity" | "toStaple" | "fromStaple";
+                  previousQuantity?: number;
+                  proposedQuantity?: number;
+                } | undefined;
+
+                if (isAddingToStaples) {
+                  changeIndicator = {
+                    type: "toStaple",
+                    previousQuantity: item.previousQuantity ?? item.proposedQuantity,
+                  };
+                } else if (isRemovingFromStaples) {
+                  changeIndicator = {
+                    type: "fromStaple",
+                    proposedQuantity: item.proposedQuantity,
+                  };
+                } else if (hasQuantityChange) {
+                  changeIndicator = {
+                    type: "quantity",
+                    previousQuantity: item.previousQuantity!,
+                    proposedQuantity: item.proposedQuantity,
+                  };
+                }
+
+                return (
+                  <InventoryItemBadge
+                    key={index}
                     name={item.ingredientName}
                     level={item.proposedQuantity as QuantityLevel}
-                    variant="dots"
-                    size="md"
-                    interactive={true}
-                    onLevelChange={(newLevel) => {
-                      setProposal({
-                        ...proposal,
-                        recognized: proposal.recognized.map((r, i) =>
-                          i === index ? { ...r, proposedQuantity: newLevel } : r
-                        ),
-                      });
-                    }}
+                    isStaple={isStaple}
+                    onLevelChange={(newLevel) => handleLevelChange(index, newLevel)}
+                    onToggleStaple={() => handleToggleStaple(index)}
+                    onDismiss={() => handleDismissIngredient(index)}
+                    changeIndicator={changeIndicator}
                   />
-                  <SmallActionButton
-                    icon={X}
-                    variant="red"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDismissIngredient(index);
-                    }}
-                    title="Dismiss ingredient"
-                    className="absolute -top-1 -right-1"
-                  />
-                  {item.previousQuantity !== null && item.previousQuantity !== item.proposedQuantity && (
-                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-400 border-2 border-black text-xs px-2 py-0.5 rounded-full font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-                      {item.previousQuantity} → {item.proposedQuantity}
-                    </span>
-                  )}
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}

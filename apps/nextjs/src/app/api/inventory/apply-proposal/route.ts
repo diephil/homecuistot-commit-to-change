@@ -47,12 +47,18 @@ export async function POST(request: Request) {
 
     await db(async (tx) => {
       for (const update of proposal.recognized) {
+        // Build values/set with optional isPantryStaple
+        const hasPantryStapleChange = update.proposedPantryStaple !== undefined;
+
         await tx
           .insert(userInventory)
           .values({
             userId: user.id,
             ingredientId: update.ingredientId,
             quantityLevel: update.proposedQuantity,
+            ...(hasPantryStapleChange && {
+              isPantryStaple: update.proposedPantryStaple,
+            }),
             updatedAt: new Date(),
           })
           .onConflictDoUpdate({
@@ -60,6 +66,9 @@ export async function POST(request: Request) {
             targetWhere: sql`${userInventory.ingredientId} IS NOT NULL`,
             set: {
               quantityLevel: update.proposedQuantity,
+              ...(hasPantryStapleChange && {
+                isPantryStaple: update.proposedPantryStaple,
+              }),
               updatedAt: new Date(),
             },
           });

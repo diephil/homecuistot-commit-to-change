@@ -58,6 +58,8 @@ export interface ValidatedInventoryUpdate {
   ingredientName: string;
   previousQuantity: number | null; // null if new to inventory
   proposedQuantity: number;
+  previousPantryStaple?: boolean; // undefined if new to inventory
+  proposedPantryStaple?: boolean; // undefined = no change
   confidence: "high" | "medium" | "low";
 }
 

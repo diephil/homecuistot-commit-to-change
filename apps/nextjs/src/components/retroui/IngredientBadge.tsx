@@ -221,7 +221,11 @@ export const IngredientBadge = React.forwardRef<HTMLButtonElement, IngredientBad
 
         {variant === "battery" && <BatteryBars level={level} />}
         {variant === "dots" && !isStaple && <DotMatrix level={level} isStaple={isStaple} />}
-        {variant === "dots" && isStaple && <span className="text-blue-600 font-bold">∞</span>}
+        {variant === "dots" && isStaple && (
+          <div className="flex gap-1 w-[44px] h-3 items-center justify-center">
+            <span className="text-blue-600 font-bold text-base leading-none">∞</span>
+          </div>
+        )}
         {variant === "fill" && <FillGauge level={level} />}
       </button>
     );

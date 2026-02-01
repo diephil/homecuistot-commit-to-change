@@ -16,11 +16,12 @@ import type {
   ValidatedInventoryUpdate,
 } from "@/types/inventory";
 
-/** Minimal inventory item for session state previousQuantity lookup */
+/** Minimal inventory item for session state lookup */
 export interface InventorySessionItem {
   id: string;           // user_inventory.id
   ingredientId: string; // ingredients.id
   quantityLevel: number;
+  isPantryStaple: boolean;
   name: string;
 }
 
@@ -35,6 +36,12 @@ const ValidateIngredientsInput = z.object({
           .min(0)
           .max(3)
           .describe("Quantity: 0=out, 1=low, 2=some, 3=full"),
+        staple: z
+          .boolean()
+          .optional()
+          .describe(
+            "Pantry staple intent. Staples are basic/important foods always considered available in recipe matching. true=add to staples, false=remove from staples, omit=no change",
+          ),
       }),
     )
     .describe("Ingredient updates"),
@@ -64,14 +71,22 @@ Call with extracted ingredients and quantity levels from user input.`,
       const currentInventory =
         (toolContext?.state?.get("currentInventory") as InventorySessionItem[]) ?? [];
 
-      // Build previousQuantity lookup from session state (by ingredientId)
+      // Build previous state lookups from session (by ingredientId)
       const prevQtyMap = new Map(
         currentInventory.map((item) => [item.ingredientId, item.quantityLevel]),
       );
+      const prevStapleMap = new Map(
+        currentInventory.map((item) => [item.ingredientId, item.isPantryStaple]),
+      );
 
-      // Create quantity lookup map
+      // Create proposed state lookup maps (by lowercase name)
       const quantityMap = new Map(
         updates.map((u) => [u.name.toLowerCase().trim(), u.qty]),
+      );
+      const stapleMap = new Map(
+        updates
+          .filter((u) => u.staple !== undefined)
+          .map((u) => [u.name.toLowerCase().trim(), u.staple]),
       );
 
       // Run matchIngredients
@@ -83,15 +98,23 @@ Call with extracted ingredients and quantity levels from user input.`,
         });
       });
 
-      // Build recognized updates with previousQuantity from session state
+      // Build recognized updates with previous state from session
       const recognized: ValidatedInventoryUpdate[] =
-        matchResult.ingredients.map((ing) => ({
-          ingredientId: ing.id,
-          ingredientName: ing.name,
-          previousQuantity: prevQtyMap.get(ing.id) ?? null,
-          proposedQuantity: quantityMap.get(ing.name.toLowerCase()) ?? 3,
-          confidence: "high" as const,
-        }));
+        matchResult.ingredients.map((ing) => {
+          const nameLower = ing.name.toLowerCase();
+          const proposedStaple = stapleMap.get(nameLower);
+          const prevStaple = prevStapleMap.get(ing.id);
+
+          return {
+            ingredientId: ing.id,
+            ingredientName: ing.name,
+            previousQuantity: prevQtyMap.get(ing.id) ?? null,
+            proposedQuantity: quantityMap.get(nameLower) ?? 3,
+            previousPantryStaple: prevStaple,
+            proposedPantryStaple: proposedStaple,
+            confidence: "high" as const,
+          };
+        });
 
       // Agent only returns recognized items (unrecognized hardcoded empty)
       const proposal: InventoryUpdateProposal = {
