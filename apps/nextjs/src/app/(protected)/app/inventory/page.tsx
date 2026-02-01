@@ -2,19 +2,17 @@
 
 import { useState, useEffect } from "react";
 import { PageContainer } from "@/components/PageContainer";
-import { Button } from "@/components/retroui/Button";
 import { InventorySection } from "@/components/inventory/inventory-section";
 import { HelpModal } from "@/components/inventory/help-modal";
 import { NeoHelpButton } from "@/components/shared/neo-help-button";
-import { InventoryUpdateModal } from "@/components/inventory/inventory-update-modal";
+import { ProposalConfirmationModal } from "@/components/inventory/proposal-confirmation-modal";
 import { DeleteConfirmationModal } from "@/components/shared/delete-confirmation-modal";
 import { UnrecognizedItemRow } from "@/components/shared/UnrecognizedItemRow";
 import { InfoCard } from "@/components/retroui/InfoCard";
 import { VoiceTextInput } from "@/components/shared";
-import { InventoryDisplayItem, QuantityLevel, InventoryGroups } from "@/types/inventory";
+import { InventoryDisplayItem, QuantityLevel, InventoryGroups, InventoryUpdateProposal } from "@/types/inventory";
 import { deleteUnrecognizedItem } from "@/app/actions/inventory";
 import { createClient } from "@/utils/supabase/client";
-import { Plus } from "lucide-react";
 import { toast } from "sonner";
 
 // Feature 021: Unrecognized item type
@@ -30,7 +28,8 @@ export default function InventoryPage() {
   });
   const [unrecognizedItems, setUnrecognizedItems] = useState<UnrecognizedItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [proposal, setProposal] = useState<InventoryUpdateProposal | null>(null);
   const [itemToDelete, setItemToDelete] = useState<InventoryDisplayItem | null>(null);
 
   // Sort items alphabetically by name
@@ -269,6 +268,58 @@ export default function InventoryPage() {
     }
   };
 
+  // Handle voice/text input submission
+  const handleVoiceTextSubmit = async (
+    result: { type: "voice"; audioBlob: Blob } | { type: "text"; text: string }
+  ) => {
+    setIsProcessing(true);
+
+    try {
+      let requestBody: { input?: string; audioBase64?: string };
+
+      if (result.type === "voice") {
+        // Convert blob to base64
+        const reader = new FileReader();
+        reader.readAsDataURL(result.audioBlob);
+        const audioBase64 = await new Promise<string>((resolve) => {
+          reader.onloadend = () => {
+            const dataUrl = reader.result as string;
+            resolve(dataUrl.split(",")[1]);
+          };
+        });
+        requestBody = { audioBase64 };
+      } else {
+        requestBody = { input: result.text };
+      }
+
+      const response = await fetch("/api/inventory/agent-proposal", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(requestBody),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        toast.error(data.error || "Failed to process input");
+        return;
+      }
+
+      const resultProposal = data.proposal as InventoryUpdateProposal;
+
+      if (resultProposal.recognized.length === 0) {
+        toast.info("No inventory updates detected");
+      } else {
+        setProposal(resultProposal);
+      }
+    } catch (error) {
+      console.error("Voice/text processing error:", error);
+      toast.error("Failed to process input");
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <PageContainer
@@ -299,41 +350,39 @@ export default function InventoryPage() {
         <div className="space-y-8">
           <div className="flex items-center justify-between">
             <h1 className="text-3xl font-bold">My Inventory</h1>
-            <div className="flex gap-2">
-              <NeoHelpButton
-                renderModal={({ isOpen, onClose }) => (
-                  <HelpModal isOpen={isOpen} onClose={onClose} />
-                )}
-              />
-              <Button
-                variant="default"
-                size="md"
-                className="gap-2 bg-black text-white hover:bg-gray-800 border-black"
-                onClick={() => setIsUpdateModalOpen(true)}
-              >
-                <Plus className="h-5 w-5" />
-                Update Inventory
-              </Button>
-            </div>
+            <NeoHelpButton
+              renderModal={({ isOpen, onClose }) => (
+                <HelpModal isOpen={isOpen} onClose={onClose} />
+              )}
+            />
           </div>
 
-          <div className="text-center py-12 space-y-4">
+          <div className="text-center py-8 space-y-4">
             <p className="text-lg text-gray-600">Your inventory is empty</p>
             <p className="text-sm text-gray-500">
-              Add ingredients to start tracking your pantry
+              Speak or type to add ingredients
             </p>
           </div>
+
+          <VoiceTextInput
+            onSubmit={handleVoiceTextSubmit}
+            disabled={isProcessing}
+            processing={isProcessing}
+            textPlaceholder="I have eggs, milk, and butter..."
+          />
         </div>
 
-        <InventoryUpdateModal
-          isOpen={isUpdateModalOpen}
-          onClose={() => setIsUpdateModalOpen(false)}
-          onUpdatesApplied={() => {
-            setIsUpdateModalOpen(false);
-            window.location.reload();
-          }}
-          existingInventory={[]}
-        />
+        {proposal && (
+          <ProposalConfirmationModal
+            isOpen={true}
+            proposal={proposal}
+            onClose={() => setProposal(null)}
+            onUpdatesApplied={() => {
+              setProposal(null);
+              window.location.reload();
+            }}
+          />
+        )}
       </PageContainer>
     );
   }
@@ -349,22 +398,11 @@ export default function InventoryPage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold">My Inventory</h1>
-          <div className="flex gap-2">
-            <NeoHelpButton
-              renderModal={({ isOpen, onClose }) => (
-                <HelpModal isOpen={isOpen} onClose={onClose} />
-              )}
-            />
-            <Button
-              variant="default"
-              size="md"
-              className="gap-2 bg-black text-white hover:bg-gray-800 border-black"
-              onClick={() => setIsUpdateModalOpen(true)}
-            >
-              <Plus className="h-5 w-5" />
-              Update Inventory
-            </Button>
-          </div>
+          <NeoHelpButton
+            renderModal={({ isOpen, onClose }) => (
+              <HelpModal isOpen={isOpen} onClose={onClose} />
+            )}
+          />
         </div>
 
         {/* Voice Input Section */}
@@ -379,10 +417,9 @@ export default function InventoryPage() {
           </InfoCard>
 
           <VoiceTextInput
-            onSubmit={(input) => {
-              // TODO: Implement voice/text processing logic
-              console.log("Voice/text input received:", input);
-            }}
+            onSubmit={handleVoiceTextSubmit}
+            disabled={isProcessing}
+            processing={isProcessing}
             textPlaceholder="Add eggs and butter, remove bacon..."
           />
         </div>
@@ -448,41 +485,17 @@ export default function InventoryPage() {
         )}
       </div>
 
-      <InventoryUpdateModal
-        isOpen={isUpdateModalOpen}
-        onClose={() => setIsUpdateModalOpen(false)}
-        onUpdatesApplied={() => {
-          // Refresh inventory after updates
-          setIsLoading(true);
-          fetch("/api/inventory")
-            .then((res) => res.json())
-            .then((data) => {
-              const items: InventoryDisplayItem[] = data.inventory.map((item: {
-                id: string;
-                ingredientId: string;
-                ingredientName: string;
-                ingredientCategory: string;
-                quantityLevel: number;
-                isPantryStaple?: boolean;
-                updatedAt: string;
-              }) => ({
-                id: item.id,
-                ingredientId: item.ingredientId,
-                name: item.ingredientName,
-                category: item.ingredientCategory,
-                quantityLevel: item.quantityLevel as QuantityLevel,
-                isPantryStaple: item.isPantryStaple ?? false,
-                updatedAt: new Date(item.updatedAt),
-              }));
-              setInventory({
-                available: sortByName(items.filter((i) => !i.isPantryStaple)),
-                pantryStaples: sortByName(items.filter((i) => i.isPantryStaple)),
-              });
-            })
-            .finally(() => setIsLoading(false));
-        }}
-        existingInventory={[...inventory.available, ...inventory.pantryStaples]}
-      />
+      {proposal && (
+        <ProposalConfirmationModal
+          isOpen={true}
+          proposal={proposal}
+          onClose={() => setProposal(null)}
+          onUpdatesApplied={() => {
+            setProposal(null);
+            window.location.reload();
+          }}
+        />
+      )}
       <DeleteConfirmationModal
         isOpen={itemToDelete !== null}
         itemName={itemToDelete?.name ?? ""}

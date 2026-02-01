@@ -8,7 +8,7 @@ import React, { ButtonHTMLAttributes, useState } from "react";
 type QuantityLevel = 0 | 1 | 2 | 3;
 
 const ingredientBadgeVariants = cva(
-  "inline-flex items-center gap-2 border-2 border-black font-medium transition-all duration-200 cursor-pointer select-none",
+  "inline-flex items-center gap-2 border-2 border-black font-medium transition-all duration-200 cursor-pointer select-none min-w-24",
   {
     variants: {
       variant: {

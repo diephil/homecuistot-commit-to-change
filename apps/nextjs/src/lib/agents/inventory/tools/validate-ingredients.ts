@@ -7,30 +7,49 @@
  * Sets endInvocation=true to return result directly as agent answer.
  */
 
-import { FunctionTool, type ToolContext } from '@google/adk';
-import { z } from 'zod';
-import { adminDb } from '@/db/client';
-import { matchIngredients } from '@/lib/services/ingredient-matcher';
-import type { InventoryUpdateProposal, ValidatedInventoryUpdate } from '@/types/inventory';
+import { FunctionTool, type ToolContext } from "@google/adk";
+import { z } from "zod";
+import { adminDb } from "@/db/client";
+import { matchIngredients } from "@/lib/services/ingredient-matcher";
+import type {
+  InventoryUpdateProposal,
+  ValidatedInventoryUpdate,
+} from "@/types/inventory";
+
+/** Minimal inventory item for session state previousQuantity lookup */
+export interface InventorySessionItem {
+  id: string;           // user_inventory.id
+  ingredientId: string; // ingredients.id
+  quantityLevel: number;
+  name: string;
+}
 
 // Input schema with short field names for token efficiency
 const ValidateIngredientsInput = z.object({
-  up: z.array(z.object({
-    name: z.string().describe('Ingredient name (lowercase, singular)'),
-    qty: z.number().min(0).max(3).describe('Quantity: 0=out, 1=low, 2=some, 3=full'),
-  })).describe('Ingredient updates'),
+  up: z
+    .array(
+      z.object({
+        name: z.string().describe("Ingredient name (lowercase, singular)"),
+        qty: z
+          .number()
+          .min(0)
+          .max(3)
+          .describe("Quantity: 0=out, 1=low, 2=some, 3=full"),
+      }),
+    )
+    .describe("Ingredient updates"),
 });
 
 type ValidateInput = z.infer<typeof ValidateIngredientsInput>;
 
 // Demo user ID for standalone script testing
-const DEMO_USER_ID = '00000000-0000-0000-0000-000000000001';
+const DEMO_USER_ID = "00000000-0000-0000-0000-000000000001";
 
 export function createValidateIngredientsTool(params?: { userId?: string }) {
   const userId = params?.userId ?? DEMO_USER_ID;
 
   return new FunctionTool({
-    name: 'validate_ingredients',
+    name: "validate_ingredients",
     description: `Match ingredient names against database and return validated updates.
 Call with extracted ingredients and quantity levels from user input.`,
     parameters: ValidateIngredientsInput,
@@ -41,9 +60,18 @@ Call with extracted ingredients and quantity levels from user input.`,
         return { recognized: [], unrecognized: [] };
       }
 
+      // Get currentInventory from session state for previousQuantity lookup
+      const currentInventory =
+        (toolContext?.state?.get("currentInventory") as InventorySessionItem[]) ?? [];
+
+      // Build previousQuantity lookup from session state (by ingredientId)
+      const prevQtyMap = new Map(
+        currentInventory.map((item) => [item.ingredientId, item.quantityLevel]),
+      );
+
       // Create quantity lookup map
       const quantityMap = new Map(
-        updates.map((u) => [u.name.toLowerCase().trim(), u.qty])
+        updates.map((u) => [u.name.toLowerCase().trim(), u.qty]),
       );
 
       // Run matchIngredients
@@ -55,17 +83,21 @@ Call with extracted ingredients and quantity levels from user input.`,
         });
       });
 
-      // Build recognized updates
-      const recognized: ValidatedInventoryUpdate[] = matchResult.ingredients.map((ing) => ({
-        ingredientId: ing.id,
-        ingredientName: ing.name,
-        previousQuantity: null,
-        proposedQuantity: quantityMap.get(ing.name.toLowerCase()) ?? 3,
-        confidence: 'high' as const,
-      }));
+      // Build recognized updates with previousQuantity from session state
+      const recognized: ValidatedInventoryUpdate[] =
+        matchResult.ingredients.map((ing) => ({
+          ingredientId: ing.id,
+          ingredientName: ing.name,
+          previousQuantity: prevQtyMap.get(ing.id) ?? null,
+          proposedQuantity: quantityMap.get(ing.name.toLowerCase()) ?? 3,
+          confidence: "high" as const,
+        }));
 
       // Agent only returns recognized items (unrecognized hardcoded empty)
-      const proposal: InventoryUpdateProposal = { recognized, unrecognized: [] };
+      const proposal: InventoryUpdateProposal = {
+        recognized,
+        unrecognized: [],
+      };
 
       // End invocation - return proposal as agent's final answer
       if (toolContext) {
