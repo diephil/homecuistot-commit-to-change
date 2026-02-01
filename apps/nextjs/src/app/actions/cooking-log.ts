@@ -115,6 +115,22 @@ export async function getRecipesWithAvailability(): Promise<RecipeWithAvailabili
   })
 }
 
+// Get recipes with availability, sorted by availability priority then alphabetically
+export async function getRecipesWithAvailabilitySorted(): Promise<RecipeWithAvailability[]> {
+  const recipes = await getRecipesWithAvailability()
+
+  const priority: Record<RecipeWithAvailability['availability'], number> = {
+    available: 0,
+    'almost-available': 1,
+    unavailable: 2,
+  }
+
+  return recipes.sort((a, b) => {
+    const p = priority[a.availability] - priority[b.availability]
+    return p !== 0 ? p : a.name.localeCompare(b.name)
+  })
+}
+
 // T003: Get cooking history (last 10 entries)
 export async function getCookingHistory(): Promise<CookingLogEntry[]> {
   const { userId, db } = await getAuthContext()

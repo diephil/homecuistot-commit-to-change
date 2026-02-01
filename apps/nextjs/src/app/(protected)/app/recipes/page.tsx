@@ -3,14 +3,16 @@
 import { useState, useEffect } from "react";
 import { PageContainer } from "@/components/PageContainer";
 import { Button } from "@/components/shared/Button";
-import { RecipeList } from "@/components/recipes/RecipeList";
+import { RecipeAvailabilityCard } from "@/components/app/RecipeAvailabilityCard";
 import { RecipeForm } from "@/components/recipes/RecipeForm";
 import { RecipeHelpModal } from "@/components/recipes/HelpModal";
 import { NeoHelpButton } from "@/components/shared/NeoHelpButton";
 import { DeleteConfirmationModal } from "@/components/shared/DeleteConfirmationModal";
 import { getRecipes, deleteRecipe } from "@/app/actions/recipes";
+import { getRecipesWithAvailabilitySorted } from "@/app/actions/cooking-log";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
+import type { RecipeWithAvailability } from "@/types/cooking";
 
 interface Recipe {
   id: string;
@@ -33,6 +35,7 @@ interface Recipe {
 }
 
 export default function RecipesPage() {
+  const [recipesWithAvailability, setRecipesWithAvailability] = useState<RecipeWithAvailability[]>([]);
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [selectedRecipeId, setSelectedRecipeId] = useState<string | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -40,7 +43,7 @@ export default function RecipesPage() {
 
   // Delete modal state
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [recipeToDelete, setRecipeToDelete] = useState<Recipe | null>(null);
+  const [recipeToDelete, setRecipeToDelete] = useState<RecipeWithAvailability | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
@@ -50,8 +53,12 @@ export default function RecipesPage() {
   async function loadRecipes() {
     try {
       setIsLoading(true);
-      const data = await getRecipes();
-      setRecipes(data);
+      const [availabilityData, fullRecipes] = await Promise.all([
+        getRecipesWithAvailabilitySorted(),
+        getRecipes(),
+      ]);
+      setRecipesWithAvailability(availabilityData);
+      setRecipes(fullRecipes);
     } catch (error) {
       console.error("Failed to load recipes:", error);
     } finally {
@@ -69,12 +76,9 @@ export default function RecipesPage() {
     setIsFormOpen(true);
   }
 
-  function handleRecipeDeleteClick(recipeId: string) {
-    const recipe = recipes.find((r) => r.id === recipeId);
-    if (recipe) {
-      setRecipeToDelete(recipe);
-      setDeleteModalOpen(true);
-    }
+  function handleRecipeDeleteClick(recipe: RecipeWithAvailability) {
+    setRecipeToDelete(recipe);
+    setDeleteModalOpen(true);
   }
 
   async function handleConfirmDelete() {
@@ -100,21 +104,17 @@ export default function RecipesPage() {
     setRecipeToDelete(null);
   }
 
-  function handleFormClose() {
+  function handleFormClose(changed?: boolean) {
     setIsFormOpen(false);
     setSelectedRecipeId(null);
-    loadRecipes();
+    if (changed) {
+      loadRecipes();
+    }
   }
 
   const selectedRecipe = selectedRecipeId
     ? recipes.find((r) => r.id === selectedRecipeId)
     : null;
-
-  const displayRecipes = recipes.map((r) => ({
-    id: r.id,
-    title: r.name,
-    description: r.description,
-  }));
 
   return (
     <PageContainer maxWidth="4xl">
@@ -143,13 +143,22 @@ export default function RecipesPage() {
           <p className="text-center py-8 text-muted-foreground">
             Loading recipes...
           </p>
+        ) : recipesWithAvailability.length === 0 ? (
+          <p className="text-sm text-muted-foreground text-center py-8">
+            No recipes yet. Add your first recipe to get started!
+          </p>
         ) : (
-          <RecipeList
-            recipes={displayRecipes}
-            showActions
-            onRecipeEdit={handleRecipeEdit}
-            onRecipeDelete={handleRecipeDeleteClick}
-          />
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
+            {recipesWithAvailability.map((recipe) => (
+              <RecipeAvailabilityCard
+                key={recipe.id}
+                recipe={recipe}
+                variant={recipe.availability}
+                onEdit={() => handleRecipeEdit(recipe.id)}
+                onDelete={() => handleRecipeDeleteClick(recipe)}
+              />
+            ))}
+          </div>
         )}
 
         {isFormOpen && (

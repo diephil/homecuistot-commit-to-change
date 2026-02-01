@@ -22,7 +22,7 @@ interface RecipeEditFormProps {
       ingredientType: string;
     }>;
   };
-  onClose: () => void;
+  onClose: (changed?: boolean) => void;
 }
 
 type InputMode = "voice" | "text";
@@ -211,7 +211,7 @@ export function RecipeEditForm(props: RecipeEditFormProps) {
       });
 
       toast.success("Recipe updated successfully");
-      onClose();
+      onClose(true);
     } catch (error) {
       console.error("Failed to save recipe:", error);
       toast.error("Failed to save recipe");
@@ -225,7 +225,7 @@ export function RecipeEditForm(props: RecipeEditFormProps) {
       setIsSubmitting(true);
       await deleteRecipe({ recipeId: recipe.id });
       toast.success("Recipe deleted successfully");
-      onClose();
+      onClose(true);
     } catch (error) {
       console.error("Failed to delete recipe:", error);
       toast.error("Failed to delete recipe");
@@ -252,7 +252,7 @@ export function RecipeEditForm(props: RecipeEditFormProps) {
         <div className="p-8 space-y-6">
           <div className="flex items-center justify-between pb-4 border-b-2 border-black">
             <h2 className="text-3xl font-bold">Edit Recipe</h2>
-            <Button variant="ghost" onClick={onClose} size="icon">
+            <Button variant="ghost" onClick={() => onClose()} size="icon">
               <span className="text-2xl">✕</span>
             </Button>
           </div>

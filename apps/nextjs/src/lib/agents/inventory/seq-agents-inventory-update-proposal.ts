@@ -9,10 +9,7 @@ import { GoogleGenAI } from "@google/genai";
 import { trackGemini } from "opik-gemini";
 import { InMemoryRunner, isFinalResponse } from "@google/adk";
 import type { Span } from "opik";
-import {
-  createAgentTrace,
-  extractAdkUsage,
-} from "@/lib/tracing/opik-agent";
+import { createAgentTrace, extractAdkUsage } from "@/lib/tracing/opik-agent";
 import { createInventoryAgent } from "./agent";
 import type { InventorySessionItem } from "./tools/validate-ingredients";
 import type { InventoryUpdateProposal } from "@/types/inventory";
@@ -35,7 +32,7 @@ interface CreateProposalResult {
 }
 
 export async function createInventoryManagerAgentProposal(
-  params: CreateProposalParams
+  params: CreateProposalParams,
 ): Promise<CreateProposalResult> {
   const { userId, input, audioBase64, currentInventory } = params;
   const inputType = audioBase64 ? "voice" : "text";
@@ -44,7 +41,13 @@ export async function createInventoryManagerAgentProposal(
   const traceCtx = createAgentTrace({
     name: "inventory-manager-agent",
     input: { inputType, inventorySize: currentInventory.length },
-    tags: ["inventory", "agent", inputType, "gemini-2.0-flash", `user:${userId}`],
+    tags: [
+      "inventory",
+      "agent",
+      inputType,
+      "gemini-2.0-flash",
+      `user:${userId}`,
+    ],
     metadata: {
       userId,
       model: "gemini-2.0-flash",
@@ -79,7 +82,7 @@ export async function createInventoryManagerAgentProposal(
             role: "user",
             parts: [
               {
-                text: "Transcribe this audio exactly as spoken. Return only the transcription.",
+                text: "Transcribe this audio exactly as spoken. Return only the transcription, no additional text. The user should be speaking about food. If they speak another language than English, translate what they say into english. Remove filling words, hesitations, while preserving the initial intent of the user. \nIMPORTANT NOTE: If nothing is heard in the audio, return an empty string. PRESERVE THE ORIGINAL INTENT OF THE USER, if nothing is heard, DO NOT INVENT CONTENT AND RETURN AN EMPTY STRING.",
               },
               { inlineData: { mimeType: "audio/webm", data: audioBase64 } },
             ],
@@ -138,7 +141,7 @@ export async function createInventoryManagerAgentProposal(
                 ? { text: p.text }
                 : "functionCall" in p
                   ? { functionCall: p.functionCall?.name }
-                  : {}
+                  : {},
             ),
           },
           usage: eventUsage,

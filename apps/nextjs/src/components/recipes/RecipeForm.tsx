@@ -18,7 +18,7 @@ interface RecipeFormProps {
       ingredientType: string;
     }>;
   } | null;
-  onClose: () => void;
+  onClose: (changed?: boolean) => void;
 }
 
 export function RecipeForm(props: RecipeFormProps) {

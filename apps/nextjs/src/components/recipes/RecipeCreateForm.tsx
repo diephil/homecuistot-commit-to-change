@@ -8,7 +8,7 @@ import { QuickInputSection } from "@/components/shared/QuickInputSection";
 import { toast } from "sonner";
 
 interface RecipeCreateFormProps {
-  onClose: () => void;
+  onClose: (changed?: boolean) => void;
 }
 
 type InputMode = "voice" | "text";
@@ -153,7 +153,7 @@ export function RecipeCreateForm(props: RecipeCreateFormProps) {
       });
 
       toast.success("Recipe created successfully");
-      onClose();
+      onClose(true);
     } catch (error) {
       console.error("Failed to save recipe:", error);
       toast.error("Failed to save recipe");
@@ -180,7 +180,7 @@ export function RecipeCreateForm(props: RecipeCreateFormProps) {
         <div className="p-8 space-y-6">
           <div className="flex items-center justify-between pb-4 border-b-2 border-black">
             <h2 className="text-3xl font-bold">Add Recipe</h2>
-            <Button variant="ghost" onClick={onClose} size="icon">
+            <Button variant="ghost" onClick={() => onClose()} size="icon">
               <span className="text-2xl">✕</span>
             </Button>
           </div>
@@ -284,7 +284,7 @@ export function RecipeCreateForm(props: RecipeCreateFormProps) {
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={onClose}
+                  onClick={() => onClose()}
                   disabled={isSubmitting}
                   size="lg"
                 >

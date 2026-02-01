@@ -12,17 +12,14 @@ interface InventoryHelpModalProps {
 export function InventoryHelpModal({ isOpen, onClose }: InventoryHelpModalProps) {
   return (
     <HelpModal isOpen={isOpen} onClose={onClose} title="How to Use Inventory">
-      {/* Voice Input Section */}
-      <HelpSection emoji="🎙️" title="Voice Input" bgColor="bg-blue-100">
-        <p className="text-sm font-medium mb-3">
-          Update multiple ingredients at once using natural language. Examples:
-        </p>
+      {/* Speak to Update Section */}
+      <HelpSection emoji="💬" title="SPEAK TO UPDATE THE LIST" bgColor="bg-cyan-100">
         <HelpExampleList
           examples={[
             "I just bought milk and eggs",
             "I have enough onions for at least 2 meals",
             "Running low on tomatoes",
-            "I always have pasta in my pantry",
+            "I always have pasta in my pantry.",
           ]}
           bulletColor="text-black"
         />
