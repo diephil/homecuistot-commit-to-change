@@ -1,16 +1,22 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { PageContainer } from "@/components/PageContainer";
 import { RecipeCard } from "@/components/recipes/RecipeCard";
 import { RecipeForm } from "@/components/recipes/RecipeForm";
 import { RecipeHelpModal } from "@/components/recipes/HelpModal";
 import { RecipeVoiceGuidanceCard } from "@/components/recipes/VoiceGuidanceCard";
+import { RecipeProposalModal } from "@/components/recipes/RecipeProposalModal";
 import { NeoHelpButton } from "@/components/shared/NeoHelpButton";
 import { DeleteConfirmationModal } from "@/components/shared/DeleteConfirmationModal";
 import { VoiceTextInput, Separator, SectionHeader } from "@/components/shared";
 import { getRecipes, deleteRecipe, toggleIngredientType } from "@/app/actions/recipes";
 import { toast } from "sonner";
+import type {
+  RecipeManagerProposal,
+  RecipeToolResult,
+  UpdateRecipeResult,
+} from "@/types/recipe-agent";
 
 interface Recipe {
   id: string;
@@ -42,6 +48,14 @@ export default function RecipesPage() {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [recipeToDelete, setRecipeToDelete] = useState<Recipe | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // Voice/text input state
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [lastTranscription, setLastTranscription] = useState<string | undefined>();
+
+  // Proposal modal state
+  const [proposalModalOpen, setProposalModalOpen] = useState(false);
+  const [currentProposal, setCurrentProposal] = useState<RecipeManagerProposal | null>(null);
 
   useEffect(() => {
     loadRecipes();
@@ -128,13 +142,130 @@ export default function RecipesPage() {
     }
   }
 
-  // Voice/text input handler (non-functional for now)
-  const handleVoiceTextSubmit = async (
-    _result: { type: "voice"; audioBlob: Blob } | { type: "text"; text: string }
-  ) => {
-    // TODO: Implement voice/text recipe creation
-    toast.info("Voice recipe creation coming soon!");
-  };
+  // Merge update proposals with local recipe data to preserve ingredientIds
+  const mergeProposalWithLocalData = useCallback(
+    (proposal: RecipeManagerProposal): RecipeManagerProposal => {
+      const mergedRecipes: RecipeToolResult[] = proposal.recipes.map((result) => {
+        if (result.operation !== "update") {
+          return result; // Create operations don't need merging
+        }
+
+        const updateResult = result as UpdateRecipeResult;
+        const localRecipe = recipes.find((r) => r.id === updateResult.recipeId);
+
+        if (!localRecipe) {
+          return result; // Recipe not found locally, return as-is
+        }
+
+        // Build name -> ingredientId lookup from local recipe
+        const nameToIngredientId = new Map<string, string>();
+        for (const ri of localRecipe.recipeIngredients) {
+          if (ri.ingredient && ri.ingredientId) {
+            nameToIngredientId.set(ri.ingredient.name.toLowerCase(), ri.ingredientId);
+          }
+        }
+
+        // Enrich proposed ingredients with ingredientIds from local data
+        const enrichedIngredients = updateResult.proposedState.ingredients.map(
+          (ing) => ({
+            ...ing,
+            ingredientId:
+              ing.ingredientId ?? nameToIngredientId.get(ing.name.toLowerCase()),
+          })
+        );
+
+        return {
+          ...updateResult,
+          proposedState: {
+            ...updateResult.proposedState,
+            ingredients: enrichedIngredients,
+          },
+        };
+      });
+
+      return {
+        ...proposal,
+        recipes: mergedRecipes,
+      };
+    },
+    [recipes]
+  );
+
+  // Voice/text input handler
+  const handleVoiceTextSubmit = useCallback(
+    async (
+      result: { type: "voice"; audioBlob: Blob } | { type: "text"; text: string }
+    ) => {
+      setIsProcessing(true);
+
+      try {
+        let body: { input?: string; audioBase64?: string };
+
+        if (result.type === "voice") {
+          // Convert blob to base64
+          const arrayBuffer = await result.audioBlob.arrayBuffer();
+          const base64 = btoa(
+            new Uint8Array(arrayBuffer).reduce(
+              (data, byte) => data + String.fromCharCode(byte),
+              ""
+            )
+          );
+          body = { audioBase64: base64 };
+        } else {
+          body = { input: result.text };
+        }
+
+        const response = await fetch("/api/recipes/agent-proposal", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to process input");
+        }
+
+        const data = await response.json();
+        const proposal = data.proposal as RecipeManagerProposal;
+        const transcribedText = data.transcribedText as string | undefined;
+
+        // Update last transcription for voice inputs
+        if (transcribedText) {
+          setLastTranscription(transcribedText);
+        }
+
+        // Check if no changes detected
+        if (proposal.noChangesDetected) {
+          toast.info("No recipe updates detected");
+          return;
+        }
+
+        // Merge update proposals with local recipe data to get ingredientIds
+        const mergedProposal = mergeProposalWithLocalData(proposal);
+
+        // Show proposal modal
+        setCurrentProposal(mergedProposal);
+        setProposalModalOpen(true);
+      } catch (error) {
+        console.error("Recipe agent error:", error);
+        toast.error("Failed to process your request");
+      } finally {
+        setIsProcessing(false);
+      }
+    },
+    [mergeProposalWithLocalData]
+  );
+
+  const handleProposalApplied = useCallback(() => {
+    setProposalModalOpen(false);
+    setCurrentProposal(null);
+    loadRecipes();
+  }, []);
+
+  const handleProposalClose = useCallback(() => {
+    setProposalModalOpen(false);
+    setCurrentProposal(null);
+  }, []);
 
   const selectedRecipe = selectedRecipeId
     ? recipes.find((r) => r.id === selectedRecipeId)
@@ -181,9 +312,10 @@ export default function RecipesPage() {
 
           <VoiceTextInput
             onSubmit={handleVoiceTextSubmit}
-            disabled={false}
-            processing={false}
+            disabled={isProcessing}
+            processing={isProcessing}
             textPlaceholder="Describe your recipe with ingredients..."
+            lastTranscription={lastTranscription}
           />
         </div>
 
@@ -238,6 +370,16 @@ export default function RecipesPage() {
         onCancel={handleCancelDelete}
         isDeleting={isDeleting}
       />
+
+      {currentProposal && (
+        <RecipeProposalModal
+          isOpen={proposalModalOpen}
+          proposal={currentProposal}
+          onClose={handleProposalClose}
+          onProposalApplied={handleProposalApplied}
+          transcription={lastTranscription}
+        />
+      )}
     </PageContainer>
   );
 }

@@ -17,25 +17,53 @@ export function getOpikClient(): Opik {
   return opikClient;
 }
 
+/**
+ * Trace parameters matching Opik's trace interface
+ */
 interface CreateAgentTraceParams {
   name: string;
-  input: Record<string, unknown>;
+  input?: Record<string, unknown>;
+  output?: Record<string, unknown>;
   metadata?: Record<string, unknown>;
   tags?: string[];
+  startTime?: Date;
+  endTime?: Date;
+  threadId?: string;
 }
+
+/**
+ * Base span parameters matching Opik's SpanData interface
+ */
+interface BaseSpanParams {
+  name: string;
+  input?: Record<string, unknown>;
+  output?: Record<string, unknown>;
+  metadata?: Record<string, unknown>;
+  tags?: string[];
+  usage?: Record<string, number>;
+  startTime?: Date;
+  endTime?: Date;
+  parentSpanId?: string;
+}
+
+/**
+ * LLM span parameters with required model field
+ */
+interface LlmSpanParams extends BaseSpanParams {
+  model: string;
+  provider?: string;
+}
+
+/**
+ * Tool span parameters
+ */
+interface ToolSpanParams extends BaseSpanParams {}
 
 export interface AgentTraceContext {
   client: Opik;
   trace: Trace;
-  createLlmSpan(params: {
-    name: string;
-    input: Record<string, unknown>;
-    model: string;
-  }): Span;
-  createToolSpan(params: {
-    name: string;
-    input: Record<string, unknown>;
-  }): Span;
+  createLlmSpan(params: LlmSpanParams): Span;
+  createToolSpan(params: ToolSpanParams): Span;
   end(): void;
   flush(): Promise<void>;
 }
@@ -44,20 +72,15 @@ export function createAgentTrace(
   params: CreateAgentTraceParams
 ): AgentTraceContext {
   const client = getOpikClient();
-  const trace = client.trace({
-    name: params.name,
-    input: params.input,
-    metadata: params.metadata,
-    tags: params.tags,
-  });
+  const trace = client.trace(params);
 
   return {
     client,
     trace,
-    createLlmSpan: ({ name, input, model }) =>
-      trace.span({ name, type: "llm", input, model, provider: "google_ai" }),
-    createToolSpan: ({ name, input }) =>
-      trace.span({ name, type: "tool", input }),
+    createLlmSpan: ({ model, provider = "google_ai", ...rest }) =>
+      trace.span({ ...rest, type: "llm", model, provider }),
+    createToolSpan: (params) =>
+      trace.span({ ...params, type: "tool" }),
     end: () => trace.end(),
     flush: () => client.flush(),
   };
