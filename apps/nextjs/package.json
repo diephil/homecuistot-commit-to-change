@@ -27,7 +27,8 @@
     "prompt:inventory": "tsx --env-file=.env.local scripts/register-inventory-prompt.ts",
     "prompt:inventory:prod": "tsx --env-file=.env.prod scripts/register-inventory-prompt.ts",
     "prompt:all": "tsx --env-file=.env.local scripts/register-voice-prompt.ts && tsx --env-file=.env.local scripts/register-text-prompt.ts && tsx --env-file=.env.local scripts/register-recipe-prompt.ts && tsx --env-file=.env.local scripts/register-inventory-prompt.ts",
-    "prompt:all:prod": "tsx --env-file=.env.prod scripts/register-voice-prompt.ts && tsx --env-file=.env.prod scripts/register-text-prompt.ts && tsx --env-file=.env.prod scripts/register-recipe-prompt.ts && tsx --env-file=.env.prod scripts/register-inventory-prompt.ts"
+    "prompt:all:prod": "tsx --env-file=.env.prod scripts/register-voice-prompt.ts && tsx --env-file=.env.prod scripts/register-text-prompt.ts && tsx --env-file=.env.prod scripts/register-recipe-prompt.ts && tsx --env-file=.env.prod scripts/register-inventory-prompt.ts",
+    "adk:inventory": "tsx --env-file=.env.local scripts/adk-inventory-agent.ts"
   },
   "dependencies": {
     "@ai-sdk/google": "^3.0.10",
