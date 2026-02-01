@@ -21,6 +21,7 @@ import type {
   ProposedRecipeIngredient,
   RecipeSessionItem,
 } from "@/types/recipe-agent";
+import { Trace } from "opik";
 
 // Input schema
 const IngredientInput = z.object({
@@ -58,7 +59,7 @@ const UpdateRecipeInput = z.object({
 
 type UpdateInput = z.infer<typeof UpdateRecipeInput>;
 
-export function createUpdateRecipeTool() {
+export function createUpdateRecipeTool(params: { opikTrace: Trace }) {
   return new FunctionTool({
     name: "update_recipe",
     description: `Update an existing recipe from the tracked recipes.
@@ -67,6 +68,11 @@ Use the recipe ID from the session state context.`,
     parameters: UpdateRecipeInput,
     execute: async (input: UpdateInput, toolContext?: ToolContext) => {
       const { recipeId, updates } = input;
+      const span = params.opikTrace.span({
+        name: "update_recipe",
+        type: "tool",
+        input,
+      });
 
       // Get tracked recipes from session state
       const trackedRecipes =
@@ -119,17 +125,17 @@ Use the recipe ID from the session state context.`,
       // Apply remove ingredients
       if (updates.removeIngredients && updates.removeIngredients.length > 0) {
         const removeSet = new Set(
-          updates.removeIngredients.map((n) => n.toLowerCase().trim())
+          updates.removeIngredients.map((n) => n.toLowerCase().trim()),
         );
         proposedIngredients = proposedIngredients.filter(
-          (i) => !removeSet.has(i.name.toLowerCase())
+          (i) => !removeSet.has(i.name.toLowerCase()),
         );
       }
 
       // Apply toggle required
       if (updates.toggleRequired && updates.toggleRequired.length > 0) {
         const toggleSet = new Set(
-          updates.toggleRequired.map((n) => n.toLowerCase().trim())
+          updates.toggleRequired.map((n) => n.toLowerCase().trim()),
         );
         proposedIngredients = proposedIngredients.map((i) => {
           if (toggleSet.has(i.name.toLowerCase())) {
@@ -148,12 +154,15 @@ Use the recipe ID from the session state context.`,
 
         // Create lookup map for isRequired
         const requiredMap = new Map(
-          newIngredients.map((i) => [i.name.toLowerCase().trim(), i.isRequired])
+          newIngredients.map((i) => [
+            i.name.toLowerCase().trim(),
+            i.isRequired,
+          ]),
         );
 
         // Normalize names for matching
         const normalizedNames = newIngredients.map((i) =>
-          i.name.toLowerCase().trim()
+          i.name.toLowerCase().trim(),
         );
         const uniqueNames = [...new Set(normalizedNames)];
 
@@ -164,13 +173,13 @@ Use the recipe ID from the session state context.`,
           .where(
             sql`LOWER(${ingredients.name}) IN (${sql.join(
               uniqueNames.map((n) => sql`${n}`),
-              sql`, `
-            )})`
+              sql`, `,
+            )})`,
           );
 
         // Track matched names
         const matchedNames = new Set(
-          matchedIngredients.map((i) => i.name.toLowerCase())
+          matchedIngredients.map((i) => i.name.toLowerCase()),
         );
 
         // Build matched results
@@ -191,7 +200,7 @@ Use the recipe ID from the session state context.`,
 
         // Add matched ingredients to proposed (avoid duplicates)
         const existingNames = new Set(
-          proposedIngredients.map((i) => i.name.toLowerCase())
+          proposedIngredients.map((i) => i.name.toLowerCase()),
         );
         for (const ing of newIngredients) {
           const nameLower = ing.name.toLowerCase().trim();
@@ -208,7 +217,7 @@ Use the recipe ID from the session state context.`,
       const finalIngredients: ProposedRecipeIngredient[] =
         proposedIngredients.map((ing) => ({
           ingredientId: matched.find(
-            (m) => m.name.toLowerCase() === ing.name.toLowerCase()
+            (m) => m.name.toLowerCase() === ing.name.toLowerCase(),
           )?.ingredientId,
           name: ing.name,
           isRequired: ing.isRequired,
@@ -231,6 +240,14 @@ Use the recipe ID from the session state context.`,
       if (toolContext) {
         toolContext.invocationContext.endInvocation = true;
       }
+
+      span.update({
+        output: result as unknown as Record<string, unknown>,
+        metadata: unrecognized.length > 0 ? { unrecognized } : {},
+        tags:
+          unrecognized.length > 0 ? ["unrecognized_items"] : ["all_recognized"],
+      });
+      span.end();
 
       return result;
     },

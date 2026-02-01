@@ -57,19 +57,19 @@ interface LlmSpanParams extends BaseSpanParams {
 /**
  * Tool span parameters
  */
-interface ToolSpanParams extends BaseSpanParams {}
+// interface ToolSpanParams extends BaseSpanParams {}
 
 export interface AgentTraceContext {
   client: Opik;
   trace: Trace;
   createLlmSpan(params: LlmSpanParams): Span;
-  createToolSpan(params: ToolSpanParams): Span;
+  // createToolSpan(params: ToolSpanParams): Span;
   end(): void;
   flush(): Promise<void>;
 }
 
 export function createAgentTrace(
-  params: CreateAgentTraceParams
+  params: CreateAgentTraceParams,
 ): AgentTraceContext {
   const client = getOpikClient();
   const trace = client.trace(params);
@@ -79,8 +79,8 @@ export function createAgentTrace(
     trace,
     createLlmSpan: ({ model, provider = "google_ai", ...rest }) =>
       trace.span({ ...rest, type: "llm", model, provider }),
-    createToolSpan: (params) =>
-      trace.span({ ...params, type: "tool" }),
+    // createToolSpan: (params) =>
+    //   trace.span({ ...params, type: "tool" }),
     end: () => trace.end(),
     flush: () => client.flush(),
   };

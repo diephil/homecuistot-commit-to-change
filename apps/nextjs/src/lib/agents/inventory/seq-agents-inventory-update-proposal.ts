@@ -104,7 +104,7 @@ export async function createInventoryManagerAgentProposal(
     }
 
     // 3. Create agent + session
-    const agent = createInventoryAgent({ userId });
+    const agent = createInventoryAgent({ userId, opikTrace: traceCtx.trace });
     const runner = new InMemoryRunner({ agent, appName: "inventory_manager" });
     const session = await runner.sessionService.createSession({
       userId,
@@ -115,10 +115,7 @@ export async function createInventoryManagerAgentProposal(
     // 4. Run agent with model and tool spans
     let proposal: InventoryUpdateProposal | null = null;
     const usage = { promptTokens: 0, completionTokens: 0, totalTokens: 0 };
-    // Track pending tool spans by call ID (supports parallel tool calls to same function)
-    // Also track by function name as fallback when ADK doesn't provide IDs
-    const pendingToolSpansById = new Map<string, Span>();
-    const pendingToolSpansByName = new Map<string, Span[]>();
+
     let currentModelSpan: Span | null = null;
     let modelCallCount = 0;
 
@@ -131,32 +128,25 @@ export async function createInventoryManagerAgentProposal(
       // Capture timestamp before processing to ensure model span starts before tool spans
       let modelSpanStartTime: Date | undefined;
       if (event.usageMetadata) {
-        modelCallCount++;
-        modelSpanStartTime = new Date();
-        currentModelSpan = traceCtx.createLlmSpan({
-          name: `adk-model-call-${modelCallCount}`,
-          input: { message: textInput },
-          model: "gemini-2.0-flash",
-          startTime: modelSpanStartTime,
+        const currentSessionState = await runner.sessionService.getSession({
+          appName: "inventory_manager",
+          userId,
+          sessionId: session.id,
         });
+        modelCallCount++;
+        modelSpanStartTime = new Date(event.timestamp);
         const eventUsage = extractAdkUsage(event.usageMetadata);
         usage.promptTokens += eventUsage.prompt_tokens;
         usage.completionTokens += eventUsage.completion_tokens;
         usage.totalTokens += eventUsage.total_tokens;
-
-        currentModelSpan.update({
-          output: {
-            parts: event.content?.parts?.map((p) =>
-              "text" in p
-                ? { text: p.text }
-                : "functionCall" in p
-                  ? { functionCall: { name: p.functionCall?.name, args: p.functionCall?.args } }
-                  : {},
-            ),
-          },
+        currentModelSpan = traceCtx.createLlmSpan({
+          name: `adk-model-call-${modelCallCount}`,
+          input: { thread: currentSessionState?.events.slice(0, -1) },
+          model: "gemini-2.0-flash",
+          startTime: modelSpanStartTime,
+          output: event as unknown as Record<string, unknown>,
           usage: eventUsage,
         });
-        // Don't end model span yet - wait for tool execution if there's a functionCall
       }
 
       // Process parts for tool spans and proposal extraction
@@ -164,65 +154,23 @@ export async function createInventoryManagerAgentProposal(
         for (const part of event.content.parts) {
           // Tool call span - starts on functionCall (child of model span)
           // Use call ID to uniquely identify each tool invocation
-          if ("functionCall" in part && part.functionCall && part.functionCall.name) {
+          if (
+            "functionCall" in part &&
+            part.functionCall &&
+            part.functionCall.name
+          ) {
             // End model span before starting tool spans
             if (currentModelSpan) {
               currentModelSpan.end();
               currentModelSpan = null;
             }
-            const funcCall = part.functionCall as { id?: string; name: string; args?: unknown };
-            const funcName = funcCall.name;
-            // Tool span starts after model span (add 1ms offset to ensure ordering)
-            const toolStartTime = modelSpanStartTime
-              ? new Date(modelSpanStartTime.getTime() + 1)
-              : new Date();
-            const toolSpan = traceCtx.createToolSpan({
-              name: `adk-tool-call-${funcName}`,
-              input: {
-                callId: funcCall.id,
-                functionName: funcName,
-                args: funcCall.args,
-              },
-              startTime: toolStartTime,
-            });
-            // Store by ID if available, otherwise by name (FIFO queue for same-name calls)
-            if (funcCall.id) {
-              pendingToolSpansById.set(funcCall.id, toolSpan);
-            }
-            // Always store by name as fallback
-            const nameQueue = pendingToolSpansByName.get(funcName) ?? [];
-            nameQueue.push(toolSpan);
-            pendingToolSpansByName.set(funcName, nameQueue);
           }
 
-          // Tool call span - ends on functionResponse
-          // Match by call ID first, fall back to function name (FIFO)
-          if ("functionResponse" in part && part.functionResponse && part.functionResponse.name) {
-            const funcResp = part.functionResponse as { id?: string; name: string; response?: Record<string, unknown> };
-            const funcName = funcResp.name;
-
-            // Try to match by ID first
-            let toolSpan = funcResp.id ? pendingToolSpansById.get(funcResp.id) : null;
-            if (toolSpan && funcResp.id) {
-              pendingToolSpansById.delete(funcResp.id);
-            } else {
-              // Fall back to name-based FIFO matching
-              const nameQueue = pendingToolSpansByName.get(funcName);
-              if (nameQueue && nameQueue.length > 0) {
-                toolSpan = nameQueue.shift()!;
-                if (nameQueue.length === 0) {
-                  pendingToolSpansByName.delete(funcName);
-                }
-              }
-            }
-
-            if (toolSpan) {
-              toolSpan.update({
-                output: funcResp.response as Record<string, unknown>,
-              });
-              toolSpan.end();
-            }
-
+          if (
+            "functionResponse" in part &&
+            part.functionResponse &&
+            part.functionResponse.name
+          ) {
             // Extract proposal from response
             const response = part.functionResponse.response;
             if (
@@ -243,33 +191,18 @@ export async function createInventoryManagerAgentProposal(
               }
             } catch {
               // Not JSON
+              console.error("Failed to parse JSON from text");
             }
           }
         }
       }
 
       // End model span if no functionCall was triggered in this event
-      if (currentModelSpan && pendingToolSpansById.size === 0 && pendingToolSpansByName.size === 0) {
+      if (currentModelSpan) {
         currentModelSpan.end();
         currentModelSpan = null;
       }
     }
-
-    // Clean up any remaining spans
-    if (currentModelSpan) {
-      currentModelSpan.end();
-    }
-    // End any pending tool spans that didn't receive responses
-    for (const span of pendingToolSpansById.values()) {
-      span.end();
-    }
-    for (const spans of pendingToolSpansByName.values()) {
-      for (const span of spans) {
-        span.end();
-      }
-    }
-    pendingToolSpansById.clear();
-    pendingToolSpansByName.clear();
 
     // 5. Set output and end trace
     const finalProposal = proposal ?? { recognized: [], unrecognized: [] };

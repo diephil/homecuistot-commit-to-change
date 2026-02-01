@@ -37,7 +37,7 @@ interface CreateRecipeProposalResult {
 }
 
 export async function createRecipeManagerAgentProposal(
-  params: CreateRecipeProposalParams
+  params: CreateRecipeProposalParams,
 ): Promise<CreateRecipeProposalResult> {
   const { userId, input, audioBase64, trackedRecipes } = params;
   const inputType = audioBase64 ? "voice" : "text";
@@ -63,9 +63,6 @@ export async function createRecipeManagerAgentProposal(
       trackedRecipes,
     },
   });
-
-  // Track if we find unrecognized items
-  let hasUnrecognizedItems = false;
 
   try {
     let textInput: string;
@@ -111,11 +108,11 @@ export async function createRecipeManagerAgentProposal(
     }
 
     // 3. Create agent + session
-    const agent = createRecipeManagerAgent();
+    const agent = createRecipeManagerAgent({ opikTrace: traceCtx.trace });
     const runner = new InMemoryRunner({ agent, appName: "recipe_manager" });
     const session = await runner.sessionService.createSession({
-      userId,
       appName: "recipe_manager",
+      userId,
       state: { trackedRecipes },
     });
 
@@ -141,8 +138,6 @@ export async function createRecipeManagerAgentProposal(
     const usage = { promptTokens: 0, completionTokens: 0, totalTokens: 0 };
     // Track pending tool spans by call ID (supports parallel tool calls to same function)
     // Also track by function name as fallback when ADK doesn't provide IDs
-    const pendingToolSpansById = new Map<string, Span>();
-    const pendingToolSpansByName = new Map<string, Span[]>();
     let currentModelSpan: Span | null = null;
     let modelCallCount = 0;
 
@@ -155,29 +150,23 @@ export async function createRecipeManagerAgentProposal(
       // Capture timestamp before processing to ensure model span starts before tool spans
       let modelSpanStartTime: Date | undefined;
       if (event.usageMetadata) {
-        modelCallCount++;
-        modelSpanStartTime = new Date();
-        currentModelSpan = traceCtx.createLlmSpan({
-          name: `adk-model-call-${modelCallCount}`,
-          input: { message: textInput },
-          model: "gemini-2.0-flash",
-          startTime: modelSpanStartTime,
+        const currentSessionState = await runner.sessionService.getSession({
+          appName: "recipe_manager",
+          userId,
+          sessionId: session.id,
         });
+        modelCallCount++;
+        modelSpanStartTime = new Date(event.timestamp);
         const eventUsage = extractAdkUsage(event.usageMetadata);
         usage.promptTokens += eventUsage.prompt_tokens;
         usage.completionTokens += eventUsage.completion_tokens;
         usage.totalTokens += eventUsage.total_tokens;
-
-        currentModelSpan.update({
-          output: {
-            parts: event.content?.parts?.map((p) =>
-              "text" in p
-                ? { text: p.text }
-                : "functionCall" in p
-                  ? { functionCall: { name: p.functionCall?.name, args: p.functionCall?.args } }
-                  : {}
-            ),
-          },
+        currentModelSpan = traceCtx.createLlmSpan({
+          name: `adk-model-call-${modelCallCount}`,
+          input: { thread: currentSessionState?.events.slice(0, -1) },
+          model: "gemini-2.0-flash",
+          startTime: modelSpanStartTime,
+          output: event as unknown as Record<string, unknown>,
           usage: eventUsage,
         });
       }
@@ -185,67 +174,23 @@ export async function createRecipeManagerAgentProposal(
       // Process parts for tool spans and result extraction
       if (event.content?.parts) {
         for (const part of event.content.parts) {
-          // Tool call span - starts on functionCall
-          // Use call ID to uniquely identify each tool invocation
-          if ("functionCall" in part && part.functionCall && part.functionCall.name) {
+          if (
+            "functionCall" in part &&
+            part.functionCall &&
+            part.functionCall.name
+          ) {
             // End model span before starting tool spans
             if (currentModelSpan) {
               currentModelSpan.end();
               currentModelSpan = null;
             }
-            const funcCall = part.functionCall as { id?: string; name: string; args?: unknown };
-            const funcName = funcCall.name;
-            // Tool span starts after model span (add 1ms offset to ensure ordering)
-            const toolStartTime = modelSpanStartTime
-              ? new Date(modelSpanStartTime.getTime() + 1)
-              : new Date();
-            const toolSpan = traceCtx.createToolSpan({
-              name: `adk-tool-call-${funcName}`,
-              input: {
-                callId: funcCall.id,
-                functionName: funcName,
-                args: funcCall.args,
-              },
-              startTime: toolStartTime,
-            });
-            // Store by ID if available, otherwise by name (FIFO queue for same-name calls)
-            if (funcCall.id) {
-              pendingToolSpansById.set(funcCall.id, toolSpan);
-            }
-            // Always store by name as fallback
-            const nameQueue = pendingToolSpansByName.get(funcName) ?? [];
-            nameQueue.push(toolSpan);
-            pendingToolSpansByName.set(funcName, nameQueue);
           }
 
-          // Tool call span - ends on functionResponse
-          // Match by call ID first, fall back to function name (FIFO)
-          if ("functionResponse" in part && part.functionResponse && part.functionResponse.name) {
-            const funcResp = part.functionResponse as { id?: string; name: string; response?: Record<string, unknown> };
-            const funcName = funcResp.name;
-
-            // Try to match by ID first
-            let toolSpan = funcResp.id ? pendingToolSpansById.get(funcResp.id) : null;
-            if (toolSpan && funcResp.id) {
-              pendingToolSpansById.delete(funcResp.id);
-            } else {
-              // Fall back to name-based FIFO matching
-              const nameQueue = pendingToolSpansByName.get(funcName);
-              if (nameQueue && nameQueue.length > 0) {
-                toolSpan = nameQueue.shift()!;
-                if (nameQueue.length === 0) {
-                  pendingToolSpansByName.delete(funcName);
-                }
-              }
-            }
-
-            if (toolSpan) {
-              toolSpan.update({
-                output: funcResp.response as Record<string, unknown>,
-              });
-              toolSpan.end();
-            }
-
+          if (
+            "functionResponse" in part &&
+            part.functionResponse &&
+            part.functionResponse.name
+          ) {
             // Extract recipe result from response
             const response = part.functionResponse.response;
             if (
@@ -255,71 +200,22 @@ export async function createRecipeManagerAgentProposal(
             ) {
               const result = response as unknown as RecipeToolResult;
               recipes.push(result);
-
-              // Check for unrecognized items (delete operations don't have unrecognized)
-              if (
-                "unrecognized" in result &&
-                result.unrecognized &&
-                result.unrecognized.length > 0
-              ) {
-                hasUnrecognizedItems = true;
-              }
             }
           }
         }
       }
-
-      // End model span if no functionCall was triggered
-      if (currentModelSpan && pendingToolSpansById.size === 0 && pendingToolSpansByName.size === 0) {
-        currentModelSpan.end();
-        currentModelSpan = null;
-      }
     }
 
-    // Clean up remaining spans
     if (currentModelSpan) {
       currentModelSpan.end();
+      currentModelSpan = null;
     }
-    // End any pending tool spans that didn't receive responses
-    for (const span of pendingToolSpansById.values()) {
-      span.end();
-    }
-    for (const spans of pendingToolSpansByName.values()) {
-      for (const span of spans) {
-        span.end();
-      }
-    }
-    pendingToolSpansById.clear();
-    pendingToolSpansByName.clear();
 
-    // 5. Build final proposal
     const proposal: RecipeManagerProposal = {
       recipes,
       noChangesDetected: recipes.length === 0,
     };
 
-    // Collect all unrecognized items (delete operations don't have unrecognized)
-    const allUnrecognizedItems = recipes.flatMap((r) =>
-      "unrecognized" in r ? r.unrecognized : []
-    );
-    const uniqueUnrecognizedItems = [...new Set(allUnrecognizedItems)];
-
-    // 6. Add unrecognized_item tag if needed
-    if (hasUnrecognizedItems) {
-      traceTags.push("unrecognized_item");
-      traceCtx.trace.update({
-        tags: traceTags,
-        metadata: { unrecognizedItems: uniqueUnrecognizedItems },
-      });
-    }
-
-    // 7. Set output and end trace
-    traceCtx.trace.update({
-      output: {
-        recipes: proposal.recipes,
-        noChangesDetected: proposal.noChangesDetected,
-      },
-    });
     traceCtx.end();
     await traceCtx.flush();
 
