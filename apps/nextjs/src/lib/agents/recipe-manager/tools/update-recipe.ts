@@ -62,9 +62,7 @@ type UpdateInput = z.infer<typeof UpdateRecipeInput>;
 export function createUpdateRecipeTool(params: { opikTrace: Trace }) {
   return new FunctionTool({
     name: "update_recipe",
-    description: `Update an existing recipe from the tracked recipes.
-Call this when user wants to modify a recipe they already have.
-Use the recipe ID from the session state context.`,
+    description: `Update an existing recipe from the tracked recipes. Call this when user wants to modify a recipe they already have. Use the recipe ID from the session state context.`,
     parameters: UpdateRecipeInput,
     execute: async (input: UpdateInput, toolContext?: ToolContext) => {
       const { recipeId, updates } = input;

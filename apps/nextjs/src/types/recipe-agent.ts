@@ -122,9 +122,22 @@ export interface DeleteRecipeResult {
 }
 
 /**
+ * Result from delete_all_recipes tool
+ */
+export interface DeleteAllRecipesResult {
+  operation: "delete_all";
+  deletedCount: number;
+  deletedRecipes: Array<{
+    recipeId: string;
+    title: string;
+  }>;
+  reason?: string;
+}
+
+/**
  * Union of tool results
  */
-export type RecipeToolResult = CreateRecipeResult | UpdateRecipeResult | DeleteRecipeResult;
+export type RecipeToolResult = CreateRecipeResult | UpdateRecipeResult | DeleteRecipeResult | DeleteAllRecipesResult;
 
 // ============================================================================
 // Proposal Types
@@ -219,4 +232,13 @@ export function isDeleteRecipeResult(
   result: RecipeToolResult
 ): result is DeleteRecipeResult {
   return result.operation === "delete";
+}
+
+/**
+ * Type guard: Check if tool result is delete all operation
+ */
+export function isDeleteAllRecipesResult(
+  result: RecipeToolResult
+): result is DeleteAllRecipesResult {
+  return result.operation === "delete_all";
 }
