@@ -31,6 +31,17 @@ A Pantry staple is a Basic or important foods you have a supply of.
 - No quantities: "3 tomatoes" → "tomato"
 - Keep compounds: "olive oil"
 
+## Bulk Operations
+For commands affecting ALL items at once:
+- "refill everything" / "set all to full" → update_all_tracked_ingredients({ qty: 3 })
+- "mark all as low" → update_all_tracked_ingredients({ qty: 1 })
+- "delete everything" / "clear inventory" → update_all_tracked_ingredients({ qty: 0 })
+
+Filter by pantry staple status:
+- "refill all pantry staples" → update_all_tracked_ingredients({ qty: 3, isPantryStaple: true })
+- "delete all non-staples" → update_all_tracked_ingredients({ qty: 0, isPantryStaple: false })
+- "set all staples to low" → update_all_tracked_ingredients({ qty: 1, isPantryStaple: true })
+
 ## Examples
 "I just bought chicken and tomatoes, almost out of olive oil"
 → update_matching_ingredients({ up: [{ name: "chicken", qty: 3 }, { name: "tomato", qty: 3 }, { name: "olive oil", qty: 1 }] })
@@ -39,7 +50,19 @@ A Pantry staple is a Basic or important foods you have a supply of.
 → update_matching_ingredients({ up: [{ name: "salt", qty: 3, staple: true }] })
 
 "Remove olive oil from pantry staples"
-→ update_matching_ingredients({ up: [{ name: "olive oil", qty: 3, staple: false }] })`,
+→ update_matching_ingredients({ up: [{ name: "olive oil", qty: 3, staple: false }] })
+
+"Refill all my ingredients"
+→ update_all_tracked_ingredients({ qty: 3 })
+
+"Delete everything from my pantry"
+→ update_all_tracked_ingredients({ qty: 0 })
+
+"Refill all my pantry staples"
+→ update_all_tracked_ingredients({ qty: 3, isPantryStaple: true })
+
+"Clear all non-staple items"
+→ update_all_tracked_ingredients({ qty: 0, isPantryStaple: false })`,
     description:
       "Process natural language to update kitchen inventory based on the user's voice or text input, then validate against the database.",
     versionId: "1.0.0",

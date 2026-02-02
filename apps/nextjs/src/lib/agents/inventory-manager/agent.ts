@@ -7,8 +7,7 @@
 
 import { LlmAgent } from "@google/adk";
 import { createUpdateMatchingIngredientsTool } from "./tools/update-matching-ingredients";
-import { createDeleteAllIngredientsTool } from "./tools/delete-all-ingredients";
-import { createRefillAllIngredientsTool } from "./tools/refill-all-ingredients";
+import { createUpdateAllTrackedIngredientsTool } from "./tools/update-all-tracked-ingredients";
 import { type Trace } from "opik";
 import { PROMPT } from "./prompt";
 
@@ -28,8 +27,9 @@ export function createInventoryAgent(params: CreateInventoryAgentParams) {
     instruction: PROMPT.prompt,
     tools: [
       createUpdateMatchingIngredientsTool({ userId, opikTrace: params.opikTrace }),
-      createDeleteAllIngredientsTool({ userId, opikTrace: params.opikTrace }),
-      createRefillAllIngredientsTool({ userId, opikTrace: params.opikTrace }),
+      // createDeleteAllIngredientsTool({ userId, opikTrace: params.opikTrace }),
+      // createRefillAllIngredientsTool({ userId, opikTrace: params.opikTrace }),
+      createUpdateAllTrackedIngredientsTool({ userId, opikTrace: params.opikTrace }),
     ],
   });
 }

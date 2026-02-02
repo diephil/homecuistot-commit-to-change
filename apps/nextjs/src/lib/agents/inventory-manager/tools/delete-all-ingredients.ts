@@ -68,14 +68,6 @@ export function createDeleteAllIngredientsTool(params: {
           .filter((item) => !item.ingredientId)
           .map((item) => item.name);
 
-        // Delete all inventory items for the user
-        const result = await adminDb
-          .delete(userInventory)
-          .where(eq(userInventory.userId, userId))
-          .returning({ id: userInventory.id });
-
-        const deletedCount = result.length;
-
         // Clear currentInventory from session state
         if (toolContext) {
           toolContext.state?.set("currentInventory", []);
@@ -94,9 +86,8 @@ export function createDeleteAllIngredientsTool(params: {
         span.update({
           output: {
             proposal,
-            deletedCount,
           } as unknown as Record<string, unknown>,
-          tags: [`deleted_${deletedCount}`],
+          tags: [`delete`],
         });
         span.end();
 

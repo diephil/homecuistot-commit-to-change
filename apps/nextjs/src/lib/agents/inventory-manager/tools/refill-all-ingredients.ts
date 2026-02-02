@@ -68,15 +68,6 @@ export function createRefillAllIngredientsTool(params: {
           .filter((item) => !item.ingredientId)
           .map((item) => item.name);
 
-        // Update all inventory items to quantity 3
-        const result = await adminDb
-          .update(userInventory)
-          .set({ quantityLevel: 3 })
-          .where(eq(userInventory.userId, userId))
-          .returning({ id: userInventory.id, ingredientId: userInventory.ingredientId });
-
-        const updatedCount = result.length;
-
         // Update currentInventory in session state
         if (toolContext) {
           const updatedInventory = currentInventory.map((item) => ({
@@ -99,9 +90,8 @@ export function createRefillAllIngredientsTool(params: {
         span.update({
           output: {
             proposal,
-            updatedCount,
           } as unknown as Record<string, unknown>,
-          tags: [`refilled_${updatedCount}`],
+          tags: [`refill`],
         });
         span.end();
 

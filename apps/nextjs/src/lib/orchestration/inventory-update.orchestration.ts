@@ -18,7 +18,7 @@ interface CreateProposalParams {
   input?: string;
   audioBase64?: string;
   currentInventory: InventorySessionItem[];
-  model?: string;
+  model: "gemini-2.0-flash" | "gemini-2.5-flash-lite";
   provider?: string;
 }
 

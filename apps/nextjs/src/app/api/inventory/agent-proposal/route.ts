@@ -75,6 +75,7 @@ export async function POST(request: Request) {
       input,
       audioBase64,
       currentInventory,
+      model: "gemini-2.5-flash-lite",
     });
 
     return NextResponse.json({

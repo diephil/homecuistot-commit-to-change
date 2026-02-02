@@ -23,7 +23,7 @@ interface CreateRecipeProposalParams {
   input?: string;
   audioBase64?: string;
   trackedRecipes: RecipeSessionItem[];
-  model?: string;
+  model: "gemini-2.0-flash" | "gemini-2.5-flash-lite";
   provider?: string;
 }
 
@@ -46,7 +46,7 @@ export async function createRecipeManagerAgentProposal(
     input,
     audioBase64,
     trackedRecipes,
-    model = "gemini-2.0-flash",
+    model,
     provider = "google",
   } = params;
   const inputType = audioBase64 ? "voice" : "text";

@@ -1,18 +1,25 @@
 import { evaluate, EvaluationTask, ExactMatch } from "opik";
-import { DATASET, DatasetItem } from "./dataset";
-import { ingredientExtractorAgent } from "@/lib/agents/ingredient-extractor/agent";
+import { DATASET, type DatasetItem } from "./dataset";
+import { createInventoryManagerAgentProposal } from "@/lib/orchestration/inventory-update.orchestration";
 import { getOpikClient } from "@/lib/tracing/opik-agent";
-import { StructureMatch, IngredientSetMatch } from "./metrics";
+import { ProposalStructureMatch, InventoryUpdateMatch } from "./metrics";
+
+// Demo user ID for evaluation
+const DEMO_USER_ID = "00000000-0000-0000-0000-000000000001";
 
 const llmTask: EvaluationTask<DatasetItem> = async (datasetItem) => {
   const { input, metadata } = datasetItem;
-  const response = await ingredientExtractorAgent({
-    currentIngredients: metadata.currentIngredients,
-    text: input,
+
+  // Call orchestration layer (includes Opik tracing)
+  const result = await createInventoryManagerAgentProposal({
+    userId: DEMO_USER_ID,
+    input,
+    currentInventory: metadata.currentInventory,
+    model: "gemini-2.5-flash-lite",
   });
 
   return {
-    output: response,
+    output: result.proposal,
   };
 };
 
@@ -25,10 +32,10 @@ export const evaluation = async (params: { nbSamples?: number }) => {
   const result = await evaluate({
     dataset: retrievedDataset,
     task: llmTask,
-    experimentName: `Ingredient Extractor ${Date.now()} - gemini-2.5-flash-lite`,
+    experimentName: `Inventory Manager ${Date.now()} - openai whisper + gemini-2.5-flash-lite`,
     scoringMetrics: [
-      new StructureMatch(),
-      new IngredientSetMatch(),
+      new ProposalStructureMatch(),
+      new InventoryUpdateMatch(),
     ],
     scoringKeyMapping: {
       output: "output",
