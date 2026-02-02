@@ -87,7 +87,11 @@ export function createDeleteAllIngredientsTool(params: {
           output: {
             proposal,
           } as unknown as Record<string, unknown>,
-          tags: [`delete`],
+          metadata: unrecognized.length > 0 ? { unrecognized } : {},
+          tags:
+            unrecognized.length > 0
+              ? ["delete", "unrecognized_items"]
+              : ["delete", "all_recognized"],
         });
         span.end();
 

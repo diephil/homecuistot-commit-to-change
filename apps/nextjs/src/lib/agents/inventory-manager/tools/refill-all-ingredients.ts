@@ -91,7 +91,11 @@ export function createRefillAllIngredientsTool(params: {
           output: {
             proposal,
           } as unknown as Record<string, unknown>,
-          tags: [`refill`],
+          metadata: unrecognized.length > 0 ? { unrecognized } : {},
+          tags:
+            unrecognized.length > 0
+              ? ["refill", "unrecognized_items"]
+              : ["refill", "all_recognized"],
         });
         span.end();
 

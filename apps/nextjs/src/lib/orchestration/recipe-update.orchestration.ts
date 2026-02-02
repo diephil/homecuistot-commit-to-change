@@ -211,6 +211,23 @@ export async function createRecipeManagerAgentProposal(
       noChangesDetected: recipes.length === 0,
     };
 
+    // Collect all unrecognized items from recipe results (create/update only)
+    const allUnrecognized = recipes.flatMap((r) =>
+      "results" in r
+        ? r.results.flatMap((item) =>
+            "unrecognized" in item ? item.unrecognized : [],
+          )
+        : [],
+    );
+    const hasUnrecognized = allUnrecognized.length > 0;
+    traceCtx.trace.update({
+      output: { recipes, noChangesDetected: proposal.noChangesDetected },
+      metadata: hasUnrecognized ? { unrecognized: allUnrecognized } : {},
+      tags: hasUnrecognized
+        ? [...traceTags, "unrecognized_items"]
+        : [...traceTags, "all_recognized"],
+    });
+
     traceCtx.end();
     await traceCtx.flush();
 

@@ -142,7 +142,11 @@ Optional: filter by pantry staple status (isPantryStaple: true for staples only,
           output: {
             proposal,
           } as unknown as Record<string, unknown>,
-          tags: [`update_all_qty_${qty}`, filterTag],
+          metadata: unrecognized.length > 0 ? { unrecognized } : {},
+          tags:
+            unrecognized.length > 0
+              ? [`update_all_qty_${qty}`, filterTag, "unrecognized_items"]
+              : [`update_all_qty_${qty}`, filterTag, "all_recognized"],
         });
         span.end();
 
