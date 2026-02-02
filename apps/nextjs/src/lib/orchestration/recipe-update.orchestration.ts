@@ -23,13 +23,14 @@ interface CreateRecipeProposalParams {
   input?: string;
   audioBase64?: string;
   trackedRecipes: RecipeSessionItem[];
-  model?: string;
+  model: "gemini-2.0-flash" | "gemini-2.5-flash-lite";
   provider?: string;
 }
 
 interface CreateRecipeProposalResult {
   proposal: RecipeManagerProposal;
   transcribedText?: string;
+  assistantResponse?: string;
   usage: {
     promptTokens: number;
     completionTokens: number;
@@ -45,7 +46,7 @@ export async function createRecipeManagerAgentProposal(
     input,
     audioBase64,
     trackedRecipes,
-    model = "gemini-2.0-flash",
+    model,
     provider = "google",
   } = params;
   const inputType = audioBase64 ? "voice" : "text";
@@ -115,6 +116,7 @@ export async function createRecipeManagerAgentProposal(
 
     // 4. Run agent with model and tool spans
     const recipes: RecipeToolResult[] = [];
+    let lastAssistantMessageEvent: string | null = null;
     const usage = { promptTokens: 0, completionTokens: 0, totalTokens: 0 };
     // Track pending tool spans by call ID (supports parallel tool calls to same function)
     // Also track by function name as fallback when ADK doesn't provide IDs
@@ -153,7 +155,7 @@ export async function createRecipeManagerAgentProposal(
       }
 
       // Process parts for tool spans and result extraction
-      if (event.content?.parts) {
+      if (event.content?.parts && event.content.role !== "model") {
         for (const part of event.content.parts) {
           if (
             "functionCall" in part &&
@@ -183,6 +185,18 @@ export async function createRecipeManagerAgentProposal(
               recipes.push(result);
             }
           }
+
+          // Capture text response when no function call (rejection/response message)
+          if ("text" in part && part.text && typeof part.text === "string") {
+            lastAssistantMessageEvent = part.text;
+          }
+        }
+      }
+
+      if (event.content?.parts && event.content.role === "model") {
+        const modelResponse = event.content.parts[0];
+        if (modelResponse.text) {
+          lastAssistantMessageEvent = modelResponse.text;
         }
       }
     }
@@ -203,6 +217,7 @@ export async function createRecipeManagerAgentProposal(
     return {
       proposal,
       transcribedText: audioBase64 ? textInput : undefined,
+      assistantResponse: lastAssistantMessageEvent ?? undefined,
       usage,
     };
   } catch (error) {

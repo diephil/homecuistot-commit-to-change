@@ -6,7 +6,8 @@
  */
 
 import { LlmAgent } from "@google/adk";
-import { createValidateIngredientsTool } from "./tools/validate-ingredients";
+import { createUpdateMatchingIngredientsTool } from "./tools/update-matching-ingredients";
+import { createUpdateAllTrackedIngredientsTool } from "./tools/update-all-tracked-ingredients";
 import { type Trace } from "opik";
 import { PROMPT } from "./prompt";
 
@@ -25,7 +26,10 @@ export function createInventoryAgent(params: CreateInventoryAgentParams) {
     model,
     instruction: PROMPT.prompt,
     tools: [
-      createValidateIngredientsTool({ userId, opikTrace: params.opikTrace }),
+      createUpdateMatchingIngredientsTool({ userId, opikTrace: params.opikTrace }),
+      // createDeleteAllIngredientsTool({ userId, opikTrace: params.opikTrace }),
+      // createRefillAllIngredientsTool({ userId, opikTrace: params.opikTrace }),
+      createUpdateAllTrackedIngredientsTool({ userId, opikTrace: params.opikTrace }),
     ],
   });
 }

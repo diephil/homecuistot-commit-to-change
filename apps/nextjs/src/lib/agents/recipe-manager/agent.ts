@@ -9,6 +9,7 @@ import { LlmAgent } from "@google/adk";
 import { createCreateRecipeTool } from "./tools/create-recipe";
 import { createUpdateRecipeTool } from "./tools/update-recipe";
 import { createDeleteRecipeTool } from "./tools/delete-recipe";
+import { createDeleteAllRecipesTool } from "./tools/delete-all-recipes";
 import { type Trace } from "opik";
 import { PROMPT } from "./prompt";
 
@@ -22,6 +23,7 @@ export function createRecipeManagerAgent(params: { opikTrace: Trace }) {
       createCreateRecipeTool(params),
       createUpdateRecipeTool(params),
       createDeleteRecipeTool(params),
+      createDeleteAllRecipesTool(params),
     ],
   });
 }

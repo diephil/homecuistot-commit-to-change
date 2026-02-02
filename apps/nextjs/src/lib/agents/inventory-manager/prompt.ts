@@ -12,7 +12,7 @@ export const PROMPT: Prompt = new Prompt(
 1. Parse text for ingredients
 2. Determine qty (0-3) from context
 3. Detect pantry staple intent (if any)
-4. Call validate_ingredients with { up: [{ name, qty, staple? }] }
+4. Call update_matching_ingredients with { up: [{ name, qty, staple? }] }
 
 ## Quantity Rules
 - 3: "bought", "restocked", "full", "new" (default if no context)
@@ -31,15 +31,38 @@ A Pantry staple is a Basic or important foods you have a supply of.
 - No quantities: "3 tomatoes" → "tomato"
 - Keep compounds: "olive oil"
 
+## Bulk Operations
+For commands affecting ALL items at once:
+- "refill everything" / "set all to full" → update_all_tracked_ingredients({ qty: 3 })
+- "mark all as low" → update_all_tracked_ingredients({ qty: 1 })
+- "delete everything" / "clear inventory" → update_all_tracked_ingredients({ qty: 0 })
+
+Filter by pantry staple status:
+- "refill all pantry staples" → update_all_tracked_ingredients({ qty: 3, isPantryStaple: true })
+- "delete all non-staples" → update_all_tracked_ingredients({ qty: 0, isPantryStaple: false })
+- "set all staples to low" → update_all_tracked_ingredients({ qty: 1, isPantryStaple: true })
+
 ## Examples
 "I just bought chicken and tomatoes, almost out of olive oil"
-→ validate_ingredients({ up: [{ name: "chicken", qty: 3 }, { name: "tomato", qty: 3 }, { name: "olive oil", qty: 1 }] })
+→ update_matching_ingredients({ up: [{ name: "chicken", qty: 3 }, { name: "tomato", qty: 3 }, { name: "olive oil", qty: 1 }] })
 
 "Mark salt as a pantry staple"
-→ validate_ingredients({ up: [{ name: "salt", qty: 3, staple: true }] })
+→ update_matching_ingredients({ up: [{ name: "salt", qty: 3, staple: true }] })
 
 "Remove olive oil from pantry staples"
-→ validate_ingredients({ up: [{ name: "olive oil", qty: 3, staple: false }] })`,
+→ update_matching_ingredients({ up: [{ name: "olive oil", qty: 3, staple: false }] })
+
+"Refill all my ingredients"
+→ update_all_tracked_ingredients({ qty: 3 })
+
+"Delete everything from my pantry"
+→ update_all_tracked_ingredients({ qty: 0 })
+
+"Refill all my pantry staples"
+→ update_all_tracked_ingredients({ qty: 3, isPantryStaple: true })
+
+"Clear all non-staple items"
+→ update_all_tracked_ingredients({ qty: 0, isPantryStaple: false })`,
     description:
       "Process natural language to update kitchen inventory based on the user's voice or text input, then validate against the database.",
     versionId: "1.0.0",

@@ -65,12 +65,18 @@ importers:
       next-themes:
         specifier: ^0.4.6
         version: 0.4.6(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      openai:
+        specifier: ^6.17.0
+        version: 6.17.0(ws@8.19.0)(zod@4.3.6)
       opik:
         specifier: ^1.9.89
         version: 1.9.89(zod@4.3.6)
       opik-gemini:
         specifier: ^1.9.98
         version: 1.9.98(@google/genai@1.38.0(@modelcontextprotocol/sdk@1.25.2(hono@4.11.4)(zod@4.3.6)))(opik@1.9.89(zod@4.3.6))
+      opik-openai:
+        specifier: ^1.10.2
+        version: 1.10.2(openai@6.17.0(ws@8.19.0)(zod@4.3.6))(opik@1.9.89(zod@4.3.6))
       opik-vercel:
         specifier: ^1.9.89
         version: 1.9.89(@opentelemetry/api@1.9.0)(@opentelemetry/core@2.4.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-node@0.210.0(@opentelemetry/api@1.9.0))(opik@1.9.89(zod@4.3.6))
@@ -3979,12 +3985,31 @@ packages:
     resolution: {integrity: sha512-smsWv2LzFjP03xmvFoJ331ss6h+jixfA4UUV/Bsiyuu4YJPfN+FIQGOIiv4w9/+MoHkfkJ22UIaQWRVFRfH6Vw==}
     engines: {node: '>=20'}
 
+  openai@6.17.0:
+    resolution: {integrity: sha512-NHRpPEUPzAvFOAFs9+9pC6+HCw/iWsYsKCMPXH5Kw7BpMxqd8g/A07/1o7Gx2TWtCnzevVRyKMRFqyiHyAlqcA==}
+    hasBin: true
+    peerDependencies:
+      ws: ^8.18.0
+      zod: ^3.25 || ^4.0
+    peerDependenciesMeta:
+      ws:
+        optional: true
+      zod:
+        optional: true
+
   opik-gemini@1.9.98:
     resolution: {integrity: sha512-thQflHqSm56eOJHcO6Xfowp/TimopvrCQF1Wu2f/JtinMheRYa3FIuD7rl5LlVu1zzt8h1YwnFxb4AxVPBc6WA==}
     engines: {node: '>=18'}
     peerDependencies:
       '@google/genai': '>=1.0.0'
       opik: ^1.7.25
+
+  opik-openai@1.10.2:
+    resolution: {integrity: sha512-wUsMODfty8fuSpYgvgJN+DqxvI7akZSjKGwzxvIshjD+z0jhAEdE6eCtnmYz6Q8KWqoAwRRT4EubJaIhmp9X/w==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      openai: ^6.0.1
+      opik: ^1.8.61
 
   opik-vercel@1.9.89:
     resolution: {integrity: sha512-h9oozCvkcUgmMonRgGKDcgdcIFYdsA+kcufs4oKVZ81PbTkoH2BI/VoiXKtXp89gKWrW7z0Y4E+3FjVsM2UxOg==}
@@ -8782,9 +8807,19 @@ snapshots:
       powershell-utils: 0.1.0
       wsl-utils: 0.3.1
 
+  openai@6.17.0(ws@8.19.0)(zod@4.3.6):
+    optionalDependencies:
+      ws: 8.19.0
+      zod: 4.3.6
+
   opik-gemini@1.9.98(@google/genai@1.38.0(@modelcontextprotocol/sdk@1.25.2(hono@4.11.4)(zod@4.3.6)))(opik@1.9.89(zod@4.3.6)):
     dependencies:
       '@google/genai': 1.38.0(@modelcontextprotocol/sdk@1.25.2(hono@4.11.4)(zod@4.3.6))
+      opik: 1.9.89(zod@4.3.6)
+
+  opik-openai@1.10.2(openai@6.17.0(ws@8.19.0)(zod@4.3.6))(opik@1.9.89(zod@4.3.6)):
+    dependencies:
+      openai: 6.17.0(ws@8.19.0)(zod@4.3.6)
       opik: 1.9.89(zod@4.3.6)
 
   opik-vercel@1.9.89(@opentelemetry/api@1.9.0)(@opentelemetry/core@2.4.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-node@0.210.0(@opentelemetry/api@1.9.0))(opik@1.9.89(zod@4.3.6)):

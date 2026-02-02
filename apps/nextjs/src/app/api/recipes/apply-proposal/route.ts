@@ -16,6 +16,7 @@ import type {
   CreateRecipeResult,
   UpdateRecipeResult,
   DeleteRecipeResult,
+  DeleteAllRecipesResult,
 } from "@/types/recipe-agent";
 import type { IngredientType } from "@/db/schema/enums";
 
@@ -76,6 +77,9 @@ export async function POST(request: Request) {
           } else if (recipe.operation === "delete") {
             await handleDelete(tx, user.id, recipe);
             deletedCount++;
+          } else if (recipe.operation === "delete_all") {
+            const count = await handleDeleteAll(tx, user.id, recipe);
+            deletedCount += count;
           }
         } catch (err) {
           errors.push(`Failed to ${recipe.operation} recipe: ${String(err)}`);
@@ -192,4 +196,34 @@ async function handleDelete(tx: any, userId: string, recipe: DeleteRecipeResult)
 
   // Delete the recipe
   await tx.delete(userRecipes).where(eq(userRecipes.id, recipeId));
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function handleDeleteAll(tx: any, userId: string, recipe: DeleteAllRecipesResult) {
+  const { deletedRecipes } = recipe;
+  let count = 0;
+
+  for (const { recipeId } of deletedRecipes) {
+    try {
+      // Verify recipe belongs to user
+      const [existing] = await tx
+        .select({ id: userRecipes.id })
+        .from(userRecipes)
+        .where(and(eq(userRecipes.id, recipeId), eq(userRecipes.userId, userId)))
+        .limit(1);
+
+      if (existing) {
+        // Delete recipe ingredients first (foreign key constraint)
+        await tx.delete(recipeIngredients).where(eq(recipeIngredients.recipeId, recipeId));
+
+        // Delete the recipe
+        await tx.delete(userRecipes).where(eq(userRecipes.id, recipeId));
+        count++;
+      }
+    } catch (err) {
+      console.error(`Failed to delete recipe ${recipeId}:`, err);
+    }
+  }
+
+  return count;
 }

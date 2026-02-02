@@ -26,9 +26,7 @@ type DeleteInput = z.infer<typeof DeleteRecipeInput>;
 export function createDeleteRecipeTool(params: { opikTrace: Trace }) {
   return new FunctionTool({
     name: "delete_recipe",
-    description: `Delete an existing recipe from the tracked recipes.
-Call this when user wants to remove a recipe entirely.
-Use the recipe ID from the session state context.`,
+    description: `Delete an existing recipe from the tracked recipes. Call this when user wants to remove a recipe entirely. Use the recipe ID from the session state context.`,
     parameters: DeleteRecipeInput,
     execute: async (input: DeleteInput, toolContext?: ToolContext) => {
       const { recipeId, reason } = input;

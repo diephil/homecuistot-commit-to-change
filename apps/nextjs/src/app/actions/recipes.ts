@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/utils/supabase/server";
 import { createUserDb, decodeSupabaseToken } from "@/db/client";
 import { userRecipes, recipeIngredients, ingredients } from "@/db/schema";
-import { eq, and, desc, sql } from "drizzle-orm";
+import { eq, and, asc, sql } from "drizzle-orm";
 import type { IngredientType } from "@/db/schema/enums";
 
 // Get all recipes for current user
@@ -40,7 +40,7 @@ export async function getRecipes(params?: { limit?: number }) {
           with: { ingredient: true },
         },
       },
-      orderBy: [desc(userRecipes.createdAt)],
+      orderBy: [asc(userRecipes.name)],
       limit: params?.limit,
     }),
   );

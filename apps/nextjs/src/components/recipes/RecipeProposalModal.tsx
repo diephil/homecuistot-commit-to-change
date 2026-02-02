@@ -15,6 +15,7 @@ import type {
   RecipeToolResult,
   ProposedRecipeIngredient,
   DeleteRecipeResult,
+  DeleteAllRecipesResult,
 } from "@/types/recipe-agent";
 
 interface RecipeProposalModalProps {
@@ -149,6 +150,9 @@ export function RecipeProposalModal({
   const createCount = proposal.recipes.filter((r) => r.operation === "create").length;
   const updateCount = proposal.recipes.filter((r) => r.operation === "update").length;
   const deleteCount = proposal.recipes.filter((r) => r.operation === "delete").length;
+  const deleteAllCount = proposal.recipes
+    .filter((r) => r.operation === "delete_all")
+    .reduce((sum, r) => sum + (r as DeleteAllRecipesResult).deletedCount, 0);
 
   return (
     <FormModal isOpen={isOpen} onClose={handleClose} title="Review Recipes">
@@ -204,7 +208,7 @@ export function RecipeProposalModal({
                 : `Save ${[
                     createCount > 0 ? `${createCount} New` : "",
                     updateCount > 0 ? `${updateCount} Update` : "",
-                    deleteCount > 0 ? `${deleteCount} Delete` : "",
+                    deleteCount + deleteAllCount > 0 ? `${deleteCount + deleteAllCount} Delete` : "",
                   ].filter(Boolean).join(" + ")}`}
           </Button>
           <Button variant="secondary" onClick={handleClose} disabled={isSaving} size="lg">
@@ -256,6 +260,51 @@ function RecipeProposalCard({
 
         {deleteRecipe.reason && (
           <p className="text-sm font-bold text-black/70 mt-2">{deleteRecipe.reason}</p>
+        )}
+      </div>
+    );
+  }
+
+  // Handle delete_all operation
+  if (recipe.operation === "delete_all") {
+    const deleteAllRecipe = recipe as DeleteAllRecipesResult;
+    return (
+      <div
+        className={cn(
+          "relative border-4 border-black p-4",
+          "shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]",
+          "bg-gradient-to-br from-red-300 to-red-400"
+        )}
+      >
+        <SmallActionButton
+          icon={X}
+          variant="red"
+          onClick={onRemove}
+          title="Cancel deletion"
+          className="absolute -top-3 -right-1"
+        />
+
+        <Badge variant="solid" size="sm" className="mb-2 bg-red-700">
+          Delete All
+        </Badge>
+
+        <h3 className="text-lg font-black">Delete {deleteAllRecipe.deletedCount} recipes</h3>
+
+        {deleteAllRecipe.reason && (
+          <p className="text-sm font-bold text-black/70 mt-2">{deleteAllRecipe.reason}</p>
+        )}
+
+        {deleteAllRecipe.deletedRecipes.length > 0 && (
+          <div className="mt-3 space-y-1">
+            <p className="text-xs font-semibold text-black/60">Recipes to delete:</p>
+            <div className="flex flex-wrap gap-1">
+              {deleteAllRecipe.deletedRecipes.map((r, idx) => (
+                <Badge key={idx} variant="outline" size="sm" className="bg-white/50">
+                  {r.title}
+                </Badge>
+              ))}
+            </div>
+          </div>
         )}
       </div>
     );

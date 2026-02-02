@@ -1,7 +1,7 @@
 /**
- * Validate Ingredients Tool for ADK Inventory Manager Agent
+ * Update Matching Ingredients Tool for ADK Inventory Manager Agent
  *
- * Uses matchIngredients() from services layer to validate
+ * Uses matchIngredients() from services layer to match
  * extracted ingredient names against database.
  *
  * Sets endInvocation=true to return result directly as agent answer.
@@ -24,10 +24,11 @@ export interface InventorySessionItem {
   quantityLevel: number;
   isPantryStaple: boolean;
   name: string;
+  category: string;
 }
 
 // Input schema with short field names for token efficiency
-const ValidateIngredientsInput = z.object({
+const UpdateMatchingIngredientsInput = z.object({
   up: z
     .array(
       z.object({
@@ -48,26 +49,26 @@ const ValidateIngredientsInput = z.object({
     .describe("Ingredient updates"),
 });
 
-type ValidateInput = z.infer<typeof ValidateIngredientsInput>;
+type UpdateInput = z.infer<typeof UpdateMatchingIngredientsInput>;
 
 // Demo user ID for standalone script testing
 const DEMO_USER_ID = "00000000-0000-0000-0000-000000000001";
 
-export function createValidateIngredientsTool(params: {
+export function createUpdateMatchingIngredientsTool(params: {
   userId?: string;
   opikTrace: Trace;
 }) {
   const userId = params?.userId ?? DEMO_USER_ID;
 
   return new FunctionTool({
-    name: "validate_ingredients",
+    name: "update_matching_ingredients",
     description: `Match ingredient names against database and return validated updates.
 Call with extracted ingredients and quantity levels from user input.`,
-    parameters: ValidateIngredientsInput,
-    execute: async (input: ValidateInput, toolContext?: ToolContext) => {
+    parameters: UpdateMatchingIngredientsInput,
+    execute: async (input: UpdateInput, toolContext?: ToolContext) => {
       const { up: updates } = input;
       const span = params.opikTrace.span({
-        name: "validate_ingredients",
+        name: "update_matching_ingredients",
         type: "tool",
         input,
       });
@@ -76,7 +77,7 @@ Call with extracted ingredients and quantity levels from user input.`,
         const result = { recognized: [], unrecognized: [] };
         span.update({
           output: result as unknown as Record<string, unknown>,
-          tags: ["nothing_to_validate"],
+          tags: ["nothing_to_update"],
         });
         span.end();
         return result;
@@ -155,9 +156,7 @@ Call with extracted ingredients and quantity levels from user input.`,
       span.update({
         output: { proposal } as unknown as Record<string, unknown>,
         tags:
-          unrecognized.length > 0
-            ? ["unrecognized_items"]
-            : ["all_recognized"],
+          unrecognized.length > 0 ? ["unrecognized_items"] : ["all_recognized"],
       });
       span.end();
 

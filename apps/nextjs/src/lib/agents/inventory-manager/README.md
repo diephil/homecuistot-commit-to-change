@@ -13,7 +13,7 @@ User Input (voice/text)
         ↓
 ┌─────────────────────────────────┐
 │    LlmAgent (Gemini 2.0)        │  ← Extracts ingredients + quantities
-│    └── validate_ingredients     │  ← Matches against DB
+│    └── update_matching_ingredients │  ← Matches against DB
 └─────────────────────────────────┘
         ↓
     InventoryUpdateProposal
@@ -35,7 +35,7 @@ LlmAgent config with instruction prompt. Parses NL for:
 - Quantity levels: 0=out, 1=low, 2=some, 3=full
 - Pantry staple intent: true/false/omit
 
-### `tools/validate-ingredients.ts`
+### `tools/update-matching-ingredients.ts`
 FunctionTool that:
 1. Takes `{ up: [{ name, qty, staple? }] }`
 2. Matches names against ingredients DB via `matchIngredients()`
@@ -61,7 +61,7 @@ Agent extracts:
    { name: "tomato", qty: 3 },
    { name: "olive oil", qty: 1 }]
         ↓
-validate_ingredients matches against DB
+update_matching_ingredients matches against DB
         ↓
 Returns proposal with ingredient IDs + previous state
         ↓

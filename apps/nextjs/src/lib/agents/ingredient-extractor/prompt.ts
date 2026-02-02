@@ -14,7 +14,7 @@ RULES:
 2. "I have X", "add X", or listed items → put X in add array
 3. "remove X", "I ran out of X", "no more X" → put X in rm array
 4. Return empty arrays if nothing to add/remove
-5. For voice input: transcribe, translate non-English to English, remove filler words while preserving intent
+5. For non-English input: translate to English, remove filler words while preserving intent
 6. "remove everything", "clear all", "delete everything", "used everything" → put ALL current ingredients in rm array
 
 Return JSON with "add" and "rm" arrays.`,

@@ -91,11 +91,13 @@ export async function POST(request: Request) {
       input,
       audioBase64,
       trackedRecipes,
+      model: "gemini-2.5-flash-lite",
     });
 
     return NextResponse.json({
       proposal: result.proposal,
       transcribedText: result.transcribedText,
+      assistantResponse: result.assistantResponse,
       usage: result.usage,
     });
   } catch (error) {

@@ -52,6 +52,7 @@ export default function RecipesPage() {
   // Voice/text input state
   const [isProcessing, setIsProcessing] = useState(false);
   const [lastTranscription, setLastTranscription] = useState<string | undefined>();
+  const [assistantResponse, setAssistantResponse] = useState<string | undefined>();
 
   // Proposal modal state
   const [proposalModalOpen, setProposalModalOpen] = useState(false);
@@ -228,10 +229,16 @@ export default function RecipesPage() {
         const data = await response.json();
         const proposal = data.proposal as RecipeManagerProposal;
         const transcribedText = data.transcribedText as string | undefined;
-
+        const assistantMsg = data.assistantResponse as string | undefined;
+        debugger
         // Update last transcription for voice inputs
         if (transcribedText) {
           setLastTranscription(transcribedText);
+        }
+
+        // Update assistant response if present
+        if (assistantMsg) {
+          setAssistantResponse(assistantMsg);
         }
 
         // Check if no changes detected
@@ -316,6 +323,7 @@ export default function RecipesPage() {
             processing={isProcessing}
             textPlaceholder="Describe your recipe with ingredients..."
             lastTranscription={lastTranscription}
+            assistantResponse={assistantResponse}
           />
         </div>
 

@@ -10,7 +10,7 @@ import type { Span } from "opik";
 import { createAgentTrace, extractAdkUsage } from "@/lib/tracing/opik-agent";
 import { createInventoryAgent } from "../agents/inventory-manager/agent";
 import { voiceTranscriptorAgent } from "../agents/voice-transcriptor/agent";
-import type { InventorySessionItem } from "../agents/inventory-manager/tools/validate-ingredients";
+import type { InventorySessionItem } from "../agents/inventory-manager/tools/update-matching-ingredients";
 import type { InventoryUpdateProposal } from "@/types/inventory";
 
 interface CreateProposalParams {
@@ -18,7 +18,7 @@ interface CreateProposalParams {
   input?: string;
   audioBase64?: string;
   currentInventory: InventorySessionItem[];
-  model?: string;
+  model: "gemini-2.0-flash" | "gemini-2.5-flash-lite";
   provider?: string;
 }
 
