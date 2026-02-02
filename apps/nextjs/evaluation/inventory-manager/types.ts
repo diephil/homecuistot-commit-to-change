@@ -14,6 +14,7 @@ export interface CurrentInventoryItem {
   name: string;
   quantityLevel: number;
   isPantryStaple: boolean;
+  category: string;
 }
 
 /**

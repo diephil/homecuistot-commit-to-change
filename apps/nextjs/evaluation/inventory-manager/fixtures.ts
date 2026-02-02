@@ -23,6 +23,7 @@ export class InventoryFixture {
       name: params.name.toLowerCase(),
       quantityLevel: params.quantityLevel,
       isPantryStaple: params.isPantryStaple ?? false,
+      category: "test", // TODO: put real categories later
     });
     return this;
   }
