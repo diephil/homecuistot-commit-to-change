@@ -16,7 +16,7 @@ const llmTask: EvaluationTask<DatasetItem> = async (datasetItem) => {
 };
 
 export const evaluation = async (params: { nbSamples?: number }) => {
-  const opikClient = await getOpikClient();
+  const opikClient = getOpikClient();
   const retrievedDataset = await opikClient.getOrCreateDataset<DatasetItem>(
     DATASET.name,
   );
@@ -31,8 +31,6 @@ export const evaluation = async (params: { nbSamples?: number }) => {
     },
     nbSamples: params.nbSamples,
   });
-
-  console.log(`Experiement URL: ${result.resultUrl}`);
 
   return result;
 };
