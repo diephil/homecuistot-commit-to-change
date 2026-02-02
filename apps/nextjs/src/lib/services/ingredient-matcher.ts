@@ -1,7 +1,7 @@
-import { sql } from 'drizzle-orm';
-import type { PgTransaction } from 'drizzle-orm/pg-core';
-import { ingredients, unrecognizedItems } from '@/db/schema';
-import type { IngredientMatchResult } from '@/types/onboarding';
+import { sql } from "drizzle-orm";
+import type { PgTransaction } from "drizzle-orm/pg-core";
+import { ingredients, unrecognizedItems } from "@/db/schema";
+import type { IngredientMatchResult } from "@/types/onboarding";
 
 /**
  * T007: matchIngredients - Match ingredient names against DB
@@ -23,7 +23,7 @@ interface MatchIngredientsParams {
 }
 
 export async function matchIngredients(
-  params: MatchIngredientsParams
+  params: MatchIngredientsParams,
 ): Promise<IngredientMatchResult> {
   const { names, userId, tx } = params;
 
@@ -46,18 +46,18 @@ export async function matchIngredients(
     .where(
       sql`LOWER(${ingredients.name}) IN (${sql.join(
         uniqueNames.map((n) => sql`${n}`),
-        sql`, `
-      )})`
+        sql`, `,
+      )})`,
     );
 
   // Track matched ingredient names
   const matchedIngredientNames = new Set(
-    matchedIngredients.map((i) => i.name.toLowerCase())
+    matchedIngredients.map((i) => i.name.toLowerCase()),
   );
 
   // 2. Find remaining names not matched to ingredients
   const remainingNames = uniqueNames.filter(
-    (n) => !matchedIngredientNames.has(n)
+    (n) => !matchedIngredientNames.has(n),
   );
 
   // 3. Query user's unrecognized_items for remaining names
@@ -70,19 +70,19 @@ export async function matchIngredients(
       .where(
         sql`${unrecognizedItems.userId} = ${userId} AND LOWER(${unrecognizedItems.rawText}) IN (${sql.join(
           remainingNames.map((n) => sql`${n}`),
-          sql`, `
-        )})`
+          sql`, `,
+        )})`,
       );
   }
 
   // Track matched unrecognized names
   const matchedUnrecognizedNames = new Set(
-    matchedUnrecognized.map((u) => u.rawText.toLowerCase())
+    matchedUnrecognized.map((u) => u.rawText.toLowerCase()),
   );
 
   // 4. Find names that need to be created as new unrecognized items
   const unrecognizedItemsToCreate = remainingNames.filter(
-    (n) => !matchedUnrecognizedNames.has(n)
+    (n) => !matchedUnrecognizedNames.has(n),
   );
 
   return {

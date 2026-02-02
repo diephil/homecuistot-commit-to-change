@@ -8,9 +8,6 @@
 
 import { FunctionTool, type ToolContext } from "@google/adk";
 import { z } from "zod";
-import { adminDb } from "@/db/client";
-import { userInventory } from "@/db/schema/user-inventory";
-import { eq } from "drizzle-orm";
 import type { Trace } from "opik";
 import type {
   InventoryUpdateProposal,
@@ -23,24 +20,22 @@ const DeleteAllIngredientsInput = z.object({});
 
 type DeleteInput = z.infer<typeof DeleteAllIngredientsInput>;
 
-// Demo user ID for standalone script testing
-const DEMO_USER_ID = "00000000-0000-0000-0000-000000000001";
-
 export function createDeleteAllIngredientsTool(params: {
-  userId?: string;
+  userId: string;
   opikTrace: Trace;
 }) {
-  const userId = params?.userId ?? DEMO_USER_ID;
+  const { userId, opikTrace } = params;
 
   return new FunctionTool({
     name: "delete_all_ingredients",
     description: `Delete all inventory items for the current user. This removes all ingredients from the user's inventory.`,
     parameters: DeleteAllIngredientsInput,
     execute: async (input: DeleteInput, toolContext?: ToolContext) => {
-      const span = params.opikTrace.span({
+      const span = opikTrace.span({
         name: "delete_all_ingredients",
         type: "tool",
         input,
+        tags: [`user:${userId}`],
       });
 
       try {
@@ -90,8 +85,8 @@ export function createDeleteAllIngredientsTool(params: {
           metadata: unrecognized.length > 0 ? { unrecognized } : {},
           tags:
             unrecognized.length > 0
-              ? ["delete", "unrecognized_items"]
-              : ["delete", "all_recognized"],
+              ? [`user:${userId}`, "delete", "unrecognized_items"]
+              : [`user:${userId}`, "delete", "all_recognized"],
         });
         span.end();
 
@@ -102,7 +97,7 @@ export function createDeleteAllIngredientsTool(params: {
 
         span.update({
           output: { error: errorMessage } as Record<string, unknown>,
-          tags: ["deletion_error"],
+          tags: [`user:${userId}`, "deletion_error"],
         });
         span.end();
 

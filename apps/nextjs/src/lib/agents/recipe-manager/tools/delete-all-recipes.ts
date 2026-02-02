@@ -19,17 +19,23 @@ const DeleteAllRecipesInput = z.object({
 
 type DeleteAllInput = z.infer<typeof DeleteAllRecipesInput>;
 
-export function createDeleteAllRecipesTool(params: { opikTrace: Trace }) {
+export function createDeleteAllRecipesTool(params: {
+  userId: string;
+  opikTrace: Trace;
+}) {
+  const { userId, opikTrace } = params;
+
   return new FunctionTool({
     name: "delete_all_recipes",
     description: `Delete all recipes from the tracked recipes. Call this when user wants to clear all recipes or start fresh.`,
     parameters: DeleteAllRecipesInput,
     execute: async (input: DeleteAllInput, toolContext?: ToolContext) => {
       const { reason } = input;
-      const span = params.opikTrace.span({
+      const span = opikTrace.span({
         name: "delete_all_recipes",
         type: "tool",
         input,
+        tags: [`user:${userId}`],
       });
 
       // Get tracked recipes from session state
@@ -55,6 +61,7 @@ export function createDeleteAllRecipesTool(params: { opikTrace: Trace }) {
 
       span.update({
         output: result as unknown as Record<string, unknown>,
+        tags: [`user:${userId}`],
       });
       span.end();
 

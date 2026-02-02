@@ -50,7 +50,12 @@ const CreateRecipesInput = z.object({
 type CreateInput = z.infer<typeof CreateRecipesInput>;
 type RecipeInput = z.infer<typeof RecipeInputSchema>;
 
-export function createCreateRecipesTool(params: { opikTrace: Trace }) {
+export function createCreateRecipesTool(params: {
+  userId: string;
+  opikTrace: Trace;
+}) {
+  const { userId, opikTrace } = params;
+
   return new FunctionTool({
     name: "create_recipes",
     description: `Create one or more new recipes with validated ingredients.
@@ -60,10 +65,11 @@ Accepts 1-5 recipes per call, each with 1-10 ingredients.`,
     parameters: CreateRecipesInput,
     execute: async (input: CreateInput, toolContext?: ToolContext) => {
       const { recipes } = input;
-      const span = params.opikTrace.span({
+      const span = opikTrace.span({
         name: "create_recipes",
         type: "tool",
         input,
+        tags: [`user:${userId}`],
       });
 
       // Collect ALL unique ingredient names across all recipes
@@ -133,7 +139,9 @@ Accepts 1-5 recipes per call, each with 1-10 ingredients.`,
               }
             : {},
         tags:
-          totalUnrecognized > 0 ? ["unrecognized_items"] : ["all_recognized"],
+          totalUnrecognized > 0
+            ? [`user:${userId}`, "unrecognized_items"]
+            : [`user:${userId}`, "all_recognized"],
       });
       span.end();
 

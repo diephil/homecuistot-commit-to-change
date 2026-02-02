@@ -51,14 +51,11 @@ const UpdateMatchingIngredientsInput = z.object({
 
 type UpdateInput = z.infer<typeof UpdateMatchingIngredientsInput>;
 
-// Demo user ID for standalone script testing
-const DEMO_USER_ID = "00000000-0000-0000-0000-000000000001";
-
 export function createUpdateMatchingIngredientsTool(params: {
-  userId?: string;
+  userId: string;
   opikTrace: Trace;
 }) {
-  const userId = params?.userId ?? DEMO_USER_ID;
+  const { userId, opikTrace } = params;
 
   return new FunctionTool({
     name: "update_matching_ingredients",
@@ -67,17 +64,18 @@ Call with extracted ingredients and quantity levels from user input.`,
     parameters: UpdateMatchingIngredientsInput,
     execute: async (input: UpdateInput, toolContext?: ToolContext) => {
       const { up: updates } = input;
-      const span = params.opikTrace.span({
+      const span = opikTrace.span({
         name: "update_matching_ingredients",
         type: "tool",
         input,
+        tags: [`user:${userId}`],
       });
 
       if (!updates || updates.length === 0) {
         const result = { recognized: [], unrecognized: [] };
         span.update({
           output: result as unknown as Record<string, unknown>,
-          tags: ["nothing_to_update"],
+          tags: [`user:${userId}`, "nothing_to_update"],
         });
         span.end();
         return result;
@@ -157,7 +155,9 @@ Call with extracted ingredients and quantity levels from user input.`,
         output: { proposal } as unknown as Record<string, unknown>,
         metadata: unrecognized.length > 0 ? { unrecognized } : {},
         tags:
-          unrecognized.length > 0 ? ["unrecognized_items"] : ["all_recognized"],
+          unrecognized.length > 0
+            ? [`user:${userId}`, "unrecognized_items"]
+            : [`user:${userId}`, "all_recognized"],
       });
       span.end();
 

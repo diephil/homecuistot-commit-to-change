@@ -63,7 +63,12 @@ const UpdateRecipesInput = z.object({
 type UpdateInput = z.infer<typeof UpdateRecipesInput>;
 type SingleUpdateInput = z.infer<typeof UpdateInputSchema>;
 
-export function createUpdateRecipesTool(params: { opikTrace: Trace }) {
+export function createUpdateRecipesTool(params: {
+  userId: string;
+  opikTrace: Trace;
+}) {
+  const { userId, opikTrace } = params;
+
   return new FunctionTool({
     name: "update_recipes",
     description: `Update one or more existing recipes from the tracked recipes.
@@ -73,10 +78,11 @@ Accepts 1-5 updates per call.`,
     parameters: UpdateRecipesInput,
     execute: async (input: UpdateInput, toolContext?: ToolContext) => {
       const { updates } = input;
-      const span = params.opikTrace.span({
+      const span = opikTrace.span({
         name: "update_recipes",
         type: "tool",
         input,
+        tags: [`user:${userId}`],
       });
 
       // Get tracked recipes from session state once
@@ -170,7 +176,9 @@ Accepts 1-5 updates per call.`,
               }
             : {},
         tags:
-          totalUnrecognized > 0 ? ["unrecognized_items"] : ["all_recognized"],
+          totalUnrecognized > 0
+            ? [`user:${userId}`, "unrecognized_items"]
+            : [`user:${userId}`, "all_recognized"],
       });
       span.end();
 

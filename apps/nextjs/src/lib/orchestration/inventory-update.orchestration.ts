@@ -75,6 +75,7 @@ export async function createInventoryManagerAgentProposal(
       const { text } = await voiceTranscriptorAgent({
         audioBase64,
         parentTrace: traceCtx.trace,
+        userId,
       });
       textInput = text;
     } else {

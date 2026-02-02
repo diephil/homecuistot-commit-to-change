@@ -20,6 +20,7 @@ export interface VoiceTranscriptorAgentParams {
   mimeType?: string;
   parentTrace: Trace;
   provider?: "google" | "openai";
+  userId?: string;
 }
 
 export interface VoiceTranscriptorAgentResult {
@@ -34,7 +35,10 @@ export async function voiceTranscriptorAgent(
     mimeType = "audio/webm",
     parentTrace,
     provider = "openai",
+    userId,
   } = params;
+
+  const userTag = userId ? [`user:${userId}`] : [];
 
   if (provider === "google") {
     // Google Gemini transcription
@@ -47,7 +51,7 @@ export async function voiceTranscriptorAgent(
       client,
       generationName: "voice_transcriptor_gemini",
       traceMetadata: {
-        tags: ["transcription", "voice-input", "gemini"],
+        tags: [...userTag, "transcription", "voice-input", "gemini"],
       },
     });
 
@@ -83,7 +87,7 @@ export async function voiceTranscriptorAgent(
       client,
       generationName: "voice_transcriptor_whisper",
       traceMetadata: {
-        tags: ["transcription", "voice-input", "whisper"],
+        tags: [...userTag, "transcription", "voice-input", "whisper"],
       },
     });
 

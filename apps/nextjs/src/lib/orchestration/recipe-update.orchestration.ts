@@ -81,6 +81,7 @@ export async function createRecipeManagerAgentProposal(
       const { text } = await voiceTranscriptorAgent({
         audioBase64,
         parentTrace: traceCtx.trace,
+        userId,
       });
       textInput = text;
     } else {
@@ -89,7 +90,10 @@ export async function createRecipeManagerAgentProposal(
 
     // 3. Create agent + session
     const APP_NAME = "recipe_manager";
-    const agent = createRecipeManagerAgent({ opikTrace: traceCtx.trace });
+    const agent = createRecipeManagerAgent({
+      opikTrace: traceCtx.trace,
+      userId,
+    });
     const runner = new InMemoryRunner({ agent, appName: APP_NAME });
     const session = await runner.sessionService.createSession({
       appName: APP_NAME,

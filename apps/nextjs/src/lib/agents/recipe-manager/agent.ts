@@ -13,7 +13,10 @@ import { createDeleteAllRecipesTool } from "./tools/delete-all-recipes";
 import { type Trace } from "opik";
 import { PROMPT } from "./prompt";
 
-export function createRecipeManagerAgent(params: { opikTrace: Trace }) {
+export function createRecipeManagerAgent(params: {
+  userId: string;
+  opikTrace: Trace;
+}) {
   return new LlmAgent({
     name: PROMPT.name,
     description: PROMPT.description,
