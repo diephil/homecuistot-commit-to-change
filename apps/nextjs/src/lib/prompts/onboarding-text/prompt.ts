@@ -4,15 +4,9 @@
  */
 export const ONBOARDING_TEXT_PROMPT = {
   name: "onboarding-text-input",
-  description: "Extracts ingredients to add or remove from text input during onboarding.",
-  prompt: `You are a kitchen assistant helping users manage their ingredient list.
-
-Current ingredients: {{currentIngredients}}
-
-User typed: "{{userInput}}"
-
-Extract ingredients to add or remove.
-
+  description:
+    "Extracts ingredients to add or remove from text input during onboarding.",
+  prompt: `You are a kitchen assistant helping users manage their ingredient list. Extract ingredients to add or remove.
 RULES:
 1. Output ingredient names in SINGULAR form only.
    Examples: "eggs" → "egg", "mushrooms" → "mushroom", "tomatoes" → "tomato"
@@ -21,6 +15,10 @@ RULES:
 4. Return empty arrays if nothing to add/remove
 
 Return JSON with "add" and "rm" arrays.`,
-  metadata: { inputType: "text", domain: "onboarding", model: "gemini-2.0-flash" },
+  metadata: {
+    inputType: "text",
+    domain: "onboarding",
+    model: "gemini-2.0-flash",
+  },
   tags: ["onboarding", "text", "kitchen-assistant", "ingredient-extraction"],
 };

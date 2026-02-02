@@ -1,30 +1,11 @@
-import { z } from "zod";
-import { GoogleGenAI, type Schema } from "@google/genai";
-import { trackGemini } from "opik-gemini";
-import {
-  IngredientExtractionSchema,
-  type IngredientExtractionResponse,
-} from "@/types/onboarding";
-import { ONBOARDING_VOICE_PROMPT } from "./prompt";
+import type { IngredientExtractionResponse } from "@/types/onboarding";
+import { ingredientExtractorAgent } from "@/lib/agents/ingredient-extractor/agent";
+import { createAgentTrace } from "@/lib/tracing/opik-agent";
 
 /**
  * T010: Updated process for ingredient-only extraction
  * Spec: specs/019-onboarding-revamp/contracts/api.md
  */
-
-const genAI = new GoogleGenAI({
-  apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY!,
-});
-
-const trackedGenAI = trackGemini(genAI, {
-  generationName: ONBOARDING_VOICE_PROMPT.name,
-  traceMetadata: {
-    tags: ONBOARDING_VOICE_PROMPT.tags,
-    ...ONBOARDING_VOICE_PROMPT.metadata,
-  },
-});
-
-const responseSchema = z.toJSONSchema(IngredientExtractionSchema) as Schema;
 
 interface ProcessVoiceInputParams {
   audioBase64: string;
@@ -38,40 +19,32 @@ export async function processVoiceInput(
 ): Promise<IngredientExtractionResponse> {
   const { audioBase64, currentContext } = params;
 
-  const systemPrompt = ONBOARDING_VOICE_PROMPT.prompt.replace(
-    "{{currentIngredients}}",
-    currentContext.ingredients.join(", ") || "none",
-  );
-
-  const response = await trackedGenAI.models.generateContent({
-    model: "gemini-2.0-flash",
-    contents: [
-      {
-        role: "user",
-        parts: [
-          { text: systemPrompt },
-          {
-            inlineData: {
-              mimeType: "audio/webm",
-              data: audioBase64,
-            },
-          },
-        ],
-      },
-    ],
-    config: {
-      responseMimeType: "application/json",
-      responseSchema,
+  const traceCtx = createAgentTrace({
+    name: "onboarding-voice-input",
+    input: { audioSize: audioBase64.length, currentIngredients: currentContext.ingredients },
+    tags: ["onboarding", "voice-input", "ingredient-extraction"],
+    metadata: {
+      inputType: "voice",
+      domain: "onboarding",
     },
   });
 
-  await trackedGenAI.flush();
+  try {
+    const result = await ingredientExtractorAgent({
+      audioBase64,
+      currentIngredients: currentContext.ingredients,
+      parentTrace: traceCtx.trace,
+    });
 
-  const text = response.text;
-  if (!text) {
-    throw new Error("Empty response from Gemini");
+    traceCtx.trace.update({ output: result });
+    traceCtx.end();
+    await traceCtx.flush();
+
+    return result;
+  } catch (error) {
+    traceCtx.trace.update({ output: { error: String(error) } });
+    traceCtx.end();
+    await traceCtx.flush();
+    throw error;
   }
-
-  const parsed = JSON.parse(text);
-  return IngredientExtractionSchema.parse(parsed);
 }
