@@ -5,13 +5,12 @@
  * Creates traces with spans for audio transcription, model calls, and tool calls.
  */
 
-import { GoogleGenAI } from "@google/genai";
-import { trackGemini } from "opik-gemini";
 import { InMemoryRunner, isFinalResponse } from "@google/adk";
 import type { Span } from "opik";
 import { createAgentTrace, extractAdkUsage } from "@/lib/tracing/opik-agent";
-import { createInventoryAgent } from "./agent";
-import type { InventorySessionItem } from "./tools/validate-ingredients";
+import { createInventoryAgent } from "../agents/inventory-manager/agent";
+import { voiceTranscriptorAgent } from "../agents/voice-transcriptor/agent";
+import type { InventorySessionItem } from "../agents/inventory-manager/tools/validate-ingredients";
 import type { InventoryUpdateProposal } from "@/types/inventory";
 
 interface CreateProposalParams {
@@ -62,43 +61,13 @@ export async function createInventoryManagerAgentProposal(
   try {
     let textInput: string;
 
-    // 2. Audio transcription using opik-gemini with parent linking
+    // 2. Audio transcription via voice-transcriptor agent
     if (audioBase64) {
-      const genAI = new GoogleGenAI({
-        apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY!,
+      const { text } = await voiceTranscriptorAgent({
+        audioBase64,
+        parentTrace: traceCtx.trace,
       });
-
-      // trackGemini with parent trace - auto-links span + tracks usage
-      const trackedGenAI = trackGemini(genAI, {
-        parent: traceCtx.trace,
-        client: traceCtx.client,
-        generationName: "audio-transcription",
-        traceMetadata: {
-          tags: ["transcription", "voice-input"],
-        },
-      });
-
-      const response = await trackedGenAI.models.generateContent({
-        model: "gemini-2.0-flash",
-        contents: [
-          {
-            role: "user",
-            parts: [
-              {
-                text: "Transcribe this audio exactly as spoken. Return only the transcription, no additional text. The user should be speaking about food. If they speak another language than English, translate what they say into english. Remove filling words, hesitations, while preserving the initial intent of the user. \nIMPORTANT NOTE: If nothing is heard in the audio, return an empty string. PRESERVE THE ORIGINAL INTENT OF THE USER, if nothing is heard, DO NOT INVENT CONTENT AND RETURN AN EMPTY STRING.",
-              },
-              { inlineData: { mimeType: "audio/webm", data: audioBase64 } },
-            ],
-          },
-        ],
-      });
-
-      await trackedGenAI.flush();
-      textInput = response.text?.trim() ?? "";
-
-      if (!textInput) {
-        throw new Error("Could not transcribe audio");
-      }
+      textInput = text;
     } else {
       textInput = input!.trim();
     }

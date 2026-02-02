@@ -10,7 +10,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { createUserDb, decodeSupabaseToken } from "@/db/client";
-import { createInventoryManagerAgentProposal } from "@/lib/agents/inventory-manager/seq-agents-inventory-update-proposal";
+import { createInventoryManagerAgentProposal } from "@/lib/orchestration/inventory-update.orchestration";
 import { getUserInventory } from "@/lib/services/user-inventory";
 import type { InventorySessionItem } from "@/lib/agents/inventory-manager/tools/validate-ingredients";
 

@@ -10,7 +10,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { createUserDb, decodeSupabaseToken } from "@/db/client";
-import { createRecipeManagerAgentProposal } from "@/lib/agents/recipe-manager/seq-agents-recipe-manager-proposal";
+import { createRecipeManagerAgentProposal } from "@/lib/orchestration/recipe-update.orchestration";
 import { userRecipes } from "@/db/schema";
 import { eq, desc } from "drizzle-orm";
 import type { RecipeSessionItem } from "@/types/recipe-agent";
