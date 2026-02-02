@@ -131,7 +131,7 @@ export function VoiceTextInput({
             />
           )}
 
-          {/* Assistant response display */}
+          {/* Assistant response display
           {assistantResponse && !processing && (
             <div className="w-full max-w-md px-4 py-3 bg-blue-50 border-2 border-black rounded text-center">
               <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">
@@ -141,7 +141,7 @@ export function VoiceTextInput({
                 &ldquo;{assistantResponse}&rdquo;
               </p>
             </div>
-          )}
+          )} */}
 
           {/* Hold-to-speak button */}
           <button
