@@ -1,6 +1,6 @@
 import type { IngredientExtractionResponse } from "@/types/onboarding";
 import { ingredientExtractorAgent } from "@/lib/agents/ingredient-extractor/agent";
-import { createAgentTrace } from "@/lib/tracing/opik-agent";
+import { createAgentTrace, getOpikClient } from "@/lib/tracing/opik-agent";
 
 /**
  * T010: Updated process for ingredient-only extraction
@@ -21,7 +21,10 @@ export async function processVoiceInput(
 
   const traceCtx = createAgentTrace({
     name: "onboarding-voice-input",
-    input: { audioSize: audioBase64.length, currentIngredients: currentContext.ingredients },
+    input: {
+      audioSize: audioBase64.length,
+      currentIngredients: currentContext.ingredients,
+    },
     tags: ["onboarding", "voice-input", "ingredient-extraction"],
     metadata: {
       inputType: "voice",
@@ -34,6 +37,7 @@ export async function processVoiceInput(
       audioBase64,
       currentIngredients: currentContext.ingredients,
       parentTrace: traceCtx.trace,
+      opikClient: getOpikClient(),
     });
 
     traceCtx.trace.update({ output: result });

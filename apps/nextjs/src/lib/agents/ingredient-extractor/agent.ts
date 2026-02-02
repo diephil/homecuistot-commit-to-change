@@ -8,22 +8,22 @@
 import { z } from "zod";
 import { GoogleGenAI, type Schema } from "@google/genai";
 import { trackGemini } from "opik-gemini";
-import { type Trace } from "opik";
-import { getOpikClient } from "@/lib/tracing/opik-agent";
+import { type Trace, Opik } from "opik";
 import {
   IngredientExtractionSchema,
   type IngredientExtractionResponse,
 } from "@/types/onboarding";
 import { PROMPT } from "./prompt";
 
-const client = getOpikClient();
-
 export interface IngredientExtractorAgentParams {
   text?: string;
   audioBase64?: string;
   mimeType?: string;
   currentIngredients: string[];
-  parentTrace: Trace;
+  parentTrace?: Trace;
+  datasetName?: string;
+  opikClient?: Opik;
+  model?: "gemini-2.5-flash-lite" | "gemini-2.0-flash";
 }
 
 export async function ingredientExtractorAgent(
@@ -35,6 +35,9 @@ export async function ingredientExtractorAgent(
     mimeType = "audio/webm",
     currentIngredients,
     parentTrace,
+    datasetName,
+    opikClient,
+    model = "gemini-2.5-flash-lite",
   } = params;
 
   if (!text && !audioBase64) {
@@ -47,12 +50,13 @@ export async function ingredientExtractorAgent(
 
   const trackedGenAI = trackGemini(genAI, {
     parent: parentTrace,
-    client,
+    client: opikClient,
     generationName: "ingredient_extractor",
     traceMetadata: {
       tags: [
         "ingredient-extraction",
         audioBase64 ? "voice-input" : "text-input",
+        ...(datasetName ? ["dataset", datasetName] : []),
       ],
     },
   });
@@ -80,7 +84,7 @@ export async function ingredientExtractorAgent(
   }
 
   const response = await trackedGenAI.models.generateContent({
-    model: "gemini-2.5-flash-lite",
+    model,
     contents: [
       {
         role: "user",
