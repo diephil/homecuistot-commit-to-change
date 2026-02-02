@@ -1,6 +1,6 @@
 import type { IngredientExtractionResponse } from "@/types/onboarding";
 import { ingredientExtractorAgent } from "@/lib/agents/ingredient-extractor/agent";
-import { createAgentTrace } from "@/lib/tracing/opik-agent";
+import { createAgentTrace, getOpikClient } from "@/lib/tracing/opik-agent";
 
 /**
  * T012: Updated process for ingredient-only extraction
@@ -34,6 +34,7 @@ export async function processTextInput(
       text,
       currentIngredients: currentContext.ingredients,
       parentTrace: traceCtx.trace,
+      opikClient: getOpikClient(),
     });
 
     traceCtx.trace.update({ output: result });

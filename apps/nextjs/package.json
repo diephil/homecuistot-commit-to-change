@@ -21,7 +21,9 @@
     "prompt:all": "tsx --env-file=.env.local scripts/register-prompts.ts",
     "prompt:all:prod": "tsx --env-file=.env.prod scripts/register-prompts.ts",
     "dataset:register": "tsx --env-file=.env.local scripts/register-datasets.ts",
-    "dataset:register:prod": "tsx --env-file=.env.prod scripts/register-datasets.ts"
+    "dataset:register:prod": "tsx --env-file=.env.prod scripts/register-datasets.ts",
+    "eval:all": "tsx --env-file=.env.local scripts/run-evaluations.ts",
+    "eval:all:prod": "tsx --env-file=.env.prod scripts/run-evaluations.ts"
   },
   "dependencies": {
     "@ai-sdk/google": "^3.0.10",

@@ -1,6 +1,6 @@
 import { Dataset } from "../types";
 
-type DatasetItem = {
+export type DatasetItem = {
   input: string;
   expected_output: {
     add: string[];
@@ -2530,7 +2530,8 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
   },
   {
-    input: "got some stuff from the farmers market umm heirloom tomatoes and fresh herbs",
+    input:
+      "got some stuff from the farmers market umm heirloom tomatoes and fresh herbs",
     expected_output: {
       add: ["fresh herb", "heirloom tomato"],
       rm: [],
