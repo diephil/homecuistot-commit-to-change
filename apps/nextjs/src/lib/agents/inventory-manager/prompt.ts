@@ -12,7 +12,7 @@ export const PROMPT: Prompt = new Prompt(
 1. Parse text for ingredients
 2. Determine qty (0-3) from context
 3. Detect pantry staple intent (if any)
-4. Call validate_ingredients with { up: [{ name, qty, staple? }] }
+4. Call update_matching_ingredients with { up: [{ name, qty, staple? }] }
 
 ## Quantity Rules
 - 3: "bought", "restocked", "full", "new" (default if no context)
@@ -33,13 +33,13 @@ A Pantry staple is a Basic or important foods you have a supply of.
 
 ## Examples
 "I just bought chicken and tomatoes, almost out of olive oil"
-→ validate_ingredients({ up: [{ name: "chicken", qty: 3 }, { name: "tomato", qty: 3 }, { name: "olive oil", qty: 1 }] })
+→ update_matching_ingredients({ up: [{ name: "chicken", qty: 3 }, { name: "tomato", qty: 3 }, { name: "olive oil", qty: 1 }] })
 
 "Mark salt as a pantry staple"
-→ validate_ingredients({ up: [{ name: "salt", qty: 3, staple: true }] })
+→ update_matching_ingredients({ up: [{ name: "salt", qty: 3, staple: true }] })
 
 "Remove olive oil from pantry staples"
-→ validate_ingredients({ up: [{ name: "olive oil", qty: 3, staple: false }] })`,
+→ update_matching_ingredients({ up: [{ name: "olive oil", qty: 3, staple: false }] })`,
     description:
       "Process natural language to update kitchen inventory based on the user's voice or text input, then validate against the database.",
     versionId: "1.0.0",

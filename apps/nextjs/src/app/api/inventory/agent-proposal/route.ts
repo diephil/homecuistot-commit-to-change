@@ -12,7 +12,7 @@ import { createClient } from "@/utils/supabase/server";
 import { createUserDb, decodeSupabaseToken } from "@/db/client";
 import { createInventoryManagerAgentProposal } from "@/lib/orchestration/inventory-update.orchestration";
 import { getUserInventory } from "@/lib/services/user-inventory";
-import type { InventorySessionItem } from "@/lib/agents/inventory-manager/tools/validate-ingredients";
+import type { InventorySessionItem } from "@/lib/agents/inventory-manager/tools/update-matching-ingredients";
 
 export async function POST(request: Request) {
   const requestId = request.headers.get("x-request-id") ?? crypto.randomUUID();
