@@ -162,7 +162,13 @@ Accepts 1-5 updates per call.`,
 
       span.update({
         output: result as unknown as Record<string, unknown>,
-        metadata: totalUnrecognized > 0 ? { totalUnrecognized } : {},
+        metadata:
+          totalUnrecognized > 0
+            ? {
+                totalUnrecognized,
+                unrecognized: results.flatMap((r) => r.unrecognized),
+              }
+            : {},
         tags:
           totalUnrecognized > 0 ? ["unrecognized_items"] : ["all_recognized"],
       });

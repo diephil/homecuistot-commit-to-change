@@ -155,6 +155,7 @@ Call with extracted ingredients and quantity levels from user input.`,
 
       span.update({
         output: { proposal } as unknown as Record<string, unknown>,
+        metadata: unrecognized.length > 0 ? { unrecognized } : {},
         tags:
           unrecognized.length > 0 ? ["unrecognized_items"] : ["all_recognized"],
       });
