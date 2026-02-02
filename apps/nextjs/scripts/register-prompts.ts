@@ -1,7 +1,7 @@
 /**
  * Register All Agent Prompts to Opik
  *
- * Automatically discovers agent.ts files and registers their PROMPT variables to Opik.
+ * Automatically discovers prompt.ts files and registers their PROMPT variables to Opik.
  * Supports dev and prod environments via NODE_ENV.
  */
 
@@ -16,19 +16,19 @@ async function main() {
 
   console.log(`\n🔍 Discovering agent prompts...`);
 
-  // Find all agent.ts files
-  const agentFiles = await glob("src/lib/agents/**/agent.ts", {
+  // Find all prompt.ts files
+  const promptFiles = await glob("src/lib/agents/**/prompt.ts", {
     cwd: path.join(process.cwd()),
     absolute: true,
   });
 
-  console.log(`✅ Found ${agentFiles.length} agents\n`);
+  console.log(`✅ Found ${promptFiles.length} prompts\n`);
 
   const results: Array<{ name: string; commit: string; status: string }> = [];
 
-  for (const filePath of agentFiles) {
+  for (const filePath of promptFiles) {
     try {
-      // Dynamic import of the agent module
+      // Dynamic import of the prompt module
       const module = await import(filePath);
 
       if (!module.PROMPT) {
