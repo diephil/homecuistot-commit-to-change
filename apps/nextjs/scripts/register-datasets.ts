@@ -40,7 +40,7 @@ async function main() {
       console.log(`📦 Registering: ${dataset.name}...`);
 
       // Create dataset in Opik (upsert pattern - idempotent)
-      const opikDataset = await client.createDataset(
+      const opikDataset = await client.getOrCreateDataset(
         dataset.name,
         dataset.description,
       );

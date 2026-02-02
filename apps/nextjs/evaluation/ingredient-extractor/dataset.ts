@@ -2477,6 +2477,162 @@ const DATASET_ENTRIES: DatasetItem[] = [
       comment: "Leavening agents",
     },
   },
+  {
+    input: "j'ai besoin de retirer le pain",
+    expected_output: {
+      add: [],
+      rm: ["bread"],
+    },
+    metadata: {
+      version: 1,
+      currentIngredients,
+      input_locale: "fr",
+      comment: "French removal need",
+    },
+  },
+  {
+    input: "add I think like three or four different kinds of peppers",
+    expected_output: {
+      add: ["pepper"],
+      rm: [],
+    },
+    metadata: {
+      version: 1,
+      currentIngredients,
+      input_locale: "en",
+      comment: "Vague quantity and type",
+    },
+  },
+  {
+    input: "we ate all the goddamn pizza",
+    expected_output: {
+      add: [],
+      rm: ["pizza"],
+    },
+    metadata: {
+      version: 1,
+      currentIngredients,
+      input_locale: "en",
+      comment: "Profane past consumption",
+    },
+  },
+  {
+    input: "agregar ajo y cebolla",
+    expected_output: {
+      add: ["garlic", "onion"],
+      rm: [],
+    },
+    metadata: {
+      version: 1,
+      currentIngredients,
+      input_locale: "es",
+      comment: "Spanish add command",
+    },
+  },
+  {
+    input: "got some stuff from the farmers market umm heirloom tomatoes and fresh herbs",
+    expected_output: {
+      add: ["fresh herb", "heirloom tomato"],
+      rm: [],
+    },
+    metadata: {
+      version: 1,
+      currentIngredients,
+      input_locale: "en",
+      comment: "Farmers market with fillers",
+    },
+  },
+  {
+    input: "remove wait no actually keep the butter",
+    expected_output: {
+      add: [],
+      rm: [],
+    },
+    metadata: {
+      version: 1,
+      currentIngredients,
+      input_locale: "en",
+      comment: "Self-correction cancellation",
+    },
+  },
+  {
+    input: "ich habe Kartoffeln und Zwiebeln gekauft",
+    expected_output: {
+      add: ["onion", "potato"],
+      rm: [],
+    },
+    metadata: {
+      version: 1,
+      currentIngredients,
+      input_locale: "de",
+      comment: "German purchase past tense",
+    },
+  },
+  {
+    input: "the fuck is this expired yogurt doing here remove",
+    expected_output: {
+      add: [],
+      rm: ["yogurt"],
+    },
+    metadata: {
+      version: 1,
+      currentIngredients,
+      input_locale: "en",
+      comment: "Angry discovery removal",
+    },
+  },
+  {
+    input: "add a whole bunch of random shit for dinner",
+    expected_output: {
+      add: [],
+      rm: [],
+    },
+    metadata: {
+      version: 1,
+      currentIngredients,
+      input_locale: "en",
+      comment: "Profane but too vague",
+    },
+  },
+  {
+    input: "got salmon tuna cod and halibut",
+    expected_output: {
+      add: ["cod", "halibut", "salmon", "tuna"],
+      rm: [],
+    },
+    metadata: {
+      version: 1,
+      currentIngredients,
+      input_locale: "en",
+      comment: "Multiple fish types",
+    },
+  },
+  {
+    input: "ajouter du beurre s'il vous plaît",
+    expected_output: {
+      add: ["butter"],
+      rm: [],
+    },
+    metadata: {
+      version: 1,
+      currentIngredients,
+      input_locale: "fr",
+      comment: "French polite request",
+    },
+  },
+  {
+    input: "need to remove like basically everything it's all bad",
+    expected_output: {
+      add: [],
+      rm: [],
+    },
+    metadata: {
+      version: 1,
+      currentIngredients,
+      input_locale: "en",
+      comment: "Dramatic but non-specific",
+    },
+  },
 ];
 
 export const DATASET: Dataset<DatasetItem> = {
