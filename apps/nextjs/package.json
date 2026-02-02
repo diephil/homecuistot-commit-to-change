@@ -18,14 +18,8 @@
     "db:status:prod": "tsx --env-file=.env.prod src/db/status.ts",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
-    "prompt:voice": "tsx --env-file=.env.local scripts/register-voice-prompt.ts",
-    "prompt:voice:prod": "tsx --env-file=.env.prod scripts/register-voice-prompt.ts",
-    "prompt:text": "tsx --env-file=.env.local scripts/register-text-prompt.ts",
-    "prompt:text:prod": "tsx --env-file=.env.prod scripts/register-text-prompt.ts",
-    "prompt:recipe": "tsx --env-file=.env.local scripts/register-recipe-prompt.ts",
-    "prompt:recipe:prod": "tsx --env-file=.env.prod scripts/register-recipe-prompt.ts",
-    "prompt:all": "tsx --env-file=.env.local scripts/register-voice-prompt.ts && tsx --env-file=.env.local scripts/register-text-prompt.ts && tsx --env-file=.env.local scripts/register-recipe-prompt.ts",
-    "prompt:all:prod": "tsx --env-file=.env.prod scripts/register-voice-prompt.ts && tsx --env-file=.env.prod scripts/register-text-prompt.ts && tsx --env-file=.env.prod scripts/register-recipe-prompt.ts"
+    "prompt:all": "tsx --env-file=.env.local scripts/register-prompts.ts",
+    "prompt:all:prod": "tsx --env-file=.env.prod scripts/register-prompts.ts"
   },
   "dependencies": {
     "@ai-sdk/google": "^3.0.10",
@@ -60,6 +54,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/glob": "^9.0.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
@@ -69,6 +64,7 @@
     "drizzle-kit": "^0.31.8",
     "eslint": "^9",
     "eslint-config-next": "16.1.3",
+    "glob": "^13.0.0",
     "shadcn": "^3.7.0",
     "supabase": "^2.72.8",
     "tailwindcss": "^4",
