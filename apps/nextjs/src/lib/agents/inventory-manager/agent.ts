@@ -12,13 +12,13 @@ import { type Trace } from "opik";
 import { PROMPT } from "./prompt";
 
 export interface CreateInventoryAgentParams {
-  userId?: string;
+  userId: string;
   model?: string;
   opikTrace: Trace;
 }
 
 export function createInventoryAgent(params: CreateInventoryAgentParams) {
-  const { userId, model = "gemini-2.0-flash" } = params ?? {};
+  const { userId, model = "gemini-2.0-flash", opikTrace } = params;
 
   return new LlmAgent({
     name: PROMPT.name,
@@ -26,10 +26,10 @@ export function createInventoryAgent(params: CreateInventoryAgentParams) {
     model,
     instruction: PROMPT.prompt,
     tools: [
-      createUpdateMatchingIngredientsTool({ userId, opikTrace: params.opikTrace }),
-      // createDeleteAllIngredientsTool({ userId, opikTrace: params.opikTrace }),
-      // createRefillAllIngredientsTool({ userId, opikTrace: params.opikTrace }),
-      createUpdateAllTrackedIngredientsTool({ userId, opikTrace: params.opikTrace }),
+      createUpdateMatchingIngredientsTool({ userId, opikTrace }),
+      // createDeleteAllIngredientsTool({ userId, opikTrace }),
+      // createRefillAllIngredientsTool({ userId, opikTrace }),
+      createUpdateAllTrackedIngredientsTool({ userId, opikTrace }),
     ],
   });
 }

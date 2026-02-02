@@ -36,14 +36,11 @@ const UpdateAllTrackedIngredientsInput = z.object({
 
 type UpdateAllInput = z.infer<typeof UpdateAllTrackedIngredientsInput>;
 
-// Demo user ID for standalone script testing
-const DEMO_USER_ID = "00000000-0000-0000-0000-000000000001";
-
 export function createUpdateAllTrackedIngredientsTool(params: {
-  userId?: string;
+  userId: string;
   opikTrace: Trace;
 }) {
-  const userId = params?.userId ?? DEMO_USER_ID;
+  const { userId, opikTrace } = params;
 
   return new FunctionTool({
     name: "update_all_tracked_ingredients",
@@ -53,10 +50,11 @@ Optional: filter by pantry staple status (isPantryStaple: true for staples only,
     parameters: UpdateAllTrackedIngredientsInput,
     execute: async (input: UpdateAllInput, toolContext?: ToolContext) => {
       const { qty, isPantryStaple } = input;
-      const span = params.opikTrace.span({
+      const span = opikTrace.span({
         name: "update_all_tracked_ingredients",
         type: "tool",
         input,
+        tags: [`user:${userId}`],
       });
 
       try {
@@ -142,7 +140,21 @@ Optional: filter by pantry staple status (isPantryStaple: true for staples only,
           output: {
             proposal,
           } as unknown as Record<string, unknown>,
-          tags: [`update_all_qty_${qty}`, filterTag],
+          metadata: unrecognized.length > 0 ? { unrecognized } : {},
+          tags:
+            unrecognized.length > 0
+              ? [
+                  `user:${userId}`,
+                  `update_all_qty_${qty}`,
+                  filterTag,
+                  "unrecognized_items",
+                ]
+              : [
+                  `user:${userId}`,
+                  `update_all_qty_${qty}`,
+                  filterTag,
+                  "all_recognized",
+                ],
         });
         span.end();
 
@@ -153,7 +165,7 @@ Optional: filter by pantry staple status (isPantryStaple: true for staples only,
 
         span.update({
           output: { error: errorMessage } as Record<string, unknown>,
-          tags: ["update_all_error"],
+          tags: [`user:${userId}`, "update_all_error"],
         });
         span.end();
 

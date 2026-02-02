@@ -8,7 +8,6 @@
 import { GoogleGenAI } from "@google/genai";
 import { trackGemini } from "opik-gemini";
 import OpenAI from "openai";
-import { trackOpenAI } from "opik-openai";
 import { type Trace } from "opik";
 import { getOpikClient } from "@/lib/tracing/opik-agent";
 import { PROMPT } from "./prompt";
@@ -20,6 +19,7 @@ export interface VoiceTranscriptorAgentParams {
   mimeType?: string;
   parentTrace: Trace;
   provider?: "google" | "openai";
+  userId?: string;
 }
 
 export interface VoiceTranscriptorAgentResult {
@@ -34,7 +34,10 @@ export async function voiceTranscriptorAgent(
     mimeType = "audio/webm",
     parentTrace,
     provider = "openai",
+    userId,
   } = params;
+
+  const userTag = userId ? [`user:${userId}`] : [];
 
   if (provider === "google") {
     // Google Gemini transcription
@@ -47,7 +50,7 @@ export async function voiceTranscriptorAgent(
       client,
       generationName: "voice_transcriptor_gemini",
       traceMetadata: {
-        tags: ["transcription", "voice-input", "gemini"],
+        tags: [...userTag, "transcription", "voice-input", "gemini"],
       },
     });
 
@@ -73,18 +76,10 @@ export async function voiceTranscriptorAgent(
 
     return { text };
   } else {
-    // OpenAI Whisper transcription
+    // OpenAI Whisper transcription with manual tracing
+    // (opik-openai doesn't parse Whisper response format)
     const openai = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY!,
-    });
-
-    const trackedOpenAI = trackOpenAI(openai, {
-      parent: parentTrace,
-      client,
-      generationName: "voice_transcriptor_whisper",
-      traceMetadata: {
-        tags: ["transcription", "voice-input", "whisper"],
-      },
     });
 
     // Convert base64 to Buffer
@@ -105,15 +100,31 @@ export async function voiceTranscriptorAgent(
       type: mimeType,
     });
 
+    const startTime = new Date();
+
     // Call OpenAI Whisper API
-    const response = await trackedOpenAI.audio.transcriptions.create({
+    const response = await openai.audio.transcriptions.create({
       file: audioFile,
       model: "whisper-1",
       prompt: PROMPT.prompt,
     });
 
-    await trackedOpenAI.flush();
     const text = response.text?.trim() ?? "";
+
+    // Manual span to capture transcription output
+    parentTrace.span({
+      name: "voice_transcriptor_whisper",
+      input: { mimeType, audioSizeBytes: audioBuffer.length, prompt: PROMPT.prompt },
+      output: { text },
+      type: "llm",
+      model: "whisper-1",
+      provider: "openai",
+      tags: [...userTag, "transcription", "voice-input", "whisper"],
+      startTime,
+      endTime: new Date(),
+    });
+
+    await client.flush();
 
     if (!text) {
       throw new Error("Could not transcribe audio");

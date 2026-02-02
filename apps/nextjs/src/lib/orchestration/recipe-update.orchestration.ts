@@ -81,6 +81,7 @@ export async function createRecipeManagerAgentProposal(
       const { text } = await voiceTranscriptorAgent({
         audioBase64,
         parentTrace: traceCtx.trace,
+        userId,
       });
       textInput = text;
     } else {
@@ -89,7 +90,10 @@ export async function createRecipeManagerAgentProposal(
 
     // 3. Create agent + session
     const APP_NAME = "recipe_manager";
-    const agent = createRecipeManagerAgent({ opikTrace: traceCtx.trace });
+    const agent = createRecipeManagerAgent({
+      opikTrace: traceCtx.trace,
+      userId,
+    });
     const runner = new InMemoryRunner({ agent, appName: APP_NAME });
     const session = await runner.sessionService.createSession({
       appName: APP_NAME,
@@ -210,6 +214,23 @@ export async function createRecipeManagerAgentProposal(
       recipes,
       noChangesDetected: recipes.length === 0,
     };
+
+    // Collect all unrecognized items from recipe results (create/update only)
+    const allUnrecognized = recipes.flatMap((r) =>
+      "results" in r
+        ? r.results.flatMap((item) =>
+            "unrecognized" in item ? item.unrecognized : [],
+          )
+        : [],
+    );
+    const hasUnrecognized = allUnrecognized.length > 0;
+    traceCtx.trace.update({
+      output: { recipes, noChangesDetected: proposal.noChangesDetected },
+      metadata: hasUnrecognized ? { unrecognized: allUnrecognized } : {},
+      tags: hasUnrecognized
+        ? [...traceTags, "unrecognized_items"]
+        : [...traceTags, "all_recognized"],
+    });
 
     traceCtx.end();
     await traceCtx.flush();

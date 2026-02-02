@@ -24,6 +24,7 @@ export interface IngredientExtractorAgentParams {
   datasetName?: string;
   opikClient?: Opik;
   model: "gemini-2.5-flash-lite" | "gemini-2.0-flash";
+  userId?: string;
 }
 
 export async function ingredientExtractorAgent(
@@ -37,12 +38,15 @@ export async function ingredientExtractorAgent(
     parentTrace,
     datasetName,
     opikClient,
-    model
+    model,
+    userId,
   } = params;
 
   if (!text && !audioBase64) {
     throw new Error("Either text or audioBase64 must be provided");
   }
+
+  const userTag = userId ? [`user:${userId}`] : [];
 
   const genAI = new GoogleGenAI({
     apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY!,
@@ -54,6 +58,7 @@ export async function ingredientExtractorAgent(
     generationName: "ingredient_extractor",
     traceMetadata: {
       tags: [
+        ...userTag,
         "ingredient-extraction",
         audioBase64 ? "voice-input" : "text-input",
         ...(datasetName ? ["dataset", datasetName] : []),

@@ -23,24 +23,22 @@ const RefillAllIngredientsInput = z.object({});
 
 type RefillInput = z.infer<typeof RefillAllIngredientsInput>;
 
-// Demo user ID for standalone script testing
-const DEMO_USER_ID = "00000000-0000-0000-0000-000000000001";
-
 export function createRefillAllIngredientsTool(params: {
-  userId?: string;
+  userId: string;
   opikTrace: Trace;
 }) {
-  const userId = params?.userId ?? DEMO_USER_ID;
+  const { userId, opikTrace } = params;
 
   return new FunctionTool({
     name: "refill_all_ingredients",
     description: `Set all inventory items to maximum quantity (full stock). This updates all ingredients to quantity level 3.`,
     parameters: RefillAllIngredientsInput,
     execute: async (input: RefillInput, toolContext?: ToolContext) => {
-      const span = params.opikTrace.span({
+      const span = opikTrace.span({
         name: "refill_all_ingredients",
         type: "tool",
         input,
+        tags: [`user:${userId}`],
       });
 
       try {
@@ -91,7 +89,11 @@ export function createRefillAllIngredientsTool(params: {
           output: {
             proposal,
           } as unknown as Record<string, unknown>,
-          tags: [`refill`],
+          metadata: unrecognized.length > 0 ? { unrecognized } : {},
+          tags:
+            unrecognized.length > 0
+              ? [`user:${userId}`, "refill", "unrecognized_items"]
+              : [`user:${userId}`, "refill", "all_recognized"],
         });
         span.end();
 
@@ -102,7 +104,7 @@ export function createRefillAllIngredientsTool(params: {
 
         span.update({
           output: { error: errorMessage } as Record<string, unknown>,
-          tags: ["refill_error"],
+          tags: [`user:${userId}`, "refill_error"],
         });
         span.end();
 

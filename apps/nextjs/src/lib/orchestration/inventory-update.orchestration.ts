@@ -75,6 +75,7 @@ export async function createInventoryManagerAgentProposal(
       const { text } = await voiceTranscriptorAgent({
         audioBase64,
         parentTrace: traceCtx.trace,
+        userId,
       });
       textInput = text;
     } else {
@@ -186,11 +187,18 @@ export async function createInventoryManagerAgentProposal(
 
     // 5. Set output and end trace
     const finalProposal = proposal ?? { recognized: [], unrecognized: [] };
+    const hasUnrecognized = finalProposal.unrecognized.length > 0;
     traceCtx.trace.update({
       output: {
         recognized: finalProposal.recognized,
         unrecognized: finalProposal.unrecognized,
       },
+      metadata: hasUnrecognized
+        ? { unrecognized: finalProposal.unrecognized }
+        : {},
+      tags: hasUnrecognized
+        ? [...traceTags, "unrecognized_items"]
+        : [...traceTags, "all_recognized"],
     });
     traceCtx.end();
     await traceCtx.flush();
