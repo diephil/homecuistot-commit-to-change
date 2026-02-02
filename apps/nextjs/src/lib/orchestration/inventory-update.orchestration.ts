@@ -18,6 +18,8 @@ interface CreateProposalParams {
   input?: string;
   audioBase64?: string;
   currentInventory: InventorySessionItem[];
+  model?: string;
+  provider?: string;
 }
 
 interface CreateProposalResult {
@@ -33,15 +35,22 @@ interface CreateProposalResult {
 export async function createInventoryManagerAgentProposal(
   params: CreateProposalParams,
 ): Promise<CreateProposalResult> {
-  const { userId, input, audioBase64, currentInventory } = params;
+  const {
+    userId,
+    input,
+    audioBase64,
+    currentInventory,
+    model = "gemini-2.0-flash",
+    provider = "google",
+  } = params;
   const inputType = audioBase64 ? "voice" : "text";
 
   // Base tags for trace (mutable for enrichment)
   const traceTags = [
-    "inventory",
-    "agent",
+    "orchestration",
+    "inventory_update",
     inputType,
-    "gemini-2.0-flash",
+    model,
     `user:${userId}`,
   ];
 
@@ -52,8 +61,8 @@ export async function createInventoryManagerAgentProposal(
     tags: traceTags,
     metadata: {
       userId,
-      model: "gemini-2.0-flash",
-      provider: "google",
+      model,
+      provider,
       currentInventory,
     },
   });
@@ -111,7 +120,7 @@ export async function createInventoryManagerAgentProposal(
         currentModelSpan = traceCtx.createLlmSpan({
           name: `adk-model-call-${modelCallCount}`,
           input: { thread: currentSessionState?.events.slice(0, -1) },
-          model: "gemini-2.0-flash",
+          model,
           startTime: modelSpanStartTime,
           output: event as unknown as Record<string, unknown>,
           usage: eventUsage,

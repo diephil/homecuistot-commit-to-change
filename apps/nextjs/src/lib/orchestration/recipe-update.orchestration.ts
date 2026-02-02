@@ -23,6 +23,8 @@ interface CreateRecipeProposalParams {
   input?: string;
   audioBase64?: string;
   trackedRecipes: RecipeSessionItem[];
+  model?: string;
+  provider?: string;
 }
 
 interface CreateRecipeProposalResult {
@@ -38,15 +40,22 @@ interface CreateRecipeProposalResult {
 export async function createRecipeManagerAgentProposal(
   params: CreateRecipeProposalParams,
 ): Promise<CreateRecipeProposalResult> {
-  const { userId, input, audioBase64, trackedRecipes } = params;
+  const {
+    userId,
+    input,
+    audioBase64,
+    trackedRecipes,
+    model = "gemini-2.0-flash",
+    provider = "google",
+  } = params;
   const inputType = audioBase64 ? "voice" : "text";
 
   // Base tags for trace (mutable for enrichment)
   const traceTags = [
-    "recipe",
-    "agent",
+    "orchestration",
+    "recipe_update",
     inputType,
-    "gemini-2.0-flash",
+    model,
     `user:${userId}`,
   ];
 
@@ -57,8 +66,8 @@ export async function createRecipeManagerAgentProposal(
     tags: traceTags,
     metadata: {
       userId,
-      model: "gemini-2.0-flash",
-      provider: "google",
+      model,
+      provider,
       trackedRecipes,
     },
   });
@@ -134,7 +143,7 @@ export async function createRecipeManagerAgentProposal(
         currentModelSpan = traceCtx.createLlmSpan({
           name: `adk-model-call-${modelCallCount}`,
           input: { thread: currentSessionState?.events.slice(0, -1) },
-          model: "gemini-2.0-flash",
+          model,
           startTime: modelSpanStartTime,
           output: event as unknown as Record<string, unknown>,
           usage: eventUsage,
