@@ -10,7 +10,18 @@ import { createValidateIngredientsTool } from "./tools/validate-ingredients";
 import { Trace, Prompt } from "opik";
 import { getOpikClient } from "@/lib/tracing/opik-agent";
 
-const AGENT_INSTRUCTION = `You are an inventory assistant. Extract ingredients, quantity levels, and pantry staple intent from user text.
+export interface CreateInventoryAgentParams {
+  userId?: string;
+  model?: string;
+  opikTrace: Trace;
+}
+
+const client = getOpikClient();
+
+export const PROMPT: Prompt = new Prompt(
+  {
+    name: "inventory_manager",
+    prompt: `You are an inventory assistant. Extract ingredients, quantity levels, and pantry staple intent from user text.
 
 ## Workflow
 1. Parse text for ingredients
@@ -43,20 +54,7 @@ A Pantry staple is a Basic or important foods you have a supply of.
 → validate_ingredients({ up: [{ name: "salt", qty: 3, staple: true }] })
 
 "Remove olive oil from pantry staples"
-→ validate_ingredients({ up: [{ name: "olive oil", qty: 3, staple: false }] })`;
-
-export interface CreateInventoryAgentParams {
-  userId?: string;
-  model?: string;
-  opikTrace: Trace;
-}
-
-const client = getOpikClient();
-
-export const INVENTORY_MANAGER_AGENT_PROMPT: Prompt = new Prompt(
-  {
-    name: "inventory_manager",
-    prompt: AGENT_INSTRUCTION,
+→ validate_ingredients({ up: [{ name: "olive oil", qty: 3, staple: false }] })`,
     description:
       "Process natural language to update kitchen inventory based on the user's voice or text input, then validate against the database.",
     versionId: "1.0.0",
@@ -71,10 +69,10 @@ export function createInventoryAgent(params: CreateInventoryAgentParams) {
   const { userId, model = "gemini-2.0-flash" } = params ?? {};
 
   return new LlmAgent({
-    name: INVENTORY_MANAGER_AGENT_PROMPT.name,
-    description: INVENTORY_MANAGER_AGENT_PROMPT.description,
+    name: PROMPT.name,
+    description: PROMPT.description,
     model,
-    instruction: INVENTORY_MANAGER_AGENT_PROMPT.prompt,
+    instruction: PROMPT.prompt,
     tools: [
       createValidateIngredientsTool({ userId, opikTrace: params.opikTrace }),
     ],

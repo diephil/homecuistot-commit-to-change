@@ -10,15 +10,13 @@ import { trackGemini } from "opik-gemini";
 import { Prompt, type Trace } from "opik";
 import { getOpikClient } from "@/lib/tracing/opik-agent";
 
-const TRANSCRIPTION_PROMPT = `Transcribe this audio exactly as spoken. Return only the transcription, no additional text. The user should be speaking about food. If they speak another language than English, translate what they say into english. Remove filling words, hesitations, while preserving the initial intent of the user.
-IMPORTANT NOTE: If nothing is heard in the audio, return an empty string. PRESERVE THE ORIGINAL INTENT OF THE USER, if nothing is heard, DO NOT INVENT CONTENT AND RETURN AN EMPTY STRING.`;
-
 const client = getOpikClient();
 
-export const VOICE_TRANSCRIPTOR_AGENT_PROMPT: Prompt = new Prompt(
+export const PROMPT: Prompt = new Prompt(
   {
     name: "voice_transcriptor",
-    prompt: TRANSCRIPTION_PROMPT,
+    prompt: `Transcribe this audio exactly as spoken. Return only the transcription, no additional text. The user should be speaking about food. If they speak another language than English, translate what they say into english. Remove filling words, hesitations, while preserving the initial intent of the user.
+IMPORTANT NOTE: If nothing is heard in the audio, return an empty string. PRESERVE THE ORIGINAL INTENT OF THE USER, if nothing is heard, DO NOT INVENT CONTENT AND RETURN AN EMPTY STRING.`,
     description:
       "Transcribe audio to text, translate non-English to English, remove filler words while preserving intent.",
     versionId: "1.0.0",
@@ -60,7 +58,7 @@ export async function voiceTranscriptorAgent(
   const response = await trackedGenAI.models.generateContent({
     model: "gemini-2.0-flash",
     config: {
-      systemInstruction: VOICE_TRANSCRIPTOR_AGENT_PROMPT.prompt,
+      systemInstruction: PROMPT.prompt,
     },
     contents: [
       {

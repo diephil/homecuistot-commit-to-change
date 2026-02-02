@@ -15,7 +15,12 @@ import {
   type IngredientExtractionResponse,
 } from "@/types/onboarding";
 
-const INGREDIENT_EXTRACTOR_PROMPT = `You are a kitchen assistant helping users manage their ingredient list. Extract ingredients to add or remove.
+const client = getOpikClient();
+
+export const PROMPT: Prompt = new Prompt(
+  {
+    name: "ingredient_extractor",
+    prompt: `You are a kitchen assistant helping users manage their ingredient list. Extract ingredients to add or remove.
 
 RULES:
 1. Output ingredient names in SINGULAR form only.
@@ -25,14 +30,7 @@ RULES:
 4. Return empty arrays if nothing to add/remove
 5. For voice input: transcribe, translate non-English to English, remove filler words while preserving intent
 
-Return JSON with "add" and "rm" arrays.`;
-
-const client = getOpikClient();
-
-export const INGREDIENT_EXTRACTOR_AGENT_PROMPT: Prompt = new Prompt(
-  {
-    name: "ingredient_extractor",
-    prompt: INGREDIENT_EXTRACTOR_PROMPT,
+Return JSON with "add" and "rm" arrays.`,
     description:
       "Extract ingredients to add/remove from text or voice input, with multilingual support and singular form normalization.",
     versionId: "1.0.0",
@@ -90,7 +88,10 @@ export async function ingredientExtractorAgent(
   const responseSchema = z.toJSONSchema(IngredientExtractionSchema) as Schema;
 
   // Build user content based on input type
-  const userContentParts: Array<{ text?: string; inlineData?: { mimeType: string; data: string } }> = [];
+  const userContentParts: Array<{
+    text?: string;
+    inlineData?: { mimeType: string; data: string };
+  }> = [];
 
   // Add current context
   const currentContext = `Current ingredients: ${currentIngredients.join(", ") || "none"}`;
@@ -117,7 +118,7 @@ export async function ingredientExtractorAgent(
     config: {
       responseMimeType: "application/json",
       responseSchema,
-      systemInstruction: INGREDIENT_EXTRACTOR_AGENT_PROMPT.prompt,
+      systemInstruction: PROMPT.prompt,
     },
   });
 

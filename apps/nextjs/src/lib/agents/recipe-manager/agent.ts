@@ -12,7 +12,12 @@ import { createDeleteRecipeTool } from "./tools/delete-recipe";
 import { Trace, Prompt } from "opik";
 import { getOpikClient } from "@/lib/tracing/opik-agent";
 
-const AGENT_INSTRUCTION = `You are a recipe assistant. Parse user input to create new recipes or update existing ones.
+const client = getOpikClient();
+
+export const PROMPT: Prompt = new Prompt(
+  {
+    name: "recipe_manager",
+    prompt: `You are a recipe assistant. Parse user input to create new recipes or update existing ones.
 
 ## Session Context
 You have access to the user's tracked recipes via session state "trackedRecipes".
@@ -107,14 +112,7 @@ Each recipe has: id, title, description, ingredients (with name and isRequired).
 → delete_recipe({
     recipeId: "<uuid from session state>",
     reason: "User no longer makes this recipe"
-  })`;
-
-const client = getOpikClient();
-
-export const RECIPE_MANAGER_AGENT_PROMPT: Prompt = new Prompt(
-  {
-    name: "recipe_manager",
-    prompt: AGENT_INSTRUCTION,
+  })`,
     description:
       "Process natural language to create, update, and delete recipes based on user voice or text input.",
     versionId: "1.0.0",
@@ -127,10 +125,10 @@ export const RECIPE_MANAGER_AGENT_PROMPT: Prompt = new Prompt(
 
 export function createRecipeManagerAgent(params: { opikTrace: Trace }) {
   return new LlmAgent({
-    name: RECIPE_MANAGER_AGENT_PROMPT.name,
-    description: RECIPE_MANAGER_AGENT_PROMPT.description,
+    name: PROMPT.name,
+    description: PROMPT.description,
     model: "gemini-2.0-flash",
-    instruction: RECIPE_MANAGER_AGENT_PROMPT.prompt,
+    instruction: PROMPT.prompt,
     tools: [
       createCreateRecipeTool(params),
       createUpdateRecipeTool(params),
