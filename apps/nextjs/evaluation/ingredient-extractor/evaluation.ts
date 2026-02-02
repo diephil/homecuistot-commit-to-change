@@ -2,6 +2,7 @@ import { evaluate, EvaluationTask, ExactMatch } from "opik";
 import { DATASET, DatasetItem } from "./dataset";
 import { ingredientExtractorAgent } from "@/lib/agents/ingredient-extractor/agent";
 import { getOpikClient } from "@/lib/tracing/opik-agent";
+import { StructureMatch, IngredientSetMatch } from "./metrics";
 
 const llmTask: EvaluationTask<DatasetItem> = async (datasetItem) => {
   const { input, metadata } = datasetItem;
@@ -25,8 +26,13 @@ export const evaluation = async (params: { nbSamples?: number }) => {
     dataset: retrievedDataset,
     task: llmTask,
     experimentName: `Ingredient Extractor ${Date.now()}`,
-    scoringMetrics: [new ExactMatch()],
+    scoringMetrics: [
+      new StructureMatch(),
+      new IngredientSetMatch(),
+      new ExactMatch(),
+    ],
     scoringKeyMapping: {
+      output: "output",
       expected: "expected_output",
     },
     nbSamples: params.nbSamples,
