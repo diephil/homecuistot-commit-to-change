@@ -37,6 +37,17 @@ export default function InventoryPage() {
   const sortByName = (items: InventoryDisplayItem[]) =>
     items.sort((a, b) => a.name.localeCompare(b.name));
 
+  // Get contextual message based on quantity level
+  const getQuantityMessage = (params: { name: string; quantity: QuantityLevel }): string => {
+    const { name, quantity } = params;
+    switch (quantity) {
+      case 0: return `No more ${name}`;
+      case 1: return `Running low on ${name}`;
+      case 2: return `You have some ${name}`;
+      case 3: return `Stocked up on ${name}`;
+    }
+  };
+
   // Fetch inventory data - extracted so it can be called after updates
   async function fetchInventory() {
     try {
@@ -139,7 +150,7 @@ export default function InventoryPage() {
         throw new Error("Failed to update quantity");
       }
 
-      toast.success(`Updated ${item.name}`);
+      toast.success(getQuantityMessage({ name: item.name, quantity }));
     } catch (error) {
       console.error("Error updating quantity:", error);
       toast.error("Failed to update quantity");
