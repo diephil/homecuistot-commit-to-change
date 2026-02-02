@@ -181,9 +181,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients: IngredientFixture.create()
-        .add(["olive oil"])
-        .build(),
+      currentIngredients: IngredientFixture.create().add(["olive oil"]).build(),
       input_locale: "en",
       comment: "Compound ingredient removal",
     },
@@ -226,9 +224,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients: IngredientFixture.create()
-        .remove(["noodle"])
-        .build(),
+      currentIngredients: IngredientFixture.create().remove(["noodle"]).build(),
       input_locale: "en",
       comment: "Casual addition",
     },
@@ -325,9 +321,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients: IngredientFixture.create()
-        .add(["lettuce"])
-        .build(),
+      currentIngredients: IngredientFixture.create().add(["lettuce"]).build(),
       input_locale: "en",
       comment: "Removal with qualifier",
     },
@@ -385,9 +379,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients: IngredientFixture.create()
-        .remove(["tomato"])
-        .build(),
+      currentIngredients: IngredientFixture.create().remove(["tomato"]).build(),
       input_locale: "en",
       comment: "Rude/frustrated",
     },
@@ -434,13 +426,13 @@ const DATASET_ENTRIES: DatasetItem[] = [
   {
     input: "add chocolate chips cookies and candy",
     expected_output: {
-      add: ["candy", "chocolate chip", "cookie"],
+      add: ["candy", "chocolate chip cookie"],
       rm: [],
     },
     metadata: {
       version: 1,
       currentIngredients: IngredientFixture.create()
-        .remove(["candy", "chocolate chip", "cookie"])
+        .remove(["candy", "chocolate chip cookie"])
         .build(),
       input_locale: "en",
       comment: "Sweet items",
@@ -519,7 +511,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     input: "remove everything",
     expected_output: {
       add: [],
-      rm: [],
+      rm: IngredientFixture.create().build(),
     },
     metadata: {
       version: 1,
@@ -631,9 +623,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients: IngredientFixture.create()
-        .remove(["banana"])
-        .build(),
+      currentIngredients: IngredientFixture.create().remove(["banana"]).build(),
       input_locale: "en",
       comment: "Quantity expression",
     },
@@ -912,7 +902,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     input: "remove every single thing",
     expected_output: {
       add: [],
-      rm: [],
+      rm: IngredientFixture.create().build(),
     },
     metadata: {
       version: 1,
@@ -1042,7 +1032,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     metadata: {
       version: 1,
       currentIngredients: IngredientFixture.create()
-        .remove(["half and half", "heavy cream", "whole milk"])
+        .remove(["half-and-half", "heavy cream", "whole milk"])
         .build(),
       input_locale: "en",
       comment: "Dairy products",
@@ -1170,9 +1160,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients: IngredientFixture.create()
-        .remove(["tomato"])
-        .build(),
+      currentIngredients: IngredientFixture.create().remove(["tomato"]).build(),
       input_locale: "es",
       comment: "Spanish add",
     },
@@ -1557,7 +1545,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     input: "the meat smells off remove it",
     expected_output: {
       add: [],
-      rm: [],
+      rm: ["meat"],
     },
     metadata: {
       version: 1,
@@ -2330,13 +2318,13 @@ const DATASET_ENTRIES: DatasetItem[] = [
   {
     input: "I have regular mayo and vegan mayo",
     expected_output: {
-      add: ["mayo", "vegan mayo"],
+      add: ["mayonnaise", "vegan mayonnaise"],
       rm: [],
     },
     metadata: {
       version: 1,
       currentIngredients: IngredientFixture.create()
-        .remove(["mayo", "vegan mayo"])
+        .remove(["mayonnaise", "vegan mayonnaise"])
         .build(),
       input_locale: "en",
       comment: "Mayo types",
@@ -2539,9 +2527,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients: IngredientFixture.create()
-        .add(["raspberry"])
-        .build(),
+      currentIngredients: IngredientFixture.create().add(["raspberry"]).build(),
       input_locale: "en",
       comment: "Texture removal",
     },
@@ -2904,7 +2890,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     input: "need to remove like basically everything it's all bad",
     expected_output: {
       add: [],
-      rm: [],
+      rm: IngredientFixture.create().build(),
     },
     metadata: {
       version: 1,

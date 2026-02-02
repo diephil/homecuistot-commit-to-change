@@ -25,7 +25,7 @@ export const evaluation = async (params: { nbSamples?: number }) => {
   const result = await evaluate({
     dataset: retrievedDataset,
     task: llmTask,
-    experimentName: `Ingredient Extractor ${Date.now()}`,
+    experimentName: `Ingredient Extractor ${Date.now()} - gemini-2.5-flash-lite`,
     scoringMetrics: [
       new StructureMatch(),
       new IngredientSetMatch(),
@@ -36,6 +36,9 @@ export const evaluation = async (params: { nbSamples?: number }) => {
       expected: "expected_output",
     },
     nbSamples: params.nbSamples,
+    experimentConfig: {
+      model: "gemini-2.5-flash-lite",
+    },
   });
 
   return result;
