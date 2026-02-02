@@ -31,6 +31,8 @@ interface VoiceTextInputProps {
   className?: string;
   /** Last transcription from voice input - displayed above the mic */
   lastTranscription?: string;
+  /** Assistant response - displayed below last transcription when available */
+  assistantResponse?: string;
 }
 
 export function VoiceTextInput({
@@ -43,6 +45,7 @@ export function VoiceTextInput({
   instructions,
   className,
   lastTranscription,
+  assistantResponse,
 }: VoiceTextInputProps) {
   const [inputMode, setInputMode] = useState<"voice" | "text">("voice");
   const [textValue, setTextValue] = useState("");
@@ -121,11 +124,23 @@ export function VoiceTextInput({
       {effectiveInputMode === "voice" && !permissionDenied && (
         <div className="flex flex-col items-center gap-4">
           {/* Last transcription display */}
-          {lastTranscription && !showRecordingUI && !processing && (
+          {lastTranscription && !processing && (
             <LastHeardDisplay
               transcription={lastTranscription}
               className="w-full max-w-md"
             />
+          )}
+
+          {/* Assistant response display */}
+          {assistantResponse && !processing && (
+            <div className="w-full max-w-md px-4 py-3 bg-blue-50 border-2 border-black rounded text-center">
+              <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">
+                Assistant response
+              </p>
+              <p className="text-sm text-gray-800 italic">
+                &ldquo;{assistantResponse}&rdquo;
+              </p>
+            </div>
           )}
 
           {/* Hold-to-speak button */}

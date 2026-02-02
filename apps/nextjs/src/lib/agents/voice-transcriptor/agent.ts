@@ -42,7 +42,7 @@ export async function voiceTranscriptorAgent(
   });
 
   const response = await trackedGenAI.models.generateContent({
-    model: "gemini-2.0-flash",
+    model: "gemini-2.5-flash-lite",
     config: {
       systemInstruction: PROMPT.prompt,
     },
