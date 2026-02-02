@@ -19,7 +19,9 @@
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "prompt:all": "tsx --env-file=.env.local scripts/register-prompts.ts",
-    "prompt:all:prod": "tsx --env-file=.env.prod scripts/register-prompts.ts"
+    "prompt:all:prod": "tsx --env-file=.env.prod scripts/register-prompts.ts",
+    "dataset:register": "tsx --env-file=.env.local scripts/register-datasets.ts",
+    "dataset:register:prod": "tsx --env-file=.env.prod scripts/register-datasets.ts"
   },
   "dependencies": {
     "@ai-sdk/google": "^3.0.10",
