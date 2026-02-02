@@ -31,7 +31,8 @@ async function main() {
     try {
       // Dynamic import
       const imported = await import(filePath);
-      const dataset: Dataset<unknown> = imported.DATASET;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const dataset: Dataset<any> = imported.DATASET;
 
       if (!dataset || !dataset.name || !dataset.entries) {
         throw new Error(`Invalid dataset export in ${filePath}`);
