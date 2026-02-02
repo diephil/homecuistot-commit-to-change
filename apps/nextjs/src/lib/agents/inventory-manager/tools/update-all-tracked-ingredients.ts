@@ -31,6 +31,7 @@ const UpdateAllTrackedIngredientsInput = z.object({
     .describe(
       "Filter items by pantry staple status. true=only pantry staples, false=only non-staples, omit=all items",
     ),
+  // TODO: support update by category of ingredients
 });
 
 type UpdateAllInput = z.infer<typeof UpdateAllTrackedIngredientsInput>;
@@ -114,9 +115,7 @@ Optional: filter by pantry staple status (isPantryStaple: true for staples only,
                   ? item.isPantryStaple === isPantryStaple
                   : true;
 
-              return shouldUpdate
-                ? { ...item, quantityLevel: qty }
-                : item;
+              return shouldUpdate ? { ...item, quantityLevel: qty } : item;
             });
             toolContext.state?.set("currentInventory", updatedInventory);
           }

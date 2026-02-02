@@ -20,7 +20,7 @@ export interface CurrentInventoryItem {
 /**
  * Dataset item for evaluation
  */
-export interface DatasetItem {
+export type DatasetItem = {
   input: string; // User utterance
   expected_output: {
     recognized: ValidatedInventoryUpdate[];
@@ -32,4 +32,4 @@ export interface DatasetItem {
     comment: string; // Scenario description
     version: number; // 1
   };
-}
+};
