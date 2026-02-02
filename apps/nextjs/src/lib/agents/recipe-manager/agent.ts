@@ -6,9 +6,9 @@
  */
 
 import { LlmAgent } from "@google/adk";
-import { createCreateRecipeTool } from "./tools/create-recipe";
-import { createUpdateRecipeTool } from "./tools/update-recipe";
-import { createDeleteRecipeTool } from "./tools/delete-recipe";
+import { createCreateRecipesTool } from "./tools/create-recipes";
+import { createUpdateRecipesTool } from "./tools/update-recipes";
+import { createDeleteRecipesTool } from "./tools/delete-recipes";
 import { createDeleteAllRecipesTool } from "./tools/delete-all-recipes";
 import { type Trace } from "opik";
 import { PROMPT } from "./prompt";
@@ -20,9 +20,9 @@ export function createRecipeManagerAgent(params: { opikTrace: Trace }) {
     model: "gemini-2.0-flash",
     instruction: PROMPT.prompt,
     tools: [
-      createCreateRecipeTool(params),
-      createUpdateRecipeTool(params),
-      createDeleteRecipeTool(params),
+      createCreateRecipesTool(params),
+      createUpdateRecipesTool(params),
+      createDeleteRecipesTool(params),
       createDeleteAllRecipesTool(params),
     ],
   });

@@ -134,10 +134,76 @@ export interface DeleteAllRecipesResult {
   reason?: string;
 }
 
+// ============================================================================
+// Batch Tool Result Types
+// ============================================================================
+
+/**
+ * Single item result from create_recipes batch tool
+ */
+export interface CreateRecipesResultItem extends CreateRecipeResult {
+  index: number;
+}
+
+/**
+ * Result from create_recipes batch tool
+ */
+export interface CreateRecipesResult {
+  operation: "create_batch";
+  results: CreateRecipesResultItem[];
+  totalCreated: number;
+  totalUnrecognized: number;
+}
+
+/**
+ * Single item result from update_recipes batch tool
+ */
+export interface UpdateRecipesResultItem extends UpdateRecipeResult {
+  index: number;
+}
+
+/**
+ * Result from update_recipes batch tool
+ */
+export interface UpdateRecipesResult {
+  operation: "update_batch";
+  results: UpdateRecipesResultItem[];
+  totalUpdated: number;
+  totalNotFound: number;
+  totalUnrecognized: number;
+}
+
+/**
+ * Single item result from delete_recipes batch tool
+ */
+export interface DeleteRecipesResultItem {
+  recipeId: string;
+  title: string;
+  found: boolean;
+}
+
+/**
+ * Result from delete_recipes batch tool
+ */
+export interface DeleteRecipesResult {
+  operation: "delete_batch";
+  results: DeleteRecipesResultItem[];
+  reason?: string;
+  totalDeleted: number;
+  totalNotFound: number;
+}
+
 /**
  * Union of tool results
  */
-export type RecipeToolResult = CreateRecipeResult | UpdateRecipeResult | DeleteRecipeResult | DeleteAllRecipesResult;
+export type RecipeToolResult =
+  | CreateRecipeResult
+  | CreateRecipesResult
+  | UpdateRecipeResult
+  | UpdateRecipesResult
+  | DeleteRecipeResult
+  | DeleteRecipesResult
+  | DeleteAllRecipesResult;
 
 // ============================================================================
 // Proposal Types
@@ -200,7 +266,8 @@ export interface RecipeApplyProposalResponse {
 
 export const RECIPE_LIMITS = {
   MAX_RECIPES_PER_REQUEST: 5,
-  MAX_INGREDIENTS_PER_RECIPE: 6,
+  MAX_INGREDIENTS_PER_RECIPE: 10,
+  MAX_DELETE_IDS_PER_REQUEST: 10,
 } as const;
 
 // ============================================================================
@@ -241,4 +308,31 @@ export function isDeleteAllRecipesResult(
   result: RecipeToolResult
 ): result is DeleteAllRecipesResult {
   return result.operation === "delete_all";
+}
+
+/**
+ * Type guard: Check if tool result is batch create operation
+ */
+export function isCreateRecipesResult(
+  result: RecipeToolResult
+): result is CreateRecipesResult {
+  return result.operation === "create_batch";
+}
+
+/**
+ * Type guard: Check if tool result is batch update operation
+ */
+export function isUpdateRecipesResult(
+  result: RecipeToolResult
+): result is UpdateRecipesResult {
+  return result.operation === "update_batch";
+}
+
+/**
+ * Type guard: Check if tool result is batch delete operation
+ */
+export function isDeleteRecipesResult(
+  result: RecipeToolResult
+): result is DeleteRecipesResult {
+  return result.operation === "delete_batch";
 }

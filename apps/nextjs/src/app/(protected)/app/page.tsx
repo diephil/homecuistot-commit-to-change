@@ -1,5 +1,7 @@
 import { redirect, RedirectType } from 'next/navigation'
 import { getRecipesWithAvailability, getCookingHistory, getUserCounts } from '@/app/actions/cooking-log'
+
+export const dynamic = 'force-dynamic'
 import { RecipeSection } from './recipe-section'
 import { CookingHistoryTable } from '@/components/app/CookingHistoryTable'
 import { ResetUserDataButton } from '@/components/app/ResetUserDataButton'

@@ -16,7 +16,54 @@ import type {
   ProposedRecipeIngredient,
   DeleteRecipeResult,
   DeleteAllRecipesResult,
+  CreateRecipesResult,
+  UpdateRecipesResult,
+  DeleteRecipesResult,
+  CreateRecipeResult,
+  UpdateRecipeResult,
 } from "@/types/recipe-agent";
+
+/**
+ * Expand batch results into individual results for display
+ * Handles create_batch, update_batch, delete_batch operations
+ */
+function expandBatchResults(recipes: RecipeToolResult[]): RecipeToolResult[] {
+  const expanded: RecipeToolResult[] = [];
+
+  for (const recipe of recipes) {
+    if (recipe.operation === "create_batch") {
+      const batch = recipe as CreateRecipesResult;
+      for (const item of batch.results) {
+        // Remove index field for display
+        const { index, ...result } = item;
+        expanded.push(result as CreateRecipeResult);
+      }
+    } else if (recipe.operation === "update_batch") {
+      const batch = recipe as UpdateRecipesResult;
+      for (const item of batch.results) {
+        const { index, ...result } = item;
+        expanded.push(result as UpdateRecipeResult);
+      }
+    } else if (recipe.operation === "delete_batch") {
+      const batch = recipe as DeleteRecipesResult;
+      for (const item of batch.results) {
+        if (item.found) {
+          expanded.push({
+            operation: "delete",
+            recipeId: item.recipeId,
+            title: item.title,
+            reason: batch.reason,
+          } as DeleteRecipeResult);
+        }
+      }
+    } else {
+      // Pass through singular operations unchanged
+      expanded.push(recipe);
+    }
+  }
+
+  return expanded;
+}
 
 interface RecipeProposalModalProps {
   isOpen: boolean;
@@ -33,7 +80,11 @@ export function RecipeProposalModal({
   onProposalApplied,
   transcription,
 }: RecipeProposalModalProps) {
-  const [proposal, setProposal] = useState(initialProposal);
+  // Expand batch results for display
+  const [proposal, setProposal] = useState(() => ({
+    ...initialProposal,
+    recipes: expandBatchResults(initialProposal.recipes),
+  }));
   const [isSaving, setIsSaving] = useState(false);
 
   if (!isOpen) return null;
@@ -310,15 +361,21 @@ function RecipeProposalCard({
     );
   }
 
+  // Batch operations should not reach this component - they are expanded by orchestrator
+  if (
+    recipe.operation === "create_batch" ||
+    recipe.operation === "update_batch" ||
+    recipe.operation === "delete_batch"
+  ) {
+    return null;
+  }
+
   const isCreate = recipe.operation === "create";
   const title = isCreate ? recipe.title : recipe.proposedState.title;
   const description = isCreate ? recipe.description : recipe.proposedState.description;
   const ingredients: ProposedRecipeIngredient[] = isCreate
     ? recipe.ingredients
     : recipe.proposedState.ingredients;
-
-  // Only show ingredients that have a matched ID
-  const validIngredients = ingredients.filter((ing) => ing.ingredientId);
 
   return (
     <div
@@ -350,13 +407,13 @@ function RecipeProposalCard({
 
       {/* Ingredients */}
       <div className="flex flex-wrap gap-2">
-        {validIngredients.map((ing, idx) => (
+        {ingredients.map((ing, idx) => (
           <div key={idx} className="relative inline-flex">
             <Badge
               variant="outline"
               size="sm"
               className="bg-white/50 cursor-pointer hover:bg-white/80 transition-colors"
-              onClick={() => onToggleRequired(ingredients.indexOf(ing))}
+              onClick={() => onToggleRequired(idx)}
             >
               <span className={cn("mr-1", ing.isRequired ? "text-amber-500" : "text-gray-300")}>
                 ★
@@ -368,7 +425,7 @@ function RecipeProposalCard({
               variant="red"
               onClick={(e) => {
                 e.stopPropagation();
-                onRemoveIngredient(ingredients.indexOf(ing));
+                onRemoveIngredient(idx);
               }}
               title="Remove ingredient"
               className="absolute -top-3 -right-2"
