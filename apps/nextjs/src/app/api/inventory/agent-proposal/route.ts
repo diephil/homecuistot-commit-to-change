@@ -66,6 +66,7 @@ export async function POST(request: Request) {
         quantityLevel: row.quantityLevel,
         isPantryStaple: row.isPantryStaple,
         name: row.ingredientName,
+        category: row.ingredientCategory,
       }),
     );
 

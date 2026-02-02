@@ -24,6 +24,7 @@ export interface InventorySessionItem {
   quantityLevel: number;
   isPantryStaple: boolean;
   name: string;
+  category: string;
 }
 
 // Input schema with short field names for token efficiency
@@ -155,9 +156,7 @@ Call with extracted ingredients and quantity levels from user input.`,
       span.update({
         output: { proposal } as unknown as Record<string, unknown>,
         tags:
-          unrecognized.length > 0
-            ? ["unrecognized_items"]
-            : ["all_recognized"],
+          unrecognized.length > 0 ? ["unrecognized_items"] : ["all_recognized"],
       });
       span.end();
 

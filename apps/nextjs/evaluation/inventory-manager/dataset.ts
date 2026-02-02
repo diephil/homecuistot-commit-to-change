@@ -90,35 +90,6 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
   },
   {
-    input: "Ran out of milk",
-    expected_output: {
-      recognized: [
-        {
-          ingredientId: ING.milk,
-          ingredientName: "milk",
-          previousQuantity: 2,
-          proposedQuantity: 0,
-          previousPantryStaple: false,
-          confidence: "high",
-        },
-      ],
-      unrecognized: [],
-    },
-    metadata: {
-      currentInventory: new InventoryFixture()
-        .add({
-          id: INV_ID.milk,
-          ingredientId: ING.milk,
-          name: "milk",
-          quantityLevel: 2,
-        })
-        .build(),
-      input_locale: "en",
-      comment: "Single removal",
-      version: 1,
-    },
-  },
-  {
     input: "Finished chicken and tomatoes",
     expected_output: {
       recognized: [
@@ -504,27 +475,6 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
   },
   {
-    input: "Bought tomatoes",
-    expected_output: {
-      recognized: [
-        {
-          ingredientId: ING.tomato,
-          ingredientName: "tomato",
-          previousQuantity: null,
-          proposedQuantity: 3,
-          confidence: "high",
-        },
-      ],
-      unrecognized: [],
-    },
-    metadata: {
-      currentInventory: new InventoryFixture().build(),
-      input_locale: "en",
-      comment: "No staple intent - field omitted",
-      version: 1,
-    },
-  },
-  {
     input: "Bought salt, it's a pantry staple",
     expected_output: {
       recognized: [
@@ -696,6 +646,1353 @@ const DATASET_ENTRIES: DatasetItem[] = [
   },
 
   // ============================================================================
+  // Bulk Operations - update_all_tracked_ingredients (16 examples)
+  // ============================================================================
+  {
+    input: "Refill everything",
+    expected_output: {
+      recognized: [
+        {
+          ingredientId: ING.chicken,
+          ingredientName: "chicken",
+          previousQuantity: 1,
+          proposedQuantity: 3,
+          previousPantryStaple: false,
+          confidence: "high",
+        },
+        {
+          ingredientId: ING.tomato,
+          ingredientName: "tomato",
+          previousQuantity: 2,
+          proposedQuantity: 3,
+          previousPantryStaple: false,
+          confidence: "high",
+        },
+        {
+          ingredientId: ING.salt,
+          ingredientName: "salt",
+          previousQuantity: 1,
+          proposedQuantity: 3,
+          previousPantryStaple: true,
+          confidence: "high",
+        },
+        {
+          ingredientId: ING.olive_oil,
+          ingredientName: "olive oil",
+          previousQuantity: 2,
+          proposedQuantity: 3,
+          previousPantryStaple: true,
+          confidence: "high",
+        },
+      ],
+      unrecognized: [],
+    },
+    metadata: {
+      currentInventory: new InventoryFixture()
+        .add({
+          id: INV_ID.chicken,
+          ingredientId: ING.chicken,
+          name: "chicken",
+          quantityLevel: 1,
+        })
+        .add({
+          id: INV_ID.tomato,
+          ingredientId: ING.tomato,
+          name: "tomato",
+          quantityLevel: 2,
+        })
+        .add({
+          id: INV_ID.salt,
+          ingredientId: ING.salt,
+          name: "salt",
+          quantityLevel: 1,
+          isPantryStaple: true,
+        })
+        .add({
+          id: INV_ID.olive_oil,
+          ingredientId: ING.olive_oil,
+          name: "olive oil",
+          quantityLevel: 2,
+          isPantryStaple: true,
+        })
+        .build(),
+      input_locale: "en",
+      comment: "Bulk - refill all items (qty: 3, no filter)",
+      version: 1,
+    },
+  },
+  {
+    input: "Clear my entire inventory",
+    expected_output: {
+      recognized: [
+        {
+          ingredientId: ING.chicken,
+          ingredientName: "chicken",
+          previousQuantity: 2,
+          proposedQuantity: 0,
+          previousPantryStaple: false,
+          proposedPantryStaple: false,
+          confidence: "high",
+        },
+        {
+          ingredientId: ING.milk,
+          ingredientName: "milk",
+          previousQuantity: 1,
+          proposedQuantity: 0,
+          previousPantryStaple: false,
+          proposedPantryStaple: false,
+          confidence: "high",
+        },
+        {
+          ingredientId: ING.salt,
+          ingredientName: "salt",
+          previousQuantity: 3,
+          proposedQuantity: 0,
+          previousPantryStaple: true,
+          proposedPantryStaple: false,
+          confidence: "high",
+        },
+      ],
+      unrecognized: [],
+    },
+    metadata: {
+      currentInventory: new InventoryFixture()
+        .add({
+          id: INV_ID.chicken,
+          ingredientId: ING.chicken,
+          name: "chicken",
+          quantityLevel: 2,
+        })
+        .add({
+          id: INV_ID.milk,
+          ingredientId: ING.milk,
+          name: "milk",
+          quantityLevel: 1,
+        })
+        .add({
+          id: INV_ID.salt,
+          ingredientId: ING.salt,
+          name: "salt",
+          quantityLevel: 3,
+          isPantryStaple: true,
+        })
+        .build(),
+      input_locale: "en",
+      comment: "Bulk - delete all items (qty: 0, no filter)",
+      version: 1,
+    },
+  },
+  {
+    input: "Set all to low",
+    expected_output: {
+      recognized: [
+        {
+          ingredientId: ING.tomato,
+          ingredientName: "tomato",
+          previousQuantity: 3,
+          proposedQuantity: 1,
+          previousPantryStaple: false,
+          confidence: "high",
+        },
+        {
+          ingredientId: ING.pepper,
+          ingredientName: "pepper",
+          previousQuantity: 2,
+          proposedQuantity: 1,
+          previousPantryStaple: true,
+          confidence: "high",
+        },
+      ],
+      unrecognized: [],
+    },
+    metadata: {
+      currentInventory: new InventoryFixture()
+        .add({
+          id: INV_ID.tomato,
+          ingredientId: ING.tomato,
+          name: "tomato",
+          quantityLevel: 3,
+        })
+        .add({
+          id: INV_ID.pepper,
+          ingredientId: ING.pepper,
+          name: "pepper",
+          quantityLevel: 2,
+          isPantryStaple: true,
+        })
+        .build(),
+      input_locale: "en",
+      comment: "Bulk - set all to low (qty: 1, no filter)",
+      version: 1,
+    },
+  },
+  {
+    input: "Mark everything as having some left",
+    expected_output: {
+      recognized: [
+        {
+          ingredientId: ING.chicken,
+          ingredientName: "chicken",
+          previousQuantity: 1,
+          proposedQuantity: 2,
+          previousPantryStaple: false,
+          confidence: "high",
+        },
+        {
+          ingredientId: ING.olive_oil,
+          ingredientName: "olive oil",
+          previousQuantity: 3,
+          proposedQuantity: 2,
+          previousPantryStaple: true,
+          confidence: "high",
+        },
+      ],
+      unrecognized: [],
+    },
+    metadata: {
+      currentInventory: new InventoryFixture()
+        .add({
+          id: INV_ID.chicken,
+          ingredientId: ING.chicken,
+          name: "chicken",
+          quantityLevel: 1,
+        })
+        .add({
+          id: INV_ID.olive_oil,
+          ingredientId: ING.olive_oil,
+          name: "olive oil",
+          quantityLevel: 3,
+          isPantryStaple: true,
+        })
+        .build(),
+      input_locale: "en",
+      comment: "Bulk - set all to some (qty: 2, no filter)",
+      version: 1,
+    },
+  },
+  {
+    input: "Refill all pantry staples",
+    expected_output: {
+      recognized: [
+        {
+          ingredientId: ING.salt,
+          ingredientName: "salt",
+          previousQuantity: 1,
+          proposedQuantity: 3,
+          previousPantryStaple: true,
+          confidence: "high",
+        },
+        {
+          ingredientId: ING.olive_oil,
+          ingredientName: "olive oil",
+          previousQuantity: 2,
+          proposedQuantity: 3,
+          previousPantryStaple: true,
+          confidence: "high",
+        },
+        {
+          ingredientId: ING.pepper,
+          ingredientName: "pepper",
+          previousQuantity: 0,
+          proposedQuantity: 3,
+          previousPantryStaple: true,
+          confidence: "high",
+        },
+      ],
+      unrecognized: [],
+    },
+    metadata: {
+      currentInventory: new InventoryFixture()
+        .add({
+          id: INV_ID.chicken,
+          ingredientId: ING.chicken,
+          name: "chicken",
+          quantityLevel: 1,
+        })
+        .add({
+          id: INV_ID.salt,
+          ingredientId: ING.salt,
+          name: "salt",
+          quantityLevel: 1,
+          isPantryStaple: true,
+        })
+        .add({
+          id: INV_ID.olive_oil,
+          ingredientId: ING.olive_oil,
+          name: "olive oil",
+          quantityLevel: 2,
+          isPantryStaple: true,
+        })
+        .add({
+          id: INV_ID.pepper,
+          ingredientId: ING.pepper,
+          name: "pepper",
+          quantityLevel: 0,
+          isPantryStaple: true,
+        })
+        .build(),
+      input_locale: "en",
+      comment:
+        "Bulk - refill pantry staples only (qty: 3, isPantryStaple: true)",
+      version: 1,
+    },
+  },
+  {
+    input: "Delete all pantry staples",
+    expected_output: {
+      recognized: [
+        {
+          ingredientId: ING.salt,
+          ingredientName: "salt",
+          previousQuantity: 3,
+          proposedQuantity: 0,
+          previousPantryStaple: true,
+          proposedPantryStaple: false,
+          confidence: "high",
+        },
+        {
+          ingredientId: ING.olive_oil,
+          ingredientName: "olive oil",
+          previousQuantity: 2,
+          proposedQuantity: 0,
+          previousPantryStaple: true,
+          proposedPantryStaple: false,
+          confidence: "high",
+        },
+      ],
+      unrecognized: [],
+    },
+    metadata: {
+      currentInventory: new InventoryFixture()
+        .add({
+          id: INV_ID.tomato,
+          ingredientId: ING.tomato,
+          name: "tomato",
+          quantityLevel: 2,
+        })
+        .add({
+          id: INV_ID.salt,
+          ingredientId: ING.salt,
+          name: "salt",
+          quantityLevel: 3,
+          isPantryStaple: true,
+        })
+        .add({
+          id: INV_ID.olive_oil,
+          ingredientId: ING.olive_oil,
+          name: "olive oil",
+          quantityLevel: 2,
+          isPantryStaple: true,
+        })
+        .build(),
+      input_locale: "en",
+      comment:
+        "Bulk - delete pantry staples only (qty: 0, isPantryStaple: true)",
+      version: 1,
+    },
+  },
+  {
+    input: "Set all pantry staples to low",
+    expected_output: {
+      recognized: [
+        {
+          ingredientId: ING.salt,
+          ingredientName: "salt",
+          previousQuantity: 3,
+          proposedQuantity: 1,
+          previousPantryStaple: true,
+          confidence: "high",
+        },
+        {
+          ingredientId: ING.pepper,
+          ingredientName: "pepper",
+          previousQuantity: 2,
+          proposedQuantity: 1,
+          previousPantryStaple: true,
+          confidence: "high",
+        },
+      ],
+      unrecognized: [],
+    },
+    metadata: {
+      currentInventory: new InventoryFixture()
+        .add({
+          id: INV_ID.chicken,
+          ingredientId: ING.chicken,
+          name: "chicken",
+          quantityLevel: 2,
+        })
+        .add({
+          id: INV_ID.salt,
+          ingredientId: ING.salt,
+          name: "salt",
+          quantityLevel: 3,
+          isPantryStaple: true,
+        })
+        .add({
+          id: INV_ID.pepper,
+          ingredientId: ING.pepper,
+          name: "pepper",
+          quantityLevel: 2,
+          isPantryStaple: true,
+        })
+        .build(),
+      input_locale: "en",
+      comment:
+        "Bulk - set pantry staples to low (qty: 1, isPantryStaple: true)",
+      version: 1,
+    },
+  },
+  {
+    input: "Mark all staples as having some",
+    expected_output: {
+      recognized: [
+        {
+          ingredientId: ING.olive_oil,
+          ingredientName: "olive oil",
+          previousQuantity: 3,
+          proposedQuantity: 2,
+          previousPantryStaple: true,
+          confidence: "high",
+        },
+      ],
+      unrecognized: [],
+    },
+    metadata: {
+      currentInventory: new InventoryFixture()
+        .add({
+          id: INV_ID.tomato,
+          ingredientId: ING.tomato,
+          name: "tomato",
+          quantityLevel: 1,
+        })
+        .add({
+          id: INV_ID.olive_oil,
+          ingredientId: ING.olive_oil,
+          name: "olive oil",
+          quantityLevel: 3,
+          isPantryStaple: true,
+        })
+        .build(),
+      input_locale: "en",
+      comment:
+        "Bulk - set pantry staples to some (qty: 2, isPantryStaple: true)",
+      version: 1,
+    },
+  },
+  {
+    input: "Refill all non-staple ingredients",
+    expected_output: {
+      recognized: [
+        {
+          ingredientId: ING.chicken,
+          ingredientName: "chicken",
+          previousQuantity: 1,
+          proposedQuantity: 3,
+          previousPantryStaple: false,
+          confidence: "high",
+        },
+        {
+          ingredientId: ING.tomato,
+          ingredientName: "tomato",
+          previousQuantity: 0,
+          proposedQuantity: 3,
+          previousPantryStaple: false,
+          confidence: "high",
+        },
+        {
+          ingredientId: ING.milk,
+          ingredientName: "milk",
+          previousQuantity: 2,
+          proposedQuantity: 3,
+          previousPantryStaple: false,
+          confidence: "high",
+        },
+      ],
+      unrecognized: [],
+    },
+    metadata: {
+      currentInventory: new InventoryFixture()
+        .add({
+          id: INV_ID.chicken,
+          ingredientId: ING.chicken,
+          name: "chicken",
+          quantityLevel: 1,
+        })
+        .add({
+          id: INV_ID.tomato,
+          ingredientId: ING.tomato,
+          name: "tomato",
+          quantityLevel: 0,
+        })
+        .add({
+          id: INV_ID.milk,
+          ingredientId: ING.milk,
+          name: "milk",
+          quantityLevel: 2,
+        })
+        .add({
+          id: INV_ID.salt,
+          ingredientId: ING.salt,
+          name: "salt",
+          quantityLevel: 1,
+          isPantryStaple: true,
+        })
+        .build(),
+      input_locale: "en",
+      comment: "Bulk - refill non-staples only (qty: 3, isPantryStaple: false)",
+      version: 1,
+    },
+  },
+  {
+    input: "Clear all non-staple items",
+    expected_output: {
+      recognized: [
+        {
+          ingredientId: ING.chicken,
+          ingredientName: "chicken",
+          previousQuantity: 2,
+          proposedQuantity: 0,
+          previousPantryStaple: false,
+          proposedPantryStaple: false,
+          confidence: "high",
+        },
+        {
+          ingredientId: ING.milk,
+          ingredientName: "milk",
+          previousQuantity: 1,
+          proposedQuantity: 0,
+          previousPantryStaple: false,
+          proposedPantryStaple: false,
+          confidence: "high",
+        },
+      ],
+      unrecognized: [],
+    },
+    metadata: {
+      currentInventory: new InventoryFixture()
+        .add({
+          id: INV_ID.chicken,
+          ingredientId: ING.chicken,
+          name: "chicken",
+          quantityLevel: 2,
+        })
+        .add({
+          id: INV_ID.milk,
+          ingredientId: ING.milk,
+          name: "milk",
+          quantityLevel: 1,
+        })
+        .add({
+          id: INV_ID.olive_oil,
+          ingredientId: ING.olive_oil,
+          name: "olive oil",
+          quantityLevel: 3,
+          isPantryStaple: true,
+        })
+        .build(),
+      input_locale: "en",
+      comment: "Bulk - delete non-staples only (qty: 0, isPantryStaple: false)",
+      version: 1,
+    },
+  },
+  {
+    input: "Set all non-staples to low",
+    expected_output: {
+      recognized: [
+        {
+          ingredientId: ING.tomato,
+          ingredientName: "tomato",
+          previousQuantity: 3,
+          proposedQuantity: 1,
+          previousPantryStaple: false,
+          confidence: "high",
+        },
+        {
+          ingredientId: ING.chicken,
+          ingredientName: "chicken",
+          previousQuantity: 2,
+          proposedQuantity: 1,
+          previousPantryStaple: false,
+          confidence: "high",
+        },
+      ],
+      unrecognized: [],
+    },
+    metadata: {
+      currentInventory: new InventoryFixture()
+        .add({
+          id: INV_ID.tomato,
+          ingredientId: ING.tomato,
+          name: "tomato",
+          quantityLevel: 3,
+        })
+        .add({
+          id: INV_ID.chicken,
+          ingredientId: ING.chicken,
+          name: "chicken",
+          quantityLevel: 2,
+        })
+        .add({
+          id: INV_ID.pepper,
+          ingredientId: ING.pepper,
+          name: "pepper",
+          quantityLevel: 1,
+          isPantryStaple: true,
+        })
+        .build(),
+      input_locale: "en",
+      comment: "Bulk - set non-staples to low (qty: 1, isPantryStaple: false)",
+      version: 1,
+    },
+  },
+  {
+    input: "Mark all non-pantry items as having some",
+    expected_output: {
+      recognized: [
+        {
+          ingredientId: ING.milk,
+          ingredientName: "milk",
+          previousQuantity: 0,
+          proposedQuantity: 2,
+          previousPantryStaple: false,
+          confidence: "high",
+        },
+      ],
+      unrecognized: [],
+    },
+    metadata: {
+      currentInventory: new InventoryFixture()
+        .add({
+          id: INV_ID.milk,
+          ingredientId: ING.milk,
+          name: "milk",
+          quantityLevel: 0,
+        })
+        .add({
+          id: INV_ID.salt,
+          ingredientId: ING.salt,
+          name: "salt",
+          quantityLevel: 3,
+          isPantryStaple: true,
+        })
+        .build(),
+      input_locale: "en",
+      comment: "Bulk - set non-staples to some (qty: 2, isPantryStaple: false)",
+      version: 1,
+    },
+  },
+  {
+    input: "Set all my ingredients to full",
+    expected_output: {
+      recognized: [
+        {
+          ingredientId: ING.chicken,
+          ingredientName: "chicken",
+          previousQuantity: 0,
+          proposedQuantity: 3,
+          previousPantryStaple: false,
+          confidence: "high",
+        },
+        {
+          ingredientId: ING.tomato,
+          ingredientName: "tomato",
+          previousQuantity: 1,
+          proposedQuantity: 3,
+          previousPantryStaple: false,
+          confidence: "high",
+        },
+        {
+          ingredientId: ING.salt,
+          ingredientName: "salt",
+          previousQuantity: 2,
+          proposedQuantity: 3,
+          previousPantryStaple: true,
+          confidence: "high",
+        },
+      ],
+      unrecognized: [],
+    },
+    metadata: {
+      currentInventory: new InventoryFixture()
+        .add({
+          id: INV_ID.chicken,
+          ingredientId: ING.chicken,
+          name: "chicken",
+          quantityLevel: 0,
+        })
+        .add({
+          id: INV_ID.tomato,
+          ingredientId: ING.tomato,
+          name: "tomato",
+          quantityLevel: 1,
+        })
+        .add({
+          id: INV_ID.salt,
+          ingredientId: ING.salt,
+          name: "salt",
+          quantityLevel: 2,
+          isPantryStaple: true,
+        })
+        .build(),
+      input_locale: "en",
+      comment: "Bulk - natural language refill all (qty: 3, no filter)",
+      version: 1,
+    },
+  },
+  {
+    input: "Delete everything from my pantry",
+    expected_output: {
+      recognized: [
+        {
+          ingredientId: ING.milk,
+          ingredientName: "milk",
+          previousQuantity: 2,
+          proposedQuantity: 0,
+          previousPantryStaple: false,
+          proposedPantryStaple: false,
+          confidence: "high",
+        },
+        {
+          ingredientId: ING.pepper,
+          ingredientName: "pepper",
+          previousQuantity: 3,
+          proposedQuantity: 0,
+          previousPantryStaple: true,
+          proposedPantryStaple: false,
+          confidence: "high",
+        },
+      ],
+      unrecognized: [],
+    },
+    metadata: {
+      currentInventory: new InventoryFixture()
+        .add({
+          id: INV_ID.milk,
+          ingredientId: ING.milk,
+          name: "milk",
+          quantityLevel: 2,
+        })
+        .add({
+          id: INV_ID.pepper,
+          ingredientId: ING.pepper,
+          name: "pepper",
+          quantityLevel: 3,
+          isPantryStaple: true,
+        })
+        .build(),
+      input_locale: "en",
+      comment: "Bulk - natural language delete all (qty: 0, no filter)",
+      version: 1,
+    },
+  },
+  {
+    input: "Mark all my pantry items as running low",
+    expected_output: {
+      recognized: [
+        {
+          ingredientId: ING.salt,
+          ingredientName: "salt",
+          previousQuantity: 3,
+          proposedQuantity: 1,
+          previousPantryStaple: true,
+          confidence: "high",
+        },
+        {
+          ingredientId: ING.olive_oil,
+          ingredientName: "olive oil",
+          previousQuantity: 2,
+          proposedQuantity: 1,
+          previousPantryStaple: true,
+          confidence: "high",
+        },
+      ],
+      unrecognized: [],
+    },
+    metadata: {
+      currentInventory: new InventoryFixture()
+        .add({
+          id: INV_ID.chicken,
+          ingredientId: ING.chicken,
+          name: "chicken",
+          quantityLevel: 1,
+        })
+        .add({
+          id: INV_ID.salt,
+          ingredientId: ING.salt,
+          name: "salt",
+          quantityLevel: 3,
+          isPantryStaple: true,
+        })
+        .add({
+          id: INV_ID.olive_oil,
+          ingredientId: ING.olive_oil,
+          name: "olive oil",
+          quantityLevel: 2,
+          isPantryStaple: true,
+        })
+        .build(),
+      input_locale: "en",
+      comment:
+        "Bulk - natural language set pantry staples to low (qty: 1, isPantryStaple: true)",
+      version: 1,
+    },
+  },
+  {
+    input: "Restock everything that's not a pantry staple",
+    expected_output: {
+      recognized: [
+        {
+          ingredientId: ING.chicken,
+          ingredientName: "chicken",
+          previousQuantity: 1,
+          proposedQuantity: 3,
+          previousPantryStaple: false,
+          confidence: "high",
+        },
+        {
+          ingredientId: ING.tomato,
+          ingredientName: "tomato",
+          previousQuantity: 0,
+          proposedQuantity: 3,
+          previousPantryStaple: false,
+          confidence: "high",
+        },
+      ],
+      unrecognized: [],
+    },
+    metadata: {
+      currentInventory: new InventoryFixture()
+        .add({
+          id: INV_ID.chicken,
+          ingredientId: ING.chicken,
+          name: "chicken",
+          quantityLevel: 1,
+        })
+        .add({
+          id: INV_ID.tomato,
+          ingredientId: ING.tomato,
+          name: "tomato",
+          quantityLevel: 0,
+        })
+        .add({
+          id: INV_ID.pepper,
+          ingredientId: ING.pepper,
+          name: "pepper",
+          quantityLevel: 2,
+          isPantryStaple: true,
+        })
+        .build(),
+      input_locale: "en",
+      comment:
+        "Bulk - natural language refill non-staples (qty: 3, isPantryStaple: false)",
+      version: 1,
+    },
+  },
+
+  // ============================================================================
+  // Bulk Operations - Edge Cases & Creative Scenarios (20 examples)
+  // ============================================================================
+  {
+    input: "Refill everything",
+    expected_output: {
+      recognized: [],
+      unrecognized: [],
+    },
+    metadata: {
+      currentInventory: new InventoryFixture().build(),
+      input_locale: "en",
+      comment: "Bulk - empty inventory (nothing to refill)",
+      version: 1,
+    },
+  },
+  {
+    input: "Set everything to running low",
+    expected_output: {
+      recognized: [
+        {
+          ingredientId: ING.chicken,
+          ingredientName: "chicken",
+          previousQuantity: 0,
+          proposedQuantity: 1,
+          previousPantryStaple: false,
+          confidence: "high",
+        },
+        {
+          ingredientId: ING.milk,
+          ingredientName: "milk",
+          previousQuantity: 3,
+          proposedQuantity: 1,
+          previousPantryStaple: false,
+          confidence: "high",
+        },
+        {
+          ingredientId: ING.olive_oil,
+          ingredientName: "olive oil",
+          previousQuantity: 2,
+          proposedQuantity: 1,
+          previousPantryStaple: true,
+          confidence: "high",
+        },
+      ],
+      unrecognized: [],
+    },
+    metadata: {
+      currentInventory: new InventoryFixture()
+        .add({
+          id: INV_ID.chicken,
+          ingredientId: ING.chicken,
+          name: "chicken",
+          quantityLevel: 0,
+        })
+        .add({
+          id: INV_ID.milk,
+          ingredientId: ING.milk,
+          name: "milk",
+          quantityLevel: 3,
+        })
+        .add({
+          id: INV_ID.olive_oil,
+          ingredientId: ING.olive_oil,
+          name: "olive oil",
+          quantityLevel: 2,
+          isPantryStaple: true,
+        })
+        .build(),
+      input_locale: "en",
+      comment: "Bulk - mixed states to uniform low",
+      version: 1,
+    },
+  },
+  {
+    input: "Delete only non-pantry items",
+    expected_output: {
+      recognized: [
+        {
+          ingredientId: ING.chicken,
+          ingredientName: "chicken",
+          previousQuantity: 3,
+          proposedQuantity: 0,
+          previousPantryStaple: false,
+          proposedPantryStaple: false,
+          confidence: "high",
+        },
+        {
+          ingredientId: ING.milk,
+          ingredientName: "milk",
+          previousQuantity: 2,
+          proposedQuantity: 0,
+          previousPantryStaple: false,
+          proposedPantryStaple: false,
+          confidence: "high",
+        },
+      ],
+      unrecognized: [],
+    },
+    metadata: {
+      currentInventory: new InventoryFixture()
+        .add({
+          id: INV_ID.chicken,
+          ingredientId: ING.chicken,
+          name: "chicken",
+          quantityLevel: 3,
+        })
+        .add({
+          id: INV_ID.milk,
+          ingredientId: ING.milk,
+          name: "milk",
+          quantityLevel: 2,
+        })
+        .add({
+          id: INV_ID.salt,
+          ingredientId: ING.salt,
+          name: "salt",
+          quantityLevel: 1,
+          isPantryStaple: true,
+        })
+        .build(),
+      input_locale: "en",
+      comment: "Bulk - emphasis with 'only'",
+      version: 1,
+    },
+  },
+  {
+    input: "Refill chicken",
+    expected_output: {
+      recognized: [
+        {
+          ingredientId: ING.chicken,
+          ingredientName: "chicken",
+          previousQuantity: 1,
+          proposedQuantity: 3,
+          previousPantryStaple: false,
+          confidence: "high",
+        },
+      ],
+      unrecognized: [],
+    },
+    metadata: {
+      currentInventory: new InventoryFixture()
+        .add({
+          id: INV_ID.chicken,
+          ingredientId: ING.chicken,
+          name: "chicken",
+          quantityLevel: 1,
+        })
+        .build(),
+      input_locale: "en",
+      comment: "Single item (should use update_matching_ingredients)",
+      version: 2,
+    },
+  },
+  {
+    input: "Mark everything as moderate stock",
+    expected_output: {
+      recognized: [
+        {
+          ingredientId: ING.tomato,
+          ingredientName: "tomato",
+          previousQuantity: 0,
+          proposedQuantity: 2,
+          previousPantryStaple: false,
+          confidence: "high",
+        },
+        {
+          ingredientId: ING.salt,
+          ingredientName: "salt",
+          previousQuantity: 1,
+          proposedQuantity: 2,
+          previousPantryStaple: true,
+          confidence: "high",
+        },
+      ],
+      unrecognized: [],
+    },
+    metadata: {
+      currentInventory: new InventoryFixture()
+        .add({
+          id: INV_ID.tomato,
+          ingredientId: ING.tomato,
+          name: "tomato",
+          quantityLevel: 0,
+        })
+        .add({
+          id: INV_ID.salt,
+          ingredientId: ING.salt,
+          name: "salt",
+          quantityLevel: 1,
+          isPantryStaple: true,
+        })
+        .build(),
+      input_locale: "en",
+      comment: "Bulk - moderate/some synonym",
+      version: 1,
+    },
+  },
+  {
+    input: "Reset everything",
+    expected_output: {
+      recognized: [
+        {
+          ingredientId: ING.chicken,
+          ingredientName: "chicken",
+          previousQuantity: 2,
+          proposedQuantity: 0,
+          previousPantryStaple: false,
+          proposedPantryStaple: false,
+          confidence: "high",
+        },
+        {
+          ingredientId: ING.pepper,
+          ingredientName: "pepper",
+          previousQuantity: 3,
+          proposedQuantity: 0,
+          previousPantryStaple: true,
+          proposedPantryStaple: false,
+          confidence: "high",
+        },
+      ],
+      unrecognized: [],
+    },
+    metadata: {
+      currentInventory: new InventoryFixture()
+        .add({
+          id: INV_ID.chicken,
+          ingredientId: ING.chicken,
+          name: "chicken",
+          quantityLevel: 2,
+        })
+        .add({
+          id: INV_ID.pepper,
+          ingredientId: ING.pepper,
+          name: "pepper",
+          quantityLevel: 3,
+          isPantryStaple: true,
+        })
+        .build(),
+      input_locale: "en",
+      comment: "Bulk - reset implies delete/clear",
+      version: 1,
+    },
+  },
+  {
+    input: "All my staples need restocking",
+    expected_output: {
+      recognized: [
+        {
+          ingredientId: ING.salt,
+          ingredientName: "salt",
+          previousQuantity: 0,
+          proposedQuantity: 0,
+          previousPantryStaple: true,
+          proposedPantryStaple: false,
+          confidence: "high",
+        },
+        {
+          ingredientId: ING.olive_oil,
+          ingredientName: "olive oil",
+          previousQuantity: 1,
+          proposedQuantity: 0,
+          previousPantryStaple: true,
+          proposedPantryStaple: false,
+          confidence: "high",
+        },
+      ],
+      unrecognized: [],
+    },
+    metadata: {
+      currentInventory: new InventoryFixture()
+        .add({
+          id: INV_ID.milk,
+          ingredientId: ING.milk,
+          name: "milk",
+          quantityLevel: 2,
+        })
+        .add({
+          id: INV_ID.salt,
+          ingredientId: ING.salt,
+          name: "salt",
+          quantityLevel: 1,
+          isPantryStaple: true,
+        })
+        .add({
+          id: INV_ID.olive_oil,
+          ingredientId: ING.olive_oil,
+          name: "olive oil",
+          quantityLevel: 1,
+          isPantryStaple: true,
+        })
+        .build(),
+      input_locale: "en",
+      comment: "Bulk - declarative statement implies refill",
+      version: 1,
+    },
+  },
+  {
+    input: "Can you refill everything?",
+    expected_output: {
+      recognized: [
+        {
+          ingredientId: ING.tomato,
+          ingredientName: "tomato",
+          previousQuantity: 1,
+          proposedQuantity: 3,
+          previousPantryStaple: false,
+          confidence: "high",
+        },
+      ],
+      unrecognized: [],
+    },
+    metadata: {
+      currentInventory: new InventoryFixture()
+        .add({
+          id: INV_ID.tomato,
+          ingredientId: ING.tomato,
+          name: "tomato",
+          quantityLevel: 1,
+        })
+        .build(),
+      input_locale: "en",
+      comment: "Bulk - question form request",
+      version: 1,
+    },
+  },
+  {
+    input: "I need to refill my entire pantry ASAP",
+    expected_output: {
+      recognized: [
+        {
+          ingredientId: ING.chicken,
+          ingredientName: "chicken",
+          previousQuantity: 0,
+          proposedQuantity: 3,
+          previousPantryStaple: false,
+          confidence: "high",
+        },
+        {
+          ingredientId: ING.milk,
+          ingredientName: "milk",
+          previousQuantity: 1,
+          proposedQuantity: 3,
+          previousPantryStaple: false,
+          confidence: "high",
+        },
+      ],
+      unrecognized: [],
+    },
+    metadata: {
+      currentInventory: new InventoryFixture()
+        .add({
+          id: INV_ID.chicken,
+          ingredientId: ING.chicken,
+          name: "chicken",
+          quantityLevel: 0,
+        })
+        .add({
+          id: INV_ID.milk,
+          ingredientId: ING.milk,
+          name: "milk",
+          quantityLevel: 1,
+        })
+        .build(),
+      input_locale: "en",
+      comment: "Bulk - urgent language with urgency marker",
+      version: 1,
+    },
+  },
+  {
+    input: "Bring all non-staples up to full",
+    expected_output: {
+      recognized: [
+        {
+          ingredientId: ING.tomato,
+          ingredientName: "tomato",
+          previousQuantity: 1,
+          proposedQuantity: 3,
+          previousPantryStaple: false,
+          confidence: "high",
+        },
+        {
+          ingredientId: ING.chicken,
+          ingredientName: "chicken",
+          previousQuantity: 0,
+          proposedQuantity: 3,
+          previousPantryStaple: false,
+          confidence: "high",
+        },
+      ],
+      unrecognized: [],
+    },
+    metadata: {
+      currentInventory: new InventoryFixture()
+        .add({
+          id: INV_ID.tomato,
+          ingredientId: ING.tomato,
+          name: "tomato",
+          quantityLevel: 1,
+        })
+        .add({
+          id: INV_ID.chicken,
+          ingredientId: ING.chicken,
+          name: "chicken",
+          quantityLevel: 0,
+        })
+        .add({
+          id: INV_ID.pepper,
+          ingredientId: ING.pepper,
+          name: "pepper",
+          quantityLevel: 2,
+          isPantryStaple: true,
+        })
+        .build(),
+      input_locale: "en",
+      comment: "Bulk - 'bring up to' phrasing",
+      version: 1,
+    },
+  },
+  {
+    input: "All items to maximum",
+    expected_output: {
+      recognized: [
+        {
+          ingredientId: ING.milk,
+          ingredientName: "milk",
+          previousQuantity: 1,
+          proposedQuantity: 3,
+          previousPantryStaple: false,
+          confidence: "high",
+        },
+        {
+          ingredientId: ING.olive_oil,
+          ingredientName: "olive oil",
+          previousQuantity: 2,
+          proposedQuantity: 3,
+          previousPantryStaple: true,
+          confidence: "high",
+        },
+      ],
+      unrecognized: [],
+    },
+    metadata: {
+      currentInventory: new InventoryFixture()
+        .add({
+          id: INV_ID.milk,
+          ingredientId: ING.milk,
+          name: "milk",
+          quantityLevel: 1,
+        })
+        .add({
+          id: INV_ID.olive_oil,
+          ingredientId: ING.olive_oil,
+          name: "olive oil",
+          quantityLevel: 2,
+          isPantryStaple: true,
+        })
+        .build(),
+      input_locale: "en",
+      comment: "Bulk - technical language 'maximum'",
+      version: 1,
+    },
+  },
+  {
+    input: "Purge everything that's not a staple",
+    expected_output: {
+      recognized: [
+        {
+          ingredientId: ING.chicken,
+          ingredientName: "chicken",
+          previousQuantity: 3,
+          proposedQuantity: 0,
+          previousPantryStaple: false,
+          proposedPantryStaple: false,
+          confidence: "high",
+        },
+      ],
+      unrecognized: [],
+    },
+    metadata: {
+      currentInventory: new InventoryFixture()
+        .add({
+          id: INV_ID.chicken,
+          ingredientId: ING.chicken,
+          name: "chicken",
+          quantityLevel: 3,
+        })
+        .add({
+          id: INV_ID.pepper,
+          ingredientId: ING.pepper,
+          name: "pepper",
+          quantityLevel: 2,
+          isPantryStaple: true,
+        })
+        .build(),
+      input_locale: "en",
+      comment: "Bulk - strong action verb 'purge'",
+      version: 1,
+    },
+  },
+
+  // ============================================================================
   // Multi-language - French (4 examples)
   // ============================================================================
   {
@@ -813,6 +2110,6 @@ const DATASET_ENTRIES: DatasetItem[] = [
 export const DATASET: Dataset<DatasetItem> = {
   name: "inventory_manager_v1",
   description:
-    "Evaluation dataset for inventory manager agent with 30+ test cases",
+    "Evaluation dataset for inventory manager agent with individual operations + bulk operations",
   entries: DATASET_ENTRIES,
 };

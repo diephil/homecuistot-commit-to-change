@@ -38,6 +38,7 @@ export async function processVoiceInput(
       currentIngredients: currentContext.ingredients,
       parentTrace: traceCtx.trace,
       opikClient: getOpikClient(),
+      model: "gemini-2.5-flash-lite",
     });
 
     traceCtx.trace.update({ output: result });
