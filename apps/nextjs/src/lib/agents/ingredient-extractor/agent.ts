@@ -23,6 +23,7 @@ export interface IngredientExtractorAgentParams {
   parentTrace?: Trace;
   datasetName?: string;
   opikClient?: Opik;
+  model?: "gemini-2.5-flash-lite" | "gemini-2.0-flash";
 }
 
 export async function ingredientExtractorAgent(
@@ -36,6 +37,7 @@ export async function ingredientExtractorAgent(
     parentTrace,
     datasetName,
     opikClient,
+    model = "gemini-2.5-flash-lite",
   } = params;
 
   if (!text && !audioBase64) {
@@ -82,7 +84,7 @@ export async function ingredientExtractorAgent(
   }
 
   const response = await trackedGenAI.models.generateContent({
-    model: "gemini-2.5-flash-lite",
+    model,
     contents: [
       {
         role: "user",
