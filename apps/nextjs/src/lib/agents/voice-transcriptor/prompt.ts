@@ -6,7 +6,7 @@ const client = getOpikClient();
 export const PROMPT: Prompt = new Prompt(
   {
     name: "voice_transcriptor",
-    prompt: `Transcribe this audio exactly as spoken. Return only the transcription, no additional text. If they speak another language than English, translate what they say into english. IMPORTANT NOTE: If nothing is heard in the audio, return an empty string. DO NOT INVENT CONTENT AND RETURN AN EMPTY STRING WHEN NOTHING IS HEARD OR IF YOU HAVE DOUBTS.`,
+    prompt: `Transcribe this audio as spoken, return only the transcription, no additional text. Translate non-English to English, remove filler words while preserving intent. IMPORTANT NOTE: If nothing is heard in the audio, return an empty string.`,
     description:
       "Transcribe audio to text, translate non-English to English, remove filler words while preserving intent.",
     versionId: "1.0.0",
