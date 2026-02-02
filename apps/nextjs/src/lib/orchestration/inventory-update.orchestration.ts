@@ -82,11 +82,12 @@ export async function createInventoryManagerAgentProposal(
     }
 
     // 3. Create agent + session
+    const APP_NAME = "inventory_manager";
     const agent = createInventoryAgent({ userId, opikTrace: traceCtx.trace });
-    const runner = new InMemoryRunner({ agent, appName: "inventory_manager" });
+    const runner = new InMemoryRunner({ agent, appName: APP_NAME });
     const session = await runner.sessionService.createSession({
       userId,
-      appName: "inventory_manager",
+      appName: APP_NAME,
       state: { currentInventory },
     });
 
@@ -107,7 +108,7 @@ export async function createInventoryManagerAgentProposal(
       let modelSpanStartTime: Date | undefined;
       if (event.usageMetadata) {
         const currentSessionState = await runner.sessionService.getSession({
-          appName: "inventory_manager",
+          appName: APP_NAME,
           userId,
           sessionId: session.id,
         });
@@ -124,6 +125,7 @@ export async function createInventoryManagerAgentProposal(
           startTime: modelSpanStartTime,
           output: event as unknown as Record<string, unknown>,
           usage: eventUsage,
+          tags: [APP_NAME, `user:${userId}`],
         });
       }
 

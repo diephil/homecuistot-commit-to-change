@@ -87,10 +87,11 @@ export async function createRecipeManagerAgentProposal(
     }
 
     // 3. Create agent + session
+    const APP_NAME = "recipe_manager";
     const agent = createRecipeManagerAgent({ opikTrace: traceCtx.trace });
-    const runner = new InMemoryRunner({ agent, appName: "recipe_manager" });
+    const runner = new InMemoryRunner({ agent, appName: APP_NAME });
     const session = await runner.sessionService.createSession({
-      appName: "recipe_manager",
+      appName: APP_NAME,
       userId,
       state: { trackedRecipes },
     });
@@ -130,7 +131,7 @@ export async function createRecipeManagerAgentProposal(
       let modelSpanStartTime: Date | undefined;
       if (event.usageMetadata) {
         const currentSessionState = await runner.sessionService.getSession({
-          appName: "recipe_manager",
+          appName: APP_NAME,
           userId,
           sessionId: session.id,
         });
@@ -147,6 +148,7 @@ export async function createRecipeManagerAgentProposal(
           startTime: modelSpanStartTime,
           output: event as unknown as Record<string, unknown>,
           usage: eventUsage,
+          tags: [APP_NAME, `user:${userId}`],
         });
       }
 
