@@ -14,25 +14,51 @@ export type DatasetItem = {
   };
 };
 
-const currentIngredients = [
-  "egg",
-  "butter",
-  "salt",
-  "pasta",
-  "rice",
-  "garlic",
-  "bread",
-  "tomato",
-  "honey",
-  "noodle",
-  "bacon",
-  "milk",
-  "cheese",
-  "chicken",
-  "cream",
-  "onion",
-  "olive oil",
-];
+class IngredientFixture {
+  public currentIngredients: string[] = [
+    "egg",
+    "butter",
+    "salt",
+    "pasta",
+    "rice",
+    "garlic",
+    "bread",
+    "tomato",
+    "honey",
+    "noodle",
+    "bacon",
+    "milk",
+    "cheese",
+    "chicken",
+    "cream",
+    "onion",
+    "olive oil",
+  ];
+
+  static create() {
+    return new IngredientFixture();
+  }
+
+  remove(ingredients: string[]) {
+    this.currentIngredients = this.currentIngredients.filter(
+      (i) => !ingredients.includes(i),
+    );
+    return this;
+  }
+
+  add(ingredients: string[]) {
+    for (const i of ingredients) {
+      if (!this.currentIngredients.includes(i)) {
+        this.currentIngredients.push(i);
+      }
+    }
+    return this;
+  }
+
+  build(): string[] {
+    return [...this.currentIngredients];
+  }
+}
 
 const DATASET_ENTRIES: DatasetItem[] = [
   {
@@ -43,7 +69,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["butter", "egg"])
+        .build(),
       input_locale: "en",
       comment: "Basic addition",
     },
@@ -56,7 +84,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().remove(["tomato"]).build(),
       input_locale: "en",
       comment: "Polite request",
     },
@@ -69,7 +97,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["chicken", "rice"])
+        .build(),
       input_locale: "en",
       comment: "Past tense purchase",
     },
@@ -82,7 +112,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().add(["milk"]).build(),
       input_locale: "en",
       comment: "Simple removal",
     },
@@ -95,7 +125,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().add(["bread"]).build(),
       input_locale: "en",
       comment: "Idiomatic removal",
     },
@@ -108,7 +138,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().add(["cheese"]).build(),
       input_locale: "en",
       comment: "Depletion statement",
     },
@@ -121,7 +151,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["garlic", "pasta"])
+        .build(),
       input_locale: "en",
       comment: "Hesitation with fillers",
     },
@@ -134,7 +166,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["bacon", "onion"])
+        .build(),
       input_locale: "en",
       comment: "Casual past tense",
     },
@@ -147,7 +181,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .add(["olive oil"])
+        .build(),
       input_locale: "en",
       comment: "Compound ingredient removal",
     },
@@ -160,7 +196,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["cream", "mushroom", "tomato"])
+        .build(),
       input_locale: "en",
       comment: "Multiple items no punctuation",
     },
@@ -173,7 +211,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .add(["pepper", "salt"])
+        .build(),
       input_locale: "en",
       comment: "Explicit removal intent",
     },
@@ -186,7 +226,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["noodle"])
+        .build(),
       input_locale: "en",
       comment: "Casual addition",
     },
@@ -199,7 +241,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().add(["honey"]).build(),
       input_locale: "en",
       comment: "Delete verb",
     },
@@ -212,7 +254,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().remove(["egg"]).build(),
       input_locale: "en",
       comment: "Uncertainty with quantity",
     },
@@ -225,7 +267,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().add(["garlic"]).build(),
       input_locale: "en",
       comment: "Completion verb",
     },
@@ -238,7 +280,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["bean", "corn", "rice"])
+        .build(),
       input_locale: "en",
       comment: "Multiple additions",
     },
@@ -251,7 +295,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .add(["butter", "milk"])
+        .build(),
       input_locale: "en",
       comment: "Plural subject removal",
     },
@@ -264,7 +310,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["basil", "cilantro"])
+        .build(),
       input_locale: "en",
       comment: "Fresh qualifier",
     },
@@ -277,7 +325,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .add(["lettuce"])
+        .build(),
       input_locale: "en",
       comment: "Removal with qualifier",
     },
@@ -290,7 +340,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["cheese", "egg"])
+        .build(),
       input_locale: "fr",
       comment: "French input",
     },
@@ -303,7 +355,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["chicken", "rice"])
+        .build(),
       input_locale: "es",
       comment: "Spanish input",
     },
@@ -316,7 +370,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["carrot", "onion", "potato"])
+        .build(),
       input_locale: "en",
       comment: "Multiple fillers",
     },
@@ -329,7 +385,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["tomato"])
+        .build(),
       input_locale: "en",
       comment: "Rude/frustrated",
     },
@@ -342,7 +400,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().add(["bread"]).build(),
       input_locale: "en",
       comment: "Vulgar complaint",
     },
@@ -355,7 +413,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().remove(["pasta"]).build(),
       input_locale: "en",
       comment: "Dismissive tone",
     },
@@ -368,7 +426,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().add(["milk"]).build(),
       input_locale: "en",
       comment: "Reason for removal",
     },
@@ -381,7 +439,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["candy", "chocolate chip", "cookie"])
+        .build(),
       input_locale: "en",
       comment: "Sweet items",
     },
@@ -394,7 +454,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().remove(["rice"]).build(),
       input_locale: "en",
       comment: "Abundance expression",
     },
@@ -407,7 +467,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().add(["salt"]).build(),
       input_locale: "en",
       comment: "Low quantity removal",
     },
@@ -420,7 +480,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["avocado", "bell pepper", "spinach"])
+        .build(),
       input_locale: "en",
       comment: "Formal purchased",
     },
@@ -433,7 +495,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().add(["yogurt"]).build(),
       input_locale: "en",
       comment: "Expiration reason",
     },
@@ -446,7 +508,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["saffron", "turmeric"])
+        .build(),
       input_locale: "en",
       comment: "Self-commentary",
     },
@@ -459,7 +523,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().build(),
       input_locale: "en",
       comment: "Ambiguous command - no specific items",
     },
@@ -472,7 +536,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().build(),
       input_locale: "en",
       comment: "Null addition",
     },
@@ -485,7 +549,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().remove(["flour"]).build(),
       input_locale: "en",
       comment: "Multiple uncertainty markers",
     },
@@ -498,7 +562,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().add(["sugar"]).build(),
       input_locale: "en",
       comment: "Depletion with 'up'",
     },
@@ -511,7 +575,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["ground beef", "pork chop"])
+        .build(),
       input_locale: "en",
       comment: "Meat with descriptors",
     },
@@ -524,7 +590,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().add(["egg"]).build(),
       input_locale: "en",
       comment: "Very frustrated removal",
     },
@@ -537,7 +603,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["caper", "olive", "pickle"])
+        .build(),
       input_locale: "en",
       comment: "Briny items",
     },
@@ -550,7 +618,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().add(["chicken"]).build(),
       input_locale: "en",
       comment: "Food safety removal",
     },
@@ -563,7 +631,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["banana"])
+        .build(),
       input_locale: "en",
       comment: "Quantity expression",
     },
@@ -576,7 +646,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["lemon", "lime", "orange"])
+        .build(),
       input_locale: "en",
       comment: "Citrus fruits",
     },
@@ -589,7 +661,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .add(["fish sauce", "soy sauce"])
+        .build(),
       input_locale: "en",
       comment: "Asian condiments removal",
     },
@@ -602,7 +676,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["pancetta", "prosciutto", "salami"])
+        .build(),
       input_locale: "en",
       comment: "Italian meats",
     },
@@ -615,7 +691,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .add(["toilet paper"])
+        .build(),
       input_locale: "en",
       comment: "Non-food item",
     },
@@ -628,7 +706,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["cat treat", "dog food"])
+        .build(),
       input_locale: "en",
       comment: "Pet items",
     },
@@ -641,7 +721,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().add(["onion"]).build(),
       input_locale: "en",
       comment: "Emotional complaint",
     },
@@ -654,7 +734,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().build(),
       input_locale: "en",
       comment: "Empty statement",
     },
@@ -667,7 +747,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().build(),
       input_locale: "en",
       comment: "Vague non-specific",
     },
@@ -681,7 +761,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["bread", "egg", "milk"])
+        .build(),
       input_locale: "en",
       comment: "Long narrative",
     },
@@ -694,7 +776,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().build(),
       input_locale: "en",
       comment: "Retraction",
     },
@@ -707,7 +789,10 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["apple"])
+        .add(["orange"])
+        .build(),
       input_locale: "en",
       comment: "Mixed add and remove",
     },
@@ -720,7 +805,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["cumin", "paprika"])
+        .build(),
       input_locale: "en",
       comment: "Uncertain spices",
     },
@@ -730,7 +817,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     expected_output: { add: [], rm: ["chip"] },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().add(["chip"]).build(),
       input_locale: "en",
       comment: "British 'chuck' verb",
     },
@@ -743,7 +830,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["mirin", "rice vinegar", "sake"])
+        .build(),
       input_locale: "en",
       comment: "Japanese ingredients",
     },
@@ -756,7 +845,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().add(["milk"]).build(),
       input_locale: "de",
       comment: "German removal",
     },
@@ -769,7 +858,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["bulgur", "couscous", "quinoa"])
+        .build(),
       input_locale: "en",
       comment: "Grains",
     },
@@ -782,7 +873,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().add(["yogurt"]).build(),
       input_locale: "en",
       comment: "Colloquial bad smell",
     },
@@ -795,7 +886,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["almond", "cashew", "walnut"])
+        .build(),
       input_locale: "en",
       comment: "Nuts plural to singular",
     },
@@ -808,7 +901,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["coconut cream", "coconut milk"])
+        .build(),
       input_locale: "en",
       comment: "Similar compound items",
     },
@@ -821,7 +916,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().build(),
       input_locale: "en",
       comment: "Emphatic but vague",
     },
@@ -834,7 +929,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().build(),
       input_locale: "en",
       comment: "Too vague",
     },
@@ -847,7 +942,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["oregano", "rosemary", "sage", "thyme"])
+        .build(),
       input_locale: "en",
       comment: "Herbs",
     },
@@ -860,7 +957,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().add(["ketchup"]).build(),
       input_locale: "en",
       comment: "Last portion depletion",
     },
@@ -873,7 +970,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["cake", "cookie", "ice cream"])
+        .build(),
       input_locale: "en",
       comment: "Context addition",
     },
@@ -886,7 +985,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["almond extract", "vanilla extract"])
+        .build(),
       input_locale: "en",
       comment: "Extracts",
     },
@@ -899,7 +1000,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().add(["potato"]).build(),
       input_locale: "en",
       comment: "British 'bin' verb",
     },
@@ -912,7 +1013,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["habanero", "jalapeño", "serrano pepper"])
+        .build(),
       input_locale: "en",
       comment: "Peppers with accents",
     },
@@ -925,7 +1028,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().add(["battery"]).build(),
       input_locale: "en",
       comment: "Non-food singular test",
     },
@@ -938,7 +1041,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["half and half", "heavy cream", "whole milk"])
+        .build(),
       input_locale: "en",
       comment: "Dairy products",
     },
@@ -951,7 +1056,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .add(["bread", "cheese"])
+        .build(),
       input_locale: "en",
       comment: "Multiple reasons removal",
     },
@@ -964,7 +1071,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["black bean", "chickpea", "lentil"])
+        .build(),
       input_locale: "en",
       comment: "Legumes",
     },
@@ -977,7 +1086,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().build(),
       input_locale: "en",
       comment: "Hostile vague",
     },
@@ -990,7 +1099,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["agave nectar", "maple syrup"])
+        .build(),
       input_locale: "en",
       comment: "Sweeteners",
     },
@@ -1003,7 +1114,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().add(["anchovy"]).build(),
       input_locale: "en",
       comment: "Opinion-based removal",
     },
@@ -1016,7 +1127,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().remove(["egg"]).build(),
       input_locale: "en",
       comment: "Emphasis on quantity",
     },
@@ -1029,7 +1140,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["chia seed", "pumpkin seed", "sunflower seed"])
+        .build(),
       input_locale: "en",
       comment: "Seeds",
     },
@@ -1042,7 +1155,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .add(["balsamic vinegar"])
+        .build(),
       input_locale: "en",
       comment: "Formal depletion",
     },
@@ -1055,7 +1170,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["tomato"])
+        .build(),
       input_locale: "es",
       comment: "Spanish add",
     },
@@ -1068,7 +1185,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["brie", "feta", "goat cheese"])
+        .build(),
       input_locale: "en",
       comment: "Fancy cheeses",
     },
@@ -1081,7 +1200,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["hot sauce", "worcestershire sauce"])
+        .build(),
       input_locale: "en",
       comment: "Sauces",
     },
@@ -1094,7 +1215,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .add(["paper towel"])
+        .build(),
       input_locale: "en",
       comment: "Frustrated non-food",
     },
@@ -1107,7 +1230,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["beer", "red wine", "white wine"])
+        .build(),
       input_locale: "en",
       comment: "Alcohol",
     },
@@ -1120,7 +1245,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["flank steak", "ribeye", "sirloin"])
+        .build(),
       input_locale: "en",
       comment: "Steak cuts",
     },
@@ -1133,7 +1260,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().add(["lettuce"]).build(),
       input_locale: "en",
       comment: "Quality-based removal",
     },
@@ -1146,7 +1273,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["cinnamon", "nutmeg"])
+        .build(),
       input_locale: "en",
       comment: "Spice uncertainty",
     },
@@ -1159,7 +1288,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["jelly", "peanut butter"])
+        .build(),
       input_locale: "en",
       comment: "Classic combo",
     },
@@ -1172,7 +1303,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().build(),
       input_locale: "en",
       comment: "Category removal - vague",
     },
@@ -1185,7 +1316,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["hoisin sauce", "oyster sauce", "soy sauce"])
+        .build(),
       input_locale: "en",
       comment: "Asian sauces",
     },
@@ -1198,7 +1331,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["artichoke", "asparagus", "brussels sprout"])
+        .build(),
       input_locale: "en",
       comment: "Fancy vegetables",
     },
@@ -1211,7 +1346,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().add(["sriracha"]).build(),
       input_locale: "en",
       comment: "Plural subject depletion",
     },
@@ -1224,7 +1359,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["blueberry", "cranberry", "strawberry"])
+        .build(),
       input_locale: "en",
       comment: "Berries",
     },
@@ -1237,7 +1374,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["breadcrumb", "panko"])
+        .build(),
       input_locale: "en",
       comment: "Coating ingredients",
     },
@@ -1250,7 +1389,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().add(["milk"]).build(),
       input_locale: "es",
       comment: "Spanish no more",
     },
@@ -1263,7 +1402,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["chip", "cracker"])
+        .build(),
       input_locale: "en",
       comment: "Thinking pause",
     },
@@ -1276,7 +1417,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["dijon mustard", "yellow mustard"])
+        .build(),
       input_locale: "en",
       comment: "Mustard types",
     },
@@ -1289,7 +1432,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().add(["banana"]).build(),
       input_locale: "en",
       comment: "Overripe removal",
     },
@@ -1302,7 +1445,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["garlic", "ginger", "shallot"])
+        .build(),
       input_locale: "en",
       comment: "Aromatics",
     },
@@ -1315,7 +1460,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["corn flour", "cornmeal", "cornstarch"])
+        .build(),
       input_locale: "en",
       comment: "Corn products",
     },
@@ -1328,7 +1475,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().add(["butter"]).build(),
       input_locale: "en",
       comment: "Frustrated depletion",
     },
@@ -1341,7 +1488,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["green bean", "kidney bean", "wax bean"])
+        .build(),
       input_locale: "en",
       comment: "Bean varieties",
     },
@@ -1354,7 +1503,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["blackstrap molasses", "honey"])
+        .build(),
       input_locale: "en",
       comment: "Viscous sweeteners",
     },
@@ -1367,7 +1518,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().add(["bread"]).build(),
       input_locale: "fr",
       comment: "French no more",
     },
@@ -1380,7 +1531,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["smoked salmon", "tuna"])
+        .build(),
       input_locale: "en",
       comment: "Fish",
     },
@@ -1393,7 +1546,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["phyllo dough", "pie crust"])
+        .build(),
       input_locale: "en",
       comment: "Dough types",
     },
@@ -1406,7 +1561,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().build(),
       input_locale: "en",
       comment: "Vague meat removal",
     },
@@ -1419,7 +1574,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["arugula", "endive", "radicchio"])
+        .build(),
       input_locale: "en",
       comment: "Bitter greens",
     },
@@ -1432,7 +1589,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().build(),
       input_locale: "en",
       comment: "Hostile vague command",
     },
@@ -1445,7 +1602,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["eggplant", "squash", "zucchini"])
+        .build(),
       input_locale: "en",
       comment: "No conjunctions",
     },
@@ -1458,7 +1617,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["brown sugar", "granulated sugar", "powdered sugar"])
+        .build(),
       input_locale: "en",
       comment: "Sugar types",
     },
@@ -1471,7 +1632,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .add(["green onion"])
+        .build(),
       input_locale: "en",
       comment: "Synonym confusion",
     },
@@ -1484,7 +1647,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["green olive", "kalamata olive"])
+        .build(),
       input_locale: "en",
       comment: "Olive types",
     },
@@ -1497,7 +1662,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["hummus", "tahini"])
+        .build(),
       input_locale: "en",
       comment: "Chickpea products",
     },
@@ -1510,7 +1677,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .add(["cooking spray"])
+        .build(),
       input_locale: "en",
       comment: "With article",
     },
@@ -1523,7 +1692,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["lamb chop", "pork tenderloin", "veal cutlet"])
+        .build(),
       input_locale: "en",
       comment: "Expensive meats",
     },
@@ -1536,7 +1707,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["couscous", "israeli couscous"])
+        .build(),
       input_locale: "en",
       comment: "Couscous types",
     },
@@ -1549,7 +1722,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().add(["jam"]).build(),
       input_locale: "en",
       comment: "Texture issue removal",
     },
@@ -1562,7 +1735,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().remove(["salt"]).build(),
       input_locale: "en",
       comment: "Minimal inventory",
     },
@@ -1575,7 +1748,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["ginger", "ponzu", "wasabi"])
+        .build(),
       input_locale: "en",
       comment: "Japanese condiments",
     },
@@ -1588,7 +1763,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .add(["almond milk"])
+        .build(),
       input_locale: "en",
       comment: "Alternative milk",
     },
@@ -1601,7 +1778,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["red potato", "russet potato", "sweet potato"])
+        .build(),
       input_locale: "en",
       comment: "Potato varieties",
     },
@@ -1614,7 +1793,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["dark chocolate", "milk chocolate"])
+        .build(),
       input_locale: "en",
       comment: "Chocolate types",
     },
@@ -1627,7 +1808,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().add(["egg"]).build(),
       input_locale: "de",
       comment: "German no more",
     },
@@ -1640,7 +1821,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["cheddar", "monterey jack", "swiss"])
+        .build(),
       input_locale: "en",
       comment: "Cheese types",
     },
@@ -1653,7 +1836,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["baby carrot", "carrot"])
+        .build(),
       input_locale: "en",
       comment: "Carrot sizes",
     },
@@ -1666,7 +1851,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().add(["celery"]).build(),
       input_locale: "en",
       comment: "Texture-based removal",
     },
@@ -1679,7 +1864,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["cannellini bean", "great northern bean", "navy bean"])
+        .build(),
       input_locale: "en",
       comment: "White bean varieties",
     },
@@ -1692,7 +1879,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["naan", "pita bread", "tortilla"])
+        .build(),
       input_locale: "en",
       comment: "Flatbreads",
     },
@@ -1705,7 +1894,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().add(["coffee"]).build(),
       input_locale: "en",
       comment: "Emphasis on depletion",
     },
@@ -1718,7 +1907,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["cherry tomato", "grape tomato", "roma tomato"])
+        .build(),
       input_locale: "en",
       comment: "Tomato varieties",
     },
@@ -1731,7 +1922,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["cajun seasoning", "old bay"])
+        .build(),
       input_locale: "en",
       comment: "Regional seasonings",
     },
@@ -1744,7 +1937,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().add(["cucumber"]).build(),
       input_locale: "en",
       comment: "Disgust reaction",
     },
@@ -1757,7 +1950,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["salted butter", "unsalted butter"])
+        .build(),
       input_locale: "en",
       comment: "Butter types",
     },
@@ -1770,7 +1965,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["all purpose flour", "whole wheat flour"])
+        .build(),
       input_locale: "en",
       comment: "Flour types",
     },
@@ -1783,7 +1980,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().add(["butter"]).build(),
       input_locale: "fr",
       comment: "French no butter",
     },
@@ -1796,7 +1993,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().build(),
       input_locale: "en",
       comment: "Empty fridge statement",
     },
@@ -1809,7 +2006,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().remove(["milk"]).build(),
       input_locale: "en",
       comment: "Relieved profanity",
     },
@@ -1822,7 +2019,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .add(["strawberry"])
+        .build(),
       input_locale: "en",
       comment: "Short removal command",
     },
@@ -1835,7 +2034,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["cremini", "portobello mushroom", "shiitake"])
+        .build(),
       input_locale: "en",
       comment: "Mushroom types",
     },
@@ -1848,7 +2049,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["orange bell pepper", "red bell pepper", "yellow bell pepper"])
+        .build(),
       input_locale: "en",
       comment: "Pepper colors",
     },
@@ -1861,7 +2064,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().build(),
       input_locale: "en",
       comment: "Complete depletion vague",
     },
@@ -1874,7 +2077,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["basmati rice", "brown rice", "jasmine rice"])
+        .build(),
       input_locale: "en",
       comment: "Rice varieties",
     },
@@ -1887,7 +2092,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["green lentil", "red lentil", "yellow lentil"])
+        .build(),
       input_locale: "en",
       comment: "Lentil colors",
     },
@@ -1900,7 +2107,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .add(["cream cheese"])
+        .build(),
       input_locale: "en",
       comment: "Metaphor removal",
     },
@@ -1913,7 +2122,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["blood orange", "navel orange", "tangerine"])
+        .build(),
       input_locale: "en",
       comment: "Orange types",
     },
@@ -1926,7 +2137,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["hot paprika", "smoked paprika", "sweet paprika"])
+        .build(),
       input_locale: "en",
       comment: "Paprika types",
     },
@@ -1939,7 +2152,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().add(["avocado"]).build(),
       input_locale: "es",
       comment: "Spanish we don't have",
     },
@@ -1952,7 +2165,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().remove(["lemon"]).build(),
       input_locale: "en",
       comment: "Partial quantity",
     },
@@ -1965,7 +2178,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["caramel sauce", "chocolate sauce", "strawberry sauce"])
+        .build(),
       input_locale: "en",
       comment: "Dessert sauces",
     },
@@ -1978,7 +2193,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().add(["parsley"]).build(),
       input_locale: "en",
       comment: "Multiple quality issues",
     },
@@ -1991,7 +2206,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["green cabbage", "red cabbage"])
+        .build(),
       input_locale: "en",
       comment: "Cabbage colors",
     },
@@ -2004,7 +2221,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["hazelnut", "macadamia nut", "pecan", "pine nut"])
+        .build(),
       input_locale: "en",
       comment: "Fancy nuts",
     },
@@ -2017,7 +2236,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().add(["egg"]).build(),
       input_locale: "en",
       comment: "Apologetic depletion",
     },
@@ -2030,7 +2249,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["canned tomato", "crushed tomato", "diced tomato"])
+        .build(),
       input_locale: "en",
       comment: "Tomato preparations",
     },
@@ -2043,7 +2264,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["beef bacon", "pork bacon", "turkey bacon"])
+        .build(),
       input_locale: "en",
       comment: "Bacon types",
     },
@@ -2056,7 +2279,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().add(["mayo"]).build(),
       input_locale: "en",
       comment: "Separated emulsion",
     },
@@ -2069,7 +2292,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["anaheim pepper", "bell pepper", "poblano pepper"])
+        .build(),
       input_locale: "en",
       comment: "Pepper varieties",
     },
@@ -2082,7 +2307,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["fettuccine", "linguine", "penne", "rigatoni"])
+        .build(),
       input_locale: "en",
       comment: "Pasta shapes",
     },
@@ -2095,7 +2322,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().add(["milk"]).build(),
       input_locale: "de",
       comment: "German no milk",
     },
@@ -2108,7 +2335,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["mayo", "vegan mayo"])
+        .build(),
       input_locale: "en",
       comment: "Mayo types",
     },
@@ -2121,7 +2350,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["cream cheese", "shredded cheese", "sliced cheese"])
+        .build(),
       input_locale: "en",
       comment: "Cheese forms",
     },
@@ -2134,7 +2365,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .add(["cottage cheese"])
+        .build(),
       input_locale: "en",
       comment: "Smell-based removal",
     },
@@ -2147,7 +2380,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["red onion", "shallot", "vidalia onion", "white onion"])
+        .build(),
       input_locale: "en",
       comment: "Onion varieties",
     },
@@ -2160,7 +2395,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["bbq sauce", "buffalo sauce", "teriyaki sauce"])
+        .build(),
       input_locale: "en",
       comment: "Meat sauces",
     },
@@ -2173,7 +2410,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().add(["garlic"]).build(),
       input_locale: "en",
       comment: "Completely depleted",
     },
@@ -2186,7 +2423,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["apple cider vinegar", "red wine vinegar", "white vinegar"])
+        .build(),
       input_locale: "en",
       comment: "Vinegar types",
     },
@@ -2199,7 +2438,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["coffee bean", "ground coffee", "instant coffee"])
+        .build(),
       input_locale: "en",
       comment: "Coffee forms",
     },
@@ -2212,7 +2453,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .add(["sour cream"])
+        .build(),
       input_locale: "en",
       comment: "Obvious removal",
     },
@@ -2225,7 +2468,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["chicken breast", "chicken thigh", "chicken wing"])
+        .build(),
       input_locale: "en",
       comment: "Chicken cuts",
     },
@@ -2238,7 +2483,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["black tea", "green tea", "jasmine tea"])
+        .build(),
       input_locale: "en",
       comment: "Tea varieties",
     },
@@ -2251,7 +2498,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().add(["chicken"]).build(),
       input_locale: "fr",
       comment: "French no chicken",
     },
@@ -2264,7 +2511,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().remove(["bean"]).build(),
       input_locale: "en",
       comment: "Profane abundance",
     },
@@ -2277,7 +2524,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["salsa roja", "salsa verde"])
+        .build(),
       input_locale: "en",
       comment: "Spanish salsas",
     },
@@ -2290,7 +2539,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .add(["raspberry"])
+        .build(),
       input_locale: "en",
       comment: "Texture removal",
     },
@@ -2303,7 +2554,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["beef broth", "chicken broth", "vegetable broth"])
+        .build(),
       input_locale: "en",
       comment: "Broth types",
     },
@@ -2316,7 +2569,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["black salt", "pink salt", "sea salt"])
+        .build(),
       input_locale: "en",
       comment: "Salt varieties",
     },
@@ -2329,7 +2584,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().add(["onion"]).build(),
       input_locale: "en",
       comment: "Emphatic depletion",
     },
@@ -2342,7 +2597,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().remove(["cheese"]).build(),
       input_locale: "en",
       comment: "Vague uncertain",
     },
@@ -2355,7 +2610,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["sourdough bread", "wheat bread", "white bread"])
+        .build(),
       input_locale: "en",
       comment: "Bread types",
     },
@@ -2368,7 +2625,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().add(["ham"]).build(),
       input_locale: "en",
       comment: "Urgent food safety",
     },
@@ -2381,7 +2638,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["dill pickle relish", "sweet pickle relish"])
+        .build(),
       input_locale: "en",
       comment: "Relish types",
     },
@@ -2394,7 +2653,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["frozen carrot", "frozen corn", "frozen pea"])
+        .build(),
       input_locale: "en",
       comment: "Frozen vegetables",
     },
@@ -2407,7 +2668,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().add(["rice"]).build(),
       input_locale: "es",
       comment: "Spanish there is no",
     },
@@ -2420,7 +2681,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["reduced fat milk", "skim milk"])
+        .build(),
       input_locale: "en",
       comment: "Milk fat levels",
     },
@@ -2433,7 +2696,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["caesar dressing", "italian dressing", "ranch dressing"])
+        .build(),
       input_locale: "en",
       comment: "Salad dressings",
     },
@@ -2446,7 +2711,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .add(["ground turkey"])
+        .build(),
       input_locale: "en",
       comment: "Dated removal",
     },
@@ -2459,7 +2726,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["baby potato", "fingerling potato", "new potato"])
+        .build(),
       input_locale: "en",
       comment: "Small potato types",
     },
@@ -2472,7 +2741,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["baking powder", "baking soda", "cream of tartar"])
+        .build(),
       input_locale: "en",
       comment: "Leavening agents",
     },
@@ -2485,7 +2756,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().add(["bread"]).build(),
       input_locale: "fr",
       comment: "French removal need",
     },
@@ -2498,7 +2769,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().remove(["pepper"]).build(),
       input_locale: "en",
       comment: "Vague quantity and type",
     },
@@ -2511,7 +2782,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().add(["pizza"]).build(),
       input_locale: "en",
       comment: "Profane past consumption",
     },
@@ -2524,7 +2795,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["garlic", "onion"])
+        .build(),
       input_locale: "es",
       comment: "Spanish add command",
     },
@@ -2538,7 +2811,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["fresh herb", "heirloom tomato"])
+        .build(),
       input_locale: "en",
       comment: "Farmers market with fillers",
     },
@@ -2551,7 +2826,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().build(),
       input_locale: "en",
       comment: "Self-correction cancellation",
     },
@@ -2564,7 +2839,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["onion", "potato"])
+        .build(),
       input_locale: "de",
       comment: "German purchase past tense",
     },
@@ -2577,7 +2854,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().add(["yogurt"]).build(),
       input_locale: "en",
       comment: "Angry discovery removal",
     },
@@ -2590,7 +2867,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().build(),
       input_locale: "en",
       comment: "Profane but too vague",
     },
@@ -2603,7 +2880,9 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create()
+        .remove(["cod", "halibut", "salmon", "tuna"])
+        .build(),
       input_locale: "en",
       comment: "Multiple fish types",
     },
@@ -2616,7 +2895,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().remove(["butter"]).build(),
       input_locale: "fr",
       comment: "French polite request",
     },
@@ -2629,7 +2908,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
     },
     metadata: {
       version: 1,
-      currentIngredients,
+      currentIngredients: IngredientFixture.create().build(),
       input_locale: "en",
       comment: "Dramatic but non-specific",
     },
