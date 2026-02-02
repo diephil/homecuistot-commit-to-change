@@ -169,17 +169,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="py-6 md:py-8 bg-black text-white">
-        <div className="max-w-7xl mx-auto px-4 md:px-8">
-          <div className="text-center">
-            <Text as="p" className="font-black text-base md:text-lg">
-              Made with ❤️ for Commit To Change 2026 by Encode Club & Comet Opik
-            </Text>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }
