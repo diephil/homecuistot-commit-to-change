@@ -13,6 +13,7 @@ import {
 } from '@/db/schema'
 import { eq, inArray } from 'drizzle-orm'
 import { DEMO_INVENTORY, DEMO_RECIPES } from '@/db/demo-data'
+import { ensureIngredientsInInventory } from '@/db/services/ensure-ingredients-in-inventory'
 
 export async function resetUserData(): Promise<{ success: boolean; error?: string }> {
   try {
@@ -172,6 +173,18 @@ export async function startDemoData(): Promise<{ success: boolean; error?: strin
 
       await tx.insert(recipeIngredients).values(recipeIngredientsData)
       console.log('[user-data] Inserted recipe ingredients:', recipeIngredientsData.length)
+
+      // Step 6: Ensure all recipe ingredients exist in inventory (add missing at quantityLevel=0)
+      const allRecipeIngredientIds = recipeIngredientsData
+        .map((ri) => ri.ingredientId)
+        .filter((id): id is string => id !== null && id !== undefined)
+
+      await ensureIngredientsInInventory({
+        tx,
+        userId,
+        ingredientIds: allRecipeIngredientIds,
+      })
+      console.log('[user-data] Ensured all recipe ingredients in inventory')
     })
 
     console.log('[user-data] Demo data complete')
