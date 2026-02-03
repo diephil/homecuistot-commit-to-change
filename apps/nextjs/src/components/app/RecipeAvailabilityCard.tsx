@@ -13,11 +13,10 @@ export interface RecipeAvailabilityCardProps {
   onMarkAsCooked?: (recipe: RecipeWithAvailability) => void
   onEdit?: () => void
   onDelete?: () => void
-  showMissingCount?: boolean
 }
 
 export function RecipeAvailabilityCard(props: RecipeAvailabilityCardProps) {
-  const { recipe, variant, onMarkAsCooked, onEdit, onDelete, showMissingCount = true } = props
+  const { recipe, variant, onMarkAsCooked, onEdit, onDelete } = props
 
   // T007: Green gradient for available, yellow/orange for almost-available, gray for unavailable
   const gradientClass = {
@@ -157,19 +156,6 @@ export function RecipeAvailabilityCard(props: RecipeAvailabilityCardProps) {
         >
           <Check className="w-5 h-5" />
           Mark as Cooked
-        </Button>
-      )}
-
-      {/* Cook it Anyway button for almost-available recipes */}
-      {variant === 'almost-available' && onMarkAsCooked && (
-        <Button
-          variant="default"
-          size="md"
-          className="w-full justify-center gap-2"
-          onClick={() => onMarkAsCooked(recipe)}
-        >
-          <Check className="w-5 h-5" />
-          Cook it Anyway
         </Button>
       )}
     </div>
