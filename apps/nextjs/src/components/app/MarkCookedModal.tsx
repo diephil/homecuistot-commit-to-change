@@ -146,7 +146,7 @@ export function MarkCookedModal(props: MarkCookedModalProps) {
                   {ingredientDiffs.filter(d => !d.isPantryStaple && !d.isMissing).length > 0 && (
                     <>
                       <p className="text-sm font-semibold mb-3">
-                        Your ingredients will be used as shown below.
+                        Your inventory will be updated as shown below. The blue badge shows the number of usage left for a given ingredient (eg. from 3 to 2 more usages after marking this recipe as cooked)
                       </p>
                       <div className="flex flex-wrap gap-3 mb-4 pt-2">
                         {ingredientDiffs

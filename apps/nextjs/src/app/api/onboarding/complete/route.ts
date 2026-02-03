@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { createClient } from '@/utils/supabase/server';
 import { createUserDb, decodeSupabaseToken } from '@/db/client';
 import { userInventory, unrecognizedItems, userRecipes, recipeIngredients } from '@/db/schema';
@@ -262,6 +263,9 @@ export async function POST(request: NextRequest) {
         unrecognizedRecipeIngredients,
       };
     });
+
+    // Invalidate onboarding page cache to prevent back button from showing onboarding again
+    revalidatePath('/app/onboarding');
 
     // Return response with stats
     const response: CompleteResponse = {

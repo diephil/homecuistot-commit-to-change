@@ -4,6 +4,7 @@ import "./globals.css";
 import { Toaster } from "@/components/shared/SonnerToaster";
 import { Footer } from "@/components/shared/Footer";
 import { NavigationProgress } from "@/components/shared/NavigationProgress";
+import { ScrollToTop } from "@/components/shared/ScrollToTop";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,6 +32,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}
       >
         <NavigationProgress />
+        <ScrollToTop />
         <div className="flex-1">
           {children}
         </div>
