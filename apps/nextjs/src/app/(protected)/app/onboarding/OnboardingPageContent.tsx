@@ -187,8 +187,18 @@ export function OnboardingPageContent() {
 
         // T048: Handle empty response
         if (result.add.length === 0 && result.rm.length === 0) {
-          toast("No updates were detected");
+          // Show unrecognized items if any, even if no updates
+          if (result.unrecognized && result.unrecognized.length > 0) {
+            toast(`Couldn't find: ${result.unrecognized.join(", ")}`);
+          } else {
+            toast("No updates were detected");
+          }
           return;
+        }
+
+        // Show toast for unrecognized items
+        if (result.unrecognized && result.unrecognized.length > 0) {
+          toast(`Couldn't find: ${result.unrecognized.join(", ")}`);
         }
 
         // Apply updates - simplified for merged list in Step 3

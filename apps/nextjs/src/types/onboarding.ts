@@ -53,6 +53,7 @@ export const IngredientExtractionSchema = z.object({
   add: z.array(z.string()).describe("Ingredients user wants to add to their list"),
   rm: z.array(z.string()).describe("Ingredients user wants to remove from their list"),
   transcribedText: z.string().optional().describe("Transcribed text from voice input"),
+  unrecognized: z.array(z.string()).optional().describe("Ingredient names not found in database"),
 });
 
 export type IngredientExtractionResponse = z.infer<typeof IngredientExtractionSchema>;

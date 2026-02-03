@@ -2,6 +2,7 @@ import { sql } from "drizzle-orm";
 import type { PgTransaction } from "drizzle-orm/pg-core";
 import { ingredients, unrecognizedItems } from "@/db/schema";
 import type { IngredientMatchResult } from "@/types/onboarding";
+import { adminDb } from "@/db/client";
 
 /**
  * T007: matchIngredients - Match ingredient names against DB
@@ -90,4 +91,54 @@ export async function matchIngredients(
     unrecognizedItems: matchedUnrecognized,
     unrecognizedItemsToCreate,
   };
+}
+
+/**
+ * Validate ingredient names against ingredients table
+ * Returns { recognized: [], unrecognized: [] }
+ * Used for filtering LLM-extracted ingredient names during onboarding
+ */
+export async function validateIngredientNames(params: {
+  names: string[];
+}): Promise<{ recognized: string[]; unrecognized: string[] }> {
+  const { names } = params;
+
+  if (names.length === 0) {
+    return { recognized: [], unrecognized: [] };
+  }
+
+  // Normalize to lowercase for matching
+  const normalizedNames = names.map((n) => n.toLowerCase().trim());
+  const uniqueNames = [...new Set(normalizedNames)];
+
+  // Query ingredients table (case-insensitive)
+  const matchedIngredients = await adminDb
+    .select({ name: ingredients.name })
+    .from(ingredients)
+    .where(
+      sql`LOWER(${ingredients.name}) IN (${sql.join(
+        uniqueNames.map((n) => sql`${n}`),
+        sql`, `,
+      )})`,
+    );
+
+  // Build set of matched names (lowercase)
+  const matchedNames = new Set(
+    matchedIngredients.map((i) => i.name.toLowerCase()),
+  );
+
+  // Separate recognized and unrecognized
+  const recognized: string[] = [];
+  const unrecognized: string[] = [];
+
+  for (const name of names) {
+    const normalized = name.toLowerCase().trim();
+    if (matchedNames.has(normalized)) {
+      recognized.push(name); // preserve original casing
+    } else {
+      unrecognized.push(name);
+    }
+  }
+
+  return { recognized, unrecognized };
 }
