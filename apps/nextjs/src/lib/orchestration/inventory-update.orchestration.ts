@@ -40,7 +40,7 @@ export async function createInventoryManagerAgentProposal(
     input,
     audioBase64,
     currentInventory,
-    model = "gemini-2.5-flash-lite",
+    model = "gemini-2.0-flash",
     provider = "google",
   } = params;
   const inputType = audioBase64 ? "voice" : "text";
