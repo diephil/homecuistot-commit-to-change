@@ -47,12 +47,9 @@ export default function Home() {
             <Text as="p" className="text-lg md:text-3xl font-black text-zinc-800 md:transform md:rotate-1">
               See what you can cook tonight — instantly. No browsing, no guessing, no mental math.
             </Text>
-            <div className="pt-4 md:pt-8 flex flex-col sm:flex-row gap-3 md:gap-4 justify-center items-stretch sm:items-center px-4">
+            <div className="pt-4 md:pt-8 flex justify-center px-4">
               <Button asChild size="lg" className="text-lg md:text-3xl px-8 md:px-16 py-5 md:py-8 bg-pink-400 hover:bg-pink-500 border-4 md:border-6 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] md:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] md:hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[3px] hover:translate-y-[3px] md:hover:translate-x-[4px] md:hover:translate-y-[4px] transition-all font-black uppercase md:transform md:-rotate-2">
                 <Link href="/login">Get Started Free →</Link>
-              </Button>
-              <Button asChild size="lg" variant="outline" className="text-base md:text-2xl px-6 md:px-12 py-5 md:py-8 bg-white border-4 md:border-6 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] md:hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] md:hover:translate-x-[4px] md:hover:translate-y-[4px] transition-all font-black uppercase md:transform md:rotate-1">
-                <Link href="#how-it-works">See How It Works ↓</Link>
               </Button>
             </div>
           </div>
