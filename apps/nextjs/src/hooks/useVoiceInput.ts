@@ -44,6 +44,7 @@ export function useVoiceInput(): UseVoiceInputReturn {
   const startTimeRef = useRef<number>(0);
   const isCancellingRef = useRef<boolean>(false);
   const isStartingRef = useRef<boolean>(false);
+  const recordingStartedAtRef = useRef<number>(0);
 
   const cleanupTimers = useCallback(() => {
     if (durationTimerRef.current) {
@@ -77,6 +78,8 @@ export function useVoiceInput(): UseVoiceInputReturn {
   };
 
   const stop = useCallback(() => {
+    // Guard: ignore stop if recording just started (Windows event timing race)
+    if (Date.now() - recordingStartedAtRef.current < 300) return;
     if (mediaRecorderRef.current?.state === "recording") {
       mediaRecorderRef.current.stop();
     }
@@ -181,6 +184,7 @@ export function useVoiceInput(): UseVoiceInputReturn {
       setState("recording");
       isStartingRef.current = false;
       startTimeRef.current = Date.now();
+      recordingStartedAtRef.current = Date.now();
 
       // Countdown timer (timestamp-based for accuracy)
       durationTimerRef.current = setInterval(() => {
