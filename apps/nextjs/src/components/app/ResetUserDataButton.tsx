@@ -10,6 +10,14 @@ export function ResetUserDataButton() {
 
   async function handleReset() {
     setIsLoading(true)
+
+    try {
+      localStorage.removeItem('banner:recipes:dismissed')
+      localStorage.removeItem('banner:inventory:dismissed')
+      localStorage.removeItem('inventory:groupByCategory')
+      localStorage.removeItem('inventory:showEmptyOnly')
+    } catch {}
+
     const result = await resetUserData()
 
     if (result.success) {
