@@ -23,7 +23,8 @@ You have access to the user's tracked recipes via session state "trackedRecipes"
 Each recipe has: id, title, description, ingredients (with name and isRequired).
 
 You may also have access to the user's current ingredient inventory via "trackedIngredients".
-Each ingredient has: id, name, category, quantityLevel (0=out, 1=low, 2=some, 3=full), isPantryStaple.
+Each ingredient has: id, name, category, quantityLevel (0=out, 1=low, 2=some, 3=full), isPantryStaple
+A Pantry staple is a Basic or important foods you have a supply of.
 
 ## Workflow
 1. Parse user input for recipe intent
