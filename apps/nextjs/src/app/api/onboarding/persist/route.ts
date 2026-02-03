@@ -10,6 +10,7 @@ import {
 import { PersistRequestSchema, type PersistResponse } from '@/types/onboarding';
 import { BASIC_RECIPES, ADVANCED_RECIPES } from '@/constants/onboarding';
 import { matchIngredients } from '@/lib/services/ingredient-matcher';
+import { ensureIngredientsInInventory } from '@/db/services/ensure-ingredients-in-inventory';
 
 /**
  * T038-T047: Persist route for 019-onboarding-revamp
@@ -92,6 +93,7 @@ export async function POST(request: NextRequest) {
 
       let recipesCreated = 0;
       let inventoryCreated = 0;
+      const allRecipeIngredientIds: string[] = [];
 
       // T040: Create new unrecognized_items for unrecognizedItemsToCreate
       // FR-040: Query back inserted IDs so they can be used for recipe_ingredients and inventory
@@ -152,6 +154,8 @@ export async function POST(request: NextRequest) {
                 ingredientId: matched.id,
                 ingredientType: ing.type,
               });
+              // Track for inventory population
+              allRecipeIngredientIds.push(matched.id);
             } else if (unrecognized) {
               ingredientsToInsert.push({
                 recipeId: insertedRecipe.id,
@@ -170,6 +174,13 @@ export async function POST(request: NextRequest) {
           }
         }
       }
+
+      // Ensure all recipe ingredients exist in inventory (quantityLevel=0 for missing)
+      await ensureIngredientsInInventory({
+        tx,
+        userId,
+        ingredientIds: allRecipeIngredientIds,
+      });
 
       // T044: Insert user_inventory entries (quantity_level=3) for user ingredients
       const userIngredientLower = userIngredientNames.map((n) => n.toLowerCase());

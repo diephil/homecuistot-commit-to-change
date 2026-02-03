@@ -19,6 +19,7 @@ import type {
   DeleteAllRecipesResult,
 } from "@/types/recipe-agent";
 import type { IngredientType } from "@/db/schema/enums";
+import { ensureIngredientsInInventory } from "@/db/services/ensure-ingredients-in-inventory";
 
 export async function POST(request: Request) {
   try {
@@ -131,6 +132,17 @@ async function handleCreate(tx: any, userId: string, recipe: CreateRecipeResult)
         ingredientType: (ing.isRequired ? "anchor" : "optional") as IngredientType,
       }))
     );
+
+    // Ensure all ingredients exist in user inventory
+    const ingredientIds = validIngredients
+      .map((ing) => ing.ingredientId)
+      .filter((id): id is string => id !== null && id !== undefined);
+
+    await ensureIngredientsInInventory({
+      tx,
+      userId,
+      ingredientIds,
+    });
   }
 }
 
@@ -173,6 +185,17 @@ async function handleUpdate(tx: any, userId: string, recipe: UpdateRecipeResult)
         ingredientType: (ing.isRequired ? "anchor" : "optional") as IngredientType,
       }))
     );
+
+    // Ensure all ingredients exist in user inventory
+    const ingredientIds = validIngredients
+      .map((ing) => ing.ingredientId)
+      .filter((id): id is string => id !== null && id !== undefined);
+
+    await ensureIngredientsInInventory({
+      tx,
+      userId,
+      ingredientIds,
+    });
   }
 }
 
