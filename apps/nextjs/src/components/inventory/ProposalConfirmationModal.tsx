@@ -118,7 +118,7 @@ export function ProposalConfirmationModal({
 
                 // Determine change indicator
                 let changeIndicator: {
-                  type: "quantity" | "toStaple" | "fromStaple";
+                  type: "quantity" | "toStaple" | "fromStaple" | "new";
                   previousQuantity?: number;
                   proposedQuantity?: number;
                 } | undefined;
@@ -139,6 +139,8 @@ export function ProposalConfirmationModal({
                     previousQuantity: item.previousQuantity!,
                     proposedQuantity: item.proposedQuantity,
                   };
+                } else if (item.previousQuantity === null) {
+                  changeIndicator = { type: "new" };
                 }
 
                 return (
@@ -147,6 +149,7 @@ export function ProposalConfirmationModal({
                     name={item.ingredientName}
                     level={item.proposedQuantity as QuantityLevel}
                     isStaple={isStaple}
+                    useWord
                     onLevelChange={(newLevel) => handleLevelChange(index, newLevel)}
                     onToggleStaple={() => handleToggleStaple(index)}
                     onDismiss={() => handleDismissIngredient(index)}

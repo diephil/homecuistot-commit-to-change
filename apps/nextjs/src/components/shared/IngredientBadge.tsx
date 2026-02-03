@@ -45,6 +45,7 @@ export interface IngredientBadgeProps
   interactive?: boolean;
   variant: "battery" | "dots" | "fill";
   isStaple?: boolean;
+  useWord?: boolean;
 }
 
 // Battery Bar Variant (Option 1)
@@ -114,6 +115,22 @@ function DotMatrix({ level, isStaple }: { level: QuantityLevel; isStaple?: boole
   );
 }
 
+// Word Label Variant
+export const quantityWords: Record<QuantityLevel, { label: string; color: string }> = {
+  0: { label: "NO MORE", color: "text-red-600/60" },
+  1: { label: "ENOUGH", color: "text-orange-600/60" },
+  2: { label: "SOME", color: "text-yellow-600/60" },
+  3: { label: "PLENTY", color: "text-green-600/60" },
+};
+
+function WordLabel({ level, isStaple }: { level: QuantityLevel; isStaple?: boolean }) {
+  if (isStaple) {
+    return <span className="text-blue-600/60 font-black text-xs translate-y-px">ALWAYS</span>;
+  }
+  const { label, color } = quantityWords[level];
+  return <span className={cn("font-black text-xs translate-y-px min-w-[60px]", color)}>{label}</span>;
+}
+
 // Fill Level Gauge Variant (Option 3)
 function FillGauge({ level }: { level: QuantityLevel }) {
   const fillPercentage = {
@@ -156,6 +173,7 @@ export const IngredientBadge = React.forwardRef<HTMLButtonElement, IngredientBad
       variant = "battery",
       size = "md",
       isStaple = false,
+      useWord = true,
       className = "",
       onClick,
       ...props
@@ -220,8 +238,9 @@ export const IngredientBadge = React.forwardRef<HTMLButtonElement, IngredientBad
         <span className="font-semibold truncate max-w-[120px] capitalize">{name}</span>
 
         {variant === "battery" && <BatteryBars level={level} />}
-        {variant === "dots" && !isStaple && <DotMatrix level={level} isStaple={isStaple} />}
-        {variant === "dots" && isStaple && (
+        {variant === "dots" && useWord && <WordLabel level={level} isStaple={isStaple} />}
+        {variant === "dots" && !useWord && !isStaple && <DotMatrix level={level} isStaple={isStaple} />}
+        {variant === "dots" && !useWord && isStaple && (
           <div className="flex gap-1 w-[44px] h-3 items-center justify-center">
             <span className="text-blue-600 font-bold text-base leading-none">∞</span>
           </div>

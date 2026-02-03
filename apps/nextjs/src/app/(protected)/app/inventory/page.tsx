@@ -45,6 +45,12 @@ export default function InventoryPage() {
       return localStorage.getItem("inventory:showEmptyOnly") === "true";
     } catch { return false; }
   });
+  const [useWord, setUseWord] = useState(() => {
+    try {
+      if (typeof window === "undefined") return true;
+      return localStorage.getItem("inventory:useWord") !== "false";
+    } catch { return true; }
+  });
 
   // Banner dismiss state (persisted in localStorage)
   const [bannerDismissed, setBannerDismissed] = useState(() => {
@@ -71,6 +77,10 @@ export default function InventoryPage() {
   useEffect(() => {
     try { localStorage.setItem("inventory:showEmptyOnly", String(showEmptyOnly)); } catch {}
   }, [showEmptyOnly]);
+
+  useEffect(() => {
+    try { localStorage.setItem("inventory:useWord", String(useWord)); } catch {}
+  }, [useWord]);
 
   // Sort items alphabetically by name
   const sortByName = (items: InventoryDisplayItem[]) =>
@@ -524,8 +534,10 @@ export default function InventoryPage() {
           isPantrySection={false}
           groupByCategory={groupByCategory}
           showEmptyOnly={showEmptyOnly}
-          onToggleView={setGroupByCategory}
+          useWord={useWord}
+          // onToggleView={setGroupByCategory} // DO NOT DELETE, KEEP IT COMMENTED FOR NOW
           onToggleEmpty={setShowEmptyOnly}
+          onToggleWord={setUseWord}
           onQuantityChange={handleQuantityChange}
           onToggleStaple={handleToggleStaple}
           onDelete={handleDelete}
@@ -538,6 +550,7 @@ export default function InventoryPage() {
             description="Basic or important foods you have a supply of. They are always considered available in recipe matching"
             items={inventory.pantryStaples}
             isPantrySection={true}
+            useWord={useWord}
             onQuantityChange={handleQuantityChange}
             onToggleStaple={handleToggleStaple}
             onDelete={handleDelete}

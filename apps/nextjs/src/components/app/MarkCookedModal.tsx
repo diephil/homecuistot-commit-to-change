@@ -146,9 +146,9 @@ export function MarkCookedModal(props: MarkCookedModalProps) {
                   {ingredientDiffs.filter(d => !d.isPantryStaple && !d.isMissing).length > 0 && (
                     <>
                       <p className="text-sm font-semibold mb-3">
-                        Tap ingredients below to adjust remaining quantities. The blue badge shows how many times you can still use each ingredient after cooking (e.g., 3 → 2 means going from 3 uses left to 2 uses left).
+                        Tap ingredients to adjust quantities. The crossed-out blue badge shows what you had before cooking.
                       </p>
-                      <div className="flex flex-wrap gap-3 mb-4 pt-2">
+                      <div className="flex flex-wrap gap-x-3 gap-y-5 mb-4 pt-2">
                         {ingredientDiffs
                           .filter((diff) => !diff.isPantryStaple && !diff.isMissing)
                           .map((diff) => (
@@ -157,6 +157,7 @@ export function MarkCookedModal(props: MarkCookedModalProps) {
                               name={diff.name}
                               level={diff.proposedQuantity}
                               isStaple={false}
+                              useWord={true}
                               onLevelChange={(newLevel) =>
                                 handleQuantityChange({
                                   ingredientId: diff.ingredientId,
@@ -180,7 +181,7 @@ export function MarkCookedModal(props: MarkCookedModalProps) {
                       <p className="text-sm font-semibold mb-3 text-gray-600">
                         Pantry staples won't be deducted (always available):
                       </p>
-                      <div className="flex flex-wrap gap-3 mb-4 pt-2">
+                      <div className="flex flex-wrap gap-x-3 gap-y-5 mb-4 pt-2">
                         {ingredientDiffs
                           .filter((diff) => diff.isPantryStaple)
                           .map((diff) => (
@@ -209,7 +210,7 @@ export function MarkCookedModal(props: MarkCookedModalProps) {
                       <p className="text-sm font-semibold mb-3 text-gray-600">
                         Optional ingredients not in your inventory (adjust if you used them):
                       </p>
-                      <div className="flex flex-wrap gap-3 mb-4 pt-2">
+                      <div className="flex flex-wrap gap-x-3 gap-y-5 mb-4 pt-2">
                         {ingredientDiffs
                           .filter((diff) => diff.isMissing)
                           .map((diff) => (
@@ -218,6 +219,7 @@ export function MarkCookedModal(props: MarkCookedModalProps) {
                               name={diff.name}
                               level={diff.proposedQuantity}
                               isStaple={false}
+                              useWord={true}
                               onLevelChange={(newLevel) =>
                                 handleQuantityChange({
                                   ingredientId: diff.ingredientId,

@@ -15,8 +15,10 @@ interface InventorySectionProps {
   isPantrySection?: boolean;
   groupByCategory?: boolean;
   showEmptyOnly?: boolean;
+  useWord?: boolean;
   onToggleView?: (grouped: boolean) => void;
   onToggleEmpty?: (empty: boolean) => void;
+  onToggleWord?: (useWord: boolean) => void;
   onQuantityChange: (params: { itemId: string; quantity: QuantityLevel }) => void;
   onToggleStaple: (itemId: string) => void;
   onDelete: (itemId: string) => void;
@@ -46,11 +48,13 @@ function groupItemsByCategory(items: InventoryDisplayItem[]) {
 function renderItems(params: {
   items: InventoryDisplayItem[];
   isPantrySection: boolean;
+  highlightEmpty: boolean;
+  useWord: boolean;
   onQuantityChange: (params: { itemId: string; quantity: QuantityLevel }) => void;
   onToggleStaple: (itemId: string) => void;
   onDelete: (itemId: string) => void;
 }) {
-  const { items, isPantrySection, onQuantityChange, onToggleStaple, onDelete } = params;
+  const { items, isPantrySection, highlightEmpty, useWord, onQuantityChange, onToggleStaple, onDelete } = params;
 
   return items.map((item) => (
     <InventoryItemBadge
@@ -58,6 +62,8 @@ function renderItems(params: {
       name={item.name}
       level={isPantrySection ? 3 : item.quantityLevel}
       isStaple={isPantrySection}
+      useWord={useWord}
+      dimmed={highlightEmpty && item.quantityLevel > 0}
       onLevelChange={(newLevel) => {
         onQuantityChange({ itemId: item.id, quantity: newLevel });
       }}
@@ -74,8 +80,10 @@ export function InventorySection({
   isPantrySection = false,
   groupByCategory = true,
   showEmptyOnly = false,
+  useWord = true,
   onToggleView,
   onToggleEmpty,
+  onToggleWord,
   onQuantityChange,
   onToggleStaple,
   onDelete,
@@ -84,6 +92,17 @@ export function InventorySection({
 
   const toggleActions = showToggles ? (
     <div className="flex items-center gap-2">
+      {onToggleWord && (
+        <Toggle
+          pressed={!useWord}
+          onPressedChange={(pressed) => onToggleWord(!pressed)}
+          aria-label="Show quantity as words"
+          size="sm"
+          className="hidden cursor-pointer border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] rounded-md bg-white data-[state=on]:bg-purple-200 data-[state=on]:text-black"
+        >
+          <span className={`text-xs font-bold ${!useWord ? "line-through" : ""}`}>abc</span>
+        </Toggle>
+      )}
       {onToggleEmpty && (
         <Toggle
           pressed={showEmptyOnly}
@@ -135,21 +154,17 @@ export function InventorySection({
     );
   }
 
-  const displayItems = showEmptyOnly && !isPantrySection
-    ? items.filter((item) => item.quantityLevel === 0)
-    : items;
+  const highlightEmpty = showEmptyOnly && !isPantrySection;
 
-  const itemRenderParams = { isPantrySection, onQuantityChange, onToggleStaple, onDelete };
+  const itemRenderParams = { isPantrySection, highlightEmpty, useWord, onQuantityChange, onToggleStaple, onDelete };
 
   return (
     <section className="space-y-4 pb-8">
       <SectionHeader title={title} description={description} action={toggleActions} />
 
-      {displayItems.length === 0 ? (
-        <p className="text-sm text-gray-500 italic">No empty items</p>
-      ) : groupByCategory && !isPantrySection ? (
+      {groupByCategory && !isPantrySection ? (
         <div className="space-y-3">
-          {groupItemsByCategory(displayItems).map((group) => (
+          {groupItemsByCategory(items).map((group) => (
             <div key={group.category} className="flex flex-wrap gap-2 items-center">
               <span className="h-2 w-2 rounded-full bg-gray-300 shrink-0" aria-hidden="true" />
               {renderItems({ items: group.items, ...itemRenderParams })}
@@ -158,7 +173,7 @@ export function InventorySection({
         </div>
       ) : (
         <div className="flex flex-wrap gap-2">
-          {renderItems({ items: displayItems, ...itemRenderParams })}
+          {renderItems({ items, ...itemRenderParams })}
         </div>
       )}
     </section>

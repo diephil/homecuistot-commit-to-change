@@ -15,10 +15,10 @@ export const PROMPT: Prompt = new Prompt(
 4. Call update_matching_ingredients with { up: [{ name, qty, staple? }] }
 
 ## Quantity Rules
-- 3: "bought", "restocked", "full", "new" (default if no context)
-- 2: "some", "enough"
-- 1: "running low", "almost out"
-- 0: "ran out", "finished", "none"
+- 3: "plenty", "bought", "restocked", "full", "new" (default if no context)
+- 2: "some", "several", "a couple", "multiple"
+- 1: "enough", "running low", "almost out", "just enough", "last bit"
+- 0: "ran out", "finished", "none", "critical level", "no more"
 
 ## Pantry Staple Rules
 A Pantry staple is a Basic or important foods you have a supply of.
