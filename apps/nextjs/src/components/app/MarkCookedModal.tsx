@@ -142,37 +142,66 @@ export function MarkCookedModal(props: MarkCookedModalProps) {
 
               {ingredientDiffs.length > 0 ? (
                 <>
-                  <p className="text-sm font-semibold mb-3">
-                    Your inventory will be updated as shown below (tap to change):
-                  </p>
-                  <div className="flex flex-wrap gap-3 mb-4 pt-2">
-                    {ingredientDiffs.map((diff) => (
-                      <InventoryItemBadge
-                        key={diff.ingredientId}
-                        name={diff.name}
-                        level={diff.isPantryStaple ? 3 : diff.proposedQuantity}
-                        isStaple={diff.isPantryStaple}
-                        onLevelChange={
-                          diff.isPantryStaple
-                            ? undefined
-                            : (newLevel) =>
+                  {/* Regular ingredients section */}
+                  {ingredientDiffs.filter(d => !d.isPantryStaple).length > 0 && (
+                    <>
+                      <p className="text-sm font-semibold mb-3">
+                        Your inventory will be updated as shown below (tap to change):
+                      </p>
+                      <div className="flex flex-wrap gap-3 mb-4 pt-2">
+                        {ingredientDiffs
+                          .filter((diff) => !diff.isPantryStaple)
+                          .map((diff) => (
+                            <InventoryItemBadge
+                              key={diff.ingredientId}
+                              name={diff.name}
+                              level={diff.proposedQuantity}
+                              isStaple={false}
+                              onLevelChange={(newLevel) =>
                                 handleQuantityChange({
                                   ingredientId: diff.ingredientId,
                                   newQuantity: newLevel,
                                 })
-                        }
-                        changeIndicator={
-                          diff.isPantryStaple
-                            ? undefined
-                            : {
+                              }
+                              changeIndicator={{
                                 type: 'quantity',
                                 previousQuantity: diff.currentQuantity,
                                 proposedQuantity: diff.proposedQuantity,
-                              }
-                        }
-                      />
-                    ))}
-                  </div>
+                              }}
+                            />
+                          ))}
+                      </div>
+                    </>
+                  )}
+
+                  {/* Pantry staples section */}
+                  {ingredientDiffs.filter(d => d.isPantryStaple).length > 0 && (
+                    <>
+                      <p className="text-sm font-semibold mb-3 text-gray-600">
+                        Pantry staples (always available):
+                      </p>
+                      <div className="flex flex-wrap gap-3 mb-4 pt-2">
+                        {ingredientDiffs
+                          .filter((diff) => diff.isPantryStaple)
+                          .map((diff) => (
+                            <div
+                              key={diff.ingredientId}
+                              className={cn(
+                                "inline-flex items-center gap-2 rounded-lg px-3 py-2",
+                                "border-2 border-blue-300 bg-blue-100",
+                                "text-sm font-medium",
+                                "min-w-24 cursor-default"
+                              )}
+                            >
+                              <span className="font-semibold truncate max-w-[120px] capitalize">
+                                {diff.name}
+                              </span>
+                              <span className="text-blue-600 font-bold text-base">∞</span>
+                            </div>
+                          ))}
+                      </div>
+                    </>
+                  )}
                 </>
               ) : (
                 <p className="text-sm text-gray-600 mb-4">
