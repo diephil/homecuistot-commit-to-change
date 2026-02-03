@@ -233,12 +233,58 @@ function OnboardingPageContent() {
     setState((prev) => ({ ...prev, currentStep: 3 }));
   };
 
-  // Placeholder handler for recipe voice/text input
+  // Handler for recipe voice/text input
   const handleRecipeInput = async (
     input: { type: "voice"; audioBlob: Blob } | { type: "text"; text: string }
   ) => {
-    // TODO: Process recipe input
-    console.log("Recipe input received:", input);
+    setIsProcessing(true);
+    setErrorMessage(null);
+
+    try {
+      let response: Response;
+
+      if (input.type === "voice") {
+        // Convert blob to base64
+        const arrayBuffer = await input.audioBlob.arrayBuffer();
+        const base64 = Buffer.from(arrayBuffer).toString("base64");
+
+        response = await fetch("/api/onboarding/process-recipe", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            audioBase64: base64,
+            trackedRecipes: state.recipes,
+          }),
+        });
+      } else {
+        response = await fetch("/api/onboarding/process-recipe", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            text: input.text,
+            trackedRecipes: state.recipes,
+          }),
+        });
+      }
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: "Unknown error" }));
+        throw new Error(errorData.error || "Failed to process recipe input");
+      }
+
+      const result = await response.json();
+      console.log("[onboarding] Recipe input processed:", result);
+
+      // TODO: Update state.recipes with result
+      toast("Recipe input received (processing not yet implemented)");
+    } catch (error) {
+      console.error("[onboarding] Recipe processing error:", error);
+      setErrorMessage(
+        error instanceof Error ? error.message : "Failed to process recipe input"
+      );
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   // Handle ingredient toggle in recipes
@@ -568,10 +614,21 @@ function OnboardingPageContent() {
             {/* Voice/Text Input */}
             <VoiceTextInput
               onSubmit={handleRecipeInput}
-              disabled={false}
-              processing={false}
+              disabled={isProcessing}
+              processing={isProcessing}
               textPlaceholder="Describe the recipes you make..."
             />
+
+            {/* Error message */}
+            {errorMessage && (
+              <div
+                className="bg-red-100 border-2 border-red-500 p-3 rounded text-sm text-red-700 text-center"
+                role="alert"
+                aria-live="assertive"
+              >
+                {errorMessage}
+              </div>
+            )}
 
             {/* Navigation buttons */}
             <div className="flex justify-between items-center mt-6 gap-4">
