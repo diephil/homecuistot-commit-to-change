@@ -32,6 +32,26 @@ export default function InventoryPage() {
   const [proposal, setProposal] = useState<InventoryUpdateProposal | null>(null);
   const [itemToDelete, setItemToDelete] = useState<InventoryDisplayItem | null>(null);
   const [lastTranscription, setLastTranscription] = useState<string | undefined>();
+  const [groupByCategory, setGroupByCategory] = useState(() => {
+    try {
+      if (typeof window === "undefined") return true;
+      return localStorage.getItem("inventory:groupByCategory") !== "false";
+    } catch { return true; }
+  });
+  const [showEmptyOnly, setShowEmptyOnly] = useState(() => {
+    try {
+      if (typeof window === "undefined") return false;
+      return localStorage.getItem("inventory:showEmptyOnly") === "true";
+    } catch { return false; }
+  });
+
+  useEffect(() => {
+    try { localStorage.setItem("inventory:groupByCategory", String(groupByCategory)); } catch {}
+  }, [groupByCategory]);
+
+  useEffect(() => {
+    try { localStorage.setItem("inventory:showEmptyOnly", String(showEmptyOnly)); } catch {}
+  }, [showEmptyOnly]);
 
   // Sort items alphabetically by name
   const sortByName = (items: InventoryDisplayItem[]) =>
@@ -451,6 +471,10 @@ export default function InventoryPage() {
           description="Tap the ingredient to adjust its quantity level to match what you have at home!"
           items={inventory.available}
           isPantrySection={false}
+          groupByCategory={groupByCategory}
+          showEmptyOnly={showEmptyOnly}
+          onToggleView={setGroupByCategory}
+          onToggleEmpty={setShowEmptyOnly}
           onQuantityChange={handleQuantityChange}
           onToggleStaple={handleToggleStaple}
           onDelete={handleDelete}
