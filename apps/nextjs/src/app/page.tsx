@@ -79,10 +79,10 @@ export default function Home() {
                 <div className="text-4xl md:text-5xl font-black font-head">02</div>
               </div>
               <Text as="h4" className="text-xl md:text-3xl font-black uppercase mb-3 md:mb-4 leading-tight">
-                🍽️ Add your dishes
+                🍽️ Create your own cookbook
               </Text>
               <Text as="p" className="text-lg md:text-2xl font-bold leading-relaxed">
-                &ldquo;I can make carbonara, stir-fry, shakshuka&hellip;&rdquo; You know the cooking steps. We just need to know what&rsquo;s in your repertoire.
+                &ldquo;I can make carbonara, stir-fry, shakshuka&hellip;&rdquo; Tell us what recipes you can cook. 
               </Text>
             </div>
 
@@ -91,10 +91,10 @@ export default function Home() {
                 <div className="text-4xl md:text-5xl font-black font-head">03</div>
               </div>
               <Text as="h4" className="text-xl md:text-3xl font-black uppercase mb-3 md:mb-4 leading-tight">
-                ✅ See what&rsquo;s cookable
+                ✅ See cookable recipies instantly
               </Text>
               <Text as="p" className="text-lg md:text-2xl font-bold leading-relaxed">
-                Open the app → see what you can cook. Pick one and go, no more thinking.
+                Open the app → see what what you can cook now, no more thinking.
               </Text>
             </div>
           </div>
