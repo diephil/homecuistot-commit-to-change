@@ -248,7 +248,7 @@ function OnboardingPageContent() {
         <HelpSection emoji="🍳" title="Basic" bgColor="bg-yellow-100">
           <p className="text-sm">
             We&apos;ll seed your account with <strong>8 simple recipes</strong> that are
-            quick and easy to prepare—perfect for everyday cooking.
+            quick and easy to prepare.
           </p>
         </HelpSection>
 
@@ -461,7 +461,7 @@ function OnboardingPageContent() {
             <InfoCard variant="cyan" emoji="💬" heading="Speak to update the list">
               <div className="space-y-1 text-sm">
                 <p>&quot;Add eggs, butter, and mushrooms&quot;</p>
-                <p>&quot;I ran out of bacon, remove it&quot;</p>
+                <p>&quot;I ran out of mushrooms, remove it&quot;</p>
               </div>
             </InfoCard>
 
