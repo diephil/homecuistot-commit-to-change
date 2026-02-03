@@ -188,6 +188,10 @@ export async function ingredientExtractorAgent(
   const parsed = JSON.parse(responseText);
   const result = IngredientExtractionSchema.parse(parsed);
 
+  // NOTE: Ingredient validation against DB happens in API routes (process-text/process-voice)
+  // using validateIngredientNames(). Unrecognized items are filtered there and returned
+  // in the 'unrecognized' field. This agent only extracts raw ingredient names from LLM.
+
   // Include transcribedText when processing audio
   return {
     ...result,

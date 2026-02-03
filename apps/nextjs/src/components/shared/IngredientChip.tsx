@@ -17,6 +17,7 @@ interface IngredientChipProps {
   selected?: boolean;
   readOnly?: boolean;
   variant?: "default" | "voice";
+  selectionColor?: "green" | "blue";
   onToggle?: () => void;
   className?: string;
 }
@@ -26,6 +27,7 @@ export function IngredientChip({
   selected = false,
   readOnly = false,
   variant = "default",
+  selectionColor = "green",
   onToggle,
   className,
 }: IngredientChipProps) {
@@ -48,12 +50,19 @@ export function IngredientChip({
   const baseStyles =
     "inline-flex items-center px-3 py-2 rounded font-bold text-sm transition-all capitalize";
 
+  const selectedBgColor = selected
+    ? selectionColor === "blue"
+      ? "bg-blue-400"
+      : "bg-green-400"
+    : "bg-white";
+
+  // Apply voice variant styling even when selectable
+  const voiceVariantBg = variant === "voice" && selected ? "bg-cyan-300" : selectedBgColor;
+
   const selectableStyles = cn(
     // Default (unselected)
     "border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]",
-    selected
-      ? "bg-yellow-400" // Selected: bright yellow
-      : "bg-white", // Unselected: white
+    voiceVariantBg,
     // Hover effect (selectable only)
     "hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px]",
     "cursor-pointer focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2"

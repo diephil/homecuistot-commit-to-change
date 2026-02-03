@@ -42,7 +42,7 @@ export default async function AppPage() {
         <AppPageHeader />
 
         <RecipeSection
-          title="Ready To Cook Recipes"
+          title="Ready To Cook!"
           subtitle="You have all the ingredients in your inventory for these recipes, start cooking!"
           recipes={availableRecipes}
           variant="available"
@@ -50,7 +50,7 @@ export default async function AppPage() {
         />
 
         <RecipeSection
-          title="Almost Available Recipes"
+          title="Missing a Few Ingredients For These Recipes"
           subtitle="You're missing a few ingredients for these recipes, add them to your inventory to cook them!"
           recipes={almostAvailableRecipes}
           variant="almost-available"

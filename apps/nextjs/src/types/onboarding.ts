@@ -53,17 +53,18 @@ export const IngredientExtractionSchema = z.object({
   add: z.array(z.string()).describe("Ingredients user wants to add to their list"),
   rm: z.array(z.string()).describe("Ingredients user wants to remove from their list"),
   transcribedText: z.string().optional().describe("Transcribed text from voice input"),
+  unrecognized: z.array(z.string()).optional().describe("Ingredient names not found in database"),
 });
 
 export type IngredientExtractionResponse = z.infer<typeof IngredientExtractionSchema>;
 
 /**
  * T038: PersistRequest schema for onboarding
- * Accepts cookingSkill and ingredients only (uses static recipes)
+ * Accepts ingredients and pantryStaples only
  */
 export const PersistRequestSchema = z.object({
-  cookingSkill: z.enum(['basic', 'advanced']),
   ingredients: z.array(z.string().min(1).max(100)).max(100),
+  pantryStaples: z.array(z.string().min(1).max(100)).max(100).optional().default([]),
 });
 
 export type PersistRequest = z.infer<typeof PersistRequestSchema>;
@@ -73,7 +74,38 @@ export type PersistRequest = z.infer<typeof PersistRequestSchema>;
  */
 export interface PersistResponse {
   success: boolean;
-  recipesCreated: number;
   inventoryCreated: number;
   unrecognizedCount: number;
+}
+
+/**
+ * CompleteRequest schema for onboarding completion
+ * Accepts ingredients, pantryStaples, and recipes
+ */
+export const CompleteRequestSchema = z.object({
+  ingredients: z.array(z.string().min(1).max(100)).max(100),
+  pantryStaples: z.array(z.string().min(1).max(100)).max(100).default([]),
+  recipes: z.array(z.object({
+    id: z.string(),
+    name: z.string().min(1).max(200),
+    description: z.string().optional(),
+    ingredients: z.array(z.object({
+      id: z.string(),
+      name: z.string().min(1).max(100),
+      type: z.enum(['anchor', 'optional']),
+    })),
+  })).max(20),
+});
+
+export type CompleteRequest = z.infer<typeof CompleteRequestSchema>;
+
+/**
+ * CompleteResponse with comprehensive stats
+ */
+export interface CompleteResponse {
+  success: boolean;
+  inventoryCreated: number;
+  recipesCreated: number;
+  unrecognizedIngredients: number;
+  unrecognizedRecipeIngredients: number;
 }

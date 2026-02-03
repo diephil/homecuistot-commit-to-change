@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { PageContainer } from "@/components/PageContainer";
 import { RecipeCard } from "@/components/recipes/RecipeCard";
-import { RecipeForm } from "@/components/recipes/RecipeForm";
 import { RecipeHelpModal } from "@/components/recipes/HelpModal";
 import { RecipeVoiceGuidanceCard } from "@/components/recipes/VoiceGuidanceCard";
 import { RecipeProposalModal } from "@/components/recipes/RecipeProposalModal";
@@ -41,8 +40,6 @@ interface Recipe {
 
 export default function RecipesPage() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
-  const [selectedRecipeId, setSelectedRecipeId] = useState<string | null>(null);
-  const [isFormOpen, setIsFormOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   // Delete modal state
@@ -93,11 +90,6 @@ export default function RecipesPage() {
     }
   }
 
-  function handleRecipeEdit(recipeId: string) {
-    setSelectedRecipeId(recipeId);
-    setIsFormOpen(true);
-  }
-
   function handleRecipeDeleteClick(recipe: Recipe) {
     setRecipeToDelete(recipe);
     setDeleteModalOpen(true);
@@ -124,14 +116,6 @@ export default function RecipesPage() {
   function handleCancelDelete() {
     setDeleteModalOpen(false);
     setRecipeToDelete(null);
-  }
-
-  function handleFormClose(changed?: boolean) {
-    setIsFormOpen(false);
-    setSelectedRecipeId(null);
-    if (changed) {
-      loadRecipes();
-    }
   }
 
   async function handleIngredientToggle(params: {
@@ -292,10 +276,6 @@ export default function RecipesPage() {
     setCurrentProposal(null);
   }, []);
 
-  const selectedRecipe = selectedRecipeId
-    ? recipes.find((r) => r.id === selectedRecipeId)
-    : null;
-
   if (isLoading) {
     return (
       <PageContainer
@@ -387,7 +367,6 @@ export default function RecipesPage() {
               <RecipeCard
                 key={recipe.id}
                 recipe={recipe}
-                onEdit={() => handleRecipeEdit(recipe.id)}
                 onDelete={() => handleRecipeDeleteClick(recipe)}
                 onIngredientToggle={handleIngredientToggle}
               />
@@ -395,13 +374,6 @@ export default function RecipesPage() {
           </div>
         )}
         </section>
-
-        {isFormOpen && (
-          <RecipeForm
-            recipe={selectedRecipe}
-            onClose={handleFormClose}
-          />
-        )}
       </div>
 
       <DeleteConfirmationModal

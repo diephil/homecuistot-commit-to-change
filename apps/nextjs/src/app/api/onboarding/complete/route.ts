@@ -1,15 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { createClient } from '@/utils/supabase/server';
 import { createUserDb, decodeSupabaseToken } from '@/db/client';
-import { userInventory, unrecognizedItems } from '@/db/schema';
-import { PersistRequestSchema, type PersistResponse } from '@/types/onboarding';
+import { userInventory, unrecognizedItems, userRecipes, recipeIngredients } from '@/db/schema';
+import { CompleteRequestSchema, type CompleteResponse } from '@/types/onboarding';
 import { matchIngredients } from '@/lib/services/ingredient-matcher';
+import { ensureRecipeIngredientsAtQuantity } from '@/db/services/ensure-recipe-ingredients-at-quantity';
 
 /**
- * T038-T047: Persist route for 019-onboarding-revamp
- * Spec: specs/019-onboarding-revamp/contracts/api.md
+ * Onboarding Complete Route
  *
- * Persists user ingredients and pantry staples.
+ * Persists ingredients, pantry staples, and recipes from onboarding flow.
+ * All operations occur in a single transaction for atomicity.
  */
 
 export const maxDuration = 30;
@@ -38,9 +40,9 @@ export async function POST(request: NextRequest) {
     const token = decodeSupabaseToken(session.access_token);
     const db = createUserDb(token);
 
-    // T038: Parse request with cookingSkill
+    // Parse request
     const body = await request.json();
-    const parseResult = PersistRequestSchema.safeParse(body);
+    const parseResult = CompleteRequestSchema.safeParse(body);
 
     if (!parseResult.success) {
       return NextResponse.json(
@@ -52,26 +54,32 @@ export async function POST(request: NextRequest) {
     const {
       ingredients: userIngredientNames,
       pantryStaples: userPantryStaples = [],
+      recipes,
     } = parseResult.data;
 
-    // Collect all unique ingredient names from user input
-    const allIngredientNames = [
-      ...new Set([
-        ...userIngredientNames.map((n) => n.toLowerCase()),
-        ...userPantryStaples.map((n) => n.toLowerCase()),
-      ]),
-    ];
-
-    // T045: Execute all operations in a transaction
+    // Execute all operations in a transaction
     const result = await db(async (tx) => {
-      // T039: Match ingredient names against DB
+      // Collect all ingredient names from user input + recipes
+      const recipeIngredientNames = recipes.flatMap((r) =>
+        r.ingredients.map((i) => i.name.toLowerCase())
+      );
+
+      const allIngredientNames = [
+        ...new Set([
+          ...userIngredientNames.map((n) => n.toLowerCase()),
+          ...userPantryStaples.map((n) => n.toLowerCase()),
+          ...recipeIngredientNames,
+        ]),
+      ];
+
+      // Match ingredient names against DB
       const matchResult = await matchIngredients({
         names: allIngredientNames,
         userId,
         tx,
       });
 
-      // Create map for quick lookup
+      // Create maps for quick lookup
       const ingredientMap = new Map(
         matchResult.ingredients.map((i) => [i.name.toLowerCase(), i])
       );
@@ -80,8 +88,10 @@ export async function POST(request: NextRequest) {
       );
 
       let inventoryCreated = 0;
+      let unrecognizedIngredients = 0;
+      let unrecognizedRecipeIngredients = 0;
 
-      // T040: Create new unrecognized_items for unrecognizedItemsToCreate
+      // Create new unrecognized_items
       if (matchResult.unrecognizedItemsToCreate.length > 0) {
         const insertedUnrecognized = await tx
           .insert(unrecognizedItems)
@@ -95,16 +105,18 @@ export async function POST(request: NextRequest) {
           .onConflictDoNothing()
           .returning();
 
-        // Add newly created items to the map for inventory lookups
+        // Add newly created items to the map
         for (const item of insertedUnrecognized) {
           unrecognizedMap.set(item.rawText.toLowerCase(), {
             id: item.id,
             rawText: item.rawText,
           });
         }
+
+        unrecognizedIngredients = insertedUnrecognized.length;
       }
 
-      // T044: Insert user_inventory entries (quantity_level=3) for user-selected ingredients FIRST
+      // Insert user_inventory entries for user-selected ingredients (quantity=3)
       const userIngredientLower = userIngredientNames.map((n) => n.toLowerCase());
 
       for (const name of userIngredientLower) {
@@ -127,7 +139,6 @@ export async function POST(request: NextRequest) {
             inventoryCreated++;
           }
         } else if (unrecognized) {
-          // FR-033: Add unrecognized items (existing + newly created) to inventory
           const inserted = await tx
             .insert(userInventory)
             .values({
@@ -185,24 +196,89 @@ export async function POST(request: NextRequest) {
         }
       }
 
+      // Insert recipes and recipe ingredients
+      let recipesCreated = 0;
+
+      for (const recipe of recipes) {
+        // Insert recipe
+        const [insertedRecipe] = await tx
+          .insert(userRecipes)
+          .values({
+            userId,
+            name: recipe.name,
+            description: recipe.description || null,
+          })
+          .returning();
+
+        recipesCreated++;
+
+        // Insert recipe ingredients
+        const recipeIngredientValues = [];
+
+        for (const ing of recipe.ingredients) {
+          const matched = ingredientMap.get(ing.name.toLowerCase());
+          const unrecognized = unrecognizedMap.get(ing.name.toLowerCase());
+
+          if (matched) {
+            recipeIngredientValues.push({
+              recipeId: insertedRecipe.id,
+              ingredientId: matched.id,
+              unrecognizedItemId: null,
+              ingredientType: ing.type,
+            });
+          } else if (unrecognized) {
+            recipeIngredientValues.push({
+              recipeId: insertedRecipe.id,
+              ingredientId: null,
+              unrecognizedItemId: unrecognized.id,
+              ingredientType: ing.type,
+            });
+            unrecognizedRecipeIngredients++;
+          }
+        }
+
+        if (recipeIngredientValues.length > 0) {
+          await tx.insert(recipeIngredients).values(recipeIngredientValues);
+
+          // Ensure recipe ingredients exist in inventory with quantity=3
+          const recipeIngredientIds = recipeIngredientValues
+            .map((v) => v.ingredientId)
+            .filter((id): id is string => id !== null);
+
+          if (recipeIngredientIds.length > 0) {
+            await ensureRecipeIngredientsAtQuantity({
+              tx,
+              userId,
+              ingredientIds: recipeIngredientIds,
+              quantityLevel: 3,
+            });
+          }
+        }
+      }
+
       return {
         inventoryCreated,
-        unrecognizedCount: matchResult.unrecognizedItemsToCreate.length,
+        recipesCreated,
+        unrecognizedIngredients,
+        unrecognizedRecipeIngredients,
       };
     });
 
-    // T047: Return PersistResponse with counts
-    const response: PersistResponse = {
+    // Invalidate onboarding page cache to prevent back button from showing onboarding again
+    revalidatePath('/app/onboarding');
+
+    // Return response with stats
+    const response: CompleteResponse = {
       success: true,
       ...result,
     };
 
     return NextResponse.json(response);
   } catch (error) {
-    console.error('[persist] Error:', error);
+    console.error('[onboarding/complete] Error:', error);
 
     return NextResponse.json(
-      { error: 'Failed to persist data' },
+      { error: 'Failed to complete onboarding' },
       { status: 500 }
     );
   }

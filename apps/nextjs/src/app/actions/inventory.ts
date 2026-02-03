@@ -152,6 +152,41 @@ export async function deleteInventoryItem(params: { ingredientId: string }) {
  * Named parameters per Constitution Principle VI
  * Security: Only deletes items with unrecognizedItemId NOT NULL
  */
+/**
+ * Check if user has completed onboarding (has at least 1 inventory item)
+ */
+export async function hasCompletedOnboarding(): Promise<boolean> {
+  try {
+    const supabase = await createClient()
+
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
+      return false
+    }
+
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session) {
+      return false
+    }
+
+    const token = decodeSupabaseToken(session.access_token)
+    const db = createUserDb(token)
+
+    const result = await db((tx) =>
+      tx
+        .select({ id: userInventory.id })
+        .from(userInventory)
+        .where(eq(userInventory.userId, session.user.id))
+        .limit(1)
+    )
+
+    return result.length > 0
+  } catch (error) {
+    console.error('hasCompletedOnboarding check failed:', error)
+    return false
+  }
+}
+
 export async function deleteUnrecognizedItem(
   params: DeleteUnrecognizedItemParams
 ): Promise<DeleteUnrecognizedItemResult> {

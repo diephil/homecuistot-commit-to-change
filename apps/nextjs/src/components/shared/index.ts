@@ -23,6 +23,8 @@ export { IngredientChip } from "./IngredientChip";
 export { LastHeardDisplay } from "./LastHeardDisplay";
 export { Logo } from "./Logo";
 export { NavigationProgress } from "./NavigationProgress";
+export { OnboardingRecipeCard } from "./OnboardingRecipeCard";
+export { ScrollToTop } from "./ScrollToTop";
 export { NeoHelpButton } from "./NeoHelpButton";
 export { QuickInputSection } from "./QuickInputSection";
 export { SectionHeader } from "./SectionHeader";

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
 import { processTextInput } from '@/lib/prompts/onboarding-text/process';
 import { IngredientExtractionSchema } from '@/types/onboarding';
+import { validateIngredientNames } from '@/lib/services/ingredient-matcher';
 
 /**
  * T035: API route for text-based onboarding input processing
@@ -44,7 +45,10 @@ export async function POST(request: NextRequest) {
     }
 
     const currentContext = {
-      ingredients: body.currentContext.ingredients || [],
+      ingredients: [
+        ...(body.currentContext.ingredients || []),
+        ...(body.currentContext.pantryStaples || []),
+      ],
     };
 
     // Process via Gemini with opik tracing
@@ -54,8 +58,22 @@ export async function POST(request: NextRequest) {
       userId: user.id,
     });
 
-    // Validate response schema
-    const validated = IngredientExtractionSchema.parse(result);
+    // Validate ingredients against database
+    const addValidation = await validateIngredientNames({ names: result.add });
+    const rmValidation = await validateIngredientNames({ names: result.rm });
+
+    // Build response with filtered ingredients
+    const allUnrecognized = [
+      ...addValidation.unrecognized,
+      ...rmValidation.unrecognized,
+    ];
+
+    const validated = IngredientExtractionSchema.parse({
+      add: addValidation.recognized,
+      rm: rmValidation.recognized,
+      transcribedText: result.transcribedText,
+      unrecognized: allUnrecognized.length > 0 ? allUnrecognized : undefined,
+    });
 
     return NextResponse.json(validated);
   } catch (error) {

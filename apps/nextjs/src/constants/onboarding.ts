@@ -1,27 +1,38 @@
 import type { StaticIngredient, StaticDish } from "@/types/onboarding";
 
 /**
- * T002: Common ingredients for step 2 multi-select (16 items)
+ * Common ingredients - fresh/refrigerated items users usually have (10 items)
  * All names in singular form, verified to exist in ingredients table
  */
 export const COMMON_INGREDIENTS: StaticIngredient[] = [
   { name: "egg" },
-  { name: "butter" },
-  { name: "salt" },
-  { name: "pasta" },
-  { name: "rice" },
-  { name: "garlic" },
-  { name: "bread" },
   { name: "tomato" },
-  { name: "honey" },
-  { name: "noodle" },
-  { name: "bacon" },
+  { name: "onion" },
+  { name: "garlic" },
+  { name: "butter" },
   { name: "milk" },
   { name: "cheese" },
   { name: "chicken" },
+  { name: "bacon" },
   { name: "cream" },
-  { name: "onion" },
+];
+
+/**
+ * Pantry staples - dry/shelf-stable items users always have at all times (10 items)
+ * All names in singular form, verified to exist in ingredients table
+ * No duplicates with COMMON_INGREDIENTS
+ */
+export const PANTRY_STAPLES: StaticIngredient[] = [
+  { name: "salt" },
+  { name: "black pepper" },
   { name: "olive oil" },
+  { name: "sugar" },
+  { name: "rice" },
+  { name: "pasta" },
+  { name: "flour" },
+  { name: "soy sauce" },
+  { name: "vinegar" },
+  { name: "honey" },
 ];
 
 /**
