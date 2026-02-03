@@ -6,9 +6,9 @@ import { Button } from "@/components/shared/Button";
 import { InfoCard } from "@/components/shared/InfoCard";
 import { PageContainer } from "@/components/PageContainer";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { Loader2, HelpCircle } from "lucide-react";
-import { IngredientChip, VoiceTextInput, HelpModal, HelpSection } from "@/components/shared";
-import { COMMON_INGREDIENTS } from "@/constants/onboarding";
+import { Loader2 } from "lucide-react";
+import { IngredientChip, VoiceTextInput } from "@/components/shared";
+import { COMMON_INGREDIENTS, PANTRY_STAPLES } from "@/constants/onboarding";
 import { toast } from "sonner";
 import type { IngredientExtractionResponse } from "@/types/onboarding";
 
@@ -21,14 +21,18 @@ import type { IngredientExtractionResponse } from "@/types/onboarding";
 interface OnboardingState {
   currentStep: 1 | 2 | 3 | 4;
   selectedIngredients: string[];
+  selectedPantryStaples: string[];
   voiceAddedIngredients: string[]; // Track ingredients added via voice/text in Step 3
+  voiceAddedPantryStaples: string[]; // Track pantry staples added via voice/text in Step 3
   hasVoiceChanges: boolean;
 }
 
 const initialState: OnboardingState = {
   currentStep: 1,
   selectedIngredients: [],
+  selectedPantryStaples: [],
   voiceAddedIngredients: [],
+  voiceAddedPantryStaples: [],
   hasVoiceChanges: false,
 };
 
@@ -37,7 +41,6 @@ function OnboardingPageContent() {
   const [state, setState] = useState<OnboardingState>(initialState);
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [lastTranscription, setLastTranscription] = useState<string | undefined>();
 
   // T009: Advance to step 2
@@ -54,6 +57,19 @@ function OnboardingPageContent() {
         selectedIngredients: isSelected
           ? prev.selectedIngredients.filter((n) => n !== name)
           : [...prev.selectedIngredients, name],
+      };
+    });
+  };
+
+  // Toggle pantry staple selection
+  const togglePantryStaple = (name: string) => {
+    setState((prev) => {
+      const isSelected = prev.selectedPantryStaples.includes(name);
+      return {
+        ...prev,
+        selectedPantryStaples: isSelected
+          ? prev.selectedPantryStaples.filter((n) => n !== name)
+          : [...prev.selectedPantryStaples, name],
       };
     });
   };
@@ -87,6 +103,7 @@ function OnboardingPageContent() {
               audioBase64: base64,
               currentContext: {
                 ingredients: state.selectedIngredients,
+                pantryStaples: state.selectedPantryStaples,
               },
             }),
           });
@@ -98,6 +115,7 @@ function OnboardingPageContent() {
               text: input.text,
               currentContext: {
                 ingredients: state.selectedIngredients,
+                pantryStaples: state.selectedPantryStaples,
               },
             }),
           });
@@ -204,6 +222,7 @@ function OnboardingPageContent() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ingredients: state.selectedIngredients,
+          pantryStaples: state.selectedPantryStaples,
         }),
       });
 
@@ -225,8 +244,10 @@ function OnboardingPageContent() {
   };
 
   // Derived state
-  const canProceedToStep3 = state.selectedIngredients.length >= 1;
-  const canCompleteSetup = state.selectedIngredients.length >= 1;
+  const canProceedToStep3 =
+    state.selectedIngredients.length >= 1 || state.selectedPantryStaples.length >= 1;
+  const canCompleteSetup =
+    state.selectedIngredients.length >= 1 || state.selectedPantryStaples.length >= 1;
 
   return (
     <PageContainer
@@ -235,29 +256,6 @@ function OnboardingPageContent() {
       gradientVia="via-yellow-50"
       gradientTo="to-cyan-50"
     >
-      {/* FR-041-043: Help modal rendered outside transform container */}
-      <HelpModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} title="Your initial selection">
-        {/* <HelpSection emoji="🍳" title="Basic" bgColor="bg-yellow-100">
-          <p className="text-sm">
-            We&apos;ll seed your account with <strong>8 simple recipes</strong> that are
-            quick and easy to prepare.
-          </p>
-        </HelpSection>
-
-        <HelpSection emoji="👨‍🍳" title="Advanced" bgColor="bg-cyan-100">
-          <p className="text-sm">
-            We&apos;ll seed your account with <strong>16 recipes</strong>, including
-            more complex dishes that take a bit more time and technique.
-          </p>
-        </HelpSection> */}
-
-        <HelpSection emoji="✨" title="Don't Worry!" bgColor="bg-pink-100">
-          <p className="text-sm">
-            <strong>Everything can be changed later.</strong> You can still manage everything after the onboarding is complete. There&apos;s no wrong choice here!
-          </p>
-        </HelpSection>
-      </HelpModal>
-
       {/* Progress indicator banner */}
       <div className="bg-gradient-to-r from-yellow-300 via-orange-400 to-pink-400 border-4 md:border-6 border-black px-6 py-3 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] mb-6">
         <p
@@ -294,18 +292,9 @@ function OnboardingPageContent() {
 
           {/* Step 2 - Skill + Ingredient Selection */}
           <div className="min-w-full p-4 md:p-8 flex flex-col gap-6 overflow-x-hidden relative">
-            {/* FR-041: Help button (top-right, Step 2 only) */}
-            <button
-              onClick={() => setIsHelpOpen(true)}
-              className="absolute top-4 right-4 border-4 border-black bg-yellow-300 p-3 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all duration-150 hover:translate-x-[-2px] hover:translate-y-[-2px] active:translate-x-[2px] active:translate-y-[2px] cursor-pointer hover:bg-yellow-400"
-              aria-label="Open help"
-            >
-              <HelpCircle className="h-6 w-6 stroke-[3px]" />
-            </button>
-
             {/* Ingredients Section */}
             <div className="space-y-4">
-              <h2 className="text-2xl md:text-3xl font-black uppercase pr-16 md:pr-0">
+              <h2 className="text-2xl md:text-3xl font-black uppercase">
                 What ingredients do you usually have?
               </h2>
               <p className="text-sm text-gray-600">Select all that apply</p>
@@ -316,7 +305,28 @@ function OnboardingPageContent() {
                     key={ingredient.name}
                     name={ingredient.name}
                     selected={state.selectedIngredients.includes(ingredient.name)}
+                    selectionColor="green"
                     onToggle={() => toggleIngredient(ingredient.name)}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Pantry Staples Section */}
+            <div className="space-y-4">
+              <h2 className="text-2xl md:text-3xl font-black uppercase">
+                What ingredients do you always have at all times?
+              </h2>
+              <p className="text-sm text-gray-600">Select all that apply</p>
+
+              <div className="flex flex-wrap gap-2">
+                {PANTRY_STAPLES.map((ingredient) => (
+                  <IngredientChip
+                    key={ingredient.name}
+                    name={ingredient.name}
+                    selected={state.selectedPantryStaples.includes(ingredient.name)}
+                    selectionColor="blue"
+                    onToggle={() => togglePantryStaple(ingredient.name)}
                   />
                 ))}
               </div>
@@ -354,19 +364,32 @@ function OnboardingPageContent() {
               </p>
             </div>
 
-            {/* T024: Step 2 ingredients as read-only display */}
+            {/* T024: All ingredients display (merged view) */}
             <div className="md:rotate-1">
-              <h3 className="text-lg font-black uppercase mb-2">Your ingredients</h3>
-              {state.selectedIngredients.length === 0 ? (
+              <h3 className="text-lg font-black uppercase mb-2">All Ingredients</h3>
+              {state.selectedIngredients.length === 0 && state.selectedPantryStaples.length === 0 ? (
                 <p className="text-gray-500 italic">No ingredients selected</p>
               ) : (
                 <>
                   <div className="flex flex-wrap gap-2">
+                    {/* Usual ingredients */}
                     {state.selectedIngredients.map((name) => {
                       const isVoiceAdded = state.voiceAddedIngredients.includes(name);
                       return (
                         <IngredientChip
-                          key={name}
+                          key={`usual-${name}`}
+                          name={name}
+                          readOnly
+                          variant={isVoiceAdded ? "voice" : "default"}
+                        />
+                      );
+                    })}
+                    {/* Pantry staples */}
+                    {state.selectedPantryStaples.map((name) => {
+                      const isVoiceAdded = state.voiceAddedPantryStaples.includes(name);
+                      return (
+                        <IngredientChip
+                          key={`pantry-${name}`}
                           name={name}
                           readOnly
                           variant={isVoiceAdded ? "voice" : "default"}
@@ -375,7 +398,8 @@ function OnboardingPageContent() {
                     })}
                   </div>
                   {/* Legend for visual differentiation */}
-                  {state.voiceAddedIngredients.length > 0 && (
+                  {(state.voiceAddedIngredients.length > 0 ||
+                    state.voiceAddedPantryStaples.length > 0) && (
                     <p className="text-xs text-gray-500 mt-2 italic">
                       <span className="inline-block w-3 h-3 bg-cyan-200 border border-cyan-500 rounded mr-1" />
                       Added following user instructions
@@ -388,8 +412,8 @@ function OnboardingPageContent() {
             {/* T031, T034: Instructions with add/remove examples */}
             <InfoCard variant="cyan" emoji="💬" heading="Speak to update the list">
               <div className="space-y-1 text-sm">
-                <p>&quot;Add eggs, butter, and mushrooms&quot;</p>
-                <p>&quot;I ran out of mushrooms, remove it&quot;</p>
+                <p>&quot;Add steak, mustard and ketchup&quot;</p>
+                <p>&quot;Actually I ran out of mustard, but add garlic bread&quot;</p>
               </div>
             </InfoCard>
 
@@ -436,7 +460,7 @@ function OnboardingPageContent() {
 
             {!canCompleteSetup && (
               <p className="text-sm text-gray-500 text-center" role="status" aria-live="polite">
-                Add at least one ingredient to continue
+                Add at least one ingredient or pantry staple to continue
               </p>
             )}
           </div>

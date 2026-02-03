@@ -56,7 +56,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { cookingSkill, ingredients: userIngredientNames } = parseResult.data;
+    const {
+      cookingSkill = 'basic',
+      ingredients: userIngredientNames,
+      pantryStaples: userPantryStaples = [],
+    } = parseResult.data;
 
     // T041: Select recipe set based on skill
     const selectedRecipes =
@@ -68,6 +72,7 @@ export async function POST(request: NextRequest) {
     const allIngredientNames = [
       ...new Set([
         ...userIngredientNames.map((n) => n.toLowerCase()),
+        ...userPantryStaples.map((n) => n.toLowerCase()),
         ...selectedRecipes.flatMap((r) =>
           r.ingredients.map((i) => i.name.toLowerCase())
         ),
@@ -189,6 +194,7 @@ export async function POST(request: NextRequest) {
               userId,
               ingredientId: matched.id,
               quantityLevel: 3,
+              isPantryStaple: false,
             })
             .onConflictDoNothing()
             .returning();
@@ -204,6 +210,47 @@ export async function POST(request: NextRequest) {
               userId,
               unrecognizedItemId: unrecognized.id,
               quantityLevel: 3,
+              isPantryStaple: false,
+            })
+            .onConflictDoNothing()
+            .returning();
+
+          if (inserted.length > 0) {
+            inventoryCreated++;
+          }
+        }
+      }
+
+      // Insert pantry staples with isPantryStaple=true
+      const pantryStaplesLower = userPantryStaples.map((n) => n.toLowerCase());
+
+      for (const name of pantryStaplesLower) {
+        const matched = ingredientMap.get(name);
+        const unrecognized = unrecognizedMap.get(name);
+
+        if (matched) {
+          const inserted = await tx
+            .insert(userInventory)
+            .values({
+              userId,
+              ingredientId: matched.id,
+              quantityLevel: 3,
+              isPantryStaple: true,
+            })
+            .onConflictDoNothing()
+            .returning();
+
+          if (inserted.length > 0) {
+            inventoryCreated++;
+          }
+        } else if (unrecognized) {
+          const inserted = await tx
+            .insert(userInventory)
+            .values({
+              userId,
+              unrecognizedItemId: unrecognized.id,
+              quantityLevel: 3,
+              isPantryStaple: true,
             })
             .onConflictDoNothing()
             .returning();

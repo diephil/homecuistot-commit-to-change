@@ -62,8 +62,9 @@ export type IngredientExtractionResponse = z.infer<typeof IngredientExtractionSc
  * Accepts cookingSkill and ingredients only (uses static recipes)
  */
 export const PersistRequestSchema = z.object({
-  cookingSkill: z.enum(['basic', 'advanced']),
+  cookingSkill: z.enum(['basic', 'advanced']).optional().default('basic'),
   ingredients: z.array(z.string().min(1).max(100)).max(100),
+  pantryStaples: z.array(z.string().min(1).max(100)).max(100).optional().default([]),
 });
 
 export type PersistRequest = z.infer<typeof PersistRequestSchema>;
