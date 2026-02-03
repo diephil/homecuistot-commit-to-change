@@ -115,7 +115,7 @@ export async function getRecipesWithAvailability(): Promise<RecipeWithAvailabili
   })
 }
 
-// T003: Get cooking history (last 10 entries)
+// T003: Get cooking history (last 20 entries)
 export async function getCookingHistory(): Promise<CookingLogEntry[]> {
   const { userId, db } = await getAuthContext()
 
@@ -130,7 +130,7 @@ export async function getCookingHistory(): Promise<CookingLogEntry[]> {
       .from(cookingLog)
       .where(eq(cookingLog.userId, userId))
       .orderBy(desc(cookingLog.cookedAt))
-      .limit(10)
+      .limit(20)
   )
 
   return history
