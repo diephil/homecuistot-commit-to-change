@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { PageContainer } from "@/components/PageContainer";
 import { RecipeCard } from "@/components/recipes/RecipeCard";
 import { RecipeForm } from "@/components/recipes/RecipeForm";
@@ -52,6 +52,7 @@ export default function RecipesPage() {
 
   // Voice/text input state
   const [isProcessing, setIsProcessing] = useState(false);
+  const abortControllerRef = useRef<AbortController | null>(null);
   const [lastTranscription, setLastTranscription] = useState<string | undefined>();
   const [assistantResponse, setAssistantResponse] = useState<string | undefined>();
 
@@ -216,6 +217,9 @@ export default function RecipesPage() {
     async (
       result: { type: "voice"; audioBlob: Blob } | { type: "text"; text: string }
     ) => {
+      abortControllerRef.current?.abort();
+      const controller = new AbortController();
+      abortControllerRef.current = controller;
       setIsProcessing(true);
 
       try {
@@ -239,6 +243,7 @@ export default function RecipesPage() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body),
+          signal: controller.signal,
         });
 
         if (!response.ok) {
@@ -272,10 +277,11 @@ export default function RecipesPage() {
         setCurrentProposal(mergedProposal);
         setProposalModalOpen(true);
       } catch (error) {
+        if (error instanceof DOMException && error.name === "AbortError") return;
         console.error("Recipe agent error:", error);
         toast.error("Failed to process your request");
       } finally {
-        setIsProcessing(false);
+        if (!controller.signal.aborted) setIsProcessing(false);
       }
     },
     [mergeProposalWithLocalData]
@@ -355,6 +361,7 @@ export default function RecipesPage() {
             onSubmit={handleVoiceTextSubmit}
             disabled={isProcessing}
             processing={isProcessing}
+            onProcessingTimeout={() => { abortControllerRef.current?.abort(); setIsProcessing(false); }}
             textPlaceholder="Describe your recipe with ingredients..."
             lastTranscription={lastTranscription}
             assistantResponse={assistantResponse}

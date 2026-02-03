@@ -1,11 +1,14 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { Mic, Loader2, Send, X, Square } from "lucide-react";
+import { toast } from "sonner";
 import { useVoiceInput } from "@/hooks/useVoiceInput";
 import { Button } from "@/components/shared/Button";
 import { LastHeardDisplay } from "./LastHeardDisplay";
 import { cn } from "@/lib/utils";
+
+const PROCESSING_TIMEOUT_MS = 8_000;
 
 /**
  * T006: VoiceTextInput - Shared component for mic recording + text fallback
@@ -33,6 +36,8 @@ interface VoiceTextInputProps {
   lastTranscription?: string;
   /** Assistant response - displayed below last transcription when available */
   assistantResponse?: string;
+  /** Called when processing exceeds 8s timeout */
+  onProcessingTimeout?: () => void;
 }
 
 export function VoiceTextInput({
@@ -46,6 +51,7 @@ export function VoiceTextInput({
   className,
   lastTranscription,
   assistantResponse,
+  onProcessingTimeout,
 }: VoiceTextInputProps) {
   const [inputMode, setInputMode] = useState<"voice" | "text">("voice");
   const [textValue, setTextValue] = useState("");
@@ -73,6 +79,23 @@ export function VoiceTextInput({
       }
     }
   }, [voiceState, consumeAudio, onSubmit]);
+
+  // Auto-abort if processing exceeds timeout
+  const onProcessingTimeoutRef = useRef(onProcessingTimeout);
+  useEffect(() => {
+    onProcessingTimeoutRef.current = onProcessingTimeout;
+  }, [onProcessingTimeout]);
+
+  useEffect(() => {
+    if (!processing) return;
+
+    const timer = setTimeout(() => {
+      toast.error("Something went wrong. Please try again.");
+      onProcessingTimeoutRef.current?.();
+    }, PROCESSING_TIMEOUT_MS);
+
+    return () => clearTimeout(timer);
+  }, [processing]);
 
   const handleRecordStart = useCallback(() => {
     if (disabled || processing) return;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/shared/Button";
 import { InfoCard } from "@/components/shared/InfoCard";
@@ -38,6 +38,7 @@ function OnboardingPageContent() {
   const router = useRouter();
   const [state, setState] = useState<OnboardingState>(initialState);
   const [isProcessing, setIsProcessing] = useState(false);
+  const abortControllerRef = useRef<AbortController | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [lastTranscription, setLastTranscription] = useState<string | undefined>();
@@ -76,6 +77,9 @@ function OnboardingPageContent() {
   // T028-T037: Handle voice/text submission
   const handleVoiceTextSubmit = useCallback(
     async (input: { type: "voice"; audioBlob: Blob } | { type: "text"; text: string }) => {
+      abortControllerRef.current?.abort();
+      const controller = new AbortController();
+      abortControllerRef.current = controller;
       setIsProcessing(true);
       setErrorMessage(null);
 
@@ -96,6 +100,7 @@ function OnboardingPageContent() {
                 ingredients: state.selectedIngredients,
               },
             }),
+            signal: controller.signal,
           });
         } else {
           response = await fetch("/api/onboarding/process-text", {
@@ -107,6 +112,7 @@ function OnboardingPageContent() {
                 ingredients: state.selectedIngredients,
               },
             }),
+            signal: controller.signal,
           });
         }
 
@@ -172,6 +178,7 @@ function OnboardingPageContent() {
         // T030, T037: Show toast
         toast("Ingredient list has been updated");
       } catch (error) {
+        if (error instanceof DOMException && error.name === "AbortError") return;
         console.error("[onboarding] Processing error:", error);
 
         if (error instanceof Error) {
@@ -189,7 +196,7 @@ function OnboardingPageContent() {
           setErrorMessage("Something went wrong. Please try again.");
         }
       } finally {
-        setIsProcessing(false);
+        if (!controller.signal.aborted) setIsProcessing(false);
       }
     },
     [state.selectedIngredients]
@@ -470,6 +477,7 @@ function OnboardingPageContent() {
               onSubmit={handleVoiceTextSubmit}
               disabled={isProcessing}
               processing={isProcessing}
+              onProcessingTimeout={() => { abortControllerRef.current?.abort(); setIsProcessing(false); }}
               textPlaceholder="Add eggs and butter, remove bacon..."
               lastTranscription={lastTranscription}
             />

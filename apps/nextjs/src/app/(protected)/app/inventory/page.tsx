@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { PageContainer } from "@/components/PageContainer";
 import { InventorySection } from "@/components/inventory/InventorySection";
 import { HelpModal } from "@/components/inventory/HelpModal";
@@ -30,6 +30,7 @@ export default function InventoryPage() {
   const [unrecognizedItems, setUnrecognizedItems] = useState<UnrecognizedItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
+  const abortControllerRef = useRef<AbortController | null>(null);
   const [proposal, setProposal] = useState<InventoryUpdateProposal | null>(null);
   const [itemToDelete, setItemToDelete] = useState<InventoryDisplayItem | null>(null);
   const [lastTranscription, setLastTranscription] = useState<string | undefined>();
@@ -325,6 +326,9 @@ export default function InventoryPage() {
   const handleVoiceTextSubmit = async (
     result: { type: "voice"; audioBlob: Blob } | { type: "text"; text: string }
   ) => {
+    abortControllerRef.current?.abort();
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
     setIsProcessing(true);
 
     try {
@@ -349,6 +353,7 @@ export default function InventoryPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(requestBody),
+        signal: controller.signal,
       });
 
       const data = await response.json();
@@ -371,10 +376,11 @@ export default function InventoryPage() {
         setProposal(resultProposal);
       }
     } catch (error) {
+      if (error instanceof DOMException && error.name === "AbortError") return;
       console.error("Voice/text processing error:", error);
       toast.error("Failed to process input");
     } finally {
-      setIsProcessing(false);
+      if (!controller.signal.aborted) setIsProcessing(false);
     }
   };
 
@@ -438,6 +444,7 @@ export default function InventoryPage() {
               onSubmit={handleVoiceTextSubmit}
               disabled={isProcessing}
               processing={isProcessing}
+              onProcessingTimeout={() => { abortControllerRef.current?.abort(); setIsProcessing(false); }}
               textPlaceholder="I have eggs, milk, and butter..."
               lastTranscription={lastTranscription}
             />
