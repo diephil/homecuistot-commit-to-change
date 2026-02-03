@@ -1,27 +1,12 @@
 import { Text } from "@/components/shared/Text";
 import { Button } from "@/components/shared/Button";
-import { Logo } from "@/components/shared/Logo";
+import { Header } from "@/components/shared/Header";
 import Link from "next/link";
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-amber-50">
-      {/* Header */}
-      <header className="border-b-4 md:border-b-8 border-black bg-gradient-to-r from-pink-400 via-orange-400 to-yellow-400 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 md:px-8">
-          <div className="flex items-center justify-between py-3 md:py-6">
-            <Logo />
-            <div className="flex items-center gap-2 md:gap-4">
-              <Button asChild variant="outline" size="sm" className="border-3 md:border-4 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] md:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] md:hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] md:hover:translate-x-[2px] md:hover:translate-y-[2px] transition-all font-black text-xs md:text-sm px-2 md:px-3">
-                <Link href="/login">Login</Link>
-              </Button>
-              <Button asChild variant="default" size="sm" className="bg-pink-400 hover:bg-pink-500 border-3 md:border-4 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] md:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] md:hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] md:hover:translate-x-[2px] md:hover:translate-y-[2px] transition-all font-black text-xs md:text-sm px-2 md:px-3">
-                <Link href="/app">Go to App</Link>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header variant="landing" logoClickable={true} />
 
       {/* Hero Section */}
       <section className="py-12 md:py-32 relative overflow-hidden">

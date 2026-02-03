@@ -4,7 +4,7 @@ import { createClient } from "@/utils/supabase/client";
 import { Button } from "@/components/shared/Button";
 import { Text } from "@/components/shared/Text";
 import { Logo } from "@/components/shared/Logo";
-import { PageContainer } from "@/components/PageContainer";
+import { Header } from "@/components/shared/Header";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 
@@ -48,25 +48,20 @@ export default function LoginPage() {
   };
 
   return (
-    <PageContainer
-      maxWidth="lg"
-      gradientFrom="from-pink-200"
-      gradientVia="via-yellow-200"
-      gradientTo="to-cyan-200"
-      className="flex items-center"
-    >
-      {/* Main login card */}
-      <div className={cn(
-        "relative border-4 md:border-6 border-black bg-gradient-to-br from-pink-300 to-orange-300",
-        "shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] md:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)]",
-        "p-8 md:p-12 md:transform md:-rotate-1 w-full"
-      )}>
+    <div className="min-h-screen flex flex-col">
+      <Header variant="login" logoClickable={true} />
 
-        <div className="flex flex-col items-center gap-6 md:gap-8">
-          {/* Logo */}
-          <Logo />
+      <div className="flex-1 bg-gradient-to-br from-pink-200 via-yellow-200 to-cyan-200 flex items-center py-6">
+        <div className="max-w-lg mx-auto w-full px-4 sm:px-6 lg:px-8">
+          {/* Main login card */}
+          <div className={cn(
+            "relative border-4 md:border-6 border-black bg-gradient-to-br from-pink-300 to-orange-300",
+            "shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] md:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)]",
+            "p-8 md:p-12 md:transform md:-rotate-1 w-full"
+          )}>
 
-          {/* Heading section */}
+            <div className="flex flex-col items-center gap-6 md:gap-8">
+              {/* Heading section */}
           <div className="text-center">
             <Text as="h1" className="text-3xl md:text-5xl font-black uppercase mb-2 md:mb-3 leading-tight tracking-tight">
               Get Started
@@ -150,7 +145,9 @@ export default function LoginPage() {
             </Button>
           </div>
         </div>
+          </div>
+        </div>
       </div>
-    </PageContainer>
+    </div>
   );
 }
