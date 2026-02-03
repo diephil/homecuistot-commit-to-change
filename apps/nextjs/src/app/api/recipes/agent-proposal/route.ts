@@ -13,7 +13,11 @@ import { createUserDb, decodeSupabaseToken } from "@/db/client";
 import { createRecipeManagerAgentProposal } from "@/lib/orchestration/recipe-update.orchestration";
 import { userRecipes } from "@/db/schema";
 import { eq, desc } from "drizzle-orm";
-import type { RecipeSessionItem } from "@/types/recipe-agent";
+import { getUserInventory } from "@/lib/services/user-inventory";
+import type {
+  RecipeSessionItem,
+  IngredientSessionItem,
+} from "@/types/recipe-agent";
 
 export const maxDuration = 30; // 30 second timeout for voice processing
 
@@ -85,12 +89,25 @@ export async function POST(request: Request) {
         })),
     }));
 
+    // Get user's current inventory
+    const inventoryRows = await getUserInventory({ db });
+    const trackedIngredients: IngredientSessionItem[] = inventoryRows.map(
+      (row) => ({
+        id: row.ingredientId!,
+        name: row.ingredientName,
+        category: row.ingredientCategory,
+        quantityLevel: row.quantityLevel,
+        isPantryStaple: row.isPantryStaple,
+      }),
+    );
+
     // Process via traced agent
     const result = await createRecipeManagerAgentProposal({
       userId: user.id,
       input,
       audioBase64,
       trackedRecipes,
+      trackedIngredients,
       model: "gemini-2.5-flash-lite",
     });
 
