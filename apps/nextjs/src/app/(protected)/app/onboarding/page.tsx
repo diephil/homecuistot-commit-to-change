@@ -40,6 +40,7 @@ function OnboardingPageContent() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
+  const [lastTranscription, setLastTranscription] = useState<string | undefined>();
 
   // T009: Advance to step 2
   const handleGetStarted = () => {
@@ -122,6 +123,11 @@ function OnboardingPageContent() {
         }
 
         const result: IngredientExtractionResponse = await response.json();
+
+        // Update transcription if available
+        if (result.transcribedText) {
+          setLastTranscription(result.transcribedText);
+        }
 
         // T048: Handle empty response
         if (result.add.length === 0 && result.rm.length === 0) {
@@ -457,6 +463,7 @@ function OnboardingPageContent() {
               disabled={isProcessing}
               processing={isProcessing}
               textPlaceholder="Add eggs and butter, remove bacon..."
+              lastTranscription={lastTranscription}
             />
 
             {/* Error message */}

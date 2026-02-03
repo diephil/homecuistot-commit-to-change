@@ -186,5 +186,11 @@ export async function ingredientExtractorAgent(
   }
 
   const parsed = JSON.parse(responseText);
-  return IngredientExtractionSchema.parse(parsed);
+  const result = IngredientExtractionSchema.parse(parsed);
+
+  // Include transcribedText when processing audio
+  return {
+    ...result,
+    transcribedText: audioBase64 ? inputText : undefined,
+  };
 }

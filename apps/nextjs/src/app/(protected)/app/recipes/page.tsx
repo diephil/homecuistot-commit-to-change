@@ -230,7 +230,6 @@ export default function RecipesPage() {
         const proposal = data.proposal as RecipeManagerProposal;
         const transcribedText = data.transcribedText as string | undefined;
         const assistantMsg = data.assistantResponse as string | undefined;
-        debugger
         // Update last transcription for voice inputs
         if (transcribedText) {
           setLastTranscription(transcribedText);
