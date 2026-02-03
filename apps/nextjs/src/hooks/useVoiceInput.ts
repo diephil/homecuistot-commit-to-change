@@ -13,7 +13,8 @@ import { useState, useRef, useCallback, useEffect } from "react";
  * Consumer must call consumeAudio() to get blob and return to idle.
  */
 
-const MAX_RECORDING_MS = 60_000;
+const MAX_RECORDING_MS = 45_000;
+const MAX_RECORDING_S = MAX_RECORDING_MS / 1000;
 
 type VoiceState = "idle" | "recording" | "stopped";
 
@@ -24,6 +25,7 @@ interface UseVoiceInputReturn {
   permissionDenied: boolean;
   start: () => Promise<void>;
   stop: () => void;
+  cancel: () => void;
   consumeAudio: () => Blob | null;
 }
 
@@ -40,6 +42,8 @@ export function useVoiceInput(): UseVoiceInputReturn {
   const durationTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const autoStopTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const startTimeRef = useRef<number>(0);
+  const isCancellingRef = useRef<boolean>(false);
+  const isStartingRef = useRef<boolean>(false);
 
   const cleanupTimers = useCallback(() => {
     if (durationTimerRef.current) {
@@ -79,20 +83,40 @@ export function useVoiceInput(): UseVoiceInputReturn {
     cleanupTimers();
   }, [cleanupTimers]);
 
+  const cancel = useCallback(() => {
+    if (mediaRecorderRef.current?.state === "recording") {
+      // Set flag so onstop handler knows we're cancelling
+      isCancellingRef.current = true;
+      mediaRecorderRef.current.stop();
+      // Note: cleanup happens in onstop handler when cancelling
+    } else {
+      // If not recording, just reset state
+      chunksRef.current = [];
+      audioBlobRef.current = null;
+      setDuration(0);
+      cleanupTimers();
+      cleanupStream();
+      setState("idle");
+    }
+  }, [cleanupTimers, cleanupStream]);
+
   const start = useCallback(async () => {
-    // Prevent starting if already recording
-    if (state === "recording") return;
+    // Prevent starting if already recording or mid-start
+    if (state === "recording" || isStartingRef.current) return;
+    isStartingRef.current = true;
 
     // Reset state
     setError(null);
     setPermissionDenied(false);
-    setDuration(0);
+    setDuration(MAX_RECORDING_S);
     chunksRef.current = [];
     audioBlobRef.current = null;
+    isCancellingRef.current = false;
     cleanupTimers();
 
     // Check browser support
     if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) {
+      isStartingRef.current = false;
       setError("Browser doesn't support audio recording");
       return;
     }
@@ -122,6 +146,17 @@ export function useVoiceInput(): UseVoiceInputReturn {
       };
 
       mediaRecorder.onstop = () => {
+        // If cancelling, skip blob creation and go straight to idle
+        if (isCancellingRef.current) {
+          isCancellingRef.current = false;
+          chunksRef.current = [];
+          audioBlobRef.current = null;
+          cleanupStream();
+          cleanupTimers();
+          setState("idle");
+          return;
+        }
+
         // Create blob from chunks
         const mType = mimeType || "audio/webm";
         audioBlobRef.current = new Blob(chunksRef.current, { type: mType });
@@ -144,12 +179,15 @@ export function useVoiceInput(): UseVoiceInputReturn {
       // Start recording
       mediaRecorder.start();
       setState("recording");
+      isStartingRef.current = false;
       startTimeRef.current = Date.now();
 
-      // Duration timer (timestamp-based for accuracy)
+      // Countdown timer (timestamp-based for accuracy)
       durationTimerRef.current = setInterval(() => {
-        const elapsed = Math.floor((Date.now() - startTimeRef.current) / 1000);
-        setDuration(elapsed);
+        const elapsedSeconds = Math.floor(
+          (Date.now() - startTimeRef.current) / 1000,
+        );
+        setDuration(Math.max(0, MAX_RECORDING_S - elapsedSeconds));
       }, 100);
 
       // Auto-stop timer
@@ -158,6 +196,7 @@ export function useVoiceInput(): UseVoiceInputReturn {
       }, MAX_RECORDING_MS);
 
     } catch (err) {
+      isStartingRef.current = false;
       cleanupStream();
 
       if (err instanceof Error) {
@@ -203,6 +242,7 @@ export function useVoiceInput(): UseVoiceInputReturn {
     permissionDenied,
     start,
     stop,
+    cancel,
     consumeAudio,
   };
 }

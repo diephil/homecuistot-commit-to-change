@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useCallback, useEffect, useRef } from "react";
-import { Mic, Loader2, Send } from "lucide-react";
+import { useState, useCallback, useEffect } from "react";
+import { Mic, Loader2, Send, X, Square } from "lucide-react";
 import { useVoiceInput } from "@/hooks/useVoiceInput";
 import { Button } from "@/components/shared/Button";
 import { LastHeardDisplay } from "./LastHeardDisplay";
@@ -57,19 +57,16 @@ export function VoiceTextInput({
     permissionDenied,
     start,
     stop,
+    cancel,
     consumeAudio,
   } = useVoiceInput();
-
-  // Track if we're waiting for audio to be ready after stop
-  const pendingProcessRef = useRef(false);
 
   // Derive effective input mode based on permission status
   const effectiveInputMode = permissionDenied ? "text" : inputMode;
 
-  // Process audio when voice state transitions to 'stopped'
+  // Process audio when voice state transitions to 'stopped' (user stop or auto-stop)
   useEffect(() => {
-    if (voiceState === "stopped" && pendingProcessRef.current) {
-      pendingProcessRef.current = false;
+    if (voiceState === "stopped") {
       const blob = consumeAudio();
       if (blob) {
         onSubmit({ type: "voice", audioBlob: blob });
@@ -84,7 +81,6 @@ export function VoiceTextInput({
 
   const handleRecordStop = useCallback(() => {
     if (voiceState === "recording") {
-      pendingProcessRef.current = true;
       stop();
     }
   }, [voiceState, stop]);
@@ -143,38 +139,54 @@ export function VoiceTextInput({
             </div>
           )} */}
 
-          {/* Hold-to-speak button */}
-          <button
-            onMouseDown={handleRecordStart}
-            onMouseUp={handleRecordStop}
-            onTouchStart={handleRecordStart}
-            onTouchEnd={handleRecordStop}
-            disabled={isDisabled}
-            aria-label={voiceLabel}
-            className={cn(
-              "relative rounded-full p-6 min-h-[80px] min-w-[80px]",
-              "border-4 md:border-6 border-black bg-pink-400",
-              "shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]",
-              "hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px]",
-              "active:shadow-none active:translate-x-[4px] active:translate-y-[4px]",
-              "transition-all cursor-pointer",
-              showRecordingUI && "animate-pulse ring-4 ring-red-500",
-              isDisabled && "opacity-50 !cursor-not-allowed"
-            )}
-          >
-            {processing ? (
-              <Loader2 className="h-8 w-8 animate-spin" />
-            ) : (
-              <Mic className="h-8 w-8" />
-            )}
+          {/* Recording area with cancel button */}
+          <div className="relative">
+            {/* Hold-to-speak button */}
+            <button
+              onMouseDown={handleRecordStart}
+              onMouseUp={handleRecordStop}
+              onTouchStart={handleRecordStart}
+              onTouchEnd={handleRecordStop}
+              disabled={isDisabled}
+              aria-label={voiceLabel}
+              className={cn(
+                "relative rounded-full p-6 min-h-[80px] min-w-[80px]",
+                "border-4 md:border-6 border-black bg-pink-400",
+                "shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]",
+                "hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px]",
+                "active:shadow-none active:translate-x-[4px] active:translate-y-[4px]",
+                "transition-all cursor-pointer",
+                showRecordingUI && "animate-pulse ring-4 ring-red-500",
+                isDisabled && "opacity-50 !cursor-not-allowed"
+              )}
+            >
+              {processing ? (
+                <Loader2 className="h-8 w-8 animate-spin" />
+              ) : showRecordingUI ? (
+                <Square className="h-8 w-8 fill-current" />
+              ) : (
+                <Mic className="h-8 w-8" />
+              )}
 
-            {/* Recording duration display */}
+              {/* Recording duration display */}
+              {showRecordingUI && (
+                <span className="absolute -top-8 left-1/2 -translate-x-1/2 text-sm font-bold bg-red-500 text-white px-2 py-1 rounded">
+                  {formatDuration(duration)}
+                </span>
+              )}
+            </button>
+
+            {/* Cancel button (absolutely positioned to the right) */}
             {showRecordingUI && (
-              <span className="absolute -top-8 left-1/2 -translate-x-1/2 text-sm font-bold bg-red-500 text-white px-2 py-1 rounded">
-                {formatDuration(duration)}
-              </span>
+              <button
+                onClick={cancel}
+                className="absolute left-[calc(100%+20px)] top-1/2 -translate-y-1/2 p-2 bg-red-400 hover:bg-red-500 rounded-full border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all cursor-pointer opacity-90 hover:opacity-100"
+                aria-label="Cancel recording"
+              >
+                <X className="h-4 w-4 text-white stroke-[2.5px]" />
+              </button>
             )}
-          </button>
+          </div>
 
           {/* Status messages */}
           {showRecordingUI && (
@@ -199,15 +211,17 @@ export function VoiceTextInput({
             <p className="text-sm text-red-600">{voiceError}</p>
           )}
 
-          {/* Toggle to text */}
-          <button
-            onClick={() => setInputMode("text")}
-            className="text-sm text-gray-600 hover:text-gray-900 underline cursor-pointer disabled:cursor-not-allowed"
-            disabled={isDisabled}
-            aria-label="Switch to text input"
-          >
-            {textFallbackLabel}
-          </button>
+          {/* Toggle to text (hidden during recording/processing) */}
+          {!showRecordingUI && !processing && (
+            <button
+              onClick={() => setInputMode("text")}
+              className="text-sm text-gray-600 hover:text-gray-900 underline cursor-pointer disabled:cursor-not-allowed"
+              disabled={isDisabled}
+              aria-label="Switch to text input"
+            >
+              {textFallbackLabel}
+            </button>
+          )}
         </div>
       )}
 
