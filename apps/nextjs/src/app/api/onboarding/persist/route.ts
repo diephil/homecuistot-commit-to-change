@@ -1,22 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
 import { createUserDb, decodeSupabaseToken } from '@/db/client';
-import {
-  userRecipes,
-  recipeIngredients,
-  userInventory,
-  unrecognizedItems,
-} from '@/db/schema';
+import { userInventory, unrecognizedItems } from '@/db/schema';
 import { PersistRequestSchema, type PersistResponse } from '@/types/onboarding';
-import { BASIC_RECIPES, ADVANCED_RECIPES } from '@/constants/onboarding';
 import { matchIngredients } from '@/lib/services/ingredient-matcher';
-import { ensureIngredientsInInventory } from '@/db/services/ensure-ingredients-in-inventory';
 
 /**
  * T038-T047: Persist route for 019-onboarding-revamp
  * Spec: specs/019-onboarding-revamp/contracts/api.md
  *
- * Uses static recipes based on cookingSkill instead of LLM generation.
+ * Persists user ingredients and pantry staples.
  */
 
 export const maxDuration = 30;
@@ -57,25 +50,15 @@ export async function POST(request: NextRequest) {
     }
 
     const {
-      cookingSkill = 'basic',
       ingredients: userIngredientNames,
       pantryStaples: userPantryStaples = [],
     } = parseResult.data;
 
-    // T041: Select recipe set based on skill
-    const selectedRecipes =
-      cookingSkill === 'basic'
-        ? BASIC_RECIPES
-        : [...BASIC_RECIPES, ...ADVANCED_RECIPES];
-
-    // Collect all unique ingredient names from user input and static recipes
+    // Collect all unique ingredient names from user input
     const allIngredientNames = [
       ...new Set([
         ...userIngredientNames.map((n) => n.toLowerCase()),
         ...userPantryStaples.map((n) => n.toLowerCase()),
-        ...selectedRecipes.flatMap((r) =>
-          r.ingredients.map((i) => i.name.toLowerCase())
-        ),
       ]),
     ];
 
@@ -96,12 +79,9 @@ export async function POST(request: NextRequest) {
         matchResult.unrecognizedItems.map((u) => [u.rawText.toLowerCase(), u])
       );
 
-      let recipesCreated = 0;
       let inventoryCreated = 0;
-      const allRecipeIngredientIds: string[] = [];
 
       // T040: Create new unrecognized_items for unrecognizedItemsToCreate
-      // FR-040: Query back inserted IDs so they can be used for recipe_ingredients and inventory
       if (matchResult.unrecognizedItemsToCreate.length > 0) {
         const insertedUnrecognized = await tx
           .insert(unrecognizedItems)
@@ -115,68 +95,12 @@ export async function POST(request: NextRequest) {
           .onConflictDoNothing()
           .returning();
 
-        // Add newly created items to the map for recipe_ingredients and inventory lookups
+        // Add newly created items to the map for inventory lookups
         for (const item of insertedUnrecognized) {
           unrecognizedMap.set(item.rawText.toLowerCase(), {
             id: item.id,
             rawText: item.rawText,
           });
-        }
-      }
-
-      // T042: Insert user_recipes from static dishes
-      for (const recipe of selectedRecipes) {
-        const insertedRecipes = await tx
-          .insert(userRecipes)
-          .values({
-            name: recipe.title,
-            description: recipe.description || null,
-            userId,
-          })
-          .onConflictDoNothing()
-          .returning();
-
-        if (insertedRecipes.length > 0) {
-          const insertedRecipe = insertedRecipes[0];
-          recipesCreated++;
-
-          // T043: Insert recipe_ingredients with anchor/optional types
-          const ingredientsToInsert: Array<{
-            recipeId: string;
-            ingredientId?: string;
-            unrecognizedItemId?: string;
-            ingredientType: 'anchor' | 'optional';
-          }> = [];
-
-          for (const ing of recipe.ingredients) {
-            const lowerName = ing.name.toLowerCase();
-            const matched = ingredientMap.get(lowerName);
-            const unrecognized = unrecognizedMap.get(lowerName);
-
-            if (matched) {
-              ingredientsToInsert.push({
-                recipeId: insertedRecipe.id,
-                ingredientId: matched.id,
-                ingredientType: ing.type,
-              });
-              // Track for inventory population
-              allRecipeIngredientIds.push(matched.id);
-            } else if (unrecognized) {
-              ingredientsToInsert.push({
-                recipeId: insertedRecipe.id,
-                unrecognizedItemId: unrecognized.id,
-                ingredientType: ing.type,
-              });
-            }
-            // Skip ingredients that couldn't be matched (shouldn't happen for static data)
-          }
-
-          if (ingredientsToInsert.length > 0) {
-            await tx
-              .insert(recipeIngredients)
-              .values(ingredientsToInsert)
-              .onConflictDoNothing();
-          }
         }
       }
 
@@ -261,16 +185,7 @@ export async function POST(request: NextRequest) {
         }
       }
 
-      // Ensure all recipe ingredients exist in inventory (quantityLevel=0 for missing)
-      // This runs AFTER user-selected ingredients, so it only adds NEW ingredients at level 0
-      await ensureIngredientsInInventory({
-        tx,
-        userId,
-        ingredientIds: allRecipeIngredientIds,
-      });
-
       return {
-        recipesCreated,
         inventoryCreated,
         unrecognizedCount: matchResult.unrecognizedItemsToCreate.length,
       };

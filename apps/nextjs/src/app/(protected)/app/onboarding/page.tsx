@@ -3,14 +3,24 @@
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/shared/Button";
-import { InfoCard } from "@/components/shared/InfoCard";
 import { PageContainer } from "@/components/PageContainer";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { Loader2 } from "lucide-react";
-import { IngredientChip, VoiceTextInput } from "@/components/shared";
+import { IngredientChip, VoiceTextInput, InfoCard, OnboardingRecipeCard } from "@/components/shared";
 import { COMMON_INGREDIENTS, PANTRY_STAPLES } from "@/constants/onboarding";
 import { toast } from "sonner";
 import type { IngredientExtractionResponse } from "@/types/onboarding";
+
+interface OnboardingRecipe {
+  id: string;
+  name: string;
+  description?: string;
+  ingredients: Array<{
+    id: string;
+    name: string;
+    type: 'anchor' | 'optional';
+  }>;
+}
 
 /**
  * Voice-Enabled Kitchen Onboarding Flow (Revamped)
@@ -19,12 +29,13 @@ import type { IngredientExtractionResponse } from "@/types/onboarding";
  */
 
 interface OnboardingState {
-  currentStep: 1 | 2 | 3 | 4;
+  currentStep: 1 | 2 | 3 | 4 | 5;
   selectedIngredients: string[];
   selectedPantryStaples: string[];
   voiceAddedIngredients: string[]; // Track ingredients added via voice/text in Step 3
   voiceAddedPantryStaples: string[]; // Track pantry staples added via voice/text in Step 3
   hasVoiceChanges: boolean;
+  recipes: OnboardingRecipe[];
 }
 
 const initialState: OnboardingState = {
@@ -34,6 +45,7 @@ const initialState: OnboardingState = {
   voiceAddedIngredients: [],
   voiceAddedPantryStaples: [],
   hasVoiceChanges: false,
+  recipes: [],
 };
 
 function OnboardingPageContent() {
@@ -203,7 +215,7 @@ function OnboardingPageContent() {
         setIsProcessing(false);
       }
     },
-    [state.selectedIngredients]
+    [state.selectedIngredients, state.selectedPantryStaples]
   );
 
   // T022: Go back to step 2
@@ -211,9 +223,49 @@ function OnboardingPageContent() {
     setState((prev) => ({ ...prev, currentStep: 2 }));
   };
 
+  // Continue to step 4
+  const handleContinueToStep4 = () => {
+    setState((prev) => ({ ...prev, currentStep: 4 }));
+  };
+
+  // Go back to step 3
+  const handleBackToStep3 = () => {
+    setState((prev) => ({ ...prev, currentStep: 3 }));
+  };
+
+  // Placeholder handler for recipe voice/text input
+  const handleRecipeInput = async (
+    input: { type: "voice"; audioBlob: Blob } | { type: "text"; text: string }
+  ) => {
+    // TODO: Process recipe input
+    console.log("Recipe input received:", input);
+  };
+
+  // Handle ingredient toggle in recipes
+  const handleIngredientToggle = (recipeId: string, ingredientId: string) => {
+    setState((prev) => ({
+      ...prev,
+      recipes: prev.recipes.map((recipe) =>
+        recipe.id === recipeId
+          ? {
+              ...recipe,
+              ingredients: recipe.ingredients.map((ing) =>
+                ing.id === ingredientId
+                  ? {
+                      ...ing,
+                      type: ing.type === 'anchor' ? 'optional' : 'anchor',
+                    }
+                  : ing
+              ),
+            }
+          : recipe
+      ),
+    }));
+  };
+
   // T046: Complete setup with persistence
   const handleCompleteSetup = async () => {
-    setState((prev) => ({ ...prev, currentStep: 4 }));
+    setState((prev) => ({ ...prev, currentStep: 5 }));
     const startTime = Date.now();
 
     try {
@@ -262,9 +314,9 @@ function OnboardingPageContent() {
           className="text-sm font-black uppercase text-center"
           role="status"
           aria-live="polite"
-          aria-label={`Step ${state.currentStep} of ${state.currentStep === 4 ? 4 : 3}`}
+          aria-label={`Step ${state.currentStep} of ${state.currentStep === 5 ? 5 : 4}`}
         >
-          {state.currentStep === 4 ? "Finishing up..." : `Step ${state.currentStep} of 3`}
+          {state.currentStep === 5 ? "Finishing up..." : `Step ${state.currentStep} of 4`}
         </p>
       </div>
 
@@ -437,7 +489,7 @@ function OnboardingPageContent() {
               </div>
             )}
 
-            {/* T025: Complete Setup button (enabled when 1+ ingredients) */}
+            {/* T025: Next Step button (enabled when 1+ ingredients) */}
             <div className="flex justify-between items-center mt-6 gap-4">
               <Button
                 onClick={handleBackToStep2}
@@ -448,13 +500,13 @@ function OnboardingPageContent() {
                 Back
               </Button>
               <Button
-                onClick={handleCompleteSetup}
+                onClick={handleContinueToStep4}
                 disabled={!canCompleteSetup}
                 variant="default"
                 size="lg"
                 className={`min-h-[44px] ${canCompleteSetup ? "cursor-pointer" : "cursor-not-allowed opacity-50"}`}
               >
-                Complete Setup
+                Next Step
               </Button>
             </div>
 
@@ -465,7 +517,84 @@ function OnboardingPageContent() {
             )}
           </div>
 
-          {/* Step 4 - Completion Screen */}
+          {/* Step 4 - Recipe Preferences */}
+          <div className="min-w-full p-4 md:p-8 flex flex-col gap-6 overflow-x-hidden">
+            <div>
+              <h2 className="text-2xl md:text-3xl font-black uppercase">
+                What kind of recipes do you usually make at home?
+              </h2>
+            </div>
+
+            {/* Instructions with recipe examples */}
+            <InfoCard variant="cyan" emoji="💬" heading="Describe 2-3 recipes you regularly cook">
+              <div className="space-y-3">
+                <p className="text-sm">&quot;I make scrambled eggs with eggs and butter. Sometimes I add black pepper.&quot;</p>
+                <div className="max-w-sm">
+                  <OnboardingRecipeCard
+                    name="Scrambled Eggs"
+                    description="Simple and fluffy eggs cooked in a pan, perfect for breakfast."
+                    ingredients={[
+                      { id: 'ing-1', name: 'Eggs', type: 'anchor' },
+                      { id: 'ing-2', name: 'Butter', type: 'anchor' },
+                      { id: 'ing-3', name: 'Black Pepper', type: 'optional' },
+                    ]}
+                  />
+                </div>
+              </div>
+            </InfoCard>
+
+            {/* User's added recipes display */}
+            <div className="md:rotate-1">
+              <h3 className="text-lg font-black uppercase mb-2">All the recipes you told me about</h3>
+              {state.recipes.length === 0 ? (
+                <p className="text-gray-500 italic">No recipes added yet</p>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {state.recipes.map((recipe) => (
+                    <OnboardingRecipeCard
+                      key={recipe.id}
+                      name={recipe.name}
+                      description={recipe.description}
+                      ingredients={recipe.ingredients}
+                      onIngredientToggle={(ingredientId) =>
+                        handleIngredientToggle(recipe.id, ingredientId)
+                      }
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Voice/Text Input */}
+            <VoiceTextInput
+              onSubmit={handleRecipeInput}
+              disabled={false}
+              processing={false}
+              textPlaceholder="Describe the recipes you make..."
+            />
+
+            {/* Navigation buttons */}
+            <div className="flex justify-between items-center mt-6 gap-4">
+              <Button
+                onClick={handleBackToStep3}
+                variant="outline"
+                size="lg"
+                className="min-h-[44px] cursor-pointer"
+              >
+                Back
+              </Button>
+              <Button
+                onClick={handleCompleteSetup}
+                variant="default"
+                size="lg"
+                className="min-h-[44px] cursor-pointer"
+              >
+                Complete Setup
+              </Button>
+            </div>
+          </div>
+
+          {/* Step 5 - Completion Screen */}
           <div className="min-w-full p-4 md:p-8 flex flex-col items-center justify-center gap-6 min-h-[400px]">
             <h2 className="text-3xl md:text-4xl font-black uppercase text-center">Congrats!</h2>
             <p className="text-lg text-gray-700 text-center max-w-md">

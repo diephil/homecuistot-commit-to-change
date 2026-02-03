@@ -59,10 +59,9 @@ export type IngredientExtractionResponse = z.infer<typeof IngredientExtractionSc
 
 /**
  * T038: PersistRequest schema for onboarding
- * Accepts cookingSkill and ingredients only (uses static recipes)
+ * Accepts ingredients and pantryStaples only
  */
 export const PersistRequestSchema = z.object({
-  cookingSkill: z.enum(['basic', 'advanced']).optional().default('basic'),
   ingredients: z.array(z.string().min(1).max(100)).max(100),
   pantryStaples: z.array(z.string().min(1).max(100)).max(100).optional().default([]),
 });
@@ -74,7 +73,6 @@ export type PersistRequest = z.infer<typeof PersistRequestSchema>;
  */
 export interface PersistResponse {
   success: boolean;
-  recipesCreated: number;
   inventoryCreated: number;
   unrecognizedCount: number;
 }
