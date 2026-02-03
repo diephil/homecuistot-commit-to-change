@@ -20,7 +20,7 @@ export function createRecipeManagerAgent(params: {
   return new LlmAgent({
     name: PROMPT.name,
     description: PROMPT.description,
-    model: "gemini-2.0-flash",
+    model: "gemini-2.5-flash-lite",
     instruction: PROMPT.prompt,
     tools: [
       createCreateRecipesTool(params),

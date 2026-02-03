@@ -18,7 +18,7 @@ export interface CreateInventoryAgentParams {
 }
 
 export function createInventoryAgent(params: CreateInventoryAgentParams) {
-  const { userId, model = "gemini-2.0-flash", opikTrace } = params;
+  const { userId, model = "gemini-2.5-flash-lite", opikTrace } = params;
 
   return new LlmAgent({
     name: PROMPT.name,
