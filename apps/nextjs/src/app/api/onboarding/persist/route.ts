@@ -175,14 +175,7 @@ export async function POST(request: NextRequest) {
         }
       }
 
-      // Ensure all recipe ingredients exist in inventory (quantityLevel=0 for missing)
-      await ensureIngredientsInInventory({
-        tx,
-        userId,
-        ingredientIds: allRecipeIngredientIds,
-      });
-
-      // T044: Insert user_inventory entries (quantity_level=3) for user ingredients
+      // T044: Insert user_inventory entries (quantity_level=3) for user-selected ingredients FIRST
       const userIngredientLower = userIngredientNames.map((n) => n.toLowerCase());
 
       for (const name of userIngredientLower) {
@@ -220,6 +213,14 @@ export async function POST(request: NextRequest) {
           }
         }
       }
+
+      // Ensure all recipe ingredients exist in inventory (quantityLevel=0 for missing)
+      // This runs AFTER user-selected ingredients, so it only adds NEW ingredients at level 0
+      await ensureIngredientsInInventory({
+        tx,
+        userId,
+        ingredientIds: allRecipeIngredientIds,
+      });
 
       return {
         recipesCreated,

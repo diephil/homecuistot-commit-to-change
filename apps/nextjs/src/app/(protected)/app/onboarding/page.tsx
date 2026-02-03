@@ -22,7 +22,7 @@ interface OnboardingState {
   currentStep: 1 | 2 | 3 | 4;
   cookingSkill: CookingSkill | null;
   selectedIngredients: string[];
-  step2Ingredients: string[]; // Track ingredients from Step 2
+  voiceAddedIngredients: string[]; // Track ingredients added via voice/text in Step 3
   hasVoiceChanges: boolean;
 }
 
@@ -30,7 +30,7 @@ const initialState: OnboardingState = {
   currentStep: 1,
   cookingSkill: null,
   selectedIngredients: [],
-  step2Ingredients: [],
+  voiceAddedIngredients: [],
   hasVoiceChanges: false,
 };
 
@@ -70,7 +70,6 @@ function OnboardingPageContent() {
     setState((prev) => ({
       ...prev,
       currentStep: 3,
-      step2Ingredients: [...prev.selectedIngredients], // Snapshot Step 2 selections
     }));
   };
 
@@ -154,9 +153,18 @@ function OnboardingPageContent() {
               )
           );
 
+          // Track newly voice-added ingredients, remove voice-tracked ones that got removed
+          const updatedVoiceAdded = prev.voiceAddedIngredients.filter(
+            (name) =>
+              !result.rm.some(
+                (toRemove) => toRemove.toLowerCase() === name.toLowerCase()
+              )
+          );
+
           return {
             ...prev,
             selectedIngredients: [...updatedIngredients, ...newIngredients],
+            voiceAddedIngredients: [...updatedVoiceAdded, ...newIngredients],
             hasVoiceChanges: true,
           };
         });
@@ -427,7 +435,7 @@ function OnboardingPageContent() {
                 <>
                   <div className="flex flex-wrap gap-2">
                     {state.selectedIngredients.map((name) => {
-                      const isVoiceAdded = !state.step2Ingredients.includes(name);
+                      const isVoiceAdded = state.voiceAddedIngredients.includes(name);
                       return (
                         <IngredientChip
                           key={name}
@@ -439,10 +447,10 @@ function OnboardingPageContent() {
                     })}
                   </div>
                   {/* Legend for visual differentiation */}
-                  {state.selectedIngredients.some((name) => !state.step2Ingredients.includes(name)) && (
+                  {state.voiceAddedIngredients.length > 0 && (
                     <p className="text-xs text-gray-500 mt-2 italic">
                       <span className="inline-block w-3 h-3 bg-cyan-200 border border-cyan-500 rounded mr-1" />
-                      Added in step 3
+                      Added following user instructions
                     </p>
                   )}
                 </>
