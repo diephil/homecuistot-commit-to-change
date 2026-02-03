@@ -3,7 +3,6 @@
 import { createClient } from "@/utils/supabase/client";
 import { Button } from "@/components/shared/Button";
 import { Text } from "@/components/shared/Text";
-import { Logo } from "@/components/shared/Logo";
 import { Header } from "@/components/shared/Header";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
@@ -63,11 +62,8 @@ export default function LoginPage() {
             <div className="flex flex-col items-center gap-6 md:gap-8">
               {/* Heading section */}
           <div className="text-center">
-            <Text as="h1" className="text-3xl md:text-5xl font-black uppercase mb-2 md:mb-3 leading-tight tracking-tight">
+            <Text as="h1" className="text-3xl md:text-5xl font-black uppercase leading-tight tracking-tight">
               Get Started
-            </Text>
-            <Text as="p" className="text-base md:text-xl font-bold">
-              See what you can cook tonight
             </Text>
           </div>
 
@@ -83,16 +79,16 @@ export default function LoginPage() {
             <Button
               onClick={handleGoogleLogin}
               variant="default"
-              size="lg"
+              size="md"
               className={cn(
-                "w-full justify-center gap-3 bg-cyan-400 hover:bg-cyan-500 border-4 border-black font-black uppercase text-base md:text-lg",
-                "shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]",
-                "hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] md:hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]",
-                "hover:translate-x-[2px] hover:translate-y-[2px] md:hover:translate-x-[3px] md:hover:translate-y-[3px]",
-                "transition-all md:transform md:hover:rotate-1 py-7 md:py-9"
+                "w-full justify-center gap-2 bg-cyan-400 hover:bg-cyan-500 border-4 border-black font-black uppercase text-sm md:text-base",
+                "shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] md:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]",
+                "hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] md:hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]",
+                "hover:translate-x-[2px] hover:translate-y-[2px]",
+                "transition-all md:transform md:hover:rotate-1 py-4 md:py-5"
               )}
             >
-              <svg className="h-5 w-5 md:h-6 md:w-6" viewBox="0 0 24 24">
+              <svg className="h-4 w-4 md:h-5 md:w-5" viewBox="0 0 24 24">
                 <path
                   fill="currentColor"
                   d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
