@@ -164,13 +164,11 @@ export function MarkCookedModal(props: MarkCookedModalProps) {
                         changeIndicator={
                           diff.isPantryStaple
                             ? undefined
-                            : diff.proposedQuantity !== diff.currentQuantity
-                              ? {
-                                  type: 'quantity',
-                                  previousQuantity: diff.currentQuantity,
-                                  proposedQuantity: diff.proposedQuantity,
-                                }
-                              : undefined
+                            : {
+                                type: 'quantity',
+                                previousQuantity: diff.currentQuantity,
+                                proposedQuantity: diff.proposedQuantity,
+                              }
                         }
                       />
                     ))}
