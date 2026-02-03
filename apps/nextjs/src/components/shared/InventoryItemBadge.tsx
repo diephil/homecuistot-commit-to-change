@@ -20,7 +20,7 @@ export interface InventoryItemBadgeProps {
   hideDiff?: boolean;
   /** Show change indicator pill */
   changeIndicator?: {
-    type: "quantity" | "toStaple" | "fromStaple";
+    type: "quantity" | "toStaple" | "fromStaple" | "new";
     previousQuantity?: number;
     proposedQuantity?: number;
   };
@@ -100,6 +100,11 @@ export function InventoryItemBadge({
           {useWord
             ? "ALWAYS"
             : `∞ → ${changeIndicator.proposedQuantity ?? 3}`}
+        </span>
+      )}
+      {!hideDiff && changeIndicator?.type === "new" && (
+        <span className="absolute -top-3 -left-1 bg-blue-400 border-2 border-black text-xs px-2 py-0.5 rounded-full font-bold">
+          NEW
         </span>
       )}
     </div>

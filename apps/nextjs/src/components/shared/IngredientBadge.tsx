@@ -117,9 +117,9 @@ function DotMatrix({ level, isStaple }: { level: QuantityLevel; isStaple?: boole
 
 // Word Label Variant
 export const quantityWords: Record<QuantityLevel, { label: string; color: string }> = {
-  0: { label: "CRITICAL", color: "text-red-600/60" },
+  0: { label: "NO MORE", color: "text-red-600/60" },
   1: { label: "ENOUGH", color: "text-orange-600/60" },
-  2: { label: "SEVERAL", color: "text-yellow-600/60" },
+  2: { label: "SOME", color: "text-yellow-600/60" },
   3: { label: "PLENTY", color: "text-green-600/60" },
 };
 
@@ -128,7 +128,7 @@ function WordLabel({ level, isStaple }: { level: QuantityLevel; isStaple?: boole
     return <span className="text-blue-600/60 font-black text-xs translate-y-px">ALWAYS</span>;
   }
   const { label, color } = quantityWords[level];
-  return <span className={cn("font-black text-xs translate-y-px", color)}>{label}</span>;
+  return <span className={cn("font-black text-xs translate-y-px min-w-[60px]", color)}>{label}</span>;
 }
 
 // Fill Level Gauge Variant (Option 3)
