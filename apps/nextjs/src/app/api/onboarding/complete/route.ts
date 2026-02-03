@@ -1,11 +1,19 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { revalidatePath } from 'next/cache';
-import { createClient } from '@/utils/supabase/server';
-import { createUserDb, decodeSupabaseToken } from '@/db/client';
-import { userInventory, unrecognizedItems, userRecipes, recipeIngredients } from '@/db/schema';
-import { CompleteRequestSchema, type CompleteResponse } from '@/types/onboarding';
-import { matchIngredients } from '@/lib/services/ingredient-matcher';
-import { ensureRecipeIngredientsAtQuantity } from '@/db/services/ensure-recipe-ingredients-at-quantity';
+import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
+import { createClient } from "@/utils/supabase/server";
+import { createUserDb, decodeSupabaseToken } from "@/db/client";
+import {
+  userInventory,
+  unrecognizedItems,
+  userRecipes,
+  recipeIngredients,
+} from "@/db/schema";
+import {
+  CompleteRequestSchema,
+  type CompleteResponse,
+} from "@/types/onboarding";
+import { matchIngredients } from "@/lib/services/ingredient-matcher";
+import { ensureRecipeIngredientsAtQuantity } from "@/db/services/ensure-recipe-ingredients-at-quantity";
 
 /**
  * Onboarding Complete Route
@@ -25,7 +33,7 @@ export async function POST(request: NextRequest) {
     } = await supabase.auth.getUser();
 
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const {
@@ -33,7 +41,7 @@ export async function POST(request: NextRequest) {
     } = await supabase.auth.getSession();
 
     if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const userId = session.user.id;
@@ -46,8 +54,8 @@ export async function POST(request: NextRequest) {
 
     if (!parseResult.success) {
       return NextResponse.json(
-        { error: 'Invalid request body', details: parseResult.error.message },
-        { status: 400 }
+        { error: "Invalid request body", details: parseResult.error.message },
+        { status: 400 },
       );
     }
 
@@ -61,7 +69,7 @@ export async function POST(request: NextRequest) {
     const result = await db(async (tx) => {
       // Collect all ingredient names from user input + recipes
       const recipeIngredientNames = recipes.flatMap((r) =>
-        r.ingredients.map((i) => i.name.toLowerCase())
+        r.ingredients.map((i) => i.name.toLowerCase()),
       );
 
       const allIngredientNames = [
@@ -81,10 +89,10 @@ export async function POST(request: NextRequest) {
 
       // Create maps for quick lookup
       const ingredientMap = new Map(
-        matchResult.ingredients.map((i) => [i.name.toLowerCase(), i])
+        matchResult.ingredients.map((i) => [i.name.toLowerCase(), i]),
       );
       const unrecognizedMap = new Map(
-        matchResult.unrecognizedItems.map((u) => [u.rawText.toLowerCase(), u])
+        matchResult.unrecognizedItems.map((u) => [u.rawText.toLowerCase(), u]),
       );
 
       let inventoryCreated = 0;
@@ -99,8 +107,8 @@ export async function POST(request: NextRequest) {
             matchResult.unrecognizedItemsToCreate.map((rawText) => ({
               userId,
               rawText,
-              context: 'ingredient',
-            }))
+              context: "ingredient",
+            })),
           )
           .onConflictDoNothing()
           .returning();
@@ -117,7 +125,9 @@ export async function POST(request: NextRequest) {
       }
 
       // Insert user_inventory entries for user-selected ingredients (quantity=3)
-      const userIngredientLower = userIngredientNames.map((n) => n.toLowerCase());
+      const userIngredientLower = userIngredientNames.map((n) =>
+        n.toLowerCase(),
+      );
 
       for (const name of userIngredientLower) {
         const matched = ingredientMap.get(name);
@@ -250,7 +260,7 @@ export async function POST(request: NextRequest) {
               tx,
               userId,
               ingredientIds: recipeIngredientIds,
-              quantityLevel: 3,
+              quantityLevel: 1,
             });
           }
         }
@@ -265,7 +275,7 @@ export async function POST(request: NextRequest) {
     });
 
     // Invalidate onboarding page cache to prevent back button from showing onboarding again
-    revalidatePath('/app/onboarding');
+    revalidatePath("/app/onboarding");
 
     // Return response with stats
     const response: CompleteResponse = {
@@ -275,11 +285,11 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(response);
   } catch (error) {
-    console.error('[onboarding/complete] Error:', error);
+    console.error("[onboarding/complete] Error:", error);
 
     return NextResponse.json(
-      { error: 'Failed to complete onboarding' },
-      { status: 500 }
+      { error: "Failed to complete onboarding" },
+      { status: 500 },
     );
   }
 }
