@@ -20,6 +20,7 @@ export { FormModal } from "./FormModal";
 export { HelpModal, HelpSection, HelpExampleList } from "./HelpModal";
 export { IngredientChip } from "./IngredientChip";
 export { LastHeardDisplay } from "./LastHeardDisplay";
+export { Logo } from "./Logo";
 export { NeoHelpButton } from "./NeoHelpButton";
 export { QuickInputSection } from "./QuickInputSection";
 export { SectionHeader } from "./SectionHeader";

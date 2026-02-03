@@ -1,5 +1,6 @@
 import { Text } from "@/components/shared/Text";
 import { Button } from "@/components/shared/Button";
+import { Logo } from "@/components/shared/Logo";
 import Link from "next/link";
 
 export default function Home() {
@@ -9,16 +10,7 @@ export default function Home() {
       <header className="border-b-4 md:border-b-8 border-black bg-gradient-to-r from-pink-400 via-orange-400 to-yellow-400 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 md:px-8">
           <div className="flex items-center justify-between py-3 md:py-6">
-            <div className="flex items-center gap-2 md:gap-3 select-none">
-              <div className="w-10 h-10 md:w-16 md:h-16 bg-yellow-300 border-2 md:border-3 border-black flex items-center justify-center text-2xl md:text-4xl md:rotate-3">
-                🍳
-              </div>
-              <div className="flex flex-col">
-                <Text as="h1" className="text-xl md:text-4xl font-black uppercase tracking-tight md:transform md:-rotate-1">
-                  HomeCuistot
-                </Text>
-              </div>
-            </div>
+            <Logo />
             <div className="flex items-center gap-2 md:gap-4">
               <Button asChild variant="outline" size="sm" className="border-3 md:border-4 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] md:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] md:hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] md:hover:translate-x-[2px] md:hover:translate-y-[2px] transition-all font-black text-xs md:text-sm px-2 md:px-3">
                 <Link href="/login">Login</Link>

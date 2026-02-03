@@ -3,7 +3,7 @@
 import { createClient } from "@/utils/supabase/client";
 import { Button } from "@/components/shared/Button";
 import { Text } from "@/components/shared/Text";
-import { Badge } from "@/components/shared/Badge";
+import { Logo } from "@/components/shared/Logo";
 import { PageContainer } from "@/components/PageContainer";
 import { cn } from "@/lib/utils";
 
@@ -61,16 +61,8 @@ export default function LoginPage() {
       )}>
 
         <div className="flex flex-col items-center gap-6 md:gap-8">
-          {/* Logo badge */}
-          <div className={cn(
-            "bg-yellow-400 border-3 md:border-4 border-black px-6 py-3 md:px-8 md:py-4",
-            "shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]",
-            "md:transform md:rotate-2"
-          )}>
-            <Badge variant="solid" size="lg" className="text-xl md:text-2xl font-black uppercase bg-transparent border-0 shadow-none">
-              🍳 HomeCuistot
-            </Badge>
-          </div>
+          {/* Logo */}
+          <Logo />
 
           {/* Heading section */}
           <div className="text-center">
