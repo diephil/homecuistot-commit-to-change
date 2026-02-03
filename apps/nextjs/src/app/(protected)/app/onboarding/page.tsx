@@ -22,6 +22,7 @@ interface OnboardingState {
   currentStep: 1 | 2 | 3 | 4;
   cookingSkill: CookingSkill | null;
   selectedIngredients: string[];
+  step2Ingredients: string[]; // Track ingredients from Step 2
   hasVoiceChanges: boolean;
 }
 
@@ -29,6 +30,7 @@ const initialState: OnboardingState = {
   currentStep: 1,
   cookingSkill: null,
   selectedIngredients: [],
+  step2Ingredients: [],
   hasVoiceChanges: false,
 };
 
@@ -64,7 +66,11 @@ function OnboardingPageContent() {
 
   // T022: Continue to step 3, preserving selections
   const handleContinueToStep3 = () => {
-    setState((prev) => ({ ...prev, currentStep: 3 }));
+    setState((prev) => ({
+      ...prev,
+      currentStep: 3,
+      step2Ingredients: [...prev.selectedIngredients], // Snapshot Step 2 selections
+    }));
   };
 
   // T028-T037: Handle voice/text submission
@@ -203,10 +209,10 @@ function OnboardingPageContent() {
       console.error("[onboarding] Persist failed:", error);
     }
 
-    // Ensure minimum 4-second display
+    // Ensure minimum 2.5-second display
     const elapsed = Date.now() - startTime;
-    if (elapsed < 4000) {
-      await new Promise((r) => setTimeout(r, 4000 - elapsed));
+    if (elapsed < 2500) {
+      await new Promise((r) => setTimeout(r, 2500 - elapsed));
     }
 
     router.push("/app/inventory");
@@ -412,11 +418,28 @@ function OnboardingPageContent() {
               {state.selectedIngredients.length === 0 ? (
                 <p className="text-gray-500 italic">No ingredients selected</p>
               ) : (
-                <div className="flex flex-wrap gap-2">
-                  {state.selectedIngredients.map((name) => (
-                    <IngredientChip key={name} name={name} readOnly />
-                  ))}
-                </div>
+                <>
+                  <div className="flex flex-wrap gap-2">
+                    {state.selectedIngredients.map((name) => {
+                      const isVoiceAdded = !state.step2Ingredients.includes(name);
+                      return (
+                        <IngredientChip
+                          key={name}
+                          name={name}
+                          readOnly
+                          variant={isVoiceAdded ? "voice" : "default"}
+                        />
+                      );
+                    })}
+                  </div>
+                  {/* Legend for visual differentiation */}
+                  {state.selectedIngredients.some((name) => !state.step2Ingredients.includes(name)) && (
+                    <p className="text-xs text-gray-500 mt-2 italic">
+                      <span className="inline-block w-3 h-3 bg-cyan-200 border border-cyan-500 rounded mr-1" />
+                      Added in step 3
+                    </p>
+                  )}
+                </>
               )}
             </div>
 

@@ -16,6 +16,7 @@ interface IngredientChipProps {
   name: string;
   selected?: boolean;
   readOnly?: boolean;
+  variant?: "default" | "voice";
   onToggle?: () => void;
   className?: string;
 }
@@ -24,6 +25,7 @@ export function IngredientChip({
   name,
   selected = false,
   readOnly = false,
+  variant = "default",
   onToggle,
   className,
 }: IngredientChipProps) {
@@ -44,7 +46,7 @@ export function IngredientChip({
 
   // Visual states per spec
   const baseStyles =
-    "inline-flex items-center px-3 py-2 rounded font-bold text-sm transition-all";
+    "inline-flex items-center px-3 py-2 rounded font-bold text-sm transition-all capitalize";
 
   const selectableStyles = cn(
     // Default (unselected)
@@ -57,8 +59,11 @@ export function IngredientChip({
     "cursor-pointer focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2"
   );
 
-  const readOnlyStyles =
-    "bg-gray-200 border-2 border-gray-400 opacity-75 cursor-default";
+  const readOnlyStyles = cn(
+    variant === "voice"
+      ? "bg-cyan-200 border-2 border-cyan-500 opacity-90 cursor-default" // Voice-added: cyan
+      : "bg-gray-200 border-2 border-gray-400 opacity-75 cursor-default" // Default: gray
+  );
 
   return (
     <span
