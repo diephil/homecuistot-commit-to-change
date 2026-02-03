@@ -12,7 +12,7 @@ export function AppHeaderContent() {
   return (
     <>
       <div className="max-w-7xl mx-auto flex justify-between items-center">
-        <Logo href="/app" size="md" />
+        <Logo href={isOnboarding ? undefined : "/app"} size="md" />
         <LogoutButton />
       </div>
       {!isOnboarding && <AppNavigation />}
