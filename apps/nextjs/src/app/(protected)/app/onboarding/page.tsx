@@ -272,11 +272,6 @@ function OnboardingPageContent() {
     [state.selectedIngredients, state.selectedPantryStaples]
   );
 
-  // T022: Go back to step 2
-  const handleBackToStep2 = () => {
-    setState((prev) => ({ ...prev, currentStep: 2 }));
-  };
-
   // Continue to step 4
   const handleContinueToStep4 = () => {
     setState((prev) => ({ ...prev, currentStep: 4 }));
@@ -397,21 +392,27 @@ function OnboardingPageContent() {
     const startTime = Date.now();
 
     try {
-      const response = await fetch("/api/onboarding/persist", {
+      const response = await fetch("/api/onboarding/complete", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ingredients: state.selectedIngredients,
           pantryStaples: state.selectedPantryStaples,
+          recipes: state.recipes,
         }),
       });
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ error: "Unknown error" }));
-        console.error("[onboarding] Persist error:", errorData);
+        console.error("[onboarding] Complete error:", errorData);
+        toast.error("Some data may not have been saved");
+      } else {
+        const result = await response.json();
+        console.log("[onboarding] Setup complete:", result);
       }
     } catch (error) {
-      console.error("[onboarding] Persist failed:", error);
+      console.error("[onboarding] Complete failed:", error);
+      toast.error("Some data may not have been saved");
     }
 
     // Ensure minimum 2.5-second display
@@ -500,6 +501,24 @@ function OnboardingPageContent() {
                     />
                   );
                 })}
+                {/* Voice-added ingredients (not in predefined list) */}
+                {state.selectedIngredients
+                  .filter(
+                    (name) =>
+                      !COMMON_INGREDIENTS.some(
+                        (ing) => ing.name.toLowerCase() === name.toLowerCase()
+                      )
+                  )
+                  .map((name) => (
+                    <IngredientChip
+                      key={`voice-${name}`}
+                      name={name}
+                      selected={true}
+                      selectionColor="green"
+                      onToggle={() => toggleIngredient(name)}
+                      variant="voice"
+                    />
+                  ))}
               </div>
             </div>
 
@@ -531,11 +550,48 @@ function OnboardingPageContent() {
                     />
                   );
                 })}
+                {/* Voice-added pantry staples (not in predefined list) */}
+                {state.selectedPantryStaples
+                  .filter(
+                    (name) =>
+                      !PANTRY_STAPLES.some(
+                        (ing) => ing.name.toLowerCase() === name.toLowerCase()
+                      )
+                  )
+                  .map((name) => (
+                    <IngredientChip
+                      key={`voice-pantry-${name}`}
+                      name={name}
+                      selected={true}
+                      selectionColor="blue"
+                      onToggle={() => togglePantryStaple(name)}
+                      variant="voice"
+                    />
+                  ))}
               </div>
 
               {canProceedToStep3 && (
                 <p className="text-sm text-gray-500 italic animate-in fade-in duration-200">
                   No worries, you can add more ingredients in later steps!
+                </p>
+              )}
+
+              {/* Legend for voice-added ingredients */}
+              {(state.selectedIngredients.some(
+                  (name) =>
+                    !COMMON_INGREDIENTS.some(
+                      (ing) => ing.name.toLowerCase() === name.toLowerCase()
+                    )
+                ) ||
+                state.selectedPantryStaples.some(
+                  (name) =>
+                    !PANTRY_STAPLES.some(
+                      (ing) => ing.name.toLowerCase() === name.toLowerCase()
+                    )
+                )) && (
+                <p className="text-xs text-gray-500 mt-2 italic">
+                  <span className="inline-block w-3 h-3 bg-cyan-300 border-2 border-black rounded mr-1" />
+                  Added via voice/text in later steps
                 </p>
               )}
             </div>
@@ -640,15 +696,7 @@ function OnboardingPageContent() {
             )}
 
             {/* T025: Next Step button (enabled when 1+ ingredients) */}
-            <div className="flex justify-between items-center mt-6 gap-4">
-              <Button
-                onClick={handleBackToStep2}
-                variant="outline"
-                size="lg"
-                className="min-h-[44px] cursor-pointer"
-              >
-                Back
-              </Button>
+            <div className="flex justify-end mt-6">
               <Button
                 onClick={handleContinueToStep4}
                 disabled={!canCompleteSetup}

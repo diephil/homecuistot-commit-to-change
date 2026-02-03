@@ -56,10 +56,13 @@ export function IngredientChip({
       : "bg-green-400"
     : "bg-white";
 
+  // Apply voice variant styling even when selectable
+  const voiceVariantBg = variant === "voice" && selected ? "bg-cyan-300" : selectedBgColor;
+
   const selectableStyles = cn(
     // Default (unselected)
     "border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]",
-    selectedBgColor,
+    voiceVariantBg,
     // Hover effect (selectable only)
     "hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px]",
     "cursor-pointer focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2"

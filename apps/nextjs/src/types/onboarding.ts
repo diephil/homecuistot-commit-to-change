@@ -76,3 +76,35 @@ export interface PersistResponse {
   inventoryCreated: number;
   unrecognizedCount: number;
 }
+
+/**
+ * CompleteRequest schema for onboarding completion
+ * Accepts ingredients, pantryStaples, and recipes
+ */
+export const CompleteRequestSchema = z.object({
+  ingredients: z.array(z.string().min(1).max(100)).max(100),
+  pantryStaples: z.array(z.string().min(1).max(100)).max(100).default([]),
+  recipes: z.array(z.object({
+    id: z.string(),
+    name: z.string().min(1).max(200),
+    description: z.string().optional(),
+    ingredients: z.array(z.object({
+      id: z.string(),
+      name: z.string().min(1).max(100),
+      type: z.enum(['anchor', 'optional']),
+    })),
+  })).max(20),
+});
+
+export type CompleteRequest = z.infer<typeof CompleteRequestSchema>;
+
+/**
+ * CompleteResponse with comprehensive stats
+ */
+export interface CompleteResponse {
+  success: boolean;
+  inventoryCreated: number;
+  recipesCreated: number;
+  unrecognizedIngredients: number;
+  unrecognizedRecipeIngredients: number;
+}
