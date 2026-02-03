@@ -12,17 +12,20 @@ interface ProcessTextInputParams {
   currentContext: {
     ingredients: string[];
   };
+  userId?: string;
 }
 
 export async function processTextInput(
   params: ProcessTextInputParams,
 ): Promise<IngredientExtractionResponse> {
-  const { text, currentContext } = params;
+  const { text, currentContext, userId } = params;
+
+  const userTag = userId ? [`user:${userId}`] : [];
 
   const traceCtx = createAgentTrace({
     name: "onboarding-text-input",
     input: { text, currentIngredients: currentContext.ingredients },
-    tags: ["onboarding", "text-input", "ingredient-extraction"],
+    tags: [...userTag, "onboarding", "text-input", "ingredient-extraction"],
     metadata: {
       inputType: "text",
       domain: "onboarding",
@@ -36,6 +39,7 @@ export async function processTextInput(
       parentTrace: traceCtx.trace,
       opikClient: getOpikClient(),
       model: "gemini-2.5-flash-lite",
+      userId,
     });
 
     traceCtx.trace.update({ output: result });

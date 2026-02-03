@@ -4,6 +4,7 @@ import { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { RecipeAvailabilityCard } from '@/components/app/RecipeAvailabilityCard'
 import { MarkCookedModal } from '@/components/app/MarkCookedModal'
+import { CookAnywayModal } from '@/components/app/CookAnywayModal'
 import type { RecipeWithAvailability } from '@/types/cooking'
 
 export interface RecipeSectionProps {
@@ -62,19 +63,31 @@ export function RecipeSection(props: RecipeSectionProps) {
               key={recipe.id}
               recipe={recipe}
               variant={variant}
-              onMarkAsCooked={variant === 'available' ? handleMarkAsCooked : undefined}
+              onMarkAsCooked={handleMarkAsCooked}
             />
           ))}
         </div>
       )}
 
-      {/* Mark as Cooked Modal */}
-      <MarkCookedModal
-        recipe={selectedRecipe}
-        isOpen={isModalOpen}
-        onClose={handleModalClose}
-        onSuccess={handleSuccess}
-      />
+      {/* Mark as Cooked Modal (available recipes) */}
+      {variant === 'available' && (
+        <MarkCookedModal
+          recipe={selectedRecipe}
+          isOpen={isModalOpen}
+          onClose={handleModalClose}
+          onSuccess={handleSuccess}
+        />
+      )}
+
+      {/* Cook it Anyway Modal (almost-available recipes) */}
+      {variant === 'almost-available' && (
+        <CookAnywayModal
+          recipe={selectedRecipe}
+          isOpen={isModalOpen}
+          onClose={handleModalClose}
+          onSuccess={handleSuccess}
+        />
+      )}
     </section>
   )
 }

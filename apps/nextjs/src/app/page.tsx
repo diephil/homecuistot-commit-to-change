@@ -1,35 +1,12 @@
 import { Text } from "@/components/shared/Text";
 import { Button } from "@/components/shared/Button";
+import { Header } from "@/components/shared/Header";
 import Link from "next/link";
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-amber-50">
-      {/* Header */}
-      <header className="border-b-4 md:border-b-8 border-black bg-gradient-to-r from-pink-400 via-orange-400 to-yellow-400 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 md:px-8">
-          <div className="flex items-center justify-between py-3 md:py-6">
-            <div className="flex items-center gap-2 md:gap-3">
-              <div className="w-10 h-10 md:w-16 md:h-16 bg-yellow-300 border-3 md:border-4 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] md:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex items-center justify-center text-2xl md:text-4xl md:rotate-3 hover:rotate-0 transition-transform">
-                🍳
-              </div>
-              <div className="flex flex-col">
-                <Text as="h1" className="text-xl md:text-4xl font-black uppercase tracking-tight md:transform md:-rotate-1">
-                  HomeCuistot
-                </Text>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 md:gap-4">
-              <Button asChild variant="outline" size="sm" className="border-3 md:border-4 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] md:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] md:hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] md:hover:translate-x-[2px] md:hover:translate-y-[2px] transition-all font-black text-xs md:text-sm px-2 md:px-3">
-                <Link href="/login">Login</Link>
-              </Button>
-              <Button asChild variant="default" size="sm" className="bg-pink-400 hover:bg-pink-500 border-3 md:border-4 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] md:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] md:hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] md:hover:translate-x-[2px] md:hover:translate-y-[2px] transition-all font-black text-xs md:text-sm px-2 md:px-3">
-                <Link href="/app">Go to App</Link>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header variant="landing" logoClickable={true} />
 
       {/* Hero Section */}
       <section className="py-12 md:py-32 relative overflow-hidden">
@@ -47,12 +24,9 @@ export default function Home() {
             <Text as="p" className="text-lg md:text-3xl font-black text-zinc-800 md:transform md:rotate-1">
               See what you can cook tonight — instantly. No browsing, no guessing, no mental math.
             </Text>
-            <div className="pt-4 md:pt-8 flex flex-col sm:flex-row gap-3 md:gap-4 justify-center items-stretch sm:items-center px-4">
+            <div className="pt-4 md:pt-8 flex justify-center px-4">
               <Button asChild size="lg" className="text-lg md:text-3xl px-8 md:px-16 py-5 md:py-8 bg-pink-400 hover:bg-pink-500 border-4 md:border-6 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] md:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] md:hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[3px] hover:translate-y-[3px] md:hover:translate-x-[4px] md:hover:translate-y-[4px] transition-all font-black uppercase md:transform md:-rotate-2">
                 <Link href="/login">Get Started Free →</Link>
-              </Button>
-              <Button asChild size="lg" variant="outline" className="text-base md:text-2xl px-6 md:px-12 py-5 md:py-8 bg-white border-4 md:border-6 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] md:hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] md:hover:translate-x-[4px] md:hover:translate-y-[4px] transition-all font-black uppercase md:transform md:rotate-1">
-                <Link href="#how-it-works">See How It Works ↓</Link>
               </Button>
             </div>
           </div>

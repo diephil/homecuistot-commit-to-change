@@ -6,6 +6,7 @@ import { createUserDb, decodeSupabaseToken } from "@/db/client";
 import { userRecipes, recipeIngredients, ingredients } from "@/db/schema";
 import { eq, and, asc, sql } from "drizzle-orm";
 import type { IngredientType } from "@/db/schema/enums";
+import { ensureIngredientsInInventory } from "@/db/services/ensure-ingredients-in-inventory";
 
 // Get all recipes for current user
 export async function getRecipes(params?: { limit?: number }) {
@@ -98,6 +99,17 @@ export async function createRecipe(params: {
           ingredientType: ing.ingredientType,
         })),
       );
+
+      // Ensure all ingredients exist in user inventory
+      const ingredientIds = params.ingredients
+        .map((ing) => ing.ingredientId)
+        .filter((id): id is string => id !== null && id !== undefined);
+
+      await ensureIngredientsInInventory({
+        tx,
+        userId: session.user.id,
+        ingredientIds,
+      });
     }
 
     return recipe;
@@ -168,6 +180,17 @@ export async function updateRecipe(params: {
           ingredientType: ing.ingredientType,
         })),
       );
+
+      // Ensure all ingredients exist in user inventory
+      const ingredientIds = params.ingredients
+        .map((ing) => ing.ingredientId)
+        .filter((id): id is string => id !== null && id !== undefined);
+
+      await ensureIngredientsInInventory({
+        tx,
+        userId: session.user.id,
+        ingredientIds,
+      });
     }
   });
 

@@ -1836,32 +1836,32 @@ const DATASET_ENTRIES: RecipeDatasetItem[] = [
     expected_output: {
       recipes: [
         {
-          operation: "update",
-          recipeId: "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-          previousState: {
-            id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-            title: "Pasta Carbonara",
-            description: "Classic Italian pasta",
-            ingredients: [
-              {
-                name: "pasta",
-                isRequired: true,
-              },
-            ],
-          },
-          proposedState: {
-            title: "Spaghetti",
-            description: "Classic Italian pasta",
-            ingredients: [
-              {
-                ingredientId: "d958b816-296a-4860-a4c8-d9b5d96d5e84",
-                name: "pasta",
-                isRequired: true,
-              },
-            ],
-          },
-          matched: [],
-          unrecognized: [],
+          operation: "delete_batch",
+          results: [
+            {
+              recipeId: RECIPE_IDS.carbonara,
+              title: "Pasta Carbonara",
+              found: true,
+            },
+          ],
+          totalDeleted: 1,
+          totalNotFound: 0,
+        },
+        {
+          operation: "create_batch",
+          results: [
+            {
+              operation: "create",
+              index: 0,
+              title: "Spaghetti",
+              description: "",
+              ingredients: [],
+              matched: [],
+              unrecognized: [],
+            },
+          ],
+          totalCreated: 1,
+          totalUnrecognized: 0,
         },
       ],
       noChangesDetected: false,
@@ -1878,7 +1878,7 @@ const DATASET_ENTRIES: RecipeDatasetItem[] = [
       input_locale: "en",
       category: "mixed_ops",
       comment: "Replace = Delete + Create",
-      version: 1,
+      version: 2,
     },
   },
 ];

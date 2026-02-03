@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createClient } from '@/utils/supabase/server';
 import { processVoiceInput } from '@/lib/prompts/onboarding-voice/process';
 import { IngredientExtractionSchema } from '@/types/onboarding';
 
@@ -14,6 +15,17 @@ export const maxDuration = 15; // 15 second timeout per spec
 
 export async function POST(request: NextRequest) {
   try {
+    // Get user ID from session
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
     const body = await request.json();
 
     // Validate request body
@@ -38,7 +50,8 @@ export async function POST(request: NextRequest) {
     // Process via Gemini with opik tracing
     const result = await processVoiceInput({
       audioBase64: body.audioBase64,
-      currentContext
+      currentContext,
+      userId: user.id,
     });
 
     // Validate response schema

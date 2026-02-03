@@ -10,23 +10,22 @@ import { X, Loader2, Check } from 'lucide-react'
 
 type ModalStage = 'confirmation' | 'processing' | 'success' | 'error'
 
-export interface MarkCookedModalProps {
+export interface CookAnywayModalProps {
   recipe: RecipeWithAvailability | null
   isOpen: boolean
   onClose: () => void
   onSuccess?: () => void
 }
 
-export function MarkCookedModal(props: MarkCookedModalProps) {
+export function CookAnywayModal(props: CookAnywayModalProps) {
   const { recipe, isOpen, onClose, onSuccess } = props
 
   const [stage, setStage] = useState<ModalStage>('confirmation')
   const [error, setError] = useState<string | null>(null)
-
-  // T012: Ingredient diffs with adjustable quantities
   const [ingredientDiffs, setIngredientDiffs] = useState<IngredientDiff[]>([])
 
-  // Initialize diffs when modal opens
+  // Initialize diffs: all anchors (including missing) + in-inventory optionals
+  // Available ingredients auto-decrement; missing show 0→0 (user can adjust)
   const initializeDiffs = useCallback((r: RecipeWithAvailability) => {
     const diffs = r.ingredients
       .filter((i) =>
@@ -37,8 +36,9 @@ export function MarkCookedModal(props: MarkCookedModalProps) {
         ingredientId: i.id,
         name: i.name,
         currentQuantity: i.currentQuantity,
-        // Default: decrement by 1, floor at 0 (pantry staples stay at 3)
-        proposedQuantity: i.isPantryStaple ? 3 : Math.max(0, i.currentQuantity - 1) as QuantityLevel,
+        proposedQuantity: i.isPantryStaple
+          ? 3
+          : Math.max(0, i.currentQuantity - 1) as QuantityLevel,
         isPantryStaple: i.isPantryStaple,
         isMissing: !i.inInventory,
       }))
@@ -47,7 +47,6 @@ export function MarkCookedModal(props: MarkCookedModalProps) {
     setError(null)
   }, [])
 
-  // Handle quantity change (tap to cycle 0-3)
   const handleQuantityChange = useCallback((params: { ingredientId: string; newQuantity: QuantityLevel }) => {
     setIngredientDiffs((prev) =>
       prev.map((d) =>
@@ -58,7 +57,6 @@ export function MarkCookedModal(props: MarkCookedModalProps) {
     )
   }, [])
 
-  // T013: Submit to server action
   const handleSave = async () => {
     if (!recipe) return
 
@@ -67,12 +65,12 @@ export function MarkCookedModal(props: MarkCookedModalProps) {
 
     // Exclude pantry staples from inventory updates
     // Missing ingredients included — user may have adjusted their quantity
-    const nonStapleDiffs = ingredientDiffs.filter((d) => !d.isPantryStaple)
+    const updatableDiffs = ingredientDiffs.filter((d) => !d.isPantryStaple)
 
     const result = await markRecipeAsCooked({
       recipeId: recipe.id,
       recipeName: recipe.name,
-      ingredientUpdates: nonStapleDiffs.map((d) => ({
+      ingredientUpdates: updatableDiffs.map((d) => ({
         ingredientId: d.ingredientId,
         newQuantity: d.proposedQuantity,
       })),
@@ -80,10 +78,9 @@ export function MarkCookedModal(props: MarkCookedModalProps) {
 
     if (result.success) {
       setStage('success')
-      // T015: Trigger page revalidation (handled by server action)
       setTimeout(() => {
         onSuccess?.()
-        setIngredientDiffs([]) // Reset diffs so next open uses fresh data
+        setIngredientDiffs([])
         setStage('confirmation')
         onClose()
       }, 1000)
@@ -93,7 +90,6 @@ export function MarkCookedModal(props: MarkCookedModalProps) {
     }
   }
 
-  // Reset on close
   const handleClose = () => {
     setStage('confirmation')
     setError(null)
@@ -108,6 +104,10 @@ export function MarkCookedModal(props: MarkCookedModalProps) {
 
   if (!isOpen || !recipe) return null
 
+  const regularDiffs = ingredientDiffs.filter((d) => !d.isPantryStaple && !d.isMissing)
+  const stapleDiffs = ingredientDiffs.filter((d) => d.isPantryStaple)
+  const missingDiffs = ingredientDiffs.filter((d) => d.isMissing)
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
@@ -121,8 +121,8 @@ export function MarkCookedModal(props: MarkCookedModalProps) {
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b-4 border-black bg-cyan-200">
-          <h2 className="text-xl font-black uppercase">Mark as Cooked</h2>
+        <div className="flex items-center justify-between p-4 border-b-4 border-black bg-orange-200">
+          <h2 className="text-xl font-black uppercase">Cook it Anyway</h2>
           <button
             onClick={handleClose}
             className="p-1 hover:bg-black/10 transition-colors"
@@ -142,95 +142,89 @@ export function MarkCookedModal(props: MarkCookedModalProps) {
 
               {ingredientDiffs.length > 0 ? (
                 <>
-                  {/* Regular ingredients section */}
-                  {ingredientDiffs.filter(d => !d.isPantryStaple && !d.isMissing).length > 0 && (
+                  {/* Regular ingredients — tap to adjust */}
+                  {regularDiffs.length > 0 && (
                     <>
                       <p className="text-sm font-semibold mb-3">
                         Your ingredients will be used as shown below.
                       </p>
                       <div className="flex flex-wrap gap-3 mb-4 pt-2">
-                        {ingredientDiffs
-                          .filter((diff) => !diff.isPantryStaple && !diff.isMissing)
-                          .map((diff) => (
-                            <InventoryItemBadge
-                              key={diff.ingredientId}
-                              name={diff.name}
-                              level={diff.proposedQuantity}
-                              isStaple={false}
-                              onLevelChange={(newLevel) =>
-                                handleQuantityChange({
-                                  ingredientId: diff.ingredientId,
-                                  newQuantity: newLevel,
-                                })
-                              }
-                              changeIndicator={{
-                                type: 'quantity',
-                                previousQuantity: diff.currentQuantity,
-                                proposedQuantity: diff.proposedQuantity,
-                              }}
-                            />
-                          ))}
+                        {regularDiffs.map((diff) => (
+                          <InventoryItemBadge
+                            key={diff.ingredientId}
+                            name={diff.name}
+                            level={diff.proposedQuantity}
+                            isStaple={false}
+                            onLevelChange={(newLevel) =>
+                              handleQuantityChange({
+                                ingredientId: diff.ingredientId,
+                                newQuantity: newLevel,
+                              })
+                            }
+                            changeIndicator={{
+                              type: 'quantity',
+                              previousQuantity: diff.currentQuantity,
+                              proposedQuantity: diff.proposedQuantity,
+                            }}
+                          />
+                        ))}
                       </div>
                     </>
                   )}
 
-                  {/* Pantry staples section */}
-                  {ingredientDiffs.filter(d => d.isPantryStaple).length > 0 && (
+                  {/* Pantry staples */}
+                  {stapleDiffs.length > 0 && (
                     <>
                       <p className="text-sm font-semibold mb-3 text-gray-600">
                         Pantry staples (always available):
                       </p>
                       <div className="flex flex-wrap gap-3 mb-4 pt-2">
-                        {ingredientDiffs
-                          .filter((diff) => diff.isPantryStaple)
-                          .map((diff) => (
-                            <div
-                              key={diff.ingredientId}
-                              className={cn(
-                                "inline-flex items-center gap-2 rounded-lg px-3 py-2",
-                                "border-2 border-blue-300 bg-blue-100",
-                                "text-sm font-medium",
-                                "min-w-24 cursor-default"
-                              )}
-                            >
-                              <span className="font-semibold truncate max-w-[120px] capitalize">
-                                {diff.name}
-                              </span>
-                              <span className="text-blue-600 font-bold text-base">∞</span>
-                            </div>
-                          ))}
+                        {stapleDiffs.map((diff) => (
+                          <div
+                            key={diff.ingredientId}
+                            className={cn(
+                              "inline-flex items-center gap-2 rounded-lg px-3 py-2",
+                              "border-2 border-blue-300 bg-blue-100",
+                              "text-sm font-medium",
+                              "min-w-24 cursor-default"
+                            )}
+                          >
+                            <span className="font-semibold truncate max-w-[120px] capitalize">
+                              {diff.name}
+                            </span>
+                            <span className="text-blue-600 font-bold text-base">∞</span>
+                          </div>
+                        ))}
                       </div>
                     </>
                   )}
 
-                  {/* Missing ingredients section */}
-                  {ingredientDiffs.filter(d => d.isMissing).length > 0 && (
+                  {/* Missing ingredients — not in inventory, tap to adjust */}
+                  {missingDiffs.length > 0 && (
                     <>
                       <p className="text-sm font-semibold mb-3 text-gray-600">
-                        Missing optional ingredients for this recipe.
+                        Missing ingredients for this recipe.
                       </p>
                       <div className="flex flex-wrap gap-3 mb-4 pt-2">
-                        {ingredientDiffs
-                          .filter((diff) => diff.isMissing)
-                          .map((diff) => (
-                            <InventoryItemBadge
-                              key={diff.ingredientId}
-                              name={diff.name}
-                              level={diff.proposedQuantity}
-                              isStaple={false}
-                              onLevelChange={(newLevel) =>
-                                handleQuantityChange({
-                                  ingredientId: diff.ingredientId,
-                                  newQuantity: newLevel,
-                                })
-                              }
-                              changeIndicator={{
-                                type: 'quantity',
-                                previousQuantity: diff.currentQuantity,
-                                proposedQuantity: diff.proposedQuantity,
-                              }}
-                            />
-                          ))}
+                        {missingDiffs.map((diff) => (
+                          <InventoryItemBadge
+                            key={diff.ingredientId}
+                            name={diff.name}
+                            level={diff.proposedQuantity}
+                            isStaple={false}
+                            onLevelChange={(newLevel) =>
+                              handleQuantityChange({
+                                ingredientId: diff.ingredientId,
+                                newQuantity: newLevel,
+                              })
+                            }
+                            changeIndicator={{
+                              type: 'quantity',
+                              previousQuantity: diff.currentQuantity,
+                              proposedQuantity: diff.proposedQuantity,
+                            }}
+                          />
+                        ))}
                       </div>
                     </>
                   )}

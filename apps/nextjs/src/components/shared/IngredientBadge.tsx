@@ -217,7 +217,7 @@ export const IngredientBadge = React.forwardRef<HTMLButtonElement, IngredientBad
         onClick={handleClick}
         {...props}
       >
-        <span className="font-semibold truncate max-w-[120px]">{name}</span>
+        <span className="font-semibold truncate max-w-[120px] capitalize">{name}</span>
 
         {variant === "battery" && <BatteryBars level={level} />}
         {variant === "dots" && !isStaple && <DotMatrix level={level} isStaple={isStaple} />}

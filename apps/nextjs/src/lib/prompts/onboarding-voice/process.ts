@@ -12,12 +12,15 @@ interface ProcessVoiceInputParams {
   currentContext: {
     ingredients: string[];
   };
+  userId?: string;
 }
 
 export async function processVoiceInput(
   params: ProcessVoiceInputParams,
 ): Promise<IngredientExtractionResponse> {
-  const { audioBase64, currentContext } = params;
+  const { audioBase64, currentContext, userId } = params;
+
+  const userTag = userId ? [`user:${userId}`] : [];
 
   const traceCtx = createAgentTrace({
     name: "onboarding-voice-input",
@@ -25,7 +28,7 @@ export async function processVoiceInput(
       audioSize: audioBase64.length,
       currentIngredients: currentContext.ingredients,
     },
-    tags: ["onboarding", "voice-input", "ingredient-extraction"],
+    tags: [...userTag, "onboarding", "voice-input", "ingredient-extraction"],
     metadata: {
       inputType: "voice",
       domain: "onboarding",
@@ -39,6 +42,7 @@ export async function processVoiceInput(
       parentTrace: traceCtx.trace,
       opikClient: getOpikClient(),
       model: "gemini-2.5-flash-lite",
+      userId,
     });
 
     traceCtx.trace.update({ output: result });

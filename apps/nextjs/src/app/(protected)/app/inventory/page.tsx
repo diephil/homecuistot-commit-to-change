@@ -13,6 +13,7 @@ import { VoiceTextInput, Separator } from "@/components/shared";
 import { InventoryDisplayItem, QuantityLevel, InventoryGroups, InventoryUpdateProposal } from "@/types/inventory";
 import { deleteUnrecognizedItem } from "@/app/actions/inventory";
 import { createClient } from "@/utils/supabase/client";
+import { Info } from "lucide-react";
 import { toast } from "sonner";
 
 // Feature 021: Unrecognized item type
@@ -32,6 +33,44 @@ export default function InventoryPage() {
   const [proposal, setProposal] = useState<InventoryUpdateProposal | null>(null);
   const [itemToDelete, setItemToDelete] = useState<InventoryDisplayItem | null>(null);
   const [lastTranscription, setLastTranscription] = useState<string | undefined>();
+  const [groupByCategory, setGroupByCategory] = useState(() => {
+    try {
+      if (typeof window === "undefined") return true;
+      return localStorage.getItem("inventory:groupByCategory") !== "false";
+    } catch { return true; }
+  });
+  const [showEmptyOnly, setShowEmptyOnly] = useState(() => {
+    try {
+      if (typeof window === "undefined") return false;
+      return localStorage.getItem("inventory:showEmptyOnly") === "true";
+    } catch { return false; }
+  });
+
+  // Banner dismiss state (persisted in localStorage)
+  const [bannerDismissed, setBannerDismissed] = useState(() => {
+    try {
+      if (typeof window === "undefined") return false;
+      return localStorage.getItem("banner:inventory:dismissed") === "true";
+    } catch { return false; }
+  });
+
+  const handleBannerDismiss = () => {
+    try { localStorage.setItem("banner:inventory:dismissed", "true"); } catch {}
+    setBannerDismissed(true);
+  };
+
+  const handleBannerRestore = () => {
+    try { localStorage.removeItem("banner:inventory:dismissed"); } catch {}
+    setBannerDismissed(false);
+  };
+
+  useEffect(() => {
+    try { localStorage.setItem("inventory:groupByCategory", String(groupByCategory)); } catch {}
+  }, [groupByCategory]);
+
+  useEffect(() => {
+    try { localStorage.setItem("inventory:showEmptyOnly", String(showEmptyOnly)); } catch {}
+  }, [showEmptyOnly]);
 
   // Sort items alphabetically by name
   const sortByName = (items: InventoryDisplayItem[]) =>
@@ -377,7 +416,23 @@ export default function InventoryPage() {
           </div>
 
           <div className="space-y-4">
-            <VoiceGuidanceCard />
+            {!bannerDismissed ? (
+              <VoiceGuidanceCard
+                onDismiss={handleBannerDismiss}
+              />
+            ) : (
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={handleBannerRestore}
+                  className="cursor-pointer border-2 border-black bg-cyan-200 p-1.5 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+                  aria-label="Show voice guidance"
+                  title="Show voice guidance"
+                >
+                  <Info className="h-4 w-4" />
+                </button>
+              </div>
+            )}
 
             <VoiceTextInput
               onSubmit={handleVoiceTextSubmit}
@@ -432,7 +487,23 @@ export default function InventoryPage() {
 
         {/* Voice Input Section */}
         <div className="space-y-4">
-          <VoiceGuidanceCard />
+          {!bannerDismissed ? (
+            <VoiceGuidanceCard
+              onDismiss={handleBannerDismiss}
+            />
+          ) : (
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={handleBannerRestore}
+                className="cursor-pointer border-2 border-black bg-cyan-200 p-1.5 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+                aria-label="Show voice guidance"
+                title="Show voice guidance"
+              >
+                <Info className="h-4 w-4" />
+              </button>
+            </div>
+          )}
 
           <VoiceTextInput
             onSubmit={handleVoiceTextSubmit}
@@ -451,6 +522,10 @@ export default function InventoryPage() {
           description="Tap the ingredient to adjust its quantity level to match what you have at home!"
           items={inventory.available}
           isPantrySection={false}
+          groupByCategory={groupByCategory}
+          showEmptyOnly={showEmptyOnly}
+          onToggleView={setGroupByCategory}
+          onToggleEmpty={setShowEmptyOnly}
           onQuantityChange={handleQuantityChange}
           onToggleStaple={handleToggleStaple}
           onDelete={handleDelete}
