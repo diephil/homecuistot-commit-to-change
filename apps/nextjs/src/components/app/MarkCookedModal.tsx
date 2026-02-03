@@ -30,10 +30,8 @@ export function MarkCookedModal(props: MarkCookedModalProps) {
   const initializeDiffs = useCallback((r: RecipeWithAvailability) => {
     const diffs = r.ingredients
       .filter((i) =>
-        // Include anchor ingredients in inventory
-        (i.type === 'anchor' && i.inInventory) ||
-        // Include optional ingredients in inventory with quantity >= 1
-        (i.type === 'optional' && i.inInventory && i.currentQuantity >= 1)
+        // Include all anchor and optional ingredients
+        i.type === 'anchor' || i.type === 'optional'
       )
       .map((i) => ({
         ingredientId: i.id,
@@ -42,6 +40,7 @@ export function MarkCookedModal(props: MarkCookedModalProps) {
         // Default: decrement by 1, floor at 0 (pantry staples stay at 3)
         proposedQuantity: i.isPantryStaple ? 3 : Math.max(0, i.currentQuantity - 1) as QuantityLevel,
         isPantryStaple: i.isPantryStaple,
+        isMissing: !i.inInventory,
       }))
     setIngredientDiffs(diffs)
     setStage('confirmation')
@@ -67,6 +66,7 @@ export function MarkCookedModal(props: MarkCookedModalProps) {
     setError(null)
 
     // Exclude pantry staples from inventory updates
+    // Missing ingredients included — user may have adjusted their quantity
     const nonStapleDiffs = ingredientDiffs.filter((d) => !d.isPantryStaple)
 
     const result = await markRecipeAsCooked({
@@ -143,14 +143,14 @@ export function MarkCookedModal(props: MarkCookedModalProps) {
               {ingredientDiffs.length > 0 ? (
                 <>
                   {/* Regular ingredients section */}
-                  {ingredientDiffs.filter(d => !d.isPantryStaple).length > 0 && (
+                  {ingredientDiffs.filter(d => !d.isPantryStaple && !d.isMissing).length > 0 && (
                     <>
                       <p className="text-sm font-semibold mb-3">
-                        Your inventory will be updated as shown below (tap to change):
+                        Your ingredients will be used as shown below.
                       </p>
                       <div className="flex flex-wrap gap-3 mb-4 pt-2">
                         {ingredientDiffs
-                          .filter((diff) => !diff.isPantryStaple)
+                          .filter((diff) => !diff.isPantryStaple && !diff.isMissing)
                           .map((diff) => (
                             <InventoryItemBadge
                               key={diff.ingredientId}
@@ -198,6 +198,38 @@ export function MarkCookedModal(props: MarkCookedModalProps) {
                               </span>
                               <span className="text-blue-600 font-bold text-base">∞</span>
                             </div>
+                          ))}
+                      </div>
+                    </>
+                  )}
+
+                  {/* Missing ingredients section */}
+                  {ingredientDiffs.filter(d => d.isMissing).length > 0 && (
+                    <>
+                      <p className="text-sm font-semibold mb-3 text-gray-600">
+                        Missing optional ingredients for this recipe.
+                      </p>
+                      <div className="flex flex-wrap gap-3 mb-4 pt-2">
+                        {ingredientDiffs
+                          .filter((diff) => diff.isMissing)
+                          .map((diff) => (
+                            <InventoryItemBadge
+                              key={diff.ingredientId}
+                              name={diff.name}
+                              level={diff.proposedQuantity}
+                              isStaple={false}
+                              onLevelChange={(newLevel) =>
+                                handleQuantityChange({
+                                  ingredientId: diff.ingredientId,
+                                  newQuantity: newLevel,
+                                })
+                              }
+                              changeIndicator={{
+                                type: 'quantity',
+                                previousQuantity: diff.currentQuantity,
+                                proposedQuantity: diff.proposedQuantity,
+                              }}
+                            />
                           ))}
                       </div>
                     </>

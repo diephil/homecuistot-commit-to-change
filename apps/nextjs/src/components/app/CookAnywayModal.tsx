@@ -29,8 +29,8 @@ export function CookAnywayModal(props: CookAnywayModalProps) {
   const initializeDiffs = useCallback((r: RecipeWithAvailability) => {
     const diffs = r.ingredients
       .filter((i) =>
-        i.type === 'anchor' ||
-        (i.type === 'optional' && i.inInventory && i.currentQuantity >= 1)
+        // Include all anchor and optional ingredients
+        i.type === 'anchor' || i.type === 'optional'
       )
       .map((i) => ({
         ingredientId: i.id,
@@ -146,7 +146,7 @@ export function CookAnywayModal(props: CookAnywayModalProps) {
                   {regularDiffs.length > 0 && (
                     <>
                       <p className="text-sm font-semibold mb-3">
-                        Adjust your inventory as needed (tap to change):
+                        Your ingredients will be used as shown below.
                       </p>
                       <div className="flex flex-wrap gap-3 mb-4 pt-2">
                         {regularDiffs.map((diff) => (
@@ -203,7 +203,7 @@ export function CookAnywayModal(props: CookAnywayModalProps) {
                   {missingDiffs.length > 0 && (
                     <>
                       <p className="text-sm font-semibold mb-3 text-gray-600">
-                        Missing from inventory (tap to change):
+                        Missing ingredients for this recipe.
                       </p>
                       <div className="flex flex-wrap gap-3 mb-4 pt-2">
                         {missingDiffs.map((diff) => (
