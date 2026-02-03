@@ -6,11 +6,11 @@ import { Button } from "@/components/shared/Button";
 import { InfoCard } from "@/components/shared/InfoCard";
 import { PageContainer } from "@/components/PageContainer";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { Loader2, Check, HelpCircle } from "lucide-react";
+import { Loader2, HelpCircle } from "lucide-react";
 import { IngredientChip, VoiceTextInput, HelpModal, HelpSection } from "@/components/shared";
 import { COMMON_INGREDIENTS } from "@/constants/onboarding";
 import { toast } from "sonner";
-import type { CookingSkill, IngredientExtractionResponse } from "@/types/onboarding";
+import type { IngredientExtractionResponse } from "@/types/onboarding";
 
 /**
  * Voice-Enabled Kitchen Onboarding Flow (Revamped)
@@ -20,7 +20,6 @@ import type { CookingSkill, IngredientExtractionResponse } from "@/types/onboard
 
 interface OnboardingState {
   currentStep: 1 | 2 | 3 | 4;
-  cookingSkill: CookingSkill | null;
   selectedIngredients: string[];
   voiceAddedIngredients: string[]; // Track ingredients added via voice/text in Step 3
   hasVoiceChanges: boolean;
@@ -28,7 +27,6 @@ interface OnboardingState {
 
 const initialState: OnboardingState = {
   currentStep: 1,
-  cookingSkill: null,
   selectedIngredients: [],
   voiceAddedIngredients: [],
   hasVoiceChanges: false,
@@ -45,11 +43,6 @@ function OnboardingPageContent() {
   // T009: Advance to step 2
   const handleGetStarted = () => {
     setState((prev) => ({ ...prev, currentStep: 2 }));
-  };
-
-  // T014: Select cooking skill
-  const handleSkillSelect = (skill: CookingSkill) => {
-    setState((prev) => ({ ...prev, cookingSkill: skill }));
   };
 
   // T019: Toggle ingredient selection
@@ -210,7 +203,6 @@ function OnboardingPageContent() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          cookingSkill: state.cookingSkill,
           ingredients: state.selectedIngredients,
         }),
       });
@@ -233,7 +225,7 @@ function OnboardingPageContent() {
   };
 
   // Derived state
-  const canProceedToStep3 = state.cookingSkill !== null && state.selectedIngredients.length >= 1;
+  const canProceedToStep3 = state.selectedIngredients.length >= 1;
   const canCompleteSetup = state.selectedIngredients.length >= 1;
 
   return (
@@ -244,8 +236,8 @@ function OnboardingPageContent() {
       gradientTo="to-cyan-50"
     >
       {/* FR-041-043: Help modal rendered outside transform container */}
-      <HelpModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} title="Choosing Your Level">
-        <HelpSection emoji="🍳" title="Basic" bgColor="bg-yellow-100">
+      <HelpModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} title="Your initial selection">
+        {/* <HelpSection emoji="🍳" title="Basic" bgColor="bg-yellow-100">
           <p className="text-sm">
             We&apos;ll seed your account with <strong>8 simple recipes</strong> that are
             quick and easy to prepare.
@@ -257,12 +249,11 @@ function OnboardingPageContent() {
             We&apos;ll seed your account with <strong>16 recipes</strong>, including
             more complex dishes that take a bit more time and technique.
           </p>
-        </HelpSection>
+        </HelpSection> */}
 
         <HelpSection emoji="✨" title="Don't Worry!" bgColor="bg-pink-100">
           <p className="text-sm">
-            <strong>Everything can be changed later.</strong> You can add, edit, or
-            remove recipes anytime after onboarding. There&apos;s no wrong choice here!
+            <strong>Everything can be changed later.</strong> You can still manage everything after the onboarding is complete. There&apos;s no wrong choice here!
           </p>
         </HelpSection>
       </HelpModal>
@@ -312,93 +303,30 @@ function OnboardingPageContent() {
               <HelpCircle className="h-6 w-6 stroke-[3px]" />
             </button>
 
-            {/* T014-T015: Cooking Skill Selection */}
+            {/* Ingredients Section */}
             <div className="space-y-4">
               <h2 className="text-2xl md:text-3xl font-black uppercase pr-16 md:pr-0">
-                What&apos;s your cooking level?
+                What ingredients do you usually have?
               </h2>
+              <p className="text-sm text-gray-600">Select all that apply</p>
 
-              <div className="flex flex-wrap gap-4">
-                {/* Basic Skill Button */}
-                <button
-                  onClick={() => handleSkillSelect("basic")}
-                  className={`
-                    flex items-center gap-3 px-6 py-4 rounded border-4 border-black
-                    shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]
-                    transition-all font-bold text-lg cursor-pointer
-                    ${
-                      state.cookingSkill === "basic"
-                        ? "bg-yellow-400"
-                        : state.cookingSkill === "advanced"
-                          ? "bg-gray-200 opacity-60"
-                          : "bg-white hover:bg-yellow-100"
-                    }
-                    ${
-                      state.cookingSkill === null || state.cookingSkill === "basic"
-                        ? "hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px]"
-                        : ""
-                    }
-                  `}
-                  aria-pressed={state.cookingSkill === "basic"}
-                >
-                  {state.cookingSkill === "basic" && <Check className="h-5 w-5" />}
-                  Basic
-                </button>
-
-                {/* Advanced Skill Button */}
-                <button
-                  onClick={() => handleSkillSelect("advanced")}
-                  className={`
-                    flex items-center gap-3 px-6 py-4 rounded border-4 border-black
-                    shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]
-                    transition-all font-bold text-lg cursor-pointer
-                    ${
-                      state.cookingSkill === "advanced"
-                        ? "bg-cyan-400"
-                        : state.cookingSkill === "basic"
-                          ? "bg-gray-200 opacity-60"
-                          : "bg-white hover:bg-cyan-100"
-                    }
-                    ${
-                      state.cookingSkill === null || state.cookingSkill === "advanced"
-                        ? "hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px]"
-                        : ""
-                    }
-                  `}
-                  aria-pressed={state.cookingSkill === "advanced"}
-                >
-                  {state.cookingSkill === "advanced" && <Check className="h-5 w-5" />}
-                  Advanced
-                </button>
+              <div className="flex flex-wrap gap-2">
+                {COMMON_INGREDIENTS.map((ingredient) => (
+                  <IngredientChip
+                    key={ingredient.name}
+                    name={ingredient.name}
+                    selected={state.selectedIngredients.includes(ingredient.name)}
+                    onToggle={() => toggleIngredient(ingredient.name)}
+                  />
+                ))}
               </div>
+
+              {canProceedToStep3 && (
+                <p className="text-sm text-gray-500 italic animate-in fade-in duration-200">
+                  You can add more ingredients in the next step using voice or text
+                </p>
+              )}
             </div>
-
-            {/* T016-T021: Ingredients Section (appears after skill selection) */}
-            {state.cookingSkill && (
-              <div className="space-y-4 mt-4 animate-in fade-in slide-in-from-bottom-4 duration-300">
-                <h3 className="text-lg font-black uppercase">What ingredients do you usually have?</h3>
-                <p className="text-sm text-gray-600">Select all that apply</p>
-
-                {/* T018: 16 COMMON_INGREDIENTS as IngredientChip grid */}
-                <div className="flex flex-wrap gap-2">
-                  {COMMON_INGREDIENTS.map((ingredient) => (
-                    <IngredientChip
-                      key={ingredient.name}
-                      name={ingredient.name}
-                      selected={state.selectedIngredients.includes(ingredient.name)}
-                      onToggle={() => toggleIngredient(ingredient.name)}
-                    />
-                  ))}
-                </div>
-
-                {/* T021: Hint text (only when skill + 1+ ingredients selected) */}
-                {canProceedToStep3 && (
-                  <p className="text-sm text-gray-500 italic animate-in fade-in duration-200">
-                    You can add more ingredients in the next step using voice or text
-                  </p>
-                )}
-              </div>
-            )}
 
             {/* T020: Next Step button (enabled when skill + 1+ ingredients) */}
             <div className="flex justify-end mt-4">
