@@ -60,28 +60,62 @@ function OnboardingPageContent() {
     setState((prev) => ({ ...prev, currentStep: 2 }));
   };
 
-  // T019: Toggle ingredient selection
+  // T019: Toggle ingredient selection with deduplication
   const toggleIngredient = (name: string) => {
     setState((prev) => {
       const isSelected = prev.selectedIngredients.includes(name);
+      // Check if exists in pantry staples (case-insensitive)
+      const existsInPantry = prev.selectedPantryStaples.some(
+        (n) => n.toLowerCase() === name.toLowerCase()
+      );
+
+      // If already selected in this array, remove it
+      if (isSelected) {
+        return {
+          ...prev,
+          selectedIngredients: prev.selectedIngredients.filter((n) => n !== name),
+        };
+      }
+
+      // If exists in other array, don't add (prevent duplicates)
+      if (existsInPantry) {
+        return prev;
+      }
+
+      // Add to ingredients
       return {
         ...prev,
-        selectedIngredients: isSelected
-          ? prev.selectedIngredients.filter((n) => n !== name)
-          : [...prev.selectedIngredients, name],
+        selectedIngredients: [...prev.selectedIngredients, name],
       };
     });
   };
 
-  // Toggle pantry staple selection
+  // Toggle pantry staple selection with deduplication
   const togglePantryStaple = (name: string) => {
     setState((prev) => {
       const isSelected = prev.selectedPantryStaples.includes(name);
+      // Check if exists in ingredients (case-insensitive)
+      const existsInIngredients = prev.selectedIngredients.some(
+        (n) => n.toLowerCase() === name.toLowerCase()
+      );
+
+      // If already selected in this array, remove it
+      if (isSelected) {
+        return {
+          ...prev,
+          selectedPantryStaples: prev.selectedPantryStaples.filter((n) => n !== name),
+        };
+      }
+
+      // If exists in other array, don't add (prevent duplicates)
+      if (existsInIngredients) {
+        return prev;
+      }
+
+      // Add to pantry staples
       return {
         ...prev,
-        selectedPantryStaples: isSelected
-          ? prev.selectedPantryStaples.filter((n) => n !== name)
-          : [...prev.selectedPantryStaples, name],
+        selectedPantryStaples: [...prev.selectedPantryStaples, name],
       };
     });
   };
@@ -164,12 +198,23 @@ function OnboardingPageContent() {
             (name) =>
               !prev.selectedIngredients.some(
                 (existing) => existing.toLowerCase() === name.toLowerCase()
+              ) &&
+              !prev.selectedPantryStaples.some(
+                (existing) => existing.toLowerCase() === name.toLowerCase()
               )
           );
 
           // Remove ingredients (case-insensitive match)
           // T033: Silently ignore removal of items not in list
           const updatedIngredients = prev.selectedIngredients.filter(
+            (existing) =>
+              !result.rm.some(
+                (toRemove) => toRemove.toLowerCase() === existing.toLowerCase()
+              )
+          );
+
+          // Remove pantry staples (case-insensitive match)
+          const updatedPantryStaples = prev.selectedPantryStaples.filter(
             (existing) =>
               !result.rm.some(
                 (toRemove) => toRemove.toLowerCase() === existing.toLowerCase()
@@ -184,10 +229,19 @@ function OnboardingPageContent() {
               )
           );
 
+          const updatedVoiceAddedPantry = prev.voiceAddedPantryStaples.filter(
+            (name) =>
+              !result.rm.some(
+                (toRemove) => toRemove.toLowerCase() === name.toLowerCase()
+              )
+          );
+
           return {
             ...prev,
             selectedIngredients: [...updatedIngredients, ...newIngredients],
+            selectedPantryStaples: updatedPantryStaples,
             voiceAddedIngredients: [...updatedVoiceAdded, ...newIngredients],
+            voiceAddedPantryStaples: updatedVoiceAddedPantry,
             hasVoiceChanges: true,
           };
         });
@@ -272,11 +326,39 @@ function OnboardingPageContent() {
         throw new Error(errorData.error || "Failed to process recipe input");
       }
 
-      const result = await response.json();
+      interface RecipeInputResponse {
+        recipes: OnboardingRecipe[];
+        transcribedText?: string;
+        assistantResponse?: string;
+        noChangesDetected: boolean;
+      }
+
+      const result: RecipeInputResponse = await response.json();
       console.log("[onboarding] Recipe input processed:", result);
 
-      // TODO: Update state.recipes with result
-      toast("Recipe input received (processing not yet implemented)");
+      // Update transcription if available
+      if (result.transcribedText) {
+        setLastTranscription(result.transcribedText);
+      }
+
+      // Handle no changes
+      if (result.noChangesDetected) {
+        toast("No recipe changes detected");
+        return;
+      }
+
+      // Update tracked recipes
+      setState((prev) => ({
+        ...prev,
+        recipes: result.recipes,
+      }));
+
+      // Show appropriate toast
+      if (result.assistantResponse) {
+        toast(result.assistantResponse);
+      } else {
+        toast("Recipes updated successfully");
+      }
     } catch (error) {
       console.error("[onboarding] Recipe processing error:", error);
       setErrorMessage(
@@ -398,15 +480,26 @@ function OnboardingPageContent() {
               <p className="text-sm text-gray-600">Select all that apply</p>
 
               <div className="flex flex-wrap gap-2">
-                {COMMON_INGREDIENTS.map((ingredient) => (
-                  <IngredientChip
-                    key={ingredient.name}
-                    name={ingredient.name}
-                    selected={state.selectedIngredients.includes(ingredient.name)}
-                    selectionColor="green"
-                    onToggle={() => toggleIngredient(ingredient.name)}
-                  />
-                ))}
+                {COMMON_INGREDIENTS.map((ingredient) => {
+                  // Check if ingredient exists in either array (case-insensitive)
+                  const isSelected =
+                    state.selectedIngredients.some(
+                      (n) => n.toLowerCase() === ingredient.name.toLowerCase()
+                    ) ||
+                    state.selectedPantryStaples.some(
+                      (n) => n.toLowerCase() === ingredient.name.toLowerCase()
+                    );
+
+                  return (
+                    <IngredientChip
+                      key={ingredient.name}
+                      name={ingredient.name}
+                      selected={isSelected}
+                      selectionColor="green"
+                      onToggle={() => toggleIngredient(ingredient.name)}
+                    />
+                  );
+                })}
               </div>
             </div>
 
@@ -418,15 +511,26 @@ function OnboardingPageContent() {
               <p className="text-sm text-gray-600">Select all that apply</p>
 
               <div className="flex flex-wrap gap-2">
-                {PANTRY_STAPLES.map((ingredient) => (
-                  <IngredientChip
-                    key={ingredient.name}
-                    name={ingredient.name}
-                    selected={state.selectedPantryStaples.includes(ingredient.name)}
-                    selectionColor="blue"
-                    onToggle={() => togglePantryStaple(ingredient.name)}
-                  />
-                ))}
+                {PANTRY_STAPLES.map((ingredient) => {
+                  // Check if ingredient exists in either array (case-insensitive)
+                  const isSelected =
+                    state.selectedIngredients.some(
+                      (n) => n.toLowerCase() === ingredient.name.toLowerCase()
+                    ) ||
+                    state.selectedPantryStaples.some(
+                      (n) => n.toLowerCase() === ingredient.name.toLowerCase()
+                    );
+
+                  return (
+                    <IngredientChip
+                      key={ingredient.name}
+                      name={ingredient.name}
+                      selected={isSelected}
+                      selectionColor="blue"
+                      onToggle={() => togglePantryStaple(ingredient.name)}
+                    />
+                  );
+                })}
               </div>
 
               {canProceedToStep3 && (
@@ -642,13 +746,20 @@ function OnboardingPageContent() {
               </Button>
               <Button
                 onClick={handleCompleteSetup}
+                disabled={state.recipes.length === 0}
                 variant="default"
                 size="lg"
-                className="min-h-[44px] cursor-pointer"
+                className={`min-h-[44px] ${state.recipes.length > 0 ? "cursor-pointer" : "cursor-not-allowed opacity-50"}`}
               >
                 Complete Setup
               </Button>
             </div>
+
+            {state.recipes.length === 0 && (
+              <p className="text-sm text-gray-500 text-center" role="status" aria-live="polite">
+                Add at least one recipe to complete setup
+              </p>
+            )}
           </div>
 
           {/* Step 5 - Completion Screen */}

@@ -24,7 +24,7 @@ export const COMMON_INGREDIENTS: StaticIngredient[] = [
  */
 export const PANTRY_STAPLES: StaticIngredient[] = [
   { name: "salt" },
-  { name: "pepper" },
+  { name: "black pepper" },
   { name: "olive oil" },
   { name: "sugar" },
   { name: "rice" },

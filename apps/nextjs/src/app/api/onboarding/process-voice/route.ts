@@ -44,7 +44,10 @@ export async function POST(request: NextRequest) {
     }
 
     const currentContext = {
-      ingredients: body.currentContext.ingredients || [],
+      ingredients: [
+        ...(body.currentContext.ingredients || []),
+        ...(body.currentContext.pantryStaples || []),
+      ],
     };
 
     // Process via Gemini with opik tracing
