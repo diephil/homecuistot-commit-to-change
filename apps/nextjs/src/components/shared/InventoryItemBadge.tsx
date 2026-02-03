@@ -12,6 +12,8 @@ export interface InventoryItemBadgeProps {
   onLevelChange?: (newLevel: QuantityLevel) => void;
   onToggleStaple?: () => void;
   onDismiss?: () => void;
+  /** Reduce opacity to de-emphasize this item */
+  dimmed?: boolean;
   /** Show change indicator pill */
   changeIndicator?: {
     type: "quantity" | "toStaple" | "fromStaple";
@@ -27,10 +29,11 @@ export function InventoryItemBadge({
   onLevelChange,
   onToggleStaple,
   onDismiss,
+  dimmed,
   changeIndicator,
 }: InventoryItemBadgeProps) {
   return (
-    <div className="relative inline-flex min-w-28">
+    <div className={`relative inline-flex min-w-28 transition-opacity ${dimmed ? "opacity-25" : ""}`}>
       <IngredientBadge
         name={name}
         level={level}

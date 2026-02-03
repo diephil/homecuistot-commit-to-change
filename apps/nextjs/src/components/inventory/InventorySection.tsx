@@ -46,11 +46,12 @@ function groupItemsByCategory(items: InventoryDisplayItem[]) {
 function renderItems(params: {
   items: InventoryDisplayItem[];
   isPantrySection: boolean;
+  highlightEmpty: boolean;
   onQuantityChange: (params: { itemId: string; quantity: QuantityLevel }) => void;
   onToggleStaple: (itemId: string) => void;
   onDelete: (itemId: string) => void;
 }) {
-  const { items, isPantrySection, onQuantityChange, onToggleStaple, onDelete } = params;
+  const { items, isPantrySection, highlightEmpty, onQuantityChange, onToggleStaple, onDelete } = params;
 
   return items.map((item) => (
     <InventoryItemBadge
@@ -58,6 +59,7 @@ function renderItems(params: {
       name={item.name}
       level={isPantrySection ? 3 : item.quantityLevel}
       isStaple={isPantrySection}
+      dimmed={highlightEmpty && item.quantityLevel > 0}
       onLevelChange={(newLevel) => {
         onQuantityChange({ itemId: item.id, quantity: newLevel });
       }}
@@ -135,21 +137,17 @@ export function InventorySection({
     );
   }
 
-  const displayItems = showEmptyOnly && !isPantrySection
-    ? items.filter((item) => item.quantityLevel === 0)
-    : items;
+  const highlightEmpty = showEmptyOnly && !isPantrySection;
 
-  const itemRenderParams = { isPantrySection, onQuantityChange, onToggleStaple, onDelete };
+  const itemRenderParams = { isPantrySection, highlightEmpty, onQuantityChange, onToggleStaple, onDelete };
 
   return (
     <section className="space-y-4 pb-8">
       <SectionHeader title={title} description={description} action={toggleActions} />
 
-      {displayItems.length === 0 ? (
-        <p className="text-sm text-gray-500 italic">No empty items</p>
-      ) : groupByCategory && !isPantrySection ? (
+      {groupByCategory && !isPantrySection ? (
         <div className="space-y-3">
-          {groupItemsByCategory(displayItems).map((group) => (
+          {groupItemsByCategory(items).map((group) => (
             <div key={group.category} className="flex flex-wrap gap-2 items-center">
               <span className="h-2 w-2 rounded-full bg-gray-300 shrink-0" aria-hidden="true" />
               {renderItems({ items: group.items, ...itemRenderParams })}
@@ -158,7 +156,7 @@ export function InventorySection({
         </div>
       ) : (
         <div className="flex flex-wrap gap-2">
-          {renderItems({ items: displayItems, ...itemRenderParams })}
+          {renderItems({ items, ...itemRenderParams })}
         </div>
       )}
     </section>
