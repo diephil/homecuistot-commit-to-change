@@ -323,7 +323,7 @@ function OnboardingPageContent() {
 
               {canProceedToStep3 && (
                 <p className="text-sm text-gray-500 italic animate-in fade-in duration-200">
-                  You can add more ingredients in the next step using voice or text
+                  No worries, you can add more ingredients in later steps!
                 </p>
               )}
             </div>
