@@ -25,7 +25,7 @@ export function CookAnywayModal(props: CookAnywayModalProps) {
   const [ingredientDiffs, setIngredientDiffs] = useState<IngredientDiff[]>([])
 
   // Initialize diffs: all anchors (including missing) + in-inventory optionals
-  // No auto-decrement — user decides how cooking impacts inventory
+  // Available ingredients auto-decrement; missing show 0→0 (user can adjust)
   const initializeDiffs = useCallback((r: RecipeWithAvailability) => {
     const diffs = r.ingredients
       .filter((i) =>
@@ -36,7 +36,9 @@ export function CookAnywayModal(props: CookAnywayModalProps) {
         ingredientId: i.id,
         name: i.name,
         currentQuantity: i.currentQuantity,
-        proposedQuantity: i.isPantryStaple ? 3 : i.currentQuantity,
+        proposedQuantity: i.isPantryStaple
+          ? 3
+          : Math.max(0, i.currentQuantity - 1) as QuantityLevel,
         isPantryStaple: i.isPantryStaple,
         isMissing: !i.inInventory,
       }))
@@ -61,8 +63,9 @@ export function CookAnywayModal(props: CookAnywayModalProps) {
     setStage('processing')
     setError(null)
 
-    // Exclude pantry staples and missing ingredients from inventory updates
-    const updatableDiffs = ingredientDiffs.filter((d) => !d.isPantryStaple && !d.isMissing)
+    // Exclude pantry staples from inventory updates
+    // Missing ingredients included — user may have adjusted their quantity
+    const updatableDiffs = ingredientDiffs.filter((d) => !d.isPantryStaple)
 
     const result = await markRecipeAsCooked({
       recipeId: recipe.id,
@@ -196,27 +199,31 @@ export function CookAnywayModal(props: CookAnywayModalProps) {
                     </>
                   )}
 
-                  {/* Missing ingredients — not in inventory */}
+                  {/* Missing ingredients — not in inventory, tap to adjust */}
                   {missingDiffs.length > 0 && (
                     <>
                       <p className="text-sm font-semibold mb-3 text-gray-600">
-                        Missing from inventory:
+                        Missing from inventory (tap to change):
                       </p>
                       <div className="flex flex-wrap gap-3 mb-4 pt-2">
                         {missingDiffs.map((diff) => (
-                          <div
+                          <InventoryItemBadge
                             key={diff.ingredientId}
-                            className={cn(
-                              "inline-flex items-center gap-2 rounded-lg px-3 py-2",
-                              "border-2 border-red-300 bg-red-100",
-                              "text-sm font-medium",
-                              "min-w-24 cursor-default"
-                            )}
-                          >
-                            <span className="font-semibold truncate max-w-[120px] capitalize">
-                              {diff.name}
-                            </span>
-                          </div>
+                            name={diff.name}
+                            level={diff.proposedQuantity}
+                            isStaple={false}
+                            onLevelChange={(newLevel) =>
+                              handleQuantityChange({
+                                ingredientId: diff.ingredientId,
+                                newQuantity: newLevel,
+                              })
+                            }
+                            changeIndicator={{
+                              type: 'quantity',
+                              previousQuantity: diff.currentQuantity,
+                              proposedQuantity: diff.proposedQuantity,
+                            }}
+                          />
                         ))}
                       </div>
                     </>
