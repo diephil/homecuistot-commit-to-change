@@ -30,7 +30,7 @@ export function VoiceGuidanceCard({ onDismiss }: VoiceGuidanceCardProps) {
         <Link href="/app/recipes" className="underline font-semibold">
           My Cookbook
         </Link>{" "}
-        to see tell us what you can cook!
+        to see what you can cook!
       </p>
     </InfoCard>
   );
