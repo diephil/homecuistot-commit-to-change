@@ -53,4 +53,5 @@ export interface IngredientDiff {
   currentQuantity: QuantityLevel
   proposedQuantity: QuantityLevel // default: max(0, current - 1)
   isPantryStaple: boolean
+  isMissing?: boolean // ingredient not in user inventory (cook-anyway mode)
 }

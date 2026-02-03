@@ -109,6 +109,25 @@ export function RecipeAvailabilityCard(props: RecipeAvailabilityCardProps) {
       {/* Spacer to push bottom content down */}
       <div className="flex-grow min-h-3" />
 
+      {/* Optional ingredients - shown first without background/borders */}
+      {(variant === 'available' || variant === 'almost-available') && optionalIngredients.length > 0 && (
+        <div className="flex flex-wrap gap-2 items-center mb-3">
+          <span className="text-sm font-black mr-1">Optional</span>
+          {optionalIngredients.map((ing) => (
+            <Badge
+              key={ing.id}
+              variant="outline"
+              size="sm"
+              className={cn(
+                ing.inInventory ? 'bg-green-200 border-green-400' : 'bg-orange-200 border-orange-400'
+              )}
+            >
+              {ing.name}
+            </Badge>
+          ))}
+        </div>
+      )}
+
       {/* Missing anchor ingredients for almost-available */}
       {variant === 'almost-available' && missingIngredients.length > 0 && (
         <div className="p-2 bg-white/50 border-2 border-black mb-3">
@@ -128,28 +147,7 @@ export function RecipeAvailabilityCard(props: RecipeAvailabilityCardProps) {
         </div>
       )}
 
-      {/* Optional ingredients */}
-      {(variant === 'available' || variant === 'almost-available') && optionalIngredients.length > 0 && (
-        <div className="p-2 bg-white/50 border-2 border-black mb-3">
-          <div className="flex flex-wrap gap-2 items-center">
-            <span className="text-sm font-black mr-1">Optional</span>
-            {optionalIngredients.map((ing) => (
-              <Badge
-                key={ing.id}
-                variant="outline"
-                size="sm"
-                className={cn(
-                  ing.inInventory ? 'bg-green-200 border-green-400' : 'bg-orange-200 border-orange-400'
-                )}
-              >
-                {ing.name}
-              </Badge>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* T014: Mark as Cooked button for available recipes only */}
+      {/* T014: Mark as Cooked button for available recipes */}
       {variant === 'available' && onMarkAsCooked && (
         <Button
           variant="default"
@@ -159,6 +157,19 @@ export function RecipeAvailabilityCard(props: RecipeAvailabilityCardProps) {
         >
           <Check className="w-5 h-5" />
           Mark as Cooked
+        </Button>
+      )}
+
+      {/* Cook it Anyway button for almost-available recipes */}
+      {variant === 'almost-available' && onMarkAsCooked && (
+        <Button
+          variant="default"
+          size="md"
+          className="w-full justify-center gap-2"
+          onClick={() => onMarkAsCooked(recipe)}
+        >
+          <Check className="w-5 h-5" />
+          Cook it Anyway
         </Button>
       )}
     </div>
