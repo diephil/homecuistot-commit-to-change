@@ -35,20 +35,18 @@ export function DeleteConfirmationModal({
         <div className="p-6 space-y-6">
           {/* Header with warning icon */}
           <div className="flex items-center gap-3 pb-4 border-b-4 border-black">
-            <div className="h-12 w-12 rounded-full bg-red-100 border-2 border-black flex items-center justify-center">
-              <AlertTriangle className="h-6 w-6 text-red-600" />
+            <div className="h-12 w-12 rounded-full bg-yellow-100 border-2 border-black flex items-center justify-center">
+              <AlertTriangle className="h-6 w-6 text-orange-600" />
             </div>
             <div>
               <h2 className="text-2xl font-bold">Delete {typeLabel}</h2>
-              <p className="text-sm text-gray-600">This action cannot be undone</p>
             </div>
           </div>
 
           {/* Content */}
           <div className="space-y-3">
             <p className="text-base font-medium">
-              Are you sure you want to delete{" "}
-              <span className="font-bold text-black">{itemName}</span> {contextText}?
+              Delete <span className="font-bold text-black">{itemName}</span> {contextText}?
             </p>
           </div>
 
