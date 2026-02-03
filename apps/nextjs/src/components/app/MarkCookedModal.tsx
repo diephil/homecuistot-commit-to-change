@@ -146,7 +146,7 @@ export function MarkCookedModal(props: MarkCookedModalProps) {
                   {ingredientDiffs.filter(d => !d.isPantryStaple && !d.isMissing).length > 0 && (
                     <>
                       <p className="text-sm font-semibold mb-3">
-                        Your inventory will be updated as shown below. The blue badge shows the number of usage left for a given ingredient (eg. from 3 to 2 more usages after marking this recipe as cooked)
+                        Tap ingredients below to adjust remaining quantities. The blue badge shows how many times you can still use each ingredient after cooking (e.g., 3 → 2 means going from 3 uses left to 2 uses left).
                       </p>
                       <div className="flex flex-wrap gap-3 mb-4 pt-2">
                         {ingredientDiffs
@@ -178,7 +178,7 @@ export function MarkCookedModal(props: MarkCookedModalProps) {
                   {ingredientDiffs.filter(d => d.isPantryStaple).length > 0 && (
                     <>
                       <p className="text-sm font-semibold mb-3 text-gray-600">
-                        Pantry staples (always available):
+                        Pantry staples won't be deducted (always available):
                       </p>
                       <div className="flex flex-wrap gap-3 mb-4 pt-2">
                         {ingredientDiffs
@@ -207,7 +207,7 @@ export function MarkCookedModal(props: MarkCookedModalProps) {
                   {ingredientDiffs.filter(d => d.isMissing).length > 0 && (
                     <>
                       <p className="text-sm font-semibold mb-3 text-gray-600">
-                        Missing optional ingredients for this recipe.
+                        Optional ingredients not in your inventory (adjust if you used them):
                       </p>
                       <div className="flex flex-wrap gap-3 mb-4 pt-2">
                         {ingredientDiffs
