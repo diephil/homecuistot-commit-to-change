@@ -106,11 +106,14 @@ export function RecipeAvailabilityCard(props: RecipeAvailabilityCardProps) {
         </div>
       )}
 
+      {/* Spacer to push bottom content down */}
+      <div className="flex-grow min-h-3" />
+
       {/* Missing anchor ingredients for almost-available */}
       {variant === 'almost-available' && missingIngredients.length > 0 && (
         <div className="p-2 bg-white/50 border-2 border-black mb-3">
           <div className="flex flex-wrap gap-2 items-center">
-            <span className="text-sm font-black mr-1">Missing Ingredients</span>
+            <span className="text-sm font-black mr-1">Missing</span>
             {missingIngredients.map((ing) => (
               <Badge
                 key={ing.id}
@@ -127,9 +130,9 @@ export function RecipeAvailabilityCard(props: RecipeAvailabilityCardProps) {
 
       {/* Optional ingredients */}
       {(variant === 'available' || variant === 'almost-available') && optionalIngredients.length > 0 && (
-        <div className="p-2 bg-white/50 border-2 border-black">
+        <div className="p-2 bg-white/50 border-2 border-black mb-3">
           <div className="flex flex-wrap gap-2 items-center">
-            <span className="text-sm font-black mr-1">Optional Ingredients</span>
+            <span className="text-sm font-black mr-1">Optional</span>
             {optionalIngredients.map((ing) => (
               <Badge
                 key={ing.id}
@@ -145,9 +148,6 @@ export function RecipeAvailabilityCard(props: RecipeAvailabilityCardProps) {
           </div>
         </div>
       )}
-
-      {/* Spacer to push bottom content down */}
-      <div className="flex-grow min-h-3" />
 
       {/* T014: Mark as Cooked button for available recipes only */}
       {variant === 'available' && onMarkAsCooked && (
