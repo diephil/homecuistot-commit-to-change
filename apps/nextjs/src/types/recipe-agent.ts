@@ -38,6 +38,14 @@ export interface RecipeSessionItem {
   ingredients: RecipeSessionIngredient[];
 }
 
+export interface IngredientSessionItem {
+  id: string; // ingredients.id
+  name: string;
+  category: string;
+  quantityLevel: number;
+  isPantryStaple: boolean;
+}
+
 // ============================================================================
 // Tool Input Types
 // ============================================================================
@@ -278,7 +286,7 @@ export const RECIPE_LIMITS = {
  * Type guard: Check if tool result is create operation
  */
 export function isCreateRecipeResult(
-  result: RecipeToolResult
+  result: RecipeToolResult,
 ): result is CreateRecipeResult {
   return result.operation === "create";
 }
@@ -287,7 +295,7 @@ export function isCreateRecipeResult(
  * Type guard: Check if tool result is update operation
  */
 export function isUpdateRecipeResult(
-  result: RecipeToolResult
+  result: RecipeToolResult,
 ): result is UpdateRecipeResult {
   return result.operation === "update";
 }
@@ -296,7 +304,7 @@ export function isUpdateRecipeResult(
  * Type guard: Check if tool result is delete operation
  */
 export function isDeleteRecipeResult(
-  result: RecipeToolResult
+  result: RecipeToolResult,
 ): result is DeleteRecipeResult {
   return result.operation === "delete";
 }
@@ -305,7 +313,7 @@ export function isDeleteRecipeResult(
  * Type guard: Check if tool result is delete all operation
  */
 export function isDeleteAllRecipesResult(
-  result: RecipeToolResult
+  result: RecipeToolResult,
 ): result is DeleteAllRecipesResult {
   return result.operation === "delete_all";
 }
@@ -314,7 +322,7 @@ export function isDeleteAllRecipesResult(
  * Type guard: Check if tool result is batch create operation
  */
 export function isCreateRecipesResult(
-  result: RecipeToolResult
+  result: RecipeToolResult,
 ): result is CreateRecipesResult {
   return result.operation === "create_batch";
 }
@@ -323,7 +331,7 @@ export function isCreateRecipesResult(
  * Type guard: Check if tool result is batch update operation
  */
 export function isUpdateRecipesResult(
-  result: RecipeToolResult
+  result: RecipeToolResult,
 ): result is UpdateRecipesResult {
   return result.operation === "update_batch";
 }
@@ -332,7 +340,7 @@ export function isUpdateRecipesResult(
  * Type guard: Check if tool result is batch delete operation
  */
 export function isDeleteRecipesResult(
-  result: RecipeToolResult
+  result: RecipeToolResult,
 ): result is DeleteRecipesResult {
   return result.operation === "delete_batch";
 }

@@ -14,6 +14,7 @@ import { createRecipeManagerAgent } from "../agents/recipe-manager/agent";
 import { voiceTranscriptorAgent } from "../agents/voice-transcriptor/agent";
 import type {
   RecipeSessionItem,
+  IngredientSessionItem,
   RecipeManagerProposal,
   RecipeToolResult,
 } from "@/types/recipe-agent";
@@ -23,6 +24,7 @@ interface CreateRecipeProposalParams {
   input?: string;
   audioBase64?: string;
   trackedRecipes: RecipeSessionItem[];
+  trackedIngredients?: IngredientSessionItem[];
   model: "gemini-2.0-flash" | "gemini-2.5-flash-lite";
   provider?: string;
   isOnBoarding?: boolean;
@@ -47,6 +49,7 @@ export async function createRecipeManagerAgentProposal(
     input,
     audioBase64,
     trackedRecipes,
+    trackedIngredients,
     model,
     provider = "google",
     isOnBoarding = false,
@@ -66,13 +69,14 @@ export async function createRecipeManagerAgentProposal(
   // 1. Create parent trace
   const traceCtx = createAgentTrace({
     name: "recipe-manager-agent",
-    input: { inputType, trackedRecipesCount: trackedRecipes.length },
+    input: { input, inputType },
     tags: traceTags,
     metadata: {
       userId,
       model,
       provider,
       trackedRecipes,
+      trackedIngredients,
     },
   });
 
@@ -104,22 +108,32 @@ export async function createRecipeManagerAgentProposal(
       state: { trackedRecipes },
     });
 
-    // Inject tracked recipes context as YAML into conversation
-    const recipesYaml = YAML.stringify({ trackedRecipes });
-    await runner.sessionService.appendEvent({
-      session,
-      event: createEvent({
-        author: "user",
-        content: {
-          role: "user",
-          parts: [
-            {
-              text: `Here are the user's current tracked recipes:\n\n${recipesYaml}`,
-            },
-          ],
-        },
-      }),
-    });
+    // Inject tracked context (recipes + ingredients) as YAML into conversation
+    const contextParts: { text: string }[] = [];
+    if (trackedRecipes.length > 0) {
+      const recipesYaml = YAML.stringify({ trackedRecipes });
+      contextParts.push({
+        text: `Here are the user's current tracked recipes:\n\n${recipesYaml}`,
+      });
+    }
+    if (trackedIngredients && trackedIngredients.length > 0) {
+      const ingredientsYaml = YAML.stringify({ trackedIngredients });
+      contextParts.push({
+        text: `Here are the user's current inventory ingredients:\n\n${ingredientsYaml}`,
+      });
+    }
+    if (contextParts.length > 0) {
+      await runner.sessionService.appendEvent({
+        session,
+        event: createEvent({
+          author: "user",
+          content: {
+            role: "user",
+            parts: contextParts,
+          },
+        }),
+      });
+    }
 
     // 4. Run agent with model and tool spans
     const recipes: RecipeToolResult[] = [];
