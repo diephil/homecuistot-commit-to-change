@@ -175,6 +175,11 @@ function OnboardingPageContent() {
     [state.selectedIngredients]
   );
 
+  // T022: Go back to step 2
+  const handleBackToStep2 = () => {
+    setState((prev) => ({ ...prev, currentStep: 2 }));
+  };
+
   // T046: Complete setup with persistence
   const handleCompleteSetup = async () => {
     setState((prev) => ({ ...prev, currentStep: 4 }));
@@ -242,30 +247,29 @@ function OnboardingPageContent() {
         </HelpSection>
       </HelpModal>
 
-      <div className="border-4 md:border-6 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
-        {/* Progress indicator */}
-        <div className="bg-gradient-to-r from-yellow-300 via-orange-400 to-pink-400 border-b-4 md:border-b-6 border-black px-6 py-3">
-          <p
-            className="text-sm font-black uppercase text-center"
-            role="status"
-            aria-live="polite"
-            aria-label={`Step ${state.currentStep} of ${state.currentStep === 4 ? 4 : 3}`}
-          >
-            {state.currentStep === 4 ? "Finishing up..." : `Step ${state.currentStep} of 3`}
-          </p>
-        </div>
+      {/* Progress indicator banner */}
+      <div className="bg-gradient-to-r from-yellow-300 via-orange-400 to-pink-400 border-4 md:border-6 border-black px-6 py-3 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] mb-6">
+        <p
+          className="text-sm font-black uppercase text-center"
+          role="status"
+          aria-live="polite"
+          aria-label={`Step ${state.currentStep} of ${state.currentStep === 4 ? 4 : 3}`}
+        >
+          {state.currentStep === 4 ? "Finishing up..." : `Step ${state.currentStep} of 3`}
+        </p>
+      </div>
 
-        {/* Sliding transition */}
+      {/* Sliding transition container */}
+      <div className="overflow-hidden">
         <div
           className="flex transition-transform duration-300 ease-in-out"
           style={{ transform: `translateX(-${(state.currentStep - 1) * 100}%)` }}
         >
           {/* Step 1 - Welcome Screen */}
-          <div className="min-w-full p-8 flex flex-col items-center gap-6 text-center">
+          <div className="min-w-full p-4 md:p-8 flex flex-col items-center gap-6 text-center">
             <h1 className="text-3xl md:text-4xl font-black uppercase">Welcome to HomeCuistot!</h1>
             <p className="text-lg text-gray-700 max-w-md">
-              Let&apos;s set up your kitchen profile. This helps us suggest recipes based on what
-              you have and what you like to cook.
+              Let&apos;s set up your kitchen profile in just a couple of steps.
             </p>
             <Button
               onClick={handleGetStarted}
@@ -278,7 +282,7 @@ function OnboardingPageContent() {
           </div>
 
           {/* Step 2 - Skill + Ingredient Selection */}
-          <div className="min-w-full p-8 flex flex-col gap-6 overflow-x-hidden relative">
+          <div className="min-w-full p-4 md:p-8 flex flex-col gap-6 overflow-x-hidden relative">
             {/* FR-041: Help button (top-right, Step 2 only) */}
             <button
               onClick={() => setIsHelpOpen(true)}
@@ -290,7 +294,7 @@ function OnboardingPageContent() {
 
             {/* T014-T015: Cooking Skill Selection */}
             <div className="space-y-4">
-              <h2 className="text-2xl md:text-3xl font-black uppercase">
+              <h2 className="text-2xl md:text-3xl font-black uppercase pr-16 md:pr-0">
                 What&apos;s your cooking level?
               </h2>
 
@@ -391,15 +395,16 @@ function OnboardingPageContent() {
           </div>
 
           {/* Step 3 - Add More Ingredients */}
-          <div className="min-w-full p-8 flex flex-col gap-6 overflow-x-hidden">
+          <div className="min-w-full p-4 md:p-8 flex flex-col gap-6 overflow-x-hidden">
             {/* T023: Title */}
-            <h2 className="text-2xl md:text-3xl font-black uppercase text-center">
-              Add more ingredients
-            </h2>
-
-            <p className="text-sm text-gray-600 text-center -mt-2">
-              Don&apos;t worry—everything can be modified later
-            </p>
+            <div>
+              <h2 className="text-2xl md:text-3xl font-black uppercase">
+                Add more ingredients
+              </h2>
+              <p className="text-sm text-gray-600 mt-2">
+                Don&apos;t worry—everything can be modified later
+              </p>
+            </div>
 
             {/* T024: Step 2 ingredients as read-only display */}
             <div className="md:rotate-1">
@@ -443,7 +448,15 @@ function OnboardingPageContent() {
             )}
 
             {/* T025: Complete Setup button (enabled when 1+ ingredients) */}
-            <div className="flex justify-end mt-6">
+            <div className="flex justify-between items-center mt-6 gap-4">
+              <Button
+                onClick={handleBackToStep2}
+                variant="outline"
+                size="lg"
+                className="min-h-[44px] cursor-pointer"
+              >
+                Back
+              </Button>
               <Button
                 onClick={handleCompleteSetup}
                 disabled={!canCompleteSetup}
@@ -463,7 +476,7 @@ function OnboardingPageContent() {
           </div>
 
           {/* Step 4 - Completion Screen */}
-          <div className="min-w-full p-8 flex flex-col items-center justify-center gap-6 min-h-[400px]">
+          <div className="min-w-full p-4 md:p-8 flex flex-col items-center justify-center gap-6 min-h-[400px]">
             <h2 className="text-3xl md:text-4xl font-black uppercase text-center">Congrats!</h2>
             <p className="text-lg text-gray-700 text-center max-w-md">
               We&apos;re preparing your Home cook gears, one moment please.
