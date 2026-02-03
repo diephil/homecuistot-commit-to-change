@@ -35,7 +35,7 @@ export function CookingHistoryTable(props: CookingHistoryTableProps) {
     <div className="border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
       {/* Header */}
       <div className="bg-cyan-200 p-3 border-b-4 border-black">
-        <h3 className="text-xl font-black uppercase">Cooking History (Last 10)</h3>
+        <h3 className="text-xl font-black uppercase">Cooking History</h3>
       </div>
 
       {/* Table */}

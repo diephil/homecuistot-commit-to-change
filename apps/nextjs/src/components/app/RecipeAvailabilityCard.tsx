@@ -26,10 +26,13 @@ export function RecipeAvailabilityCard(props: RecipeAvailabilityCardProps) {
     unavailable: 'bg-gradient-to-br from-gray-200 to-gray-300',
   }[variant]
 
-  // Get anchor ingredients only for display, available first
-  const anchorIngredients = recipe.ingredients
-    .filter((i) => i.type === 'anchor')
-    .sort((a, b) => (b.inInventory ? 1 : 0) - (a.inInventory ? 1 : 0))
+  // Get anchor ingredients separated by availability
+  const anchorIngredients = recipe.ingredients.filter((i) => i.type === 'anchor')
+  const availableIngredients = anchorIngredients.filter((i) => i.inInventory)
+  const missingIngredients = anchorIngredients.filter((i) => !i.inInventory)
+
+  // Get optional ingredients
+  const optionalIngredients = recipe.ingredients.filter((i) => i.type !== 'anchor')
 
   return (
     <div
@@ -73,35 +76,78 @@ export function RecipeAvailabilityCard(props: RecipeAvailabilityCardProps) {
         </p>
       )}
 
-      {/* Ingredients list */}
-      <div className="flex flex-wrap gap-2">
-        {anchorIngredients.map((ing) => (
-          <Badge
-            key={ing.id}
-            variant="outline"
-            size="sm"
-            className={cn(
-              'bg-white/50',
-              variant === 'almost-available' && ing.inInventory && 'bg-green-200 border-green-400',
-              !ing.inInventory && 'bg-red-100 border-red-400'
-            )}
-          >
-            {ing.name}
-          </Badge>
-        ))}
-      </div>
+      {/* Available anchor ingredients */}
+      {variant === 'available' && anchorIngredients.length > 0 && (
+        <div className="flex flex-wrap gap-2 mb-3">
+          {anchorIngredients.map((ing) => (
+            <Badge
+              key={ing.id}
+              variant="outline"
+              size="sm"
+              className="bg-green-200 border-green-400"
+            >
+              {ing.name}
+            </Badge>
+          ))}
+        </div>
+      )}
+      {variant === 'almost-available' && availableIngredients.length > 0 && (
+        <div className="flex flex-wrap gap-2 mb-3">
+          {availableIngredients.map((ing) => (
+            <Badge
+              key={ing.id}
+              variant="outline"
+              size="sm"
+              className="bg-green-200 border-green-400"
+            >
+              {ing.name}
+            </Badge>
+          ))}
+        </div>
+      )}
+
+      {/* Missing anchor ingredients for almost-available */}
+      {variant === 'almost-available' && missingIngredients.length > 0 && (
+        <div className="p-2 bg-white/50 border-2 border-black mb-3">
+          <div className="flex flex-wrap gap-2 items-center">
+            <span className="text-sm font-black mr-1">Missing Ingredients</span>
+            {missingIngredients.map((ing) => (
+              <Badge
+                key={ing.id}
+                variant="outline"
+                size="sm"
+                className="bg-red-100 border-red-400"
+              >
+                {ing.name}
+              </Badge>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Optional ingredients */}
+      {(variant === 'available' || variant === 'almost-available') && optionalIngredients.length > 0 && (
+        <div className="p-2 bg-white/50 border-2 border-black">
+          <div className="flex flex-wrap gap-2 items-center">
+            <span className="text-sm font-black mr-1">Optional Ingredients</span>
+            {optionalIngredients.map((ing) => (
+              <Badge
+                key={ing.id}
+                variant="outline"
+                size="sm"
+                className={cn(
+                  ing.inInventory ? 'bg-green-200 border-green-400' : 'bg-orange-200 border-orange-400'
+                )}
+              >
+                {ing.name}
+              </Badge>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Spacer to push bottom content down */}
       <div className="flex-grow min-h-3" />
-
-      {/* Missing ingredients count for almost-available */}
-      {showMissingCount && variant === 'almost-available' && recipe.missingAnchorCount > 0 && (
-        <div className="p-2 bg-white/50 border-2 border-black">
-          <span className="text-sm font-black">
-            Requires {recipe.missingAnchorCount} more ingredient{recipe.missingAnchorCount !== 1 ? 's' : ''}
-          </span>
-        </div>
-      )}
 
       {/* T014: Mark as Cooked button for available recipes only */}
       {variant === 'available' && onMarkAsCooked && (
