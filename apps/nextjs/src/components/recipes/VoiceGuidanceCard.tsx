@@ -6,9 +6,18 @@
 
 import { InfoCard } from "@/components/shared/InfoCard";
 
-export function RecipeVoiceGuidanceCard() {
+interface RecipeVoiceGuidanceCardProps {
+  onDismiss?: () => void;
+}
+
+export function RecipeVoiceGuidanceCard({ onDismiss }: RecipeVoiceGuidanceCardProps) {
   return (
-    <InfoCard variant="cyan" emoji="💬" heading="Speak to manage recipes">
+    <InfoCard
+      variant="cyan"
+      emoji="💬"
+      heading="Speak to manage recipes"
+      onDismiss={onDismiss}
+    >
       <div className="space-y-3 text-sm">
         <div>
           <ul className="list-disc list-inside space-y-1">

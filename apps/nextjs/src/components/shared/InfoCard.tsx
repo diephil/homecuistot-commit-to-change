@@ -1,5 +1,6 @@
 import { HTMLAttributes, ReactNode } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
+import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Text } from "@/components/shared/Text";
 
@@ -29,6 +30,7 @@ interface InfoCardProps
   emoji?: string;
   heading?: string;
   children?: ReactNode;
+  onDismiss?: () => void;
 }
 
 const InfoCard = ({
@@ -37,13 +39,14 @@ const InfoCard = ({
   emoji = "👨‍🏫",
   heading,
   children,
+  onDismiss,
   ...props
 }: InfoCardProps) => {
   return (
-    <div className={cn(infoCardVariants({ variant }), className)} {...props}>
+    <div className={cn(infoCardVariants({ variant }), "relative", className)} {...props}>
       <div className="flex items-start gap-3">
         <span className="text-2xl md:text-3xl">{emoji}</span>
-        <div>
+        <div className="flex-1">
           {heading && (
             <Text
               as="h3"
@@ -59,6 +62,17 @@ const InfoCard = ({
           )}
         </div>
       </div>
+      {onDismiss && (
+        <button
+          type="button"
+          onClick={onDismiss}
+          className="absolute top-2 right-2 cursor-pointer border-2 border-black bg-white p-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+          aria-label="Dismiss"
+          title="Dismiss"
+        >
+          <X className="h-3.5 w-3.5" />
+        </button>
+      )}
     </div>
   );
 };
