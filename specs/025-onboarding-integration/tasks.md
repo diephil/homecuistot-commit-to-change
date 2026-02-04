@@ -68,7 +68,7 @@ All paths relative to `apps/nextjs/src/` unless specified otherwise.
 
 ### Implementation for User Story 2
 
-- [ ] T009 [US2] Update Scene4Voice inventory update logic in `app/(protected)/app/onboarding/story/scenes/Scene4Voice.tsx` — when processing `data.add`, read `quantityLevel` from each item (`data.add` is now `Array<{ name, quantityLevel }>`) instead of hardcoding 3. For existing items: set `existing.quantityLevel = item.quantityLevel`. For new items: use `item.quantityLevel` in the push. Default to 3 if quantityLevel missing (fallback safety).
+- [X] T009 [US2] Update Scene4Voice inventory update logic in `app/(protected)/app/onboarding/story/scenes/Scene4Voice.tsx` — when processing `data.add`, read `quantityLevel` from each item (`data.add` is now `Array<{ name, quantityLevel }>`) instead of hardcoding 3. For existing items: set `existing.quantityLevel = item.quantityLevel`. For new items: use `item.quantityLevel` in the push. Default to 3 if quantityLevel missing (fallback safety).
 
 **Checkpoint**: Quantity bug fixed end-to-end (LLM → API → frontend). Report for review.
 
@@ -82,7 +82,7 @@ All paths relative to `apps/nextjs/src/` unless specified otherwise.
 
 ### Implementation for User Story 3
 
-- [ ] T010 [US3] Update Scene7Manifesto payload in `app/(protected)/app/onboarding/story/scenes/Scene7Manifesto.tsx` — change `ingredients` from `inventory.filter().map(i => i.name)` to `inventory.filter().map(i => ({ name: i.name, quantityLevel: i.quantityLevel }))`, same for `pantryStaples`
+- [X] T010 [US3] Update Scene7Manifesto payload in `app/(protected)/app/onboarding/story/scenes/Scene7Manifesto.tsx` — change `ingredients` from `inventory.filter().map(i => i.name)` to `inventory.filter().map(i => ({ name: i.name, quantityLevel: i.quantityLevel }))`, same for `pantryStaples`
 
 **Checkpoint**: Full data flow complete (voice input → correct qty in UI → correct qty persisted in DB). Report for review.
 
@@ -96,7 +96,7 @@ All paths relative to `apps/nextjs/src/` unless specified otherwise.
 
 ### Implementation for User Story 4
 
-- [ ] T011 [US4] Fix Opik trace update in `app/api/onboarding/story/process-input/route.ts` — in the `traceCtx.trace.update()` call, conditionally add `"unrecognized_items"` to tags array when `allUnrecognized.length > 0`, add `unrecognized: allUnrecognized` to metadata object. When no unrecognized items, omit the tag.
+- [X] T011 [US4] Fix Opik trace update in `app/api/onboarding/story/process-input/route.ts` — ALREADY HANDLED by orchestration: `createInventoryManagerAgentProposal` internally adds `"unrecognized_items"` tag and `unrecognized` metadata when unrecognized items exist, plus "onboarding-story" provider tag for differentiation
 
 **Checkpoint**: Observability gap fixed. Report for review.
 

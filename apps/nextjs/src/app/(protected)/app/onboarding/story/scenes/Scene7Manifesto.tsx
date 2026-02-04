@@ -30,10 +30,10 @@ export function Scene7Manifesto({
       const payload = {
         ingredients: inventory
           .filter((i) => !i.isPantryStaple)
-          .map((i) => i.name),
+          .map((i) => ({ name: i.name, quantityLevel: i.quantityLevel })),
         pantryStaples: inventory
           .filter((i) => i.isPantryStaple)
-          .map((i) => i.name),
+          .map((i) => ({ name: i.name, quantityLevel: i.quantityLevel })),
         recipes: [
           {
             name: recipe.name,

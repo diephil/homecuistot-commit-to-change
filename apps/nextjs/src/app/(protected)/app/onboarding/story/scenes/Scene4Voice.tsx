@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect, useRef } from "react";
+import { toast } from "sonner";
 import { VoiceTextInput } from "@/components/shared/VoiceTextInput";
 import { InventoryItemBadge } from "@/components/shared/InventoryItemBadge";
 import { Button } from "@/components/shared/Button";
@@ -10,6 +11,14 @@ import {
 } from "@/lib/story-onboarding/constants";
 import { hasRequiredItems } from "@/lib/story-onboarding/transforms";
 import type { DemoInventoryItem } from "@/lib/story-onboarding/types";
+import type { QuantityLevel } from "@/types/inventory";
+
+interface ProcessInputResponse {
+  add: Array<{ name: string; quantityLevel: QuantityLevel }>;
+  rm: string[];
+  transcribedText?: string;
+  unrecognized?: string[];
+}
 
 interface Scene4VoiceProps {
   inventory: DemoInventoryItem[];
@@ -81,25 +90,43 @@ export function Scene4Voice({
           );
         }
 
-        const data = await response.json();
+        const data: ProcessInputResponse = await response.json();
         setLastTranscription(data.transcribedText);
         setHasInputOnce(true);
+
+        // Show toast for unrecognized ingredients
+        if (data.unrecognized && data.unrecognized.length > 0) {
+          const items = data.unrecognized.join(", ");
+          toast.warning(`Not recognized: ${items}`, {
+            description: "These ingredients weren't found in our database",
+          });
+        }
+
+        // Show success toast for recognized ingredients
+        if (data.add && data.add.length > 0) {
+          const items = data.add.map((item) => item.name).join(", ");
+          toast.success(`Added: ${items}`, {
+            description: `${data.add.length} ingredient${data.add.length > 1 ? "s" : ""} added to inventory`,
+          });
+        }
 
         // Update inventory with recognized items
         const updatedInventory = [...inventory.map((item) => ({ ...item }))];
 
-        for (const name of data.add ?? []) {
+        for (const item of data.add ?? []) {
+          const name = item.name;
+          const quantityLevel = item.quantityLevel ?? 3; // Default to 3 if missing
           const existing = updatedInventory.find(
-            (item) => item.name.toLowerCase() === name.toLowerCase(),
+            (invItem) => invItem.name.toLowerCase() === name.toLowerCase(),
           );
           if (existing) {
-            existing.quantityLevel = 3;
+            existing.quantityLevel = quantityLevel;
             existing.isNew = true;
           } else {
             updatedInventory.push({
               name,
               category: "non_classified",
-              quantityLevel: 3,
+              quantityLevel,
               isPantryStaple: false,
               isNew: true,
             });

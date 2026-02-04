@@ -20,6 +20,7 @@ interface CreateProposalParams {
   currentInventory: InventorySessionItem[];
   model: "gemini-2.0-flash" | "gemini-2.5-flash-lite";
   provider?: string;
+  additionalTags?: string[];
 }
 
 interface CreateProposalResult {
@@ -42,6 +43,7 @@ export async function createInventoryManagerAgentProposal(
     currentInventory,
     model = "gemini-2.0-flash",
     provider = "google",
+    additionalTags = [],
   } = params;
   const inputType = audioBase64 ? "voice" : "text";
 
@@ -52,6 +54,7 @@ export async function createInventoryManagerAgentProposal(
     inputType,
     model,
     `user:${userId}`,
+    ...additionalTags,
   ];
 
   // 1. Create parent trace with full inventory in metadata

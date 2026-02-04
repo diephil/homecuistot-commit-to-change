@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
         audioBase64: audioBase64 || undefined,
         currentInventory,
         model: "gemini-2.5-flash-lite",
-        provider: "onboarding-story", // Tag to differentiate traces
+        additionalTags: ["onboarding-story"],
       });
 
     // Transform response to match Scene4Voice expectations
