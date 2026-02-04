@@ -26,10 +26,6 @@ export interface OpikSpan {
   created_at?: string;
 }
 
-interface SearchSpansResponse {
-  data: OpikSpan[];
-  total: number;
-}
 
 function getOpikHeaders(): Record<string, string> {
   const headers: Record<string, string> = {
@@ -82,8 +78,18 @@ export async function getNextUnprocessedSpan(): Promise<OpikSpan | null> {
     );
   }
 
-  const data: SearchSpansResponse = await response.json();
-  return data.data?.[0] ?? null;
+  const json = await response.json();
+
+  // Opik search returns different formats depending on version:
+  // - Wrapped: { data: [span, ...], total: N }
+  // - Direct: span object with `id` field (when limit=1)
+  if (Array.isArray(json?.data)) {
+    return (json.data[0] as OpikSpan) ?? null;
+  }
+  if (json?.id) {
+    return json as OpikSpan;
+  }
+  return null;
 }
 
 /**

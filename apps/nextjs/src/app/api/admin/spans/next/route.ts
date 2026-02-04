@@ -16,6 +16,7 @@ export async function GET() {
     const span = await getNextUnprocessedSpan();
 
     if (!span) {
+      console.log("[spans/next] No unprocessed span found from Opik");
       return NextResponse.json({
         spanId: null,
         traceId: null,
@@ -24,8 +25,16 @@ export async function GET() {
       });
     }
 
+    console.log("[spans/next] Span found:", {
+      spanId: span.id,
+      tags: span.tags,
+      metadataKeys: span.metadata ? Object.keys(span.metadata) : "null",
+      metadata: span.metadata,
+    });
+
     // Extract unrecognized items from metadata
     const rawItems = span.metadata?.unrecognized ?? [];
+    console.log("[spans/next] rawItems:", rawItems);
 
     if (!Array.isArray(rawItems) || rawItems.length === 0) {
       console.warn("Span has malformed or empty metadata.unrecognized", {
@@ -93,6 +102,15 @@ export async function GET() {
     const newItems = deduplicatedItems.filter(
       (item) => !existingSet.has(item),
     );
+
+    console.log("[spans/next] Processing:", {
+      deduplicatedCount: deduplicatedItems.length,
+      existingInDb: existingNames.length,
+      newItemsCount: newItems.length,
+      deduplicatedItems,
+      existingNames: existingNames.map((r) => r.name),
+      newItems,
+    });
 
     // If all items already exist, auto-tag and return empty
     if (newItems.length === 0) {
