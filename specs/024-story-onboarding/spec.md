@@ -100,7 +100,7 @@ Scene 7 delivers the product message and offers a CTA to enter the real app. Use
 - **FR-012**: Scene 6 MUST display a modal showing each used ingredient with before/after quantity levels, and list staples as "NOT TRACKED".
 - **FR-013**: Scene 7 MUST redirect to /recipes when user taps "Get started".
 - **FR-014**: All state MUST be client-side only. No user data is persisted during this flow.
-- **FR-015**: This flow MUST coexist alongside the current onboarding — no modifications to existing OnboardingPageContent.
+- **FR-015**: This flow MUST live at a new dedicated route (e.g., `/app/onboarding/story`), coexisting alongside the current onboarding with no modifications to existing OnboardingPageContent.
 - **FR-016**: Scene 4 voice input MUST reuse the existing ingredient extractor agent for LLM extraction.
 
 ### Key Entities
@@ -119,6 +119,12 @@ Scene 7 delivers the product message and offers a CTA to enter the real app. Use
 - **SC-003**: >85% of users successfully add eggs and parmesan via voice on first attempt (Scene 4).
 - **SC-004**: <15% drop-off rate at Scene 4 (voice input step).
 - **SC-005**: Users understand the product value proposition — measured by proceeding to "Get started" rather than abandoning at Scene 7.
+
+## Clarifications
+
+### Session 2026-02-04
+
+- Q: How do users enter the story onboarding (route/entry point)? → A: New dedicated route (e.g., `/app/onboarding/story`), coexists separately from current onboarding.
 
 ## Assumptions
 
