@@ -45,10 +45,20 @@ export function Scene2Inventory({ onContinue }: Scene2InventoryProps) {
           ),
         )}
 
+        {/* Legend explaining quantity levels */}
+        <div
+          className="bg-blue-50 border-2 border-blue-200 p-3 rounded animate-[fadeIn_0.5s_ease-in_both]"
+          style={{ animationDelay: "0.8s" }}
+        >
+          <p className="text-sm text-blue-900 leading-relaxed">
+            {SCENE_TEXT.scene2Legend[0]}
+          </p>
+        </div>
+
         {/* Tracked ingredients — read-only badges (no action buttons) */}
         <div
           className="space-y-2 animate-[fadeIn_0.5s_ease-in_both]"
-          style={{ animationDelay: "0.8s" }}
+          style={{ animationDelay: "1.2s" }}
         >
           <h3 className="text-lg font-black">Tracked Ingredients</h3>
           <div className="flex flex-wrap gap-2">
@@ -67,7 +77,7 @@ export function Scene2Inventory({ onContinue }: Scene2InventoryProps) {
         {/* Staples — read-only badges */}
         <div
           className="space-y-2 animate-[fadeIn_0.5s_ease-in_both]"
-          style={{ animationDelay: "1.2s" }}
+          style={{ animationDelay: "1.6s" }}
         >
           <h3 className="text-lg font-black">Staples (always available)</h3>
           <div className="flex flex-wrap gap-2">
@@ -86,7 +96,7 @@ export function Scene2Inventory({ onContinue }: Scene2InventoryProps) {
         {/* Recipe card */}
         <div
           className="animate-[fadeIn_0.5s_ease-in_both]"
-          style={{ animationDelay: "1.6s" }}
+          style={{ animationDelay: "2.0s" }}
         >
           <h3 className="text-lg font-black mb-2">Tonight&apos;s Options</h3>
           <RecipeAvailabilityCard
@@ -100,7 +110,7 @@ export function Scene2Inventory({ onContinue }: Scene2InventoryProps) {
           <p
             key={i}
             className="text-lg font-bold leading-relaxed animate-[fadeIn_0.5s_ease-in_both]"
-            style={{ animationDelay: `${2.0 + i * 0.4}s` }}
+            style={{ animationDelay: `${2.4 + i * 0.4}s` }}
           >
             {segment.split(/(\{[^}]+\})/).map((part, j) => {
               const match = part.match(/^\{(.+)\}$/);
@@ -121,7 +131,7 @@ export function Scene2Inventory({ onContinue }: Scene2InventoryProps) {
 
         <div
           className="pt-4 animate-[fadeIn_0.5s_ease-in_both]"
-          style={{ animationDelay: "2.4s" }}
+          style={{ animationDelay: "2.8s" }}
         >
           <Button
             variant="default"

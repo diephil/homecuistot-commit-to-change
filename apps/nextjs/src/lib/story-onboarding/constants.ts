@@ -91,18 +91,25 @@ export const SCENE_TEXT = {
     "She opens HomeCuistot instead. 💡",
   ],
   scene2Intro: ["Here's what HomeCuistot shows Sarah:", "SARAH'S KITCHEN"],
+  scene2Legend: [
+    "The quantity levels show how many times each ingredient can be used in recipes: Plenty → Some → Low → Critical (out of stock).",
+  ],
   scene2Outro: [
     "Sarah wants carbonara, let's skip the truffle this time, but she's missing {eggs} and {parmesan} to cook it tonight.",
   ],
   scene3: [
-    "She doesn't need step-by-step instructions for the carbonara she's made a hundred times.👩‍🍳",
-    'She doesn\'t need precise measurements — she knows what "some eggs" means.',
+    "Sarah doesn't need step-by-step instructions for the carbonara she's made a hundred times. 👩‍🍳",
     "She stops at the store on her way home. 🛒",
     "Grabs what's missing (eggs and parmesan) plus a few other things.",
   ],
-  scene4Intro: ["6:30pm. Home.", 'Partner: "What\'d you get?"'],
+  scene4Intro: [
+    "6:30pm. Home.",
+    "Sarah just arrived home, her hands are full of groceries.",
+    "She needs to tell HomeCuistot what she just bought from the store.",
+    'Partner: "What\'d you get?"',
+  ],
   scene4Instructions: [
-    "Help Sarah say what she bought.",
+    "Help Sarah tell the app what she bought.",
     "Tap and say:",
     '"I bought parmesan, eggs, and some bananas"',
   ],
