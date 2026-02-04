@@ -25,12 +25,15 @@ export default function UnrecognizedItemsPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [hasReviewedSpan, setHasReviewedSpan] = useState(false);
+  const [queueEmpty, setQueueEmpty] = useState(false);
 
   const handleLoadSpan = async () => {
     setIsLoading(true);
     setError(null);
     setLoadedSpan(null);
     setPromotions({});
+    setQueueEmpty(false);
 
     try {
       const response = await fetch("/api/admin/spans/next");
@@ -42,6 +45,7 @@ export default function UnrecognizedItemsPage() {
       }
 
       if (!data.spanId) {
+        setQueueEmpty(true);
         toast.info("No more spans to review");
         return;
       }
@@ -108,6 +112,7 @@ export default function UnrecognizedItemsPage() {
       // Reset for next span
       setLoadedSpan(null);
       setPromotions({});
+      setHasReviewedSpan(true);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Unknown error";
       setError(message);
@@ -140,6 +145,7 @@ export default function UnrecognizedItemsPage() {
       toast.success("Span dismissed");
       setLoadedSpan(null);
       setPromotions({});
+      setHasReviewedSpan(true);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Unknown error";
       setError(message);
@@ -183,22 +189,51 @@ export default function UnrecognizedItemsPage() {
           </div>
         )}
 
-        {/* Load CTA or review list */}
+        {/* Load CTA, queue empty, or review list */}
         {!loadedSpan ? (
-          <div className="border-4 md:border-6 border-black bg-gradient-to-br from-blue-200 to-blue-300 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] md:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-6 md:p-10">
-            <div className="text-center space-y-4">
-              <p className="text-lg font-bold">
-                Click below to load the next unrecognized ingredient span
-              </p>
-              <button
-                onClick={handleLoadSpan}
-                disabled={isLoading}
-                className="bg-cyan-300 hover:bg-cyan-400 disabled:opacity-50 border-4 border-black px-8 py-4 font-black uppercase text-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] cursor-pointer transition"
-              >
-                {isLoading ? "Loading..." : "↓ Load Next Span"}
-              </button>
+          queueEmpty ? (
+            <div className="border-4 md:border-6 border-black bg-gradient-to-br from-green-200 to-emerald-300 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] md:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-6 md:p-10">
+              <div className="text-center space-y-4">
+                <p className="text-4xl">🎉</p>
+                <p className="text-xl font-black uppercase">
+                  All spans reviewed!
+                </p>
+                <p className="text-base font-bold">
+                  No more unprocessed spans remain. Check back later when new
+                  recipes are created.
+                </p>
+                <button
+                  onClick={handleLoadSpan}
+                  disabled={isLoading}
+                  className="bg-cyan-300 hover:bg-cyan-400 disabled:opacity-50 border-4 border-black px-8 py-4 font-black uppercase text-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] cursor-pointer transition"
+                >
+                  {isLoading ? "Loading..." : "↻ Check Again"}
+                </button>
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="border-4 md:border-6 border-black bg-gradient-to-br from-blue-200 to-blue-300 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] md:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-6 md:p-10">
+              <div className="text-center space-y-4">
+                {hasReviewedSpan && (
+                  <p className="text-2xl font-black uppercase text-green-700 mb-2">
+                    ✓ Span complete
+                  </p>
+                )}
+                <p className="text-lg font-bold">
+                  {hasReviewedSpan
+                    ? "Ready for the next span"
+                    : "Click below to load the next unrecognized ingredient span"}
+                </p>
+                <button
+                  onClick={handleLoadSpan}
+                  disabled={isLoading}
+                  className="bg-cyan-300 hover:bg-cyan-400 disabled:opacity-50 border-4 border-black px-8 py-4 font-black uppercase text-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] cursor-pointer transition"
+                >
+                  {isLoading ? "Loading..." : "↓ Load Next Span"}
+                </button>
+              </div>
+            </div>
+          )
         ) : (
           <div className="space-y-6">
             {/* Span info */}

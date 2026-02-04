@@ -116,7 +116,7 @@
 
 ### Implementation
 
-- [ ] T016 [US6] Add "Load Next Span" CTA to `apps/nextjs/src/app/(admin)/admin/unrecognized/page.tsx` — after successful promote or dismiss-all (state reset, `loadedSpan` is null), show "Load Next Span" CTA (reuse `handleLoadSpan`). Show completion message when API returns `spanId: null`. Ref: spec.md US6 acceptance scenarios, FR-015, FR-016
+- [X] T016 [US6] Add "Load Next Span" CTA to `apps/nextjs/src/app/(admin)/admin/unrecognized/page.tsx` — after successful promote or dismiss-all (state reset, `loadedSpan` is null), show "Load Next Span" CTA (reuse `handleLoadSpan`). Show completion message when API returns `spanId: null`. Ref: spec.md US6 acceptance scenarios, FR-015, FR-016
 
 **Checkpoint**: Sequential span processing fully functional. Admin can process 20+ spans in a single session.
 
