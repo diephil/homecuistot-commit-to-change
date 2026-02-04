@@ -5,7 +5,6 @@ export const dynamic = 'force-dynamic'
 import { RecipeSection } from './recipe-section'
 import { CookingHistoryTable } from '@/components/app/CookingHistoryTable'
 import { ResetUserDataButton } from '@/components/app/ResetUserDataButton'
-import { StartDemoButton } from '@/components/app/StartDemoButton'
 import { AppPageHeader } from '@/components/app/AppPageHeader'
 
 export default async function AppPage() {
@@ -62,7 +61,6 @@ export default async function AppPage() {
         </section>
 
         <section className="flex justify-center gap-4 pt-8">
-          <StartDemoButton />
           <ResetUserDataButton />
         </section>
       </div>

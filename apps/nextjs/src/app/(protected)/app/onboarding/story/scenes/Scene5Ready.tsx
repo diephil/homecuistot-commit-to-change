@@ -47,6 +47,7 @@ export function Scene5Ready({ inventory, onContinue }: Scene5ReadyProps) {
             recipe={recipeData}
             variant="available"
             onMarkAsCooked={() => onContinue()}
+            pulseButton={true}
           />
         </div>
 

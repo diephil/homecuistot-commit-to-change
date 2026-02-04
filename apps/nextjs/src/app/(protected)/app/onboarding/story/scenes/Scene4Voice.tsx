@@ -36,7 +36,18 @@ export function Scene4Voice({
   const [hasInputOnce, setHasInputOnce] = useState(false);
   const [lastTranscription, setLastTranscription] = useState<string>();
   const [showHint, setShowHint] = useState(false);
+  const [attemptCount, setAttemptCount] = useState(0);
   const hintTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+  // Check if user has already added ingredients (from localStorage)
+  useEffect(() => {
+    const hasAddedItems = inventory.some((item) =>
+      !item.isPantryStaple && item.isNew
+    );
+    if (hasAddedItems) {
+      setHasInputOnce(true);
+    }
+  }, [inventory]);
 
   // Show hint after 5s of inactivity
   useEffect(() => {
@@ -93,6 +104,7 @@ export function Scene4Voice({
         const data: ProcessInputResponse = await response.json();
         setLastTranscription(data.transcribedText);
         setHasInputOnce(true);
+        setAttemptCount((prev) => prev + 1);
 
         // Show toast for unrecognized ingredients
         if (data.unrecognized && data.unrecognized.length > 0) {
@@ -215,6 +227,15 @@ export function Scene4Voice({
             lastTranscription={lastTranscription}
           />
         </div>
+
+        {/* Urgency banner after 3 attempts */}
+        {attemptCount >= 3 && (
+          <div className="bg-pink-100 border-4 border-pink-600 p-4 rounded-none animate-[fadeIn_0.5s_ease-in_both] shadow-[4px_4px_0px_0px_rgba(219,39,119,1)]">
+            <p className="text-lg font-black text-pink-600 text-center">
+              🍝 Hurry up, Sarah is hungry!
+            </p>
+          </div>
+        )}
 
         {/* Hint after 5s inactivity */}
         {/* {showHint && !hasInputOnce && (

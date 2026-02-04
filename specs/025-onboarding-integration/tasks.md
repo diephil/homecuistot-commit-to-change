@@ -111,7 +111,7 @@ All paths relative to `apps/nextjs/src/` unless specified otherwise.
 ### Implementation for User Stories 5 & 6
 
 - [X] T012 [P] [US5] Add `homecuistot:story-onboarding` to localStorage cleanup in `components/app/ResetUserDataButton.tsx` — add `localStorage.removeItem('homecuistot:story-onboarding')` in the `handleReset` try block alongside existing removals
-- [X] T013 [P] [US6] Convert StartDemoButton to "Start Onboarding" in `components/app/StartDemoButton.tsx` — rename button text from "🚀 Start Demo" to "🚀 Start Onboarding", update modal title/message, replace `handleStartDemo` logic: remove `startDemoData()` call, instead clear localStorage keys (`homecuistot:story-onboarding` + banner/inventory keys), then `window.location.href = '/app/onboarding'`. Remove `useRouter` and `startDemoData` imports.
+- [X] T013 [P] [US6] Remove StartDemoButton entirely — delete `components/app/StartDemoButton.tsx` and remove all imports/usage from `app/(protected)/app/page.tsx`
 
 **Checkpoint**: All user stories complete. Report for review.
 

@@ -529,7 +529,15 @@ export default function InventoryPage() {
         {/* Tracked Ingredients */}
         <InventorySection
           title="Tracked Ingredients"
-          description="Tap the ingredient to adjust its approximate quantity level to match what you have at home!"
+          description={
+            <>
+              Tap the ingredient to adjust quantities from{" "}
+              <span className="font-bold text-green-600">Plenty</span> →{" "}
+              <span className="font-bold text-yellow-600">Some</span> →{" "}
+              <span className="font-bold text-orange-600">Enough</span> →{" "}
+              <span className="font-bold text-red-600">No More</span>
+            </>
+          }
           items={inventory.available}
           isPantrySection={false}
           groupByCategory={groupByCategory}
