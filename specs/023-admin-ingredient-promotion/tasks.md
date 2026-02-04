@@ -27,9 +27,9 @@
 
 **Purpose**: Branch and directory structure
 
-- [ ] T001 Create feature branch `023-admin-ingredient-promotion` from `main`
-- [ ] T002 Create directory structure: `app/api/admin/spans/next/`, `app/api/admin/spans/mark-reviewed/`, `app/api/admin/ingredients/promote/`, `app/(admin)/admin/unrecognized/`
-- [ ] T003 [P] Add `OPIK_WORKSPACE=philippe-diep` to `apps/nextjs/.env.prod` (after `OPIK_API_KEY` line). Add `OPIK_WORKSPACE=` (empty) to `apps/nextjs/.env.local` for local dev (no workspace needed for self-hosted Opik)
+- [X] T001 Create feature branch `023-admin-ingredient-promotion` from `main`
+- [X] T002 Create directory structure: `app/api/admin/spans/next/`, `app/api/admin/spans/mark-reviewed/`, `app/api/admin/ingredients/promote/`, `app/(admin)/admin/unrecognized/`
+- [X] T003 [P] Add `OPIK_WORKSPACE=philippe-diep` to `apps/nextjs/.env.prod` (after `OPIK_API_KEY` line). Add `OPIK_WORKSPACE=` (empty) to `apps/nextjs/.env.local` for local dev (no workspace needed for self-hosted Opik)
 
 ---
 
