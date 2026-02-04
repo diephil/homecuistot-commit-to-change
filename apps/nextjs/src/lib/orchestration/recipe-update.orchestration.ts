@@ -100,6 +100,7 @@ export async function createRecipeManagerAgentProposal(
     const agent = createRecipeManagerAgent({
       opikTrace: traceCtx.trace,
       userId,
+      model,
     });
     const runner = new InMemoryRunner({ agent, appName: APP_NAME });
     const session = await runner.sessionService.createSession({

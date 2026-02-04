@@ -84,7 +84,11 @@ export async function createInventoryManagerAgentProposal(
 
     // 3. Create agent + session
     const APP_NAME = "inventory_manager";
-    const agent = createInventoryAgent({ userId, opikTrace: traceCtx.trace });
+    const agent = createInventoryAgent({
+      userId,
+      opikTrace: traceCtx.trace,
+      model,
+    });
     const runner = new InMemoryRunner({ agent, appName: APP_NAME });
     const session = await runner.sessionService.createSession({
       userId,

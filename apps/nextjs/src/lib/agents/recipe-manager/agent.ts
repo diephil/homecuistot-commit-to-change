@@ -16,11 +16,12 @@ import { PROMPT } from "./prompt";
 export function createRecipeManagerAgent(params: {
   userId: string;
   opikTrace: Trace;
+  model: "gemini-2.0-flash" | "gemini-2.5-flash-lite";
 }) {
   return new LlmAgent({
     name: PROMPT.name,
     description: PROMPT.description,
-    model: "gemini-2.0-flash",
+    model: params.model,
     instruction: PROMPT.prompt,
     tools: [
       createCreateRecipesTool(params),
