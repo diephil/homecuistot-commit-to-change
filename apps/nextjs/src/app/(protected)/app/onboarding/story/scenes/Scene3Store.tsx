@@ -14,7 +14,7 @@ export function Scene3Store({ onContinue }: Scene3StoreProps) {
         {SCENE_TEXT.scene3.map((segment, i) => (
           <p
             key={i}
-            className="text-lg font-bold leading-relaxed opacity-0 animate-[fadeIn_0.5s_ease-in_forwards]"
+            className="text-lg font-bold leading-relaxed animate-[fadeIn_0.5s_ease-in_both]"
             style={{ animationDelay: `${i * 0.4}s` }}
           >
             {segment}
@@ -22,7 +22,7 @@ export function Scene3Store({ onContinue }: Scene3StoreProps) {
         ))}
 
         <div
-          className="pt-4 opacity-0 animate-[fadeIn_0.5s_ease-in_forwards]"
+          className="pt-4 animate-[fadeIn_0.5s_ease-in_both]"
           style={{ animationDelay: `${SCENE_TEXT.scene3.length * 0.4}s` }}
         >
           <Button

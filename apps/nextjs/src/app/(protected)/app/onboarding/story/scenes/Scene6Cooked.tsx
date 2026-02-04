@@ -36,14 +36,14 @@ export function Scene6Cooked({
     <div className="flex flex-col items-center min-h-[80vh] px-6 py-8">
       <div className="max-w-md w-full space-y-6">
         <h2
-          className="text-2xl font-black tracking-tight opacity-0 animate-[fadeIn_0.5s_ease-in_forwards]"
+          className="text-2xl font-black tracking-tight animate-[fadeIn_0.5s_ease-in_both]"
           style={{ animationDelay: "0s" }}
         >
           Carbonara: cooked!
         </h2>
 
         <p
-          className="text-base font-semibold text-black/70 opacity-0 animate-[fadeIn_0.5s_ease-in_forwards]"
+          className="text-base font-semibold text-black/70 animate-[fadeIn_0.5s_ease-in_both]"
           style={{ animationDelay: "0.4s" }}
         >
           Here&apos;s what changed in Sarah&apos;s inventory after cooking the recipe:
@@ -51,7 +51,7 @@ export function Scene6Cooked({
 
         {/* Tracked ingredients with diff badges on decremented items */}
         <div
-          className="space-y-2 opacity-0 animate-[fadeIn_0.5s_ease-in_forwards]"
+          className="space-y-2 animate-[fadeIn_0.5s_ease-in_both]"
           style={{ animationDelay: "0.8s" }}
         >
           <div className="flex flex-wrap gap-2">
@@ -86,7 +86,7 @@ export function Scene6Cooked({
 
         {/* Staples */}
         <div
-          className="space-y-2 opacity-0 animate-[fadeIn_0.5s_ease-in_forwards]"
+          className="space-y-2 animate-[fadeIn_0.5s_ease-in_both]"
           style={{ animationDelay: "1.2s" }}
         >
           <h3 className="text-lg font-black">Staples (always available)</h3>
@@ -104,7 +104,7 @@ export function Scene6Cooked({
         </div>
 
         <div
-          className="pt-4 opacity-0 animate-[fadeIn_0.5s_ease-in_forwards]"
+          className="pt-4 animate-[fadeIn_0.5s_ease-in_both]"
           style={{ animationDelay: "2.0s" }}
         >
           <Button

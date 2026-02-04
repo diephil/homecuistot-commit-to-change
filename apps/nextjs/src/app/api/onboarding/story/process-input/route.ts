@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
-import { ingredientExtractorAgent } from "@/lib/agents/ingredient-extractor/agent";
-import { validateIngredientNames } from "@/lib/services/ingredient-matcher";
-import { createAgentTrace } from "@/lib/tracing/opik-agent";
-import { IngredientExtractionSchema } from "@/types/onboarding";
+import { createInventoryManagerAgentProposal } from "@/lib/orchestration/inventory-update.orchestration";
+import type { InventorySessionItem } from "@/lib/agents/inventory-manager/tools/update-matching-ingredients";
 
 /**
  * Unified process-input route for story onboarding Scene 4.
  * Accepts voice (audioBase64) OR text input. No DB writes.
+ * Uses inventory-update orchestration with "onboarding-story" tag.
  */
 
 export const maxDuration = 15;
@@ -33,64 +32,51 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create Opik trace
-    const traceCtx = createAgentTrace({
-      name: "story-onboarding-process-input",
-      input: {
-        hasAudio: !!audioBase64,
-        hasText: !!text,
-        currentIngredients,
-      },
-      tags: [
-        `user:${user.id}`,
-        "story-onboarding",
-        audioBase64 ? "voice-input" : "text-input",
-      ],
-    });
+    // Convert currentIngredients (string[]) to minimal InventorySessionItem[]
+    // For story onboarding, we use fake IDs since no DB records exist yet
+    const currentInventory: InventorySessionItem[] = currentIngredients.map(
+      (name: string, index: number) => ({
+        id: `demo-${index}`,
+        ingredientId: `demo-ing-${index}`,
+        name,
+        quantityLevel: 3, // Default for demo items
+        isPantryStaple: false,
+      }),
+    );
 
-    try {
-      // Call ingredient extractor agent (handles both voice and text natively)
-      const result = await ingredientExtractorAgent({
-        text: text || undefined,
-        audioBase64: audioBase64 || undefined,
-        currentIngredients,
-        parentTrace: traceCtx.trace,
+    // Call inventory manager orchestration (handles tracing internally)
+    const { proposal, transcribedText } =
+      await createInventoryManagerAgentProposal({
         userId: user.id,
+        input: text || undefined,
+        audioBase64: audioBase64 || undefined,
+        currentInventory,
+        model: "gemini-2.5-flash-lite",
+        additionalTags: ["onboarding-story"],
       });
 
-      // Validate extracted names against ingredients DB
-      const addValidation = await validateIngredientNames({
-        names: result.add,
-      });
-      const rmValidation = await validateIngredientNames({
-        names: result.rm,
-      });
+    // Transform response to match Scene4Voice expectations
+    // ValidatedInventoryUpdate[] → { name, quantityLevel }[]
+    const add = proposal.recognized.map((item) => ({
+      name: item.ingredientName,
+      quantityLevel: item.proposedQuantity,
+    }));
 
-      const allUnrecognized = [
-        ...addValidation.unrecognized,
-        ...rmValidation.unrecognized,
-      ];
+    // For removals, extract names only (orchestration doesn't return removals separately)
+    // Items with proposedQuantity = 0 are removals
+    const rm = proposal.recognized
+      .filter((item) => item.proposedQuantity === 0)
+      .map((item) => item.ingredientName);
 
-      const validated = IngredientExtractionSchema.parse({
-        add: addValidation.recognized,
-        rm: rmValidation.recognized,
-        transcribedText: result.transcribedText,
-        unrecognized:
-          allUnrecognized.length > 0 ? allUnrecognized : undefined,
-      });
+    const response = {
+      add,
+      rm,
+      transcribedText,
+      unrecognized:
+        proposal.unrecognized.length > 0 ? proposal.unrecognized : undefined,
+    };
 
-      traceCtx.trace.update({
-        output: validated as unknown as Record<string, unknown>,
-      });
-      traceCtx.end();
-      await traceCtx.flush();
-
-      return NextResponse.json(validated);
-    } catch (innerError) {
-      traceCtx.end();
-      await traceCtx.flush();
-      throw innerError;
-    }
+    return NextResponse.json(response);
   } catch (error) {
     console.error("[story/process-input] Error:", error);
 

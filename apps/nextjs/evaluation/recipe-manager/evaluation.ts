@@ -29,9 +29,8 @@ const llmTask: EvaluationTask<RecipeDatasetItem> = async (datasetItem) => {
 
 export const evaluation = async (params: { nbSamples?: number }) => {
   const opikClient = getOpikClient();
-  const retrievedDataset = await opikClient.getOrCreateDataset<RecipeDatasetItem>(
-    DATASET.name,
-  );
+  const retrievedDataset =
+    await opikClient.getOrCreateDataset<RecipeDatasetItem>(DATASET.name);
 
   // Retrieve prompts used in the evaluation
   const prompt1 = await opikClient.getPrompt({

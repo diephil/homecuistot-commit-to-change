@@ -8,9 +8,11 @@ import { InventoryDisplayItem, QuantityLevel } from "@/types/inventory";
 import { Toggle } from "@/components/ui/toggle";
 import { List, LayoutGrid, CircleOff } from "lucide-react";
 
+import type { ReactNode } from "react";
+
 interface InventorySectionProps {
   title: string;
-  description?: string;
+  description?: ReactNode;
   items: InventoryDisplayItem[];
   isPantrySection?: boolean;
   groupByCategory?: boolean;
@@ -90,6 +92,9 @@ export function InventorySection({
 }: InventorySectionProps) {
   const showToggles = !isPantrySection && items.length > 0;
 
+  // Check if there are any critical-level items (0 or 1)
+  const hasCriticalItems = !isPantrySection && items.some((item) => item.quantityLevel === 0);
+
   const toggleActions = showToggles ? (
     <div className="flex items-center gap-2">
       {onToggleWord && (
@@ -109,7 +114,10 @@ export function InventorySection({
           onPressedChange={onToggleEmpty}
           aria-label="Show empty only"
           size="sm"
-          className="cursor-pointer border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] rounded-md bg-white data-[state=on]:bg-red-200 data-[state=on]:text-black"
+          disabled={!hasCriticalItems}
+          className={`border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] rounded-md bg-white data-[state=on]:bg-red-200 data-[state=on]:text-black ${
+            hasCriticalItems ? 'cursor-pointer' : 'opacity-40 cursor-not-allowed'
+          }`}
         >
           <CircleOff className="h-4 w-4" />
         </Toggle>

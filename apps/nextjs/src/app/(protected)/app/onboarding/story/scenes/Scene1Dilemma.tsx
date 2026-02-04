@@ -16,7 +16,7 @@ export function Scene1Dilemma({ onContinue }: Scene1DilemmaProps) {
       <div className="max-w-md w-full space-y-6">
         {/* Time/place setting — distinct styling */}
         <p
-          className="text-sm font-mono font-semibold uppercase tracking-widest text-black/50 opacity-0 animate-[fadeIn_0.5s_ease-in_forwards]"
+          className="text-sm font-mono font-semibold uppercase tracking-widest text-black/50 animate-[fadeIn_0.5s_ease-in_both]"
           style={{ animationDelay: "0s" }}
         >
           {setting}
@@ -26,7 +26,7 @@ export function Scene1Dilemma({ onContinue }: Scene1DilemmaProps) {
         {narrative.map((segment, i) => (
           <p
             key={i}
-            className="text-lg font-bold leading-relaxed opacity-0 animate-[fadeIn_0.5s_ease-in_forwards]"
+            className="text-lg font-bold leading-relaxed animate-[fadeIn_0.5s_ease-in_both]"
             style={{ animationDelay: `${(i + 1) * 0.4}s` }}
           >
             {segment}
@@ -34,7 +34,7 @@ export function Scene1Dilemma({ onContinue }: Scene1DilemmaProps) {
         ))}
 
         <div
-          className="pt-4 opacity-0 animate-[fadeIn_0.5s_ease-in_forwards]"
+          className="pt-4 animate-[fadeIn_0.5s_ease-in_both]"
           style={{ animationDelay: `${SCENE_TEXT.scene1.length * 0.4}s` }}
         >
           <Button

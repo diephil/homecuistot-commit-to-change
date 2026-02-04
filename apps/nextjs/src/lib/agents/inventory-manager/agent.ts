@@ -13,12 +13,12 @@ import { PROMPT } from "./prompt";
 
 export interface CreateInventoryAgentParams {
   userId: string;
-  model?: string;
+  model: string;
   opikTrace: Trace;
 }
 
 export function createInventoryAgent(params: CreateInventoryAgentParams) {
-  const { userId, model = "gemini-2.0-flash", opikTrace } = params;
+  const { userId, model, opikTrace } = params;
 
   return new LlmAgent({
     name: PROMPT.name,

@@ -31,7 +31,7 @@ export function Scene5Ready({ inventory, onContinue }: Scene5ReadyProps) {
         {SCENE_TEXT.scene5.map((segment, i) => (
           <p
             key={i}
-            className="text-lg font-bold leading-relaxed opacity-0 animate-[fadeIn_0.5s_ease-in_forwards]"
+            className="text-lg font-bold leading-relaxed animate-[fadeIn_0.5s_ease-in_both]"
             style={{ animationDelay: `${i * 0.4}s` }}
           >
             {segment}
@@ -40,19 +40,20 @@ export function Scene5Ready({ inventory, onContinue }: Scene5ReadyProps) {
 
         {/* Recipe card — now available */}
         <div
-          className="opacity-0 animate-[fadeIn_0.5s_ease-in_forwards]"
+          className="animate-[fadeIn_0.5s_ease-in_both]"
           style={{ animationDelay: `${SCENE_TEXT.scene5.length * 0.4}s` }}
         >
           <RecipeAvailabilityCard
             recipe={recipeData}
             variant="available"
             onMarkAsCooked={() => onContinue()}
+            pulseButton={true}
           />
         </div>
 
         {/* Inventory with "NEW" badges */}
         <div
-          className="space-y-2 opacity-0 animate-[fadeIn_0.5s_ease-in_forwards]"
+          className="space-y-2 animate-[fadeIn_0.5s_ease-in_both]"
           style={{
             animationDelay: `${(SCENE_TEXT.scene5.length + 1) * 0.4}s`,
           }}

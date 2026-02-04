@@ -279,7 +279,7 @@ const DATASET_ENTRIES: DatasetItem[] = [
           ingredientId: ING.salt,
           ingredientName: "salt",
           previousQuantity: 3,
-          proposedQuantity: 2,
+          proposedQuantity: 1,
           previousPantryStaple: false,
           confidence: "high",
         },

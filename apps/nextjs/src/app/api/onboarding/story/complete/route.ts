@@ -44,6 +44,7 @@ export async function POST(request: NextRequest) {
     const parseResult = StoryCompleteRequestSchema.safeParse(body);
 
     if (!parseResult.success) {
+      console.error("[story/complete] Validation error:", parseResult.error);
       return NextResponse.json(
         { error: "Invalid request body", details: parseResult.error.message },
         { status: 400 },

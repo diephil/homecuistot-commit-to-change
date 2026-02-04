@@ -1,7 +1,7 @@
 import { redirect, RedirectType } from "next/navigation";
 import { hasCompletedOnboarding } from "@/app/actions/inventory";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { OnboardingPageContent } from "./OnboardingPageContent";
+import { StoryOnboarding } from "./story/StoryOnboarding";
 import { OnboardingGuard } from "./OnboardingGuard";
 
 export const dynamic = "force-dynamic";
@@ -24,7 +24,7 @@ export default async function OnboardingPage() {
   return (
     <ErrorBoundary>
       <OnboardingGuard>
-        <OnboardingPageContent />
+        <StoryOnboarding />
       </OnboardingGuard>
     </ErrorBoundary>
   );

@@ -29,7 +29,7 @@ export function Scene2Inventory({ onContinue }: Scene2InventoryProps) {
           i === 0 ? (
             <p
               key={i}
-              className="text-lg font-bold leading-relaxed opacity-0 animate-[fadeIn_0.5s_ease-in_forwards]"
+              className="text-lg font-bold leading-relaxed animate-[fadeIn_0.5s_ease-in_both]"
               style={{ animationDelay: `${i * 0.4}s` }}
             >
               {segment}
@@ -37,7 +37,7 @@ export function Scene2Inventory({ onContinue }: Scene2InventoryProps) {
           ) : (
             <h2
               key={i}
-              className="text-2xl font-black tracking-tight opacity-0 animate-[fadeIn_0.5s_ease-in_forwards]"
+              className="text-2xl font-black tracking-tight animate-[fadeIn_0.5s_ease-in_both]"
               style={{ animationDelay: `${i * 0.4}s` }}
             >
               {segment}
@@ -47,7 +47,7 @@ export function Scene2Inventory({ onContinue }: Scene2InventoryProps) {
 
         {/* Tracked ingredients — read-only badges (no action buttons) */}
         <div
-          className="space-y-2 opacity-0 animate-[fadeIn_0.5s_ease-in_forwards]"
+          className="space-y-2 animate-[fadeIn_0.5s_ease-in_both]"
           style={{ animationDelay: "0.8s" }}
         >
           <h3 className="text-lg font-black">Tracked Ingredients</h3>
@@ -66,7 +66,7 @@ export function Scene2Inventory({ onContinue }: Scene2InventoryProps) {
 
         {/* Staples — read-only badges */}
         <div
-          className="space-y-2 opacity-0 animate-[fadeIn_0.5s_ease-in_forwards]"
+          className="space-y-2 animate-[fadeIn_0.5s_ease-in_both]"
           style={{ animationDelay: "1.2s" }}
         >
           <h3 className="text-lg font-black">Staples (always available)</h3>
@@ -85,7 +85,7 @@ export function Scene2Inventory({ onContinue }: Scene2InventoryProps) {
 
         {/* Recipe card */}
         <div
-          className="opacity-0 animate-[fadeIn_0.5s_ease-in_forwards]"
+          className="animate-[fadeIn_0.5s_ease-in_both]"
           style={{ animationDelay: "1.6s" }}
         >
           <h3 className="text-lg font-black mb-2">Tonight&apos;s Options</h3>
@@ -99,7 +99,7 @@ export function Scene2Inventory({ onContinue }: Scene2InventoryProps) {
         {SCENE_TEXT.scene2Outro.map((segment, i) => (
           <p
             key={i}
-            className="text-lg font-bold leading-relaxed opacity-0 animate-[fadeIn_0.5s_ease-in_forwards]"
+            className="text-lg font-bold leading-relaxed animate-[fadeIn_0.5s_ease-in_both]"
             style={{ animationDelay: `${2.0 + i * 0.4}s` }}
           >
             {segment.split(/(\{[^}]+\})/).map((part, j) => {
@@ -120,7 +120,7 @@ export function Scene2Inventory({ onContinue }: Scene2InventoryProps) {
         ))}
 
         <div
-          className="pt-4 opacity-0 animate-[fadeIn_0.5s_ease-in_forwards]"
+          className="pt-4 animate-[fadeIn_0.5s_ease-in_both]"
           style={{ animationDelay: "2.4s" }}
         >
           <Button
