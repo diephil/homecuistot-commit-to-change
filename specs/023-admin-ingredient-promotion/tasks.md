@@ -86,8 +86,8 @@
 
 ### Implementation
 
-- [ ] T012 [US4] Create API route `apps/nextjs/src/app/api/admin/ingredients/promote/route.ts` — POST handler: admin auth check, Zod validation (`spanId: uuid, promotions: [{name: string, category: IngredientCategory}]`), validate categories against 30-item enum, batch insert via `adminDb.insert(ingredients).values(...).onConflictDoNothing()` (lowercase names), call `markSpanAsReviewed({ spanId })` (GET-then-PATCH), return `{ promoted, skipped, spanTagged }`. Ref: contracts/admin-api.md §POST /api/admin/ingredients/promote, data-model.md Workflow 2
-- [ ] T013 [US4] Add promote functionality to `apps/nextjs/src/app/(admin)/admin/unrecognized/page.tsx` — "Promote" button: collects `promotions[]` from state, POST to `/api/admin/ingredients/promote` with `{ spanId, promotions }`, show toast with promoted/skipped counts, reset state for next span. Disable button when no items remain. Ref: spec.md US4 acceptance scenarios
+- [X] T012 [US4] Create API route `apps/nextjs/src/app/api/admin/ingredients/promote/route.ts` — POST handler: admin auth check, Zod validation (`spanId: uuid, promotions: [{name: string, category: IngredientCategory}]`), validate categories against 30-item enum, batch insert via `adminDb.insert(ingredients).values(...).onConflictDoNothing()` (lowercase names), call `markSpanAsReviewed({ spanId })` (GET-then-PATCH), return `{ promoted, skipped, spanTagged }`. Ref: contracts/admin-api.md §POST /api/admin/ingredients/promote, data-model.md Workflow 2
+- [X] T013 [US4] Add promote functionality to `apps/nextjs/src/app/(admin)/admin/unrecognized/page.tsx` — "Promote" button: collects `promotions[]` from state, POST to `/api/admin/ingredients/promote` with `{ spanId, promotions }`, show toast with promoted/skipped counts, reset state for next span. Disable button when no items remain. Ref: spec.md US4 acceptance scenarios
 
 **Checkpoint**: Full promote workflow functional. Ingredients enter DB, spans get tagged.
 
@@ -101,8 +101,8 @@
 
 ### Implementation
 
-- [ ] T014 [US5] Create API route `apps/nextjs/src/app/api/admin/spans/mark-reviewed/route.ts` — POST handler: admin auth check, Zod validation (`spanId: uuid`), call `markSpanAsReviewed({ spanId })` (GET-then-PATCH), return `{ spanTagged }`. Ref: contracts/admin-api.md §POST /api/admin/spans/mark-reviewed, data-model.md Workflow 3
-- [ ] T015 [US5] Add dismiss functionality to `apps/nextjs/src/app/(admin)/admin/unrecognized/page.tsx` — per-item "X" button removes item from `promotions` state. "Dismiss All" button: confirm dialog, POST to `/api/admin/spans/mark-reviewed` with `{ spanId }`, reset state. Ref: spec.md US5 acceptance scenarios
+- [X] T014 [US5] Create API route `apps/nextjs/src/app/api/admin/spans/mark-reviewed/route.ts` — POST handler: admin auth check, Zod validation (`spanId: uuid`), call `markSpanAsReviewed({ spanId })` (GET-then-PATCH), return `{ spanTagged }`. Ref: contracts/admin-api.md §POST /api/admin/spans/mark-reviewed, data-model.md Workflow 3
+- [X] T015 [US5] Add dismiss functionality to `apps/nextjs/src/app/(admin)/admin/unrecognized/page.tsx` — per-item "X" button removes item from `promotions` state. "Dismiss All" button: confirm dialog, POST to `/api/admin/spans/mark-reviewed` with `{ spanId }`, reset state. Ref: spec.md US5 acceptance scenarios
 
 **Checkpoint**: Admin can dismiss items individually or in bulk. Span lifecycle complete.
 

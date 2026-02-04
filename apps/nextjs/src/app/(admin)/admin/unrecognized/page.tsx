@@ -23,6 +23,7 @@ export default function UnrecognizedItemsPage() {
     {},
   );
   const [isLoading, setIsLoading] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleLoadSpan = async () => {
@@ -68,6 +69,83 @@ export default function UnrecognizedItemsPage() {
       ...prev,
       [itemName]: { name: itemName, category },
     }));
+  };
+
+  const handlePromote = async () => {
+    if (!loadedSpan) return;
+
+    const items = Object.values(promotions);
+    if (items.length === 0) {
+      toast.warning("No items to promote");
+      return;
+    }
+
+    setIsProcessing(true);
+    setError(null);
+
+    try {
+      const response = await fetch("/api/admin/ingredients/promote", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          spanId: loadedSpan.spanId,
+          promotions: items,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || "Failed to promote ingredients");
+        return;
+      }
+
+      toast.success(`Promoted ${data.promoted} ingredient(s)`);
+      if (data.skipped > 0) {
+        toast.info(`${data.skipped} duplicate(s) skipped`);
+      }
+
+      // Reset for next span
+      setLoadedSpan(null);
+      setPromotions({});
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Unknown error";
+      setError(message);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleDismissAll = async () => {
+    if (!loadedSpan) return;
+    if (!confirm("Dismiss all items without promoting? This cannot be undone."))
+      return;
+
+    setIsProcessing(true);
+    setError(null);
+
+    try {
+      const response = await fetch("/api/admin/spans/mark-reviewed", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ spanId: loadedSpan.spanId }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        setError(data.error || "Failed to dismiss span");
+        return;
+      }
+
+      toast.success("Span dismissed");
+      setLoadedSpan(null);
+      setPromotions({});
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Unknown error";
+      setError(message);
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const handleRemoveItem = (itemName: string) => {
@@ -159,6 +237,27 @@ export default function UnrecognizedItemsPage() {
                   </p>
                 </div>
               )}
+            </div>
+
+            {/* Action buttons */}
+            <div className="flex gap-4 flex-wrap">
+              <button
+                onClick={handlePromote}
+                disabled={isProcessing || remainingItems.length === 0}
+                className="flex-1 bg-green-300 hover:bg-green-400 disabled:opacity-50 border-4 border-black px-6 py-4 font-black uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] cursor-pointer transition"
+              >
+                {isProcessing
+                  ? "Processing..."
+                  : `✓ Promote (${remainingItems.length})`}
+              </button>
+
+              <button
+                onClick={handleDismissAll}
+                disabled={isProcessing}
+                className="flex-1 bg-red-300 hover:bg-red-400 disabled:opacity-50 border-4 border-black px-6 py-4 font-black uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] cursor-pointer transition"
+              >
+                {isProcessing ? "Processing..." : "✗ Dismiss All"}
+              </button>
             </div>
           </div>
         )}
