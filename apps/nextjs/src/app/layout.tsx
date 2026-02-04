@@ -18,7 +18,17 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "HomeCuistot",
-  description: "AI-powered voice assistant for home cooks. Know what you have, know what you can cook, eat better without thinking about it.",
+  description:
+    "AI-powered voice assistant for home cooks. Know what you have, know what you can cook, eat better without thinking about it.",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "HomeCuistot",
+  },
+  icons: {
+    icon: "/icons/favicon.ico",
+    apple: "/icons/apple-touch-icon.png",
+  },
 };
 
 export default function RootLayout({
