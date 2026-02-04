@@ -19,10 +19,6 @@ export async function GET() {
 
   try {
     const span = await getNextUnprocessedSpan();
-    console.log("Got next unprocessed span", {
-      span,
-      metadata: span?.metadata,
-    });
 
     if (!span) {
       return NextResponse.json({

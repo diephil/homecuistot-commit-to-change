@@ -26,7 +26,6 @@ export interface OpikSpan {
   created_at?: string;
 }
 
-
 function getOpikHeaders(): Record<string, string> {
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
@@ -45,8 +44,13 @@ function getOpikHeaders(): Record<string, string> {
 }
 
 /**
- * Search for spans with `unrecognized_items` tag but NOT `promotion_reviewed`.
- * Returns the most recent unprocessed span or null if none found.
+ * Search for spans with `unrecognized_items` tag.
+ * Reviewed spans have this tag swapped to `promotion_reviewed`,
+ * so only unprocessed spans match.
+ *
+ * Handles Opik search index eventual consistency: fetches a batch
+ * of candidates, then verifies each via GET-by-ID (authoritative)
+ * to confirm the span still has `unrecognized_items`.
  */
 export async function getNextUnprocessedSpan(): Promise<OpikSpan | null> {
   const response = await fetch(`${OPIK_URL}/v1/private/spans/search`, {
@@ -60,13 +64,8 @@ export async function getNextUnprocessedSpan(): Promise<OpikSpan | null> {
           operator: "contains",
           value: "unrecognized_items",
         },
-        {
-          field: "tags",
-          operator: "not_contains",
-          value: "promotion_reviewed",
-        },
       ],
-      limit: 1,
+      limit: 100,
       sort_by: [{ field: "created_at", direction: "desc" }],
     }),
   });
@@ -78,17 +77,38 @@ export async function getNextUnprocessedSpan(): Promise<OpikSpan | null> {
     );
   }
 
-  const json = await response.json();
+  const text = await response.text();
 
-  // Opik search returns different formats depending on version:
-  // - Wrapped: { data: [span, ...], total: N }
-  // - Direct: span object with `id` field (when limit=1)
-  if (Array.isArray(json?.data)) {
-    return (json.data[0] as OpikSpan) ?? null;
+  // Opik search returns different formats:
+  // - Wrapped JSON: { data: [span, ...], total: N }
+  // - Single JSON object with `id` field
+  // - NDJSON (newline-delimited): one JSON object per line (limit > 1)
+  let candidates: OpikSpan[] = [];
+  try {
+    const json = JSON.parse(text);
+    if (Array.isArray(json?.data)) {
+      candidates = json.data as OpikSpan[];
+    } else if (json?.id) {
+      candidates = [json as OpikSpan];
+    }
+  } catch {
+    // NDJSON: parse each line as a separate JSON object
+    candidates = text
+      .split("\n")
+      .filter((line) => line.trim())
+      .map((line) => JSON.parse(line) as OpikSpan)
+      .filter((span) => span.id);
   }
-  if (json?.id) {
-    return json as OpikSpan;
+
+  // Verify each candidate against authoritative state (GET by ID)
+  // to handle stale search index after tag swap
+  for (const candidate of candidates) {
+    const fresh = await getSpanById({ spanId: candidate.id });
+    if (fresh.tags?.includes("unrecognized_items")) {
+      return fresh;
+    }
   }
+
   return null;
 }
 
@@ -118,11 +138,11 @@ export async function getSpanById(params: {
 }
 
 /**
- * Mark a span as reviewed by adding promotion_reviewed tag.
+ * Mark a span as reviewed by swapping `unrecognized_items` → `promotion_reviewed`.
  *
  * Uses GET-then-PATCH pattern: re-fetches the span first to get
- * current tags, then appends promotion_reviewed. Never uses stale
- * tags from the initial search.
+ * current tags, then replaces the tag. Never uses stale tags from
+ * the initial search. Metadata stays untouched.
  */
 export async function markSpanAsReviewed(params: {
   spanId: string;
@@ -130,11 +150,13 @@ export async function markSpanAsReviewed(params: {
   // Step 1: Re-fetch span to get current state
   const span = await getSpanById({ spanId: params.spanId });
 
-  // Step 2: Append promotion_reviewed to current tags
+  // Step 2: Swap unrecognized_items → promotion_reviewed
   const currentTags = span.tags || [];
-  if (currentTags.includes("promotion_reviewed")) return true; // already tagged
+  if (!currentTags.includes("unrecognized_items")) return true; // already swapped
 
-  const newTags = [...currentTags, "promotion_reviewed"];
+  const newTags = currentTags
+    .filter((tag) => tag !== "unrecognized_items")
+    .concat("promotion_reviewed");
 
   // Step 3: PATCH with merged tags (project_name required to avoid 409)
   const response = await fetch(

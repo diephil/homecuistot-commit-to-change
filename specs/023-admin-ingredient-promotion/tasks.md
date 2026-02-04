@@ -151,8 +151,8 @@
 
 **Trigger**: Opik documentation does not confirm `not_contains` support. Tag swap avoids reliance on unsupported operator.
 
-- [ ] T024 [US-INFRA] Modify `apps/nextjs/src/lib/services/opik-spans.ts` — **`getNextUnprocessedSpan()`**: remove `not_contains` filter for `promotion_reviewed`, keep only single `contains: "unrecognized_items"` filter. Update JSDoc.
-- [ ] T025 [US-INFRA] Modify `apps/nextjs/src/lib/services/opik-spans.ts` — **`markSpanAsReviewed()`**: change from appending `promotion_reviewed` to swapping: remove `unrecognized_items` from current tags, add `promotion_reviewed`. Guard condition: return early if `unrecognized_items` not present (already swapped). Metadata untouched.
+- [X] T024 [US-INFRA] Modify `apps/nextjs/src/lib/services/opik-spans.ts` — **`getNextUnprocessedSpan()`**: remove `not_contains` filter for `promotion_reviewed`, keep only single `contains: "unrecognized_items"` filter. Update JSDoc.
+- [X] T025 [US-INFRA] Modify `apps/nextjs/src/lib/services/opik-spans.ts` — **`markSpanAsReviewed()`**: change from appending `promotion_reviewed` to swapping: remove `unrecognized_items` from current tags, add `promotion_reviewed`. Guard condition: return early if `unrecognized_items` not present (already swapped). Metadata untouched.
 - [ ] T026 Manual verification — test full flow: load span → promote/dismiss → verify span no longer appears in next search. Verify other tags (e.g., `user:<uuid>`) preserved. Verify metadata untouched.
 
 **Checkpoint**: Search uses only `contains` operator. Reviewed spans lose `unrecognized_items` tag. No reliance on `not_contains`.
