@@ -67,7 +67,7 @@ export const SARAH_INITIAL_INVENTORY: DemoInventoryItem[] = [
 export const CARBONARA_RECIPE: DemoRecipe = {
   name: "Sarah's Pasta Carbonara",
   description:
-    "My family's version of a Classic Italian pasta with eggs, cheese, and bacon",
+    "A family version of a Pasta Carbonara with eggs, bacon, parmesan and a bit of black truffle.",
   ingredients: [
     { name: "Pasta", type: "anchor" },
     { name: "Bacon", type: "anchor" },
@@ -85,14 +85,14 @@ export const SCENE_TEXT = {
     "5:47pm. Office.",
     "Sarah's hungry. She doesn't feel like scrolling through Uber Eats again. 😩",
     "She knows how to cook a couple dishes she's made a hundred times. She's not looking for new recipes or inspiration.",
+    '"I can cook my family\'s pasta carbonara with some bacon and parmesan — I even add a bit of black truffle sometimes."',
     "The problem: she has no idea what's actually in her fridge right now. 🤷‍♀️",
-    "Can she make carbonara tonight? Or does she need to stop at the store? For what exactly?",
     "Tonight, she's not going to give up. She's going to commit to changing her takeout-ordering habits.",
     "She opens HomeCuistot instead. 💡",
   ],
-  scene2Intro: ["SARAH'S KITCHEN"],
+  scene2Intro: ["Here's what HomeCuistot shows Sarah:", "SARAH'S KITCHEN"],
   scene2Outro: [
-    "Sarah wants carbonara, but she's missing {eggs} and {parmesan} to cook it. She uses black truffle sometimes but she will not use it tonight.",
+    "Sarah wants carbonara, let's skip the truffle this time, but she's missing {eggs} and {parmesan} to cook it tonight.",
   ],
   scene3: [
     "She doesn't need step-by-step instructions for the carbonara she's made a hundred times.👩‍🍳",
@@ -121,10 +121,10 @@ export const SCENE_TEXT = {
     "She just needed to know she could make it tonight. ✨",
   ],
   scene7Closing: [
-    "HomeCuistot isn't a recipe app.",
+    "HomeCuistot isn't a recipe library.",
     "It's your inventory clerk.",
-    "You bring the skills.",
+    "You bring the skills and you bring your beloved recipies.",
     "We track the ingredients.",
-    "Let's commit to change our ordering takeout habits and cook more! 🍳",
+    "Let's commit to change, let's cook more today 🍳",
   ],
 } as const;

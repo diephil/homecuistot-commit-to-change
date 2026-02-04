@@ -24,21 +24,31 @@ export function Scene2Inventory({ onContinue }: Scene2InventoryProps) {
   return (
     <div className="flex flex-col items-center min-h-[80vh] px-6 py-8">
       <div className="max-w-md w-full space-y-6">
-        {/* Intro text */}
-        {SCENE_TEXT.scene2Intro.map((segment, i) => (
-          <h2
-            key={i}
-            className="text-2xl font-black tracking-tight opacity-0 animate-[fadeIn_0.5s_ease-in_forwards]"
-            style={{ animationDelay: `${i * 0.4}s` }}
-          >
-            {segment}
-          </h2>
-        ))}
+        {/* Intro text — first segment is context, rest are headings */}
+        {SCENE_TEXT.scene2Intro.map((segment, i) =>
+          i === 0 ? (
+            <p
+              key={i}
+              className="text-lg font-bold leading-relaxed opacity-0 animate-[fadeIn_0.5s_ease-in_forwards]"
+              style={{ animationDelay: `${i * 0.4}s` }}
+            >
+              {segment}
+            </p>
+          ) : (
+            <h2
+              key={i}
+              className="text-2xl font-black tracking-tight opacity-0 animate-[fadeIn_0.5s_ease-in_forwards]"
+              style={{ animationDelay: `${i * 0.4}s` }}
+            >
+              {segment}
+            </h2>
+          ),
+        )}
 
         {/* Tracked ingredients — read-only badges (no action buttons) */}
         <div
           className="space-y-2 opacity-0 animate-[fadeIn_0.5s_ease-in_forwards]"
-          style={{ animationDelay: "0.4s" }}
+          style={{ animationDelay: "0.8s" }}
         >
           <h3 className="text-lg font-black">Tracked Ingredients</h3>
           <div className="flex flex-wrap gap-2">
@@ -57,7 +67,7 @@ export function Scene2Inventory({ onContinue }: Scene2InventoryProps) {
         {/* Staples — read-only badges */}
         <div
           className="space-y-2 opacity-0 animate-[fadeIn_0.5s_ease-in_forwards]"
-          style={{ animationDelay: "0.8s" }}
+          style={{ animationDelay: "1.2s" }}
         >
           <h3 className="text-lg font-black">Staples (always available)</h3>
           <div className="flex flex-wrap gap-2">
@@ -76,7 +86,7 @@ export function Scene2Inventory({ onContinue }: Scene2InventoryProps) {
         {/* Recipe card */}
         <div
           className="opacity-0 animate-[fadeIn_0.5s_ease-in_forwards]"
-          style={{ animationDelay: "1.2s" }}
+          style={{ animationDelay: "1.6s" }}
         >
           <h3 className="text-lg font-black mb-2">Tonight&apos;s Options</h3>
           <RecipeAvailabilityCard
@@ -90,7 +100,7 @@ export function Scene2Inventory({ onContinue }: Scene2InventoryProps) {
           <p
             key={i}
             className="text-lg font-bold leading-relaxed opacity-0 animate-[fadeIn_0.5s_ease-in_forwards]"
-            style={{ animationDelay: `${1.6 + i * 0.4}s` }}
+            style={{ animationDelay: `${2.0 + i * 0.4}s` }}
           >
             {segment.split(/(\{[^}]+\})/).map((part, j) => {
               const match = part.match(/^\{(.+)\}$/);
@@ -111,7 +121,7 @@ export function Scene2Inventory({ onContinue }: Scene2InventoryProps) {
 
         <div
           className="pt-4 opacity-0 animate-[fadeIn_0.5s_ease-in_forwards]"
-          style={{ animationDelay: "2.0s" }}
+          style={{ animationDelay: "2.4s" }}
         >
           <Button
             variant="default"

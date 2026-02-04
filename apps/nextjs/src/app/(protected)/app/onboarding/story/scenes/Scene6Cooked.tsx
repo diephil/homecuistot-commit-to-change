@@ -23,11 +23,9 @@ export function Scene6Cooked({
     preDecrementInventory.map((i) => [i.name.toLowerCase(), i]),
   );
 
-  // Build set of anchor ingredient names that were decremented
-  const anchorNames = new Set(
-    CARBONARA_RECIPE.ingredients
-      .filter((ing) => ing.type === "anchor")
-      .map((ing) => ing.name.toLowerCase()),
+  // Build set of all recipe ingredient names (anchor + optional) for diff display
+  const recipeIngredientNames = new Set(
+    CARBONARA_RECIPE.ingredients.map((ing) => ing.name.toLowerCase()),
   );
 
   const trackedItems = postDecrementInventory.filter(
@@ -60,7 +58,7 @@ export function Scene6Cooked({
             {trackedItems.map((item, i) => {
               const pre = preMap.get(item.name.toLowerCase());
               const wasDecremented =
-                anchorNames.has(item.name.toLowerCase()) &&
+                recipeIngredientNames.has(item.name.toLowerCase()) &&
                 pre &&
                 pre.quantityLevel !== item.quantityLevel;
 
@@ -105,9 +103,16 @@ export function Scene6Cooked({
           </div>
         </div>
 
+        <p
+          className="text-base font-bold text-black/70 bg-orange-50 border-2 border-orange-200 rounded-lg px-4 py-3 opacity-0 animate-[fadeIn_0.5s_ease-in_forwards]"
+          style={{ animationDelay: "1.6s" }}
+        >
+          Next time Sarah wants carbonara, she&apos;ll need to pick up more bacon — she just used the last of it. 🥓
+        </p>
+
         <div
           className="pt-4 opacity-0 animate-[fadeIn_0.5s_ease-in_forwards]"
-          style={{ animationDelay: "1.6s" }}
+          style={{ animationDelay: "2.0s" }}
         >
           <Button
             variant="default"

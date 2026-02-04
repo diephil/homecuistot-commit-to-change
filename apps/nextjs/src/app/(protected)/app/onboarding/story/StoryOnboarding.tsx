@@ -32,15 +32,13 @@ export function StoryOnboarding() {
     // Save pre-decrement snapshot for Scene 6 display
     setPreDecrementInventory(state.demoInventory.map((item) => ({ ...item })));
 
-    // Apply decrement: non-staple anchor ingredients lose 1 level (floor at 0)
-    const anchorNames = new Set(
-      CARBONARA_RECIPE.ingredients
-        .filter((ing) => ing.type === "anchor")
-        .map((ing) => ing.name.toLowerCase()),
+    // Apply decrement: non-staple recipe ingredients lose 1 level (floor at 0)
+    const recipeIngredientNames = new Set(
+      CARBONARA_RECIPE.ingredients.map((ing) => ing.name.toLowerCase()),
     );
 
     const decremented = state.demoInventory.map((item) => {
-      if (!item.isPantryStaple && anchorNames.has(item.name.toLowerCase())) {
+      if (!item.isPantryStaple && recipeIngredientNames.has(item.name.toLowerCase())) {
         return {
           ...item,
           quantityLevel: Math.max(0, item.quantityLevel - 1) as QuantityLevel,
