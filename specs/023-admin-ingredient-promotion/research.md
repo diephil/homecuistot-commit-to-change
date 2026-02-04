@@ -28,7 +28,18 @@
 }
 ```
 
-Returns: `{ "data": [{ "id": "...", "trace_id": "...", "tags": [...], ... }] }`
+Returns span object directly (NOT wrapped in `{ data: [...] }`):
+```json
+{
+  "id": "...", "trace_id": "...", "project_id": "...",
+  "name": "update_matching_ingredients", "type": "tool",
+  "tags": ["user:<uuid>", "unrecognized_items"],
+  "metadata": { "unrecognized": ["scallion"] },
+  "created_at": "...", "last_updated_at": "..."
+}
+```
+
+> **IMPORTANT**: Response format differs from Opik docs. Self-hosted Opik returns a single span object when `limit: 1`, not `{ data: [...] }`. Code handles both formats.
 
 **Get span by ID** (GET): `{OPIK_URL_OVERRIDE}/v1/private/spans/{id}`
 
@@ -38,13 +49,15 @@ Returns full span object including current `tags`, `trace_id`, `metadata`. Used 
 
 ```json
 {
+  "project_name": "<OPIK_PROJECT_NAME>",
   "trace_id": "<from GET response>",
   "tags": ["<current tags from GET>", "promotion_reviewed"]
 }
 ```
 
+> **IMPORTANT**: `project_name` is REQUIRED in the PATCH body. Without it, Opik returns `409 Conflict` with error: "Project name and workspace name do not match the existing span".
+
 **Tag update flow**: Always GET span by ID first, then PATCH with current tags + `promotion_reviewed`. Never rely on tags cached from initial search — they may be stale.
-```
 
 ### Authentication
 

@@ -83,49 +83,42 @@ Search for spans matching filters.
 - `limit`: Max spans to return (use `1` to fetch one at a time)
 - `sort_by`: Sort order (descending created_at = most recent first, per spec)
 
-**Response 200 - Spans found**:
+**Response 200 - Span found** (self-hosted Opik returns span directly, NOT wrapped in `{ data: [...] }`):
 ```json
 {
-  "data": [
-    {
-      "id": "550e8400-e29b-41d4-a716-446655440000",
-      "trace_id": "660e8400-e29b-41d4-a716-446655440001",
-      "name": "span_name",
-      "tags": [
-        "unrecognized_items",
-        "user:abc123def456"
-      ],
-      "metadata": {
-        "totalUnrecognized": 5,
-        "unrecognized": [
-          "truffle oil",
-          "truffle oil",
-          "smoked paprika",
-          "pomegranate molasses",
-          "pomegranate molasses"
-        ]
-      },
-      "created_at": "2025-02-04T10:30:00Z",
-      "updated_at": "2025-02-04T10:30:00Z"
-    }
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "project_id": "019bd132-22ed-73c9-a6b8-ceb675c91e75",
+  "trace_id": "660e8400-e29b-41d4-a716-446655440001",
+  "name": "update_matching_ingredients",
+  "type": "tool",
+  "tags": [
+    "user:abc123def456",
+    "unrecognized_items"
   ],
-  "total": 1
+  "metadata": {
+    "unrecognized": [
+      "truffle oil",
+      "smoked paprika"
+    ]
+  },
+  "created_at": "2025-02-04T10:30:00Z",
+  "last_updated_at": "2025-02-04T10:30:00Z"
 }
 ```
+
+> **IMPORTANT**: Self-hosted Opik returns a single span object when `limit: 1`, not `{ data: [...] }`. Code must handle both formats (direct object with `id` field, or wrapped `{ data: [...] }`).
 
 **Field descriptions** (minimal fields shown, Opik returns more):
 - `id`: Span UUID (needed for PATCH operations)
 - `trace_id`: Trace UUID (needed for PATCH operations)
+- `project_id`: Project UUID (informational)
 - `tags`: Array of span tags (preserving this is critical for PATCH)
-- `metadata.totalUnrecognized`: Original count of unrecognized items detected
 - `metadata.unrecognized`: Array of ingredient names (may have duplicates, may include items already in DB)
+- `metadata.totalUnrecognized`: Original count (only present on recipe create/update spans, not inventory spans)
 
-**Response 200 - No spans found**:
+**Response 200 - No spans found** (format may vary):
 ```json
-{
-  "data": [],
-  "total": 0
-}
+{}
 ```
 
 **Response 400 - Bad request**:
@@ -207,6 +200,7 @@ Update span tags.
 **Request body**:
 ```json
 {
+  "project_name": "<OPIK_PROJECT_NAME>",
   "trace_id": "660e8400-e29b-41d4-a716-446655440001",
   "tags": [
     "unrecognized_items",
@@ -217,6 +211,7 @@ Update span tags.
 ```
 
 **Field descriptions**:
+- `project_name`: **REQUIRED** — must match the span's project. Without this, Opik returns `409 Conflict`.
 - `trace_id`: From the GET response (freshly fetched)
 - `tags`: Complete array of tags (replaces all existing tags)
   - **CRITICAL**: Must be built from the GET response's current tags + `promotion_reviewed`
@@ -226,6 +221,14 @@ Update span tags.
 
 **Response 204 - Success**:
 No response body. HTTP 204 indicates successful update.
+
+**Response 409 - Conflict**:
+```json
+{
+  "errors": ["Project name and workspace name do not match the existing span"]
+}
+```
+Cause: `project_name` missing or incorrect in PATCH body.
 
 **Response 400 - Bad request**:
 ```json
@@ -306,6 +309,7 @@ Tags used in this feature follow conventions:
 | `400` | Malformed request | Log error, don't retry |
 | `401` | Auth failed | Check headers/credentials |
 | `404` | Span not found | Span may have been deleted, skip |
+| `409` | Project name mismatch | Add `project_name` to PATCH body |
 | `429` | Rate limited | Implement backoff, retry |
 | `500-599` | Server error | Log error, retry with backoff |
 
@@ -337,6 +341,7 @@ Patch endpoint (local):
 curl -X PATCH http://localhost:5173/api/v1/private/spans/SPAN_UUID \
   -H "Content-Type: application/json" \
   -d '{
+    "project_name": "homecuistot-hackathon",
     "trace_id": "TRACE_UUID",
     "tags": ["unrecognized_items", "user:abc123", "promotion_reviewed"]
   }'

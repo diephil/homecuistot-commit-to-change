@@ -136,13 +136,14 @@ export async function markSpanAsReviewed(params: {
 
   const newTags = [...currentTags, "promotion_reviewed"];
 
-  // Step 3: PATCH with merged tags (response is 204 No Content)
+  // Step 3: PATCH with merged tags (project_name required to avoid 409)
   const response = await fetch(
     `${OPIK_URL}/v1/private/spans/${params.spanId}`,
     {
       method: "PATCH",
       headers: getOpikHeaders(),
       body: JSON.stringify({
+        project_name: OPIK_PROJECT_NAME,
         trace_id: span.trace_id,
         tags: newTags,
       }),

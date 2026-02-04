@@ -229,3 +229,9 @@ git commit -m "feat(admin): polish error handling and edge cases"
 - Ingredient names stored lowercase, matched case-insensitive
 - No schema migrations required — uses existing `ingredients` table
 - No auto-loading of spans — all CTA-triggered
+
+## Implementation Learnings (Phase 8)
+
+1. **Opik search response format**: Self-hosted Opik returns span object directly (not wrapped in `{ data: [...] }`). Code handles both formats — checks for `json.data` array or direct object with `json.id`.
+2. **Opik PATCH requires `project_name`**: Without `project_name` in the PATCH body, Opik returns `409 Conflict: "Project name and workspace name do not match the existing span"`. Always include `project_name: OPIK_PROJECT_NAME` in PATCH requests.
+3. **Opik service error propagation**: Functions throw `OpikApiError` on HTTP errors instead of silently returning null/false. Routes catch errors and return proper 500 status codes. Promote route wraps tagging in separate try-catch to preserve insertion results.
