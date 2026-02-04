@@ -91,7 +91,7 @@ export const SCENE_TEXT = {
     "She knows how to cook. Carbonara, stir fry, a couple of other dishes she's made a hundred times. She's not looking for new recipes or inspiration.",
     "The problem: she has no idea what's actually in her fridge right now.",
     "Can she make carbonara tonight? Or does she need to stop at the store? For what exactly?",
-    "This uncertainty is enough to make her give up and order pad thai for the third time this week.",
+    "This uncertainty is enough to make her give up and order pad thai for the third time this week...",
     "She opens HomeCuistot instead.",
   ],
   scene2Intro: ["SARAH'S KITCHEN"],
