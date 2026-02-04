@@ -1,12 +1,13 @@
 # Research: Story-Based Onboarding
 
-## R1: Voice Input Without DB Persistence
+## R1: Unified Input Processing Without DB Persistence
 
-**Decision**: Create a dedicated `/api/onboarding/story/process-voice` route that reuses `processVoiceInput()` + `validateIngredientNames()` but skips the inventory-manager agent pipeline entirely.
+**Decision**: Create a single `/api/onboarding/story/process-input` route that accepts either `audioBase64` (voice) or `text` (fallback) and calls `ingredientExtractorAgent()` directly + `validateIngredientNames()`. No separate routes for voice vs text.
 
-**Rationale**: The existing inventory page uses a full ADK agent pipeline (transcription → LLM agent → update_matching_ingredients tool → proposal modal → apply-proposal). For the story onboarding, we only need: transcription → ingredient name extraction → name validation against ingredients table → return recognized names. The existing onboarding `process-voice` route (`/api/onboarding/process-voice`) already does exactly this — calls `processVoiceInput()` and `validateIngredientNames()`. We clone this pattern into `/api/onboarding/story/process-voice`.
+**Rationale**: `ingredientExtractorAgent()` (`lib/agents/ingredient-extractor/agent.ts:33`) already supports both `text` and `audioBase64` params natively — it checks which is provided and handles both modes. A single unified route simplifies the API surface (1 endpoint instead of 2) and mirrors how the frontend sends input: it doesn't care about the transport, just sends whichever input the user provided. The route creates an Opik trace (same pattern as `processVoiceInput()`), calls the agent, then validates results with `validateIngredientNames()`.
 
 **Alternatives considered**:
+- Separate `/process-voice` and `/process-text` routes: Rejected — unnecessary duplication since the underlying agent handles both modes. Two routes means two nearly-identical files with the same validation, error handling, and response shape.
 - Reuse `/api/onboarding/process-voice` directly: Rejected because it requires `currentContext` with existing ingredient lists (designed for the multi-step onboarding), and we want a cleaner separation.
 - Reuse `/api/inventory/agent-proposal`: Rejected because it involves the full ADK agent pipeline, writes to session state, and returns a proposal format incompatible with our in-memory-only needs.
 

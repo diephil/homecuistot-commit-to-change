@@ -35,7 +35,7 @@ Navigate to: `http://localhost:3000/app/onboarding/story`
 | `app/(protected)/app/onboarding/story/scenes/*.tsx` | 7 scene components |
 | `app/(protected)/app/onboarding/story/hooks/useStoryState.ts` | localStorage state |
 | `app/(protected)/app/onboarding/story/hooks/useFadeTransition.ts` | Fade animations |
-| `app/api/onboarding/story/process-voice/route.ts` | Voice API (no DB) |
+| `app/api/onboarding/story/process-input/route.ts` | Unified voice/text API (no DB) |
 | `app/api/onboarding/story/complete/route.ts` | Completion + pre-fill API |
 | `lib/story-onboarding/constants.ts` | Demo data + scene content |
 

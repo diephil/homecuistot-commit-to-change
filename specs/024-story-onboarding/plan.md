@@ -68,7 +68,7 @@ apps/nextjs/src/
 │       ├── useStoryState.ts        # localStorage-backed state machine
 │       └── useFadeTransition.ts    # Fade-in/out scene transition hook
 ├── app/api/onboarding/story/
-│   ├── process-voice/route.ts      # Voice → ingredient extraction (no DB)
+│   ├── process-input/route.ts      # Unified voice/text → ingredient extraction (no DB)
 │   └── complete/route.ts           # Pre-fill DB for brand-new users
 └── lib/
     └── story-onboarding/

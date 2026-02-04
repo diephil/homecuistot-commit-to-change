@@ -1,17 +1,20 @@
 # API Contracts: Story-Based Onboarding
 
-## POST /api/onboarding/story/process-voice
+## POST /api/onboarding/story/process-input
 
-Voice input processing for Scene 4. Transcribes audio, extracts ingredient names, validates against DB. No database writes.
+Unified input processing for Scene 4. Accepts voice (audio) OR text input. Extracts ingredient names via LLM, validates against DB. No database writes.
 
 ### Request
 
 ```typescript
 {
-  audioBase64: string           // Base64-encoded WebM/Opus audio
+  audioBase64?: string          // Base64-encoded WebM/Opus audio (voice mode)
+  text?: string                 // User-typed ingredient list (text fallback mode)
   currentIngredients: string[]  // Names already in demo inventory (for context)
 }
 ```
+
+**Validation**: At least one of `audioBase64` or `text` must be provided. If both are provided, `audioBase64` takes priority.
 
 ### Response (200)
 
@@ -19,7 +22,7 @@ Voice input processing for Scene 4. Transcribes audio, extracts ingredient names
 {
   add: string[]                 // Recognized ingredient names to add
   rm: string[]                  // Recognized ingredient names to remove
-  transcribedText?: string      // Raw transcription
+  transcribedText?: string      // Raw transcription (present when audioBase64 provided)
   unrecognized?: string[]       // Names not found in ingredients table
 }
 ```
@@ -29,59 +32,18 @@ Voice input processing for Scene 4. Transcribes audio, extracts ingredient names
 | Status | Body | When |
 |--------|------|------|
 | 401 | `{ error: "Unauthorized" }` | No valid session |
-| 400 | `{ error: "audioBase64 is required" }` | Missing audio |
+| 400 | `{ error: "Either audioBase64 or text is required" }` | Neither audio nor text provided |
 | 408 | `{ error: "Request timeout. Please try again." }` | Gemini timeout |
-| 500 | `{ error: "NLP processing failed. Please try again." }` | LLM/Zod failure |
+| 500 | `{ error: "Processing failed. Please try again." }` | LLM/Zod failure |
 
 ### Implementation Notes
 
-- Reuses `processVoiceInput()` from `@/lib/prompts/onboarding-voice/process`
-- Reuses `validateIngredientNames()` from `@/lib/services/ingredient-matcher`
+- Calls `ingredientExtractorAgent()` from `@/lib/agents/ingredient-extractor/agent` directly — it already supports both `text` and `audioBase64` params
+- Creates Opik trace via `createAgentTrace()` (same pattern as `processVoiceInput()`)
+- Validates extracted names with `validateIngredientNames()` from `@/lib/services/ingredient-matcher`
 - `maxDuration = 15`
 - Auth via Supabase `getUser()`
 - `currentIngredients` passed as context to the LLM prompt for better extraction
-
----
-
-## POST /api/onboarding/story/process-text
-
-Text input fallback for Scene 4 (when mic permission denied). Extracts ingredient names from text, validates against DB. No database writes.
-
-### Request
-
-```typescript
-{
-  text: string                  // User-typed ingredient list
-  currentIngredients: string[]  // Names already in demo inventory
-}
-```
-
-### Response (200)
-
-Same shape as process-voice response:
-
-```typescript
-{
-  add: string[]
-  rm: string[]
-  transcribedText?: string
-  unrecognized?: string[]
-}
-```
-
-### Errors
-
-| Status | Body | When |
-|--------|------|------|
-| 401 | `{ error: "Unauthorized" }` | No valid session |
-| 400 | `{ error: "text is required" }` | Missing text |
-| 500 | `{ error: "Processing failed. Please try again." }` | LLM failure |
-
-### Implementation Notes
-
-- Reuses `processTextInput()` from `@/lib/prompts/onboarding-voice/process` (or equivalent)
-- Same validation pipeline as process-voice
-- `maxDuration = 15`
 
 ---
 
@@ -147,6 +109,6 @@ Complete story onboarding. Detects brand-new vs returning user. Pre-fills demo d
 - Brand-new detection: `SELECT count(*) FROM user_inventory WHERE user_id = $1` + `SELECT count(*) FROM user_recipes WHERE user_id = $1` — both must be 0
 - Pre-fill uses single Drizzle transaction (same pattern as `/api/onboarding/complete`)
 - Uses `matchIngredients()` to resolve ingredient names → IDs
-- Uses `ensureRecipeIngredientsAtQuantity()` for recipe ingredient inventory entries
+- Uses `ensureRecipeIngredientsAtQuantity()` from `@/db/services/ensure-recipe-ingredients-at-quantity` for recipe ingredient inventory entries
 - Revalidates `/app/onboarding` and `/app` paths on success
 - Request schema reuses `CompleteRequestSchema` from `@/types/onboarding` (minus `id` on recipe ingredients)

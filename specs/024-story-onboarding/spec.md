@@ -153,7 +153,7 @@ For **returning users** (already have inventory or recipes), tapping "Get starte
 ## Assumptions
 
 - Quantity mapping: plenty=3, some=2, enough=2, low=1, critical=0. Maps to existing `QuantityLevel` (0|1|2|3).
-- Voice input uses dedicated `/api/onboarding/story/process-voice` route (near-copy of existing process-voice, no DB persistence).
+- Voice/text input uses unified `/api/onboarding/story/process-input` route (calls `ingredientExtractorAgent()` directly with either `audioBase64` or `text`, no DB persistence).
 - Authentication is required before entering this flow (same as current onboarding).
 - Scene transitions use fade-in/fade-out animations.
 - No back navigation — forward-only linear flow.
