@@ -7,41 +7,76 @@
 
 ## User Scenarios & Testing *(mandatory)*
 
-### User Story 1 - Fetch and Display Unrecognized Ingredients (Priority: P1)
+### User Story 1 - Admin Welcome Page (Priority: P1)
 
-As an admin, I want to fetch the next unprocessed span from Opik containing unrecognized ingredients so I can see which ingredient names need review.
+As an admin, I want to see a welcome page at `/admin` listing available admin features so I can navigate to the tool I need.
 
-**Why this priority**: Core data retrieval. Without fetching spans and displaying unrecognized items, no other workflow is possible.
+**Why this priority**: Entry point for all admin functionality. Replaces the existing placeholder page and provides navigation context. Must exist before feature-specific pages.
 
-**Independent Test**: Admin clicks "Search Next Span", system queries Opik for unprocessed spans, and displays the list of unrecognized ingredient names from the span's metadata. Delivers visibility into unrecognized items.
+**Independent Test**: Admin navigates to `/admin`, sees a welcome page listing "Review unrecognized items to enrich the ingredient database" as an available feature with a link to `/admin/unrecognized`. Delivers admin orientation.
 
 **Acceptance Scenarios**:
 
-1. **Given** there are unprocessed spans tagged `unrecognized_items` (without `promotion_reviewed`), **When** the admin clicks "Search Next Span", **Then** the system fetches the next span and displays a list of unrecognized ingredient names
-2. **Given** a span contains duplicate ingredient names, **When** the span is loaded, **Then** duplicates are removed and each ingredient appears only once
-3. **Given** a span contains ingredients that already exist in the ingredients database, **When** the span is loaded, **Then** those ingredients are filtered out and only truly unrecognized items are displayed
-4. **Given** no unprocessed spans remain, **When** the admin clicks "Search Next Span", **Then** the system displays a message indicating all spans have been reviewed
+1. **Given** I am an authorized admin, **When** I navigate to `/admin`, **Then** I see a welcome page listing available admin features
+2. **Given** I am on the admin welcome page, **When** I view the feature list, **Then** I see "Review unrecognized items to enrich the ingredient database" as a feature with a link to `/admin/unrecognized`
+3. **Given** I am on the admin welcome page, **When** I click the unrecognized items feature, **Then** I am navigated to `/admin/unrecognized`
 
 ---
 
-### User Story 2 - Promote Ingredients with Category (Priority: P2)
+### User Story 2 - Admin Header Navigation (Priority: P1)
+
+As an admin, I want a header with navigation items so I can move between admin sections and back to the main app.
+
+**Why this priority**: Shared navigation infrastructure. Co-priority with P1 since the header is needed for all admin pages. Includes "Go To App" CTA for navigating to `/app` and "Unrecognized Items" tab for `/admin/unrecognized`.
+
+**Independent Test**: Admin sees header with "Unrecognized Items" nav link and "Go To App" CTA on any admin page. Clicking each navigates correctly. Delivers admin navigation.
+
+**Acceptance Scenarios**:
+
+1. **Given** I am on any admin page, **When** I view the header, **Then** I see an "Unrecognized Items" navigation link
+2. **Given** I am on any admin page, **When** I view the header, **Then** I see a "Go To App" CTA that links to `/app`
+3. **Given** I am on the admin welcome page, **When** I click "Unrecognized Items" in the header, **Then** I am navigated to `/admin/unrecognized`
+4. **Given** I am on any admin page, **When** I click "Go To App", **Then** I am navigated to `/app`
+5. **Given** I am on `/admin/unrecognized`, **When** I view the header, **Then** the "Unrecognized Items" nav item is visually highlighted as active
+
+---
+
+### User Story 3 - Load and Display Unrecognized Ingredients (Priority: P2)
+
+As an admin, I want to click a CTA on the `/admin/unrecognized` page to load the most recent unprocessed span from Opik and see the unrecognized ingredient names that need review.
+
+**Why this priority**: Core data retrieval for the promotion workflow. The page starts with no data loaded — admin explicitly triggers the first span fetch via a CTA button.
+
+**Independent Test**: Admin navigates to `/admin/unrecognized`, sees a CTA to load spans. Clicks it, system fetches the most recent unprocessed span and displays the unrecognized ingredient names. Delivers visibility into unrecognized items.
+
+**Acceptance Scenarios**:
+
+1. **Given** I am on `/admin/unrecognized` and no span is loaded, **When** the page renders, **Then** I see a CTA button to load the first span (no auto-loading)
+2. **Given** there are unprocessed spans tagged `unrecognized_items` (without `promotion_reviewed`), **When** I click the load CTA, **Then** the system fetches the most recent span and displays a list of unrecognized ingredient names
+3. **Given** a span contains duplicate ingredient names, **When** the span is loaded, **Then** duplicates are removed and each ingredient appears only once
+4. **Given** a span contains ingredients that already exist in the ingredients database, **When** the span is loaded, **Then** those ingredients are filtered out and only truly unrecognized items are displayed
+5. **Given** no unprocessed spans remain, **When** I click the load CTA, **Then** the system displays a message indicating all spans have been reviewed
+
+---
+
+### User Story 4 - Promote Ingredients with Category (Priority: P3)
 
 As an admin, I want to assign a category to each unrecognized ingredient and promote it to the ingredients database so it gets recognized in future recipe operations.
 
-**Why this priority**: Core value delivery — turning unrecognized items into recognized ingredients. Depends on P1 for data display.
+**Why this priority**: Core value delivery — turning unrecognized items into recognized ingredients. Depends on P2 for data display.
 
 **Independent Test**: Admin selects a category for an ingredient and clicks promote. The ingredient appears in the ingredients table with the chosen category. Delivers ingredient enrichment.
 
 **Acceptance Scenarios**:
 
-1. **Given** an unrecognized ingredient is displayed, **When** the admin selects a category from the dropdown and clicks "Save/Promote", **Then** the ingredient is inserted into the ingredients database with the selected category
-2. **Given** the admin promotes all items in a span, **When** the promote action completes, **Then** the span is tagged `promotion_reviewed` so it won't appear again
-3. **Given** the admin promotes some items and skips others, **When** the promote action completes, **Then** only selected items are inserted and the span is still tagged `promotion_reviewed`
-4. **Given** the admin tries to promote an ingredient that was added to the database by another process since the span was loaded, **When** the promote action runs, **Then** the system handles the conflict gracefully (skip duplicate, inform admin)
+1. **Given** an unrecognized ingredient is displayed, **When** I select a category from the dropdown and click "Save/Promote", **Then** the ingredient is inserted into the ingredients database with the selected category
+2. **Given** I promote all items in a span, **When** the promote action completes, **Then** the span is tagged `promotion_reviewed` so it won't appear again
+3. **Given** I promote some items and skip others, **When** the promote action completes, **Then** only selected items are inserted and the span is still tagged `promotion_reviewed`
+4. **Given** I try to promote an ingredient that was added to the database by another process since the span was loaded, **When** the promote action runs, **Then** the system handles the conflict gracefully (skip duplicate, inform admin)
 
 ---
 
-### User Story 3 - Skip/Dismiss Non-Ingredients (Priority: P3)
+### User Story 5 - Skip/Dismiss Non-Ingredients (Priority: P4)
 
 As an admin, I want to dismiss items that are not real ingredients (e.g., "car", "msg") so they don't clutter the review and the span is still marked as processed.
 
@@ -51,50 +86,63 @@ As an admin, I want to dismiss items that are not real ingredients (e.g., "car",
 
 **Acceptance Scenarios**:
 
-1. **Given** an unrecognized item is displayed, **When** the admin clicks "Skip/Dismiss", **Then** the item is removed from the current review list without being added to the database
+1. **Given** an unrecognized item is displayed, **When** I click "Skip/Dismiss", **Then** the item is removed from the current review list without being added to the database
 2. **Given** all items in a span are dismissed (none promoted), **When** the last item is dismissed, **Then** the span is still tagged `promotion_reviewed`
 
 ---
 
-### User Story 4 - Continuous Processing Flow (Priority: P4)
+### User Story 6 - Load Next Span (Priority: P5)
 
-As an admin, I want the system to automatically load the next unprocessed span after I finish reviewing the current one, so I can process multiple spans efficiently in one session.
+As an admin, after finishing review of a span, I want to click a CTA to load the next unprocessed span so I can continue processing sequentially.
 
-**Why this priority**: Productivity improvement. Core review works without auto-advance (admin can manually click "Search Next Span"), but auto-loading streamlines the workflow.
+**Why this priority**: Enables sequential processing across multiple spans. No auto-loading — admin explicitly triggers each next span fetch.
 
-**Independent Test**: Admin finishes reviewing a span, system automatically fetches and displays the next one. Delivers efficient batch processing.
+**Independent Test**: Admin finishes reviewing a span, clicks "Load Next Span" CTA, system fetches and displays the next unprocessed span. Delivers sequential batch processing.
 
 **Acceptance Scenarios**:
 
-1. **Given** the admin finishes reviewing a span (all items promoted or dismissed), **When** the review is complete, **Then** the system automatically fetches and displays the next unprocessed span
-2. **Given** the admin finishes the last remaining span, **When** the review is complete, **Then** the system displays a "No more spans to review" message
+1. **Given** I finished reviewing a span (all items promoted or dismissed), **When** the review is complete, **Then** a "Load Next Span" CTA appears
+2. **Given** I click "Load Next Span", **When** there are remaining unprocessed spans, **Then** the system fetches the next most recent span and displays its unrecognized items
+3. **Given** I click "Load Next Span", **When** no unprocessed spans remain, **Then** the system displays a "No more spans to review" message
 
 ---
 
 ### Edge Cases
 
-- What happens when the Opik service is unavailable? → Display error message, allow retry
+- What happens when the Opik service is unavailable? → Display error message on the CTA area, allow retry
 - What happens when a span's metadata is malformed (missing `unrecognized` array)? → Skip the span, tag it as reviewed, fetch next
-- What happens when all items in a span already exist in the database after deduplication? → Show empty state for that span, auto-tag as reviewed, fetch next
+- What happens when all items in a span already exist in the database after deduplication? → Show empty state for that span, auto-tag as reviewed, offer "Load Next Span" CTA
 - What happens when the admin session expires mid-review? → Existing admin auth handles redirect to login; unfinished span remains untagged for next session
 - What happens when two admins review simultaneously? → Span tagging is idempotent; duplicate ingredient inserts handled gracefully
+- What happens when admin navigates away from `/admin/unrecognized` mid-review and comes back? → Page resets to initial state (no span loaded), admin clicks CTA to load again
 
 ## Requirements *(mandatory)*
 
 ### Functional Requirements
 
-- **FR-001**: System MUST fetch unprocessed Opik spans tagged `unrecognized_items` that are NOT tagged `promotion_reviewed`
-- **FR-002**: System MUST extract ingredient names from span metadata field `metadata.unrecognized` (string array)
-- **FR-003**: System MUST deduplicate ingredient names within a span (case-insensitive)
-- **FR-004**: System MUST check each ingredient name against the existing ingredients database using case-insensitive matching and only display items not already present
-- **FR-005**: System MUST present a category dropdown with all 30 ingredient categories for each unrecognized item, defaulting to `non_classified` (admin can override)
-- **FR-006**: System MUST insert promoted ingredients into the ingredients database table with the admin-selected category, storing names in lowercase
-- **FR-007**: System MUST tag processed spans with `promotion_reviewed` via Opik API after all items are handled
-- **FR-008**: System MUST allow admins to dismiss/skip items without promoting them to the database
-- **FR-009**: System MUST automatically load the next unprocessed span after the current span is fully reviewed
-- **FR-010**: System MUST display a completion message when no unprocessed spans remain
-- **FR-011**: System MUST handle duplicate ingredient conflicts gracefully when promoting (skip and inform admin)
-- **FR-012**: System MUST be accessible only to authorized admin users (using existing admin layout authentication)
+**Admin Welcome & Navigation**:
+
+- **FR-001**: System MUST replace the existing `/admin` placeholder page with a welcome page listing available admin features
+- **FR-002**: The welcome page MUST list "Review unrecognized items to enrich the ingredient database" as a feature linking to `/admin/unrecognized`
+- **FR-003**: Admin header MUST include an "Unrecognized Items" navigation link to `/admin/unrecognized`
+- **FR-004**: Admin header MUST include a "Go To App" CTA linking to `/app`
+- **FR-005**: The active navigation item MUST be visually highlighted in the header
+
+**Unrecognized Items Page (`/admin/unrecognized`)**:
+
+- **FR-006**: The page MUST initially display a CTA to load the first span (no auto-loading on page load)
+- **FR-007**: System MUST fetch the most recent unprocessed Opik span tagged `unrecognized_items` that is NOT tagged `promotion_reviewed`
+- **FR-008**: System MUST extract ingredient names from span metadata field `metadata.unrecognized` (string array)
+- **FR-009**: System MUST deduplicate ingredient names within a span (case-insensitive)
+- **FR-010**: System MUST check each ingredient name against the existing ingredients database using case-insensitive matching and only display items not already present
+- **FR-011**: System MUST present a category dropdown with all 30 ingredient categories for each unrecognized item, defaulting to `non_classified` (admin can override)
+- **FR-012**: System MUST insert promoted ingredients into the ingredients database table with the admin-selected category, storing names in lowercase
+- **FR-013**: System MUST tag processed spans with `promotion_reviewed` via Opik API after all items are handled
+- **FR-014**: System MUST allow admins to dismiss/skip items without promoting them to the database
+- **FR-015**: After a span is fully reviewed, system MUST display a "Load Next Span" CTA (no auto-loading)
+- **FR-016**: System MUST display a completion message when no unprocessed spans remain
+- **FR-017**: System MUST handle duplicate ingredient conflicts gracefully when promoting (skip and inform admin)
+- **FR-018**: System MUST be accessible only to authorized admin users (using existing admin layout authentication)
 
 ### Key Entities
 
@@ -106,11 +154,13 @@ As an admin, I want the system to automatically load the next unprocessed span a
 
 ### Measurable Outcomes
 
-- **SC-001**: Admin can review and process an unrecognized ingredient span in under 60 seconds per span
-- **SC-002**: 100% of promoted ingredients appear in the ingredients database with correct category
-- **SC-003**: Processed spans never reappear in the admin review queue
-- **SC-004**: Admin can process 20+ spans in a single session without page refresh or navigation
-- **SC-005**: Zero junk entries (non-food items) enter the ingredients database when admin uses dismiss functionality
+- **SC-001**: Admin can navigate from `/admin` welcome page to `/admin/unrecognized` in 1 click
+- **SC-002**: Admin can navigate back to `/app` from any admin page in 1 click via header CTA
+- **SC-003**: Admin can review and process an unrecognized ingredient span in under 60 seconds per span
+- **SC-004**: 100% of promoted ingredients appear in the ingredients database with correct category
+- **SC-005**: Processed spans never reappear in the admin review queue
+- **SC-006**: Admin can process 20+ spans in a single session without page refresh or navigation away from `/admin/unrecognized`
+- **SC-007**: Zero junk entries (non-food items) enter the ingredients database when admin uses dismiss functionality
 
 ## Clarifications
 
@@ -119,10 +169,14 @@ As an admin, I want the system to automatically load the next unprocessed span a
 - Q: How should ingredient name matching work (case sensitivity)? → A: Case-insensitive matching; store names in lowercase
 - Q: Should promoting ingredients also update `resolvedAt` in `unrecognized_items` table? → A: Deferred — address in a future feature; keep the two systems independent for now
 - Q: Should category dropdown have a default value? → A: Default to `non_classified`; admin can override
+- Q: Should spans auto-load? → A: No auto-loading; admin clicks CTA to load first span and each subsequent span
+- Q: Where does the promotion feature live? → A: Dedicated page at `/admin/unrecognized`, accessible via header nav tab
+- Q: What happens to the existing `/admin` placeholder? → A: Replaced with welcome page listing available admin features
 
 ## Assumptions
 
 - Existing admin layout at `(admin)/admin/layout.tsx` provides sufficient authentication and access control
+- Admin header will be updated in the layout to include navigation items and "Go To App" CTA
 - Opik API is accessible from the application server at the configured URL
 - Span search API supports filtering by tag presence and absence
 - The 30 ingredient categories are stable and do not change frequently
@@ -131,3 +185,4 @@ As an admin, I want the system to automatically load the next unprocessed span a
 - Dismissed items do not need to be tracked separately (they are implicitly handled by the span being marked reviewed)
 - Promoting ingredients does NOT update the `unrecognized_items` DB table; the two systems remain independent (deferred to future feature)
 - The Opik project name is available via environment configuration
+- No auto-loading of spans; all span fetches are user-initiated via CTA clicks
