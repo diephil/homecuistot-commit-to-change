@@ -19,7 +19,8 @@ import type {
   DeleteAllRecipesResult,
 } from "@/types/recipe-agent";
 import type { IngredientType } from "@/db/schema/enums";
-import { ensureIngredientsInInventory } from "@/db/services/ensure-ingredients-in-inventory";
+// DISABLED: auto-adding recipe ingredients to user inventory
+// import { ensureIngredientsInInventory } from "@/db/services/ensure-ingredients-in-inventory";
 
 export async function POST(request: Request) {
   try {
@@ -133,16 +134,16 @@ async function handleCreate(tx: any, userId: string, recipe: CreateRecipeResult)
       }))
     );
 
-    // Ensure all ingredients exist in user inventory
-    const ingredientIds = validIngredients
-      .map((ing) => ing.ingredientId)
-      .filter((id): id is string => id !== null && id !== undefined);
-
-    await ensureIngredientsInInventory({
-      tx,
-      userId,
-      ingredientIds,
-    });
+    // DISABLED: auto-adding recipe ingredients to user inventory
+    // const ingredientIds = validIngredients
+    //   .map((ing) => ing.ingredientId)
+    //   .filter((id): id is string => id !== null && id !== undefined);
+    //
+    // await ensureIngredientsInInventory({
+    //   tx,
+    //   userId,
+    //   ingredientIds,
+    // });
   }
 }
 
@@ -186,16 +187,16 @@ async function handleUpdate(tx: any, userId: string, recipe: UpdateRecipeResult)
       }))
     );
 
-    // Ensure all ingredients exist in user inventory
-    const ingredientIds = validIngredients
-      .map((ing) => ing.ingredientId)
-      .filter((id): id is string => id !== null && id !== undefined);
-
-    await ensureIngredientsInInventory({
-      tx,
-      userId,
-      ingredientIds,
-    });
+    // DISABLED: auto-adding recipe ingredients to user inventory
+    // const ingredientIds = validIngredients
+    //   .map((ing) => ing.ingredientId)
+    //   .filter((id): id is string => id !== null && id !== undefined);
+    //
+    // await ensureIngredientsInInventory({
+    //   tx,
+    //   userId,
+    //   ingredientIds,
+    // });
   }
 }
 
