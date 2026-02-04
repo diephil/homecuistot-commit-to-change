@@ -82,14 +82,14 @@ export function InventoryItemBadge({
 
       {/* Change indicator pill - top left (flat, non-clickable) */}
       {!hideDiff && changeIndicator?.type === "quantity" && (
-        <span className={`absolute -top-3 -left-1 bg-blue-400 border-2 border-black text-xs px-2 py-0.5 rounded-full font-bold ${useWord ? "line-through" : ""}`}>
+        <span className={`absolute -top-3 -left-1 bg-blue-400 border-2 border-black text-xs px-2 py-0.5 rounded-full font-bold ${useWord && changeIndicator.previousQuantity !== changeIndicator.proposedQuantity ? "line-through" : ""}`}>
           {useWord
             ? quantityWords[(changeIndicator.previousQuantity ?? 0) as QuantityLevel].label
             : `${changeIndicator.previousQuantity} → ${changeIndicator.proposedQuantity}`}
         </span>
       )}
       {!hideDiff && changeIndicator?.type === "toStaple" && (
-        <span className={`absolute -top-3 -left-1 bg-blue-400 border-2 border-black text-xs px-2 py-0.5 rounded-full font-bold ${useWord ? "line-through" : ""}`}>
+        <span className={`absolute -top-3 -left-1 bg-blue-400 border-2 border-black text-xs px-2 py-0.5 rounded-full font-bold ${useWord && changeIndicator.previousQuantity !== changeIndicator.proposedQuantity ? "line-through" : ""}`}>
           {useWord
             ? quantityWords[(changeIndicator.previousQuantity ?? 0) as QuantityLevel].label
             : `${changeIndicator.previousQuantity ?? "?"} → ∞`}
