@@ -1,6 +1,6 @@
 # Contract: POST /api/onboarding/story/process-input
 
-**Change type**: Response schema extension
+**Change type**: Response schema extension (using inventory-update.orchestration.ts internally)
 
 ## Request (unchanged)
 
@@ -48,8 +48,14 @@ One of `audioBase64` or `text` required.
 | 1 | low | "a little", "not much", "running low" |
 | 0 | out | N/A — handled by `rm` array |
 
+## Implementation Details
+
+**Internal**: Uses `createInventoryManagerAgentProposal` from `lib/orchestration/inventory-update.orchestration.ts` with:
+- Tag: `"onboarding-story"` to differentiate from regular inventory updates
+- Response transformation: `ValidatedInventoryUpdate.proposedQuantity` → `quantityLevel`
+
 ## Opik Trace Enhancement
 
 When `unrecognized` array is non-empty, trace update must include:
-- **Tag**: `"unrecognized_items"` appended to existing tags
-- **Metadata**: `{ unrecognized: ["dragon fruit", ...] }`
+- **Tag**: `"unrecognized_items"` appended to existing tags (orchestration already handles this)
+- **Metadata**: `{ unrecognized: ["dragon fruit", ...] }` (orchestration already handles this)

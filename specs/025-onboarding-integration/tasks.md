@@ -23,8 +23,8 @@ All paths relative to `apps/nextjs/src/` unless specified otherwise.
 
 **Purpose**: Schema and type definitions that multiple user stories depend on
 
-- [ ] T001 [P] Add `StoryIngredientExtractionSchema` (with per-item quantityLevel in `add` array) in `types/onboarding.ts` — new schema alongside existing `IngredientExtractionSchema`, derive `StoryIngredientExtractionResponse` type via `z.infer`
-- [ ] T002 [P] Extend `StoryCompleteRequestSchema` in `lib/story-onboarding/types.ts` — change `ingredients` and `pantryStaples` from `z.array(z.string())` to `z.array(z.object({ name: z.string(), quantityLevel: z.number() }))`, derive updated `StoryCompleteRequest` type
+- [X] T001 REMOVED — No new schema needed, reusing `inventory-update.orchestration.ts` which already handles quantity detection
+- [X] T002 [P] Extend `StoryCompleteRequestSchema` in `lib/story-onboarding/types.ts` — change `ingredients` and `pantryStaples` from `z.array(z.string())` to `z.array(z.object({ name: z.string(), quantityLevel: z.number() }))`, derive updated `StoryCompleteRequest` type
 
 **Checkpoint**: Types ready. Report for review before proceeding.
 
@@ -36,11 +36,11 @@ All paths relative to `apps/nextjs/src/` unless specified otherwise.
 
 **⚠️ CRITICAL**: US2 (quantity bug fix) and US3 (correct persistence) depend on these.
 
-- [ ] T003 Update ingredient extractor LLM prompt in `lib/agents/ingredient-extractor/prompt.ts` — add quantity extraction rules: return `add` as `Array<{ name, quantityLevel }>`, include quantity word mapping (plenty=3, some=2, low=1, default=3), keep `rm` as `Array<string>`
-- [ ] T004 Update `ingredientExtractorAgent` in `lib/agents/ingredient-extractor/agent.ts` — use `StoryIngredientExtractionSchema` for response parsing (import from `types/onboarding.ts`), update `responseSchema` and return type
-- [ ] T005 Update process-input route in `app/api/onboarding/story/process-input/route.ts` — adapt `validateIngredientNames` call to work with `{ name, quantityLevel }` objects (extract names for validation, preserve quantityLevel through), return `StoryIngredientExtractionResponse`
-- [ ] T006 Update `prefillDemoData` service in `lib/services/demo-data-prefill.ts` — change `ingredients` and `pantryStaples` params from `string[]` to `Array<{ name: string, quantityLevel: number }>`, use each item's `quantityLevel` instead of hardcoded 3
-- [ ] T007 Update story complete route in `app/api/onboarding/story/complete/route.ts` — parse body with updated `StoryCompleteRequestSchema`, pass structured ingredients/pantryStaples to `prefillDemoData`
+- [X] T003 REMOVED — No agent changes needed, reusing `inventory-update.orchestration.ts`
+- [X] T004 REMOVED — No agent changes needed, reusing `inventory-update.orchestration.ts`
+- [X] T005 Update process-input route in `app/api/onboarding/story/process-input/route.ts` — replace `ingredientExtractorAgent` with `createInventoryManagerAgentProposal` from `lib/orchestration/inventory-update.orchestration.ts`, add "onboarding-story" tag, adapt response to extract `{ name, quantityLevel }` from `ValidatedInventoryUpdate.proposedQuantity`, add Opik trace metadata for unrecognized items
+- [X] T006 Update `prefillDemoData` service in `lib/services/demo-data-prefill.ts` — change `ingredients` and `pantryStaples` params from `string[]` to `Array<{ name: string, quantityLevel: number }>`, use each item's `quantityLevel` instead of hardcoded 3
+- [X] T007 Update story complete route in `app/api/onboarding/story/complete/route.ts` — parse body with updated `StoryCompleteRequestSchema`, pass structured ingredients/pantryStaples to `prefillDemoData` (NO CHANGES NEEDED - already uses updated schema and service)
 
 **Checkpoint**: Backend ready. Report for review before proceeding.
 

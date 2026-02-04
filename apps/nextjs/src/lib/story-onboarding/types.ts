@@ -34,8 +34,8 @@ export interface StoryOnboardingState {
 }
 
 export interface StoryCompleteRequest {
-  ingredients: string[]
-  pantryStaples: string[]
+  ingredients: Array<{ name: string; quantityLevel: number }>
+  pantryStaples: Array<{ name: string; quantityLevel: number }>
   recipes: Array<{
     name: string
     description?: string
@@ -47,8 +47,14 @@ export interface StoryCompleteRequest {
 }
 
 export const StoryCompleteRequestSchema = z.object({
-  ingredients: z.array(z.string().min(1).max(100)).max(100),
-  pantryStaples: z.array(z.string().min(1).max(100)).max(100).default([]),
+  ingredients: z.array(z.object({
+    name: z.string().min(1).max(100),
+    quantityLevel: z.number().int().min(0).max(3),
+  })).max(100),
+  pantryStaples: z.array(z.object({
+    name: z.string().min(1).max(100),
+    quantityLevel: z.number().int().min(0).max(3),
+  })).max(100).default([]),
   recipes: z.array(z.object({
     name: z.string().min(1).max(200),
     description: z.string().optional(),

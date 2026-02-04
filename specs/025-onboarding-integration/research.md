@@ -12,34 +12,31 @@
 - Move story files into `/onboarding/` root → unnecessary file churn, story files already work from their current location via imports
 - Create redirect from `/onboarding` to `/onboarding/story` → adds a redirect hop, worse UX
 
-## Decision 2: QuantityLevel Extraction Approach
+## Decision 2: QuantityLevel Extraction Approach (UPDATED)
 
-**Decision**: Extend the LLM extraction schema to return `{ name, quantityLevel }` objects instead of plain strings in the `add` array. Update the Gemini prompt to map quantity words to 0-3 levels.
+**Decision**: Reuse `inventory-update.orchestration.ts` instead of modifying `ingredient-extractor`. The orchestration already handles quantity detection via the ADK InventoryAgent and returns `ValidatedInventoryUpdate[]` with `proposedQuantity` (0-3). Add "onboarding-story" tag to differentiate traces.
 
-**Rationale**: The LLM already parses natural language for ingredient names; adding quantity context is a natural extension. The 4-level scale (0-3) maps cleanly to common quantity words. Keeping the mapping in the LLM prompt avoids a separate NLP layer.
+**Rationale**: The `inventory-update.orchestration.ts` already does everything we need:- Voice/text transcription via `voiceTranscriptorAgent`- Ingredient extraction WITH quantity levels via ADK InventoryAgent- Returns `ValidatedInventoryUpdate` with `proposedQuantity` (0-3)- Proper Opik tracing with tags and metadata
+- Validation against ingredients database
+- Unrecognized item handling
 
-**Alternatives considered**:
-- Client-side quantity word parsing → fragile, duplicates NLP logic, can't handle multilingual
-- Separate LLM call for quantities → unnecessary latency, one call suffices
-- Regex-based extraction → too rigid for natural language variation
-
-**Quantity Word Mapping** (for LLM prompt):
-| Level | Value | Trigger Words |
-|-------|-------|---------------|
-| plenty | 3 | "a lot", "plenty", "tons", "loads", no modifier (default) |
-| some | 2 | "some", "a few", "several", "enough" |
-| low | 1 | "a little", "not much", "running low", "almost out", "barely any" |
-| out | 0 | Handled by `rm` array (existing behavior) |
-
-## Decision 3: Schema Extension Pattern
-
-**Decision**: Create a new `StoryIngredientExtractionSchema` alongside the existing `IngredientExtractionSchema` (not modify it) to avoid breaking the old onboarding routes. The story-specific schema has `add` as `Array<{ name: string, quantityLevel: number }>`.
-
-**Rationale**: The old onboarding routes (process-voice, process-text) still import `IngredientExtractionSchema`. Modifying it would require updating those routes. Since user wants to keep old code untouched, a new schema is safer.
+No need to duplicate this functionality in `ingredient-extractor`. Just add "onboarding-story" tag to distinguish onboarding traces from regular inventory update traces.
 
 **Alternatives considered**:
-- Modify existing schema to be a union → complex, breaks existing consumers
-- Add quantityLevel as optional field on existing schema → silent failures if old routes accidentally use it
+- ~~Extend ingredient-extractor LLM schema~~ → duplicates existing functionality
+- ~~Client-side quantity word parsing~~ → fragile, can't handle multilingual
+- ~~Separate LLM call for quantities~~ → unnecessary latency
+
+**Architecture**:
+- `process-input` route calls `createInventoryManagerAgentProposal({ ..., tags: ["onboarding-story"] })`
+- Response has `ValidatedInventoryUpdate[]` with `proposedQuantity`
+- Transform to `{ name, quantityLevel }[]` for frontend compatibility
+
+## Decision 3: Schema Extension Pattern (UPDATED - NO LONGER NEEDED)
+
+**Decision**: No new schema needed. Reusing `InventoryUpdateProposal` from `inventory-update.orchestration.ts` which already has `ValidatedInventoryUpdate[]` with `proposedQuantity`.
+
+**Rationale**: Since we're reusing the orchestration, we get the quantity data from `ValidatedInventoryUpdate.proposedQuantity`. The process-input route will transform this to the format the frontend expects: `{ name, quantityLevel }[]`.
 
 ## Decision 4: Completion Payload Extension
 
@@ -72,16 +69,15 @@
 
 ### Services (REUSE WITH MODIFICATION)
 - `prefillDemoData` — modify to accept per-item quantityLevel
-- `ingredientExtractorAgent` — modify to use new schema with quantityLevel
-- `validateIngredientNames` — reuse as-is (post-extraction validation)
+- `createInventoryManagerAgentProposal` — reuse as-is with "onboarding-story" tag
 
 ### Services (REUSE AS-IS)
-- `matchIngredients` — ingredient name → ID matching
+- `voiceTranscriptorAgent` — voice transcription (used by orchestration)
+- `createInventoryAgent` — ADK inventory agent (used by orchestration)
 - `ensureRecipeIngredientsAtQuantity` — recipe ingredient inventory creation
 - `isNewUser` — brand-new user detection
 - `resetUserData` — server action for DB reset
 - `hasCompletedOnboarding` — onboarding completion check
-- `createAgentTrace` — Opik trace creation
 
 ### Hooks (REUSE AS-IS)
 - `useStoryState` — localStorage state management

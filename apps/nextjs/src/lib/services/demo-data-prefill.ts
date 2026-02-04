@@ -18,8 +18,8 @@ export async function prefillDemoData(params: {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tx: PgTransaction<any, any, any>;
   userId: string;
-  ingredients: string[];
-  pantryStaples: string[];
+  ingredients: Array<{ name: string; quantityLevel: number }>;
+  pantryStaples: Array<{ name: string; quantityLevel: number }>;
   recipes: StoryCompleteRequest["recipes"];
 }): Promise<{
   inventoryCreated: number;
@@ -30,7 +30,7 @@ export async function prefillDemoData(params: {
   const {
     tx,
     userId,
-    ingredients: userIngredientNames,
+    ingredients: userIngredients,
     pantryStaples,
     recipes,
   } = params;
@@ -42,8 +42,8 @@ export async function prefillDemoData(params: {
 
   const allNames = [
     ...new Set([
-      ...userIngredientNames.map((n) => n.toLowerCase()),
-      ...pantryStaples.map((n) => n.toLowerCase()),
+      ...userIngredients.map((item) => item.name.toLowerCase()),
+      ...pantryStaples.map((item) => item.name.toLowerCase()),
       ...recipeIngredientNames,
     ]),
   ];
@@ -86,10 +86,10 @@ export async function prefillDemoData(params: {
     unrecognizedIngredients = inserted.length;
   }
 
-  // Insert tracked ingredients (quantity=3)
-  for (const name of userIngredientNames) {
-    const matched = ingredientMap.get(name.toLowerCase());
-    const unrecognized = unrecognizedMap.get(name.toLowerCase());
+  // Insert tracked ingredients with per-item quantityLevel
+  for (const item of userIngredients) {
+    const matched = ingredientMap.get(item.name.toLowerCase());
+    const unrecognized = unrecognizedMap.get(item.name.toLowerCase());
 
     if (matched) {
       const ins = await tx
@@ -97,7 +97,7 @@ export async function prefillDemoData(params: {
         .values({
           userId,
           ingredientId: matched.id,
-          quantityLevel: 3,
+          quantityLevel: item.quantityLevel,
           isPantryStaple: false,
         })
         .onConflictDoNothing()
@@ -109,7 +109,7 @@ export async function prefillDemoData(params: {
         .values({
           userId,
           unrecognizedItemId: unrecognized.id,
-          quantityLevel: 3,
+          quantityLevel: item.quantityLevel,
           isPantryStaple: false,
         })
         .onConflictDoNothing()
@@ -118,10 +118,10 @@ export async function prefillDemoData(params: {
     }
   }
 
-  // Insert pantry staples (quantity=3, isPantryStaple=true)
-  for (const name of pantryStaples) {
-    const matched = ingredientMap.get(name.toLowerCase());
-    const unrecognized = unrecognizedMap.get(name.toLowerCase());
+  // Insert pantry staples with per-item quantityLevel (isPantryStaple=true)
+  for (const item of pantryStaples) {
+    const matched = ingredientMap.get(item.name.toLowerCase());
+    const unrecognized = unrecognizedMap.get(item.name.toLowerCase());
 
     if (matched) {
       const ins = await tx
@@ -129,7 +129,7 @@ export async function prefillDemoData(params: {
         .values({
           userId,
           ingredientId: matched.id,
-          quantityLevel: 3,
+          quantityLevel: item.quantityLevel,
           isPantryStaple: true,
         })
         .onConflictDoNothing()
@@ -141,7 +141,7 @@ export async function prefillDemoData(params: {
         .values({
           userId,
           unrecognizedItemId: unrecognized.id,
-          quantityLevel: 3,
+          quantityLevel: item.quantityLevel,
           isPantryStaple: true,
         })
         .onConflictDoNothing()
