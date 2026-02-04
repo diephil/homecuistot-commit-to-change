@@ -1,5 +1,10 @@
 @AGENTS.md
 
+## Coding approach
+
+- In React, when it makes sense, create first a re-usable component before using it.
+- In the backend logic, same principle, create first a re-usable service or lib before using it.
+
 ## Gemini Builds Reference
 
 - `gemini-builds/` folder: AI Studio mockups as reference. Code must NOT be used as-is - requires revision and proper integration following project standards. Use only as inspiration.
@@ -35,6 +40,7 @@
   - `docs(readme): add setup instructions`
 
 ## Active Technologies
+
 - TypeScript 5+ (strict mode), React 19, Next.js 16 App Router + Drizzle ORM 0.45.1, @supabase/supabase-js, Tailwind CSS v4, RetroUI components, lucide-react icons (001-unrecognized-items-display)
 - Supabase PostgreSQL (user_inventory, unrecognized_items, ingredients tables) (001-unrecognized-items-display)
 - TypeScript 5+ (strict mode), React 19, Next.js 16 App Router + Next.js 16, React 19, Tailwind CSS v4, existing shared components (Button, Text from `@/components/shared`) (022-homepage-revamp)
@@ -118,6 +124,7 @@ pnpm db:studio            # Open Drizzle Studio GUI
 ## Component Organization
 
 **Structure** (`apps/nextjs/src/components/`):
+
 ```
 components/
 ├── ErrorBoundary.tsx    (global - error handling)
@@ -129,6 +136,7 @@ components/
 ```
 
 **Rules**:
+
 - **PascalCase filenames**: `RecipeCard.tsx`, not `recipe-card.tsx`
 - **Domain folders**: page-specific components go in their domain folder
 - **shared/**: UI primitives (Button, Card, Badge), cross-domain components (HelpModal, VoiceInput)
@@ -136,6 +144,7 @@ components/
 - **Barrel exports**: `shared/index.ts` exports all shared components
 
 **Placement decision**:
+
 - Used by 1 page → domain folder (`app/`, `inventory/`, `recipes/`)
 - Used by 2+ pages → `shared/`
 - Global wrapper/utility → root level
@@ -157,7 +166,7 @@ components/
 - Purpose: Generate SQL migration from CSV data
 
 ## Recent Changes
+
 - 024-story-onboarding: Added TypeScript 5+ (strict mode) + React 19, Next.js 16 App Router, Tailwind CSS v4, Drizzle ORM 0.45.1, @google/genai (Gemini), Zod
 - 023-admin-ingredient-promotion: Added [if applicable, e.g., PostgreSQL, CoreData, files or N/A]
 - 022-homepage-revamp: Added TypeScript 5+ (strict mode), React 19, Next.js 16 App Router + Next.js 16, React 19, Tailwind CSS v4, existing shared components (Button, Text from `@/components/shared`)
-

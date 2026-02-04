@@ -75,12 +75,15 @@ export async function POST(request: NextRequest) {
         add: addValidation.recognized,
         rm: rmValidation.recognized,
         transcribedText: result.transcribedText,
-        unrecognized:
-          allUnrecognized.length > 0 ? allUnrecognized : undefined,
+        unrecognized: allUnrecognized.length > 0 ? allUnrecognized : undefined,
       });
 
       traceCtx.trace.update({
         output: validated as unknown as Record<string, unknown>,
+        metadata: {
+          // ADD 'unrecognized' field
+        },
+        // ADD unrecognized_items tag
       });
       traceCtx.end();
       await traceCtx.flush();
