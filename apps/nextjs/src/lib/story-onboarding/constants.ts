@@ -123,7 +123,7 @@ export const SCENE_TEXT = {
   scene7Closing: [
     "HomeCuistot isn't a recipe library.",
     "It's your inventory clerk.",
-    "You bring the skills and you bring your beloved recipies.",
+    "You bring the skills and your beloved recipies you've mastered already.",
     "We track the ingredients.",
     "Let's commit to change, let's cook more today 🍳",
   ],

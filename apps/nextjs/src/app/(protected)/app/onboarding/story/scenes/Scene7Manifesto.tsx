@@ -22,7 +22,7 @@ export function Scene7Manifesto({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleComplete = async (destination: "app" | "recipes") => {
+  const handleComplete = async () => {
     setLoading(true);
     setError(null);
 
@@ -43,7 +43,7 @@ export function Scene7Manifesto({
         ],
       };
 
-      const minDelay = new Promise((resolve) => setTimeout(resolve, 5000));
+      const minDelay = new Promise((resolve) => setTimeout(resolve, 6000));
 
       const [response] = await Promise.all([
         fetch("/api/onboarding/story/complete", {
@@ -62,9 +62,7 @@ export function Scene7Manifesto({
       // Clear localStorage on successful completion
       localStorage.removeItem(LOCALSTORAGE_KEY);
 
-      const redirectPath =
-        destination === "recipes" ? "/app/recipes" : "/app";
-      router.push(redirectPath);
+      router.push("/app/recipes");
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Something went wrong. Try again.",
@@ -146,7 +144,7 @@ export function Scene7Manifesto({
             variant="default"
             size="lg"
             className="w-full justify-center"
-            onClick={() => handleComplete("app")}
+            onClick={handleComplete}
             disabled={loading}
           >
             {loading ? (
@@ -154,16 +152,6 @@ export function Scene7Manifesto({
             ) : (
               "Get started \u2192"
             )}
-          </Button>
-
-          <Button
-            variant="default"
-            size="lg"
-            className="w-full justify-center bg-pink-400 hover:bg-pink-500"
-            onClick={() => handleComplete("recipes")}
-            disabled={loading}
-          >
-            Tell us what you can cook blindfolded!
           </Button>
 
           {/* Error */}

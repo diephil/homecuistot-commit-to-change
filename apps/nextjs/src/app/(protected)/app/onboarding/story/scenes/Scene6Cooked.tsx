@@ -46,7 +46,7 @@ export function Scene6Cooked({
           className="text-base font-semibold text-black/70 opacity-0 animate-[fadeIn_0.5s_ease-in_forwards]"
           style={{ animationDelay: "0.4s" }}
         >
-          Here&apos;s what changed in Sarah&apos;s inventory:
+          Here&apos;s what changed in Sarah&apos;s inventory after cooking the recipe:
         </p>
 
         {/* Tracked ingredients with diff badges on decremented items */}
@@ -102,13 +102,6 @@ export function Scene6Cooked({
             ))}
           </div>
         </div>
-
-        <p
-          className="text-base font-bold text-black/70 bg-orange-50 border-2 border-orange-200 rounded-lg px-4 py-3 opacity-0 animate-[fadeIn_0.5s_ease-in_forwards]"
-          style={{ animationDelay: "1.6s" }}
-        >
-          Next time Sarah wants carbonara, she&apos;ll need to pick up more bacon — she just used the last of it. 🥓
-        </p>
 
         <div
           className="pt-4 opacity-0 animate-[fadeIn_0.5s_ease-in_forwards]"
