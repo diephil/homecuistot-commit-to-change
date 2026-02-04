@@ -85,7 +85,7 @@ For **returning users** (already have inventory or recipes), tapping "Get starte
 - What happens when user says something completely unrelated (e.g., "the weather is nice")? Items extracted (if any), inventory updates, "Continue" stays disabled if eggs/parmesan missing.
 - What happens when user adds items beyond eggs/parmesan (e.g., "cheesecake")? Accepted and displayed in inventory, no impact on progression.
 - What happens when voice transcription returns empty? Show error, allow retry.
-- What happens if user navigates away mid-flow and returns? Flow resets to Scene 1 (all state is client-side, no persistence).
+- What happens if user navigates away mid-flow and returns? Scene progress and demo state are restored from localStorage; user resumes where they left off.
 - What happens on slow network during voice processing? Show loading state on mic button; timeout after reasonable duration with retry option.
 - What happens if pre-fill persistence fails on "Get started"? Show error with retry option; do not leave user stuck on loading screen.
 - What happens if a returning user (with existing data) replays the demo via "Restart demo" then taps "Get started"? They already have data, so skip loading screen and go directly to the app.
@@ -96,24 +96,30 @@ For **returning users** (already have inventory or recipes), tapping "Get starte
 
 - **FR-001**: System MUST display 7 sequential scenes in a linear forward-only flow.
 - **FR-002**: Scenes 1, 2, 3, 7 MUST be static content screens with a "Continue" (or "Get started") button.
-- **FR-003**: Scene 2 MUST display Sarah's inventory (7 tracked items + 3 staples) and the carbonara recipe card showing missing ingredients (eggs, parmesan) with a "NOT READY" status.
+- **FR-003**: Scene 2 MUST display Sarah's inventory using two read-only InventorySection components (one for tracked ingredients, one for pantry staples — no quantity change, delete, or interaction allowed on badges) and the carbonara recipe card in "almost-available" variant showing missing ingredients (eggs, parmesan) with a "NOT READY" status.
 - **FR-004**: Scene 4 MUST provide a mic button that captures user speech and extracts ingredient names via LLM.
 - **FR-005**: Scene 4 MUST update the inventory display in real-time as items are extracted from speech.
 - **FR-006**: Scene 4 "Continue" button MUST remain disabled until both eggs AND parmesan are present in the inventory.
 - **FR-007**: Scene 4 MUST allow multiple voice passes (mic button label changes to "Add more" after first input).
 - **FR-008**: Scene 4 MUST show a text input fallback when microphone permission is denied.
 - **FR-009**: Scene 4 MUST show a hint after 5 seconds of silence.
-- **FR-010**: Scene 5 MUST display the carbonara recipe card as "READY" with all ingredients checked, including "just added" labels on eggs and parmesan.
+- **FR-010**: Scene 5 MUST display the carbonara recipe card using the "available" variant as "READY" with all ingredients checked, including "just added" labels on eggs and parmesan.
 - **FR-011**: Scene 5 MUST provide an "I made this" button that triggers Scene 6.
 - **FR-012**: Scene 6 MUST display a modal showing each used ingredient with before/after quantity levels, and list staples as "NOT TRACKED".
 - **FR-013**: Scene 7 MUST offer two CTAs: "Get started" and "Restart demo" (resets all demo state and returns to Scene 1).
-- **FR-014**: All scene state during the flow (Scenes 1-7) MUST be client-side only. No data is persisted until the user taps "Get started".
+- **FR-014**: All scene state during the flow (Scenes 1-7) MUST be stored in localStorage (scene progress, demo inventory, demo recipe). No data is persisted to the database until the user taps "Get started". On page refresh, the flow resumes from the last saved scene.
 - **FR-017**: When a brand-new user (no existing user_inventory rows and no existing user_recipes rows) taps "Get started", the system MUST show a loading screen and pre-fill their account with the demo inventory items and the carbonara recipe.
 - **FR-018**: The loading screen MUST inform the user that demo data is being added to their account, and that they can add their own recipes via voice and manage their inventory later to update or remove pre-filled items.
 - **FR-019**: When a returning user (has existing inventory or recipes) taps "Get started", the system MUST skip the loading screen and redirect directly to the app.
 - **FR-020**: If pre-fill persistence fails, the system MUST show an error with a retry option rather than leaving the user stuck on the loading screen.
 - **FR-015**: This flow MUST live at a new dedicated route (e.g., `/app/onboarding/story`), coexisting alongside the current onboarding with no modifications to existing OnboardingPageContent.
-- **FR-016**: Scene 4 voice input MUST reuse the existing ingredient extractor agent for LLM extraction.
+- **FR-016**: Scene 4 voice input MUST reuse the existing ingredient extractor agent for LLM extraction. The mic interaction pattern mirrors the inventory page mic logic — extracted items are applied directly to the in-memory/localStorage demo inventory without database persistence and without a confirmation modal.
+- **FR-021**: The flow MUST use neo brutalism design consistent with the rest of the app.
+- **FR-022**: Scene transitions MUST use fade-in/fade-out animations.
+- **FR-023**: Storytelling text in static scenes MUST appear with a progressive fade-in effect (text revealed gradually, not all at once).
+- **FR-024**: Recipe cards MUST reuse the existing RecipeAvailabilityCard component. Scene 2 uses the "almost-available" variant; Scene 5 uses the "available" variant.
+- **FR-025**: Inventory displays MUST reuse the existing InventorySection component in read-only mode (two instances: one for tracked ingredients, one for pantry staples). InventoryItemBadges MUST NOT allow quantity changes, deletion, or direct interaction during onboarding.
+- **FR-026**: "Restart demo" MUST clear all localStorage onboarding state in addition to resetting in-memory state.
 
 ### Key Entities
 
@@ -144,7 +150,7 @@ For **returning users** (already have inventory or recipes), tapping "Get starte
 - The quantity scale is: plenty > some > enough > low > critical. This matches the display in the spec scenes.
 - Voice input reuses the existing `/api/onboarding/process-voice` endpoint and ingredient extractor agent.
 - Authentication is required before entering this flow (same as current onboarding).
-- Scene transitions use simple forward animation (slide or fade) consistent with existing onboarding patterns.
+- Scene transitions use fade-in/fade-out animations.
 - No back navigation — forward-only linear flow.
 - No skip option — the flow is short (~2 min) and the interactive moments are essential for product understanding.
 - Newly added items (via voice) default to "plenty" quantity level.
@@ -155,7 +161,7 @@ For **returning users** (already have inventory or recipes), tapping "Get starte
 - 7-scene linear narrative flow
 - Voice input with LLM extraction in Scene 4
 - Text fallback for Scene 4
-- Client-side demo state management during Scenes 1-7
+- Client-side demo state in localStorage during Scenes 1-7 (persists across refresh)
 - Recipe readiness display
 - Inventory decrement modal
 - Pre-fill persistence of demo data for brand-new users on "Get started"
