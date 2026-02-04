@@ -1,0 +1,167 @@
+const OPIK_URL = process.env.OPIK_URL_OVERRIDE || "http://localhost:5173/api";
+const OPIK_PROJECT_NAME =
+  process.env.OPIK_PROJECT_NAME || "homecuistot-hackathon";
+const OPIK_API_KEY = process.env.OPIK_API_KEY;
+const OPIK_WORKSPACE = process.env.OPIK_WORKSPACE;
+
+export interface OpikSpan {
+  id: string;
+  trace_id: string;
+  name: string;
+  tags: string[];
+  metadata?: {
+    totalUnrecognized?: number;
+    unrecognized?: string[];
+  };
+  created_at?: string;
+}
+
+interface SearchSpansResponse {
+  data: OpikSpan[];
+  total: number;
+}
+
+function getOpikHeaders(): Record<string, string> {
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+
+  // Production (Opik Cloud): API key + workspace header
+  // NOTE: authorization value has NO "Bearer " prefix
+  if (OPIK_API_KEY) {
+    headers["authorization"] = OPIK_API_KEY;
+  }
+  if (OPIK_WORKSPACE) {
+    headers["Comet-Workspace"] = OPIK_WORKSPACE;
+  }
+
+  return headers;
+}
+
+/**
+ * Search for spans with `unrecognized_items` tag but NOT `promotion_reviewed`.
+ * Returns the most recent unprocessed span or null if none found.
+ */
+export async function getNextUnprocessedSpan(): Promise<OpikSpan | null> {
+  try {
+    const response = await fetch(
+      `${OPIK_URL}/v1/private/spans/search`,
+      {
+        method: "POST",
+        headers: getOpikHeaders(),
+        body: JSON.stringify({
+          project_name: OPIK_PROJECT_NAME,
+          filters: [
+            {
+              field: "tags",
+              operator: "contains",
+              value: "unrecognized_items",
+            },
+            {
+              field: "tags",
+              operator: "not_contains",
+              value: "promotion_reviewed",
+            },
+          ],
+          limit: 1,
+          sort_by: [{ field: "created_at", direction: "desc" }],
+        }),
+      },
+    );
+
+    if (!response.ok) {
+      console.error("Opik search spans failed", {
+        status: response.status,
+        statusText: response.statusText,
+      });
+      return null;
+    }
+
+    const data: SearchSpansResponse = await response.json();
+    return data.data?.[0] ?? null;
+  } catch (error) {
+    console.error("Opik search spans error", error);
+    return null;
+  }
+}
+
+/**
+ * Get a span by ID from Opik.
+ * Used to re-fetch current state (tags, trace_id) before PATCH.
+ */
+export async function getSpanById(params: {
+  spanId: string;
+}): Promise<OpikSpan | null> {
+  try {
+    const response = await fetch(
+      `${OPIK_URL}/v1/private/spans/${params.spanId}`,
+      {
+        method: "GET",
+        headers: getOpikHeaders(),
+      },
+    );
+
+    if (!response.ok) {
+      console.error("Opik get span failed", {
+        spanId: params.spanId,
+        status: response.status,
+      });
+      return null;
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Opik get span error", error);
+    return null;
+  }
+}
+
+/**
+ * Mark a span as reviewed by adding promotion_reviewed tag.
+ *
+ * Uses GET-then-PATCH pattern: re-fetches the span first to get
+ * current tags, then appends promotion_reviewed. Never uses stale
+ * tags from the initial search.
+ */
+export async function markSpanAsReviewed(params: {
+  spanId: string;
+}): Promise<boolean> {
+  try {
+    // Step 1: Re-fetch span to get current state
+    const span = await getSpanById({ spanId: params.spanId });
+    if (!span) return false;
+
+    // Step 2: Append promotion_reviewed to current tags
+    const currentTags = span.tags || [];
+    if (currentTags.includes("promotion_reviewed")) return true; // already tagged
+
+    const newTags = [...currentTags, "promotion_reviewed"];
+
+    // Step 3: PATCH with merged tags (response is 204 No Content)
+    const response = await fetch(
+      `${OPIK_URL}/v1/private/spans/${params.spanId}`,
+      {
+        method: "PATCH",
+        headers: getOpikHeaders(),
+        body: JSON.stringify({
+          trace_id: span.trace_id,
+          tags: newTags,
+        }),
+      },
+    );
+
+    if (!response.ok) {
+      console.error("Opik update span failed", {
+        spanId: params.spanId,
+        status: response.status,
+        statusText: response.statusText,
+      });
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Opik mark span reviewed error", error);
+    return false;
+  }
+}

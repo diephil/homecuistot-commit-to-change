@@ -39,8 +39,8 @@
 
 **CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T004 [US-INFRA] Create Opik REST API service at `apps/nextjs/src/lib/services/opik-spans.ts` with types (`OpikSpan`, `SearchSpansResponse`), `getOpikHeaders()` for auth (local: no headers, production: `authorization` from `OPIK_API_KEY` + `Comet-Workspace` from `OPIK_WORKSPACE` — no Bearer prefix), `getNextUnprocessedSpan()` (POST search with `unrecognized_items` / NOT `promotion_reviewed` filters, limit 1), `getSpanById({ spanId })` (GET by ID), and `markSpanAsReviewed({ spanId })` (GET-then-PATCH: re-fetch span, append `promotion_reviewed` to current tags, PATCH with trace_id). Ref: contracts/opik-api.md, research.md §1
-- [ ] T005 [P] [US-INFRA] Create admin auth helper — extract repeatable auth check pattern (verify session via `createClient()` + check `user.id` against `ADMIN_USER_IDS` env var) to reuse across all 3 API routes. Return `{ user }` or `NextResponse` 401. Ref: research.md §3
+- [X] T004 [US-INFRA] Create Opik REST API service at `apps/nextjs/src/lib/services/opik-spans.ts` with types (`OpikSpan`, `SearchSpansResponse`), `getOpikHeaders()` for auth (local: no headers, production: `authorization` from `OPIK_API_KEY` + `Comet-Workspace` from `OPIK_WORKSPACE` — no Bearer prefix), `getNextUnprocessedSpan()` (POST search with `unrecognized_items` / NOT `promotion_reviewed` filters, limit 1), `getSpanById({ spanId })` (GET by ID), and `markSpanAsReviewed({ spanId })` (GET-then-PATCH: re-fetch span, append `promotion_reviewed` to current tags, PATCH with trace_id). Ref: contracts/opik-api.md, research.md §1
+- [X] T005 [P] [US-INFRA] Create admin auth helper — extract repeatable auth check pattern (verify session via `createClient()` + check `user.id` against `ADMIN_USER_IDS` env var) to reuse across all 3 API routes. Return `{ user }` or `NextResponse` 401. Ref: research.md §3
 
 **Checkpoint**: Opik service and auth helper ready. User story implementation can begin.
 
