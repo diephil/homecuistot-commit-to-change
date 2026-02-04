@@ -16,6 +16,7 @@ export function ResetUserDataButton() {
       localStorage.removeItem('banner:inventory:dismissed')
       localStorage.removeItem('inventory:groupByCategory')
       localStorage.removeItem('inventory:showEmptyOnly')
+      localStorage.removeItem('homecuistot:story-onboarding')
     } catch {}
 
     const result = await resetUserData()
