@@ -54,7 +54,7 @@ All paths relative to `apps/nextjs/src/` unless specified otherwise.
 
 ### Implementation for User Story 1
 
-- [ ] T008 [US1] Swap `page.tsx` in `app/(protected)/app/onboarding/page.tsx` — replace `OnboardingPageContent` import with `StoryOnboarding` import from `./story/StoryOnboarding`, keep `ErrorBoundary` and `OnboardingGuard` wrappers, keep server-side `hasCompletedOnboarding` guard
+- [X] T008 [US1] Swap `page.tsx` in `app/(protected)/app/onboarding/page.tsx` — replace `OnboardingPageContent` import with `StoryOnboarding` import from `./story/StoryOnboarding`, keep `ErrorBoundary` and `OnboardingGuard` wrappers, keep server-side `hasCompletedOnboarding` guard
 
 **Checkpoint**: Route swap done. `/onboarding` now shows story flow. Old wizard is dead code (kept). Report for review.
 
