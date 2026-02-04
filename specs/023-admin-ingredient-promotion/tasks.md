@@ -29,6 +29,7 @@
 
 - [ ] T001 Create feature branch `023-admin-ingredient-promotion` from `main`
 - [ ] T002 Create directory structure: `app/api/admin/spans/next/`, `app/api/admin/spans/mark-reviewed/`, `app/api/admin/ingredients/promote/`, `app/(admin)/admin/unrecognized/`
+- [ ] T003 [P] Add `OPIK_WORKSPACE=philippe-diep` to `apps/nextjs/.env.prod` (after `OPIK_API_KEY` line). Add `OPIK_WORKSPACE=` (empty) to `apps/nextjs/.env.local` for local dev (no workspace needed for self-hosted Opik)
 
 ---
 
@@ -38,8 +39,8 @@
 
 **CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T003 [US-INFRA] Create Opik REST API service at `apps/nextjs/src/lib/services/opik-spans.ts` with types (`OpikSpan`, `SearchSpansResponse`), `getOpikHeaders()` for auth (local: no auth, production: `authorization` + `Comet-Workspace` headers), `getNextUnprocessedSpan()` (POST search with `unrecognized_items` / NOT `promotion_reviewed` filters, limit 1), `getSpanById({ spanId })` (GET by ID), and `markSpanAsReviewed({ spanId })` (GET-then-PATCH: re-fetch span, append `promotion_reviewed` to current tags, PATCH with trace_id). Ref: contracts/opik-api.md, research.md §1
-- [ ] T004 [P] [US-INFRA] Create admin auth helper — extract repeatable auth check pattern (verify session via `createClient()` + check `user.id` against `ADMIN_USER_IDS` env var) to reuse across all 3 API routes. Return `{ user }` or `NextResponse` 401. Ref: research.md §3
+- [ ] T004 [US-INFRA] Create Opik REST API service at `apps/nextjs/src/lib/services/opik-spans.ts` with types (`OpikSpan`, `SearchSpansResponse`), `getOpikHeaders()` for auth (local: no headers, production: `authorization` from `OPIK_API_KEY` + `Comet-Workspace` from `OPIK_WORKSPACE` — no Bearer prefix), `getNextUnprocessedSpan()` (POST search with `unrecognized_items` / NOT `promotion_reviewed` filters, limit 1), `getSpanById({ spanId })` (GET by ID), and `markSpanAsReviewed({ spanId })` (GET-then-PATCH: re-fetch span, append `promotion_reviewed` to current tags, PATCH with trace_id). Ref: contracts/opik-api.md, research.md §1
+- [ ] T005 [P] [US-INFRA] Create admin auth helper — extract repeatable auth check pattern (verify session via `createClient()` + check `user.id` against `ADMIN_USER_IDS` env var) to reuse across all 3 API routes. Return `{ user }` or `NextResponse` 401. Ref: research.md §3
 
 **Checkpoint**: Opik service and auth helper ready. User story implementation can begin.
 
@@ -53,8 +54,8 @@
 
 ### Implementation
 
-- [ ] T005 [P] [US1] Modify `apps/nextjs/src/app/(admin)/admin/page.tsx` — replace placeholder "Demo In Progress" with welcome page: hero section with title, feature card for "Review Unrecognized Items" linking to `/admin/unrecognized`, "Coming Soon" section. Neobrutalist styling (bold borders, vibrant gradients, shadow offsets). Ref: quickstart.md Phase 4
-- [ ] T006 [P] [US2] Modify `apps/nextjs/src/app/(admin)/admin/layout.tsx` — add navigation bar below title row with `AdminNavLink` component for "Unrecognized Items" (`/admin/unrecognized`) with active state highlighting. Add "Go To App" CTA linking to `/app` (cyan bg, neobrutalist shadow). Keep existing `LogoutButton`. Ref: quickstart.md Phase 3
+- [ ] T006 [P] [US1] Modify `apps/nextjs/src/app/(admin)/admin/page.tsx` — replace placeholder "Demo In Progress" with welcome page: hero section with title, feature card for "Review Unrecognized Items" linking to `/admin/unrecognized`, "Coming Soon" section. Neobrutalist styling (bold borders, vibrant gradients, shadow offsets). Ref: quickstart.md Phase 4
+- [ ] T007 [P] [US2] Modify `apps/nextjs/src/app/(admin)/admin/layout.tsx` — add navigation bar below title row with `AdminNavLink` component for "Unrecognized Items" (`/admin/unrecognized`) with active state highlighting. Add "Go To App" CTA linking to `/app` (cyan bg, neobrutalist shadow). Keep existing `LogoutButton`. Ref: quickstart.md Phase 3
 
 **Checkpoint**: Admin welcome page and header navigation functional. Admin can navigate between `/admin`, `/admin/unrecognized`, and `/app`.
 
@@ -68,8 +69,8 @@
 
 ### Implementation
 
-- [ ] T007 [US3] Create API route `apps/nextjs/src/app/api/admin/spans/next/route.ts` — GET handler: admin auth check (T004), call `getNextUnprocessedSpan()` (T003), extract `metadata.unrecognized[]`, deduplicate (case-insensitive), query `adminDb` for existing ingredients (`LOWER(name) IN (...)`), filter out existing, return `{ spanId, traceId, items[], totalInSpan }` or `{ spanId: null, items: [], totalInSpan: 0 }` if no spans. Ref: contracts/admin-api.md §GET /api/admin/spans/next, data-model.md Workflow 1
-- [ ] T008 [US3] Create unrecognized items page `apps/nextjs/src/app/(admin)/admin/unrecognized/page.tsx` — `'use client'` component with states: `loadedSpan`, `promotions`, `isLoading`, `error`. Initial render: CTA button "Load Next Span". On click: fetch `/api/admin/spans/next`, display items list with category dropdowns (default `non_classified`). Show "no more spans" message when `spanId` is null. Neobrutalist styling. Ref: quickstart.md Phase 5, spec.md FR-006 through FR-010
+- [ ] T008 [US3] Create API route `apps/nextjs/src/app/api/admin/spans/next/route.ts` — GET handler: admin auth check (T005), call `getNextUnprocessedSpan()` (T004), extract `metadata.unrecognized[]`, deduplicate (case-insensitive), query `adminDb` for existing ingredients (`LOWER(name) IN (...)`), filter out existing, return `{ spanId, traceId, items[], totalInSpan }` or `{ spanId: null, items: [], totalInSpan: 0 }` if no spans. Ref: contracts/admin-api.md §GET /api/admin/spans/next, data-model.md Workflow 1
+- [ ] T009 [US3] Create unrecognized items page `apps/nextjs/src/app/(admin)/admin/unrecognized/page.tsx` — `'use client'` component with states: `loadedSpan`, `promotions`, `isLoading`, `error`. Initial render: CTA button "Load Next Span". On click: fetch `/api/admin/spans/next`, display items list with category dropdowns (default `non_classified`). Show "no more spans" message when `spanId` is null. Neobrutalist styling. Ref: quickstart.md Phase 5, spec.md FR-006 through FR-010
 
 **Checkpoint**: Admin can load and view unrecognized ingredients from Opik spans.
 
@@ -83,8 +84,8 @@
 
 ### Implementation
 
-- [ ] T009 [US4] Create API route `apps/nextjs/src/app/api/admin/ingredients/promote/route.ts` — POST handler: admin auth check, Zod validation (`spanId: uuid, promotions: [{name: string, category: IngredientCategory}]`), validate categories against 30-item enum, batch insert via `adminDb.insert(ingredients).values(...).onConflictDoNothing()` (lowercase names), call `markSpanAsReviewed({ spanId })` (GET-then-PATCH), return `{ promoted, skipped, spanTagged }`. Ref: contracts/admin-api.md §POST /api/admin/ingredients/promote, data-model.md Workflow 2
-- [ ] T010 [US4] Add promote functionality to `apps/nextjs/src/app/(admin)/admin/unrecognized/page.tsx` — "Promote" button: collects `promotions[]` from state, POST to `/api/admin/ingredients/promote` with `{ spanId, promotions }`, show toast with promoted/skipped counts, reset state for next span. Disable button when no items remain. Ref: spec.md US4 acceptance scenarios
+- [ ] T010 [US4] Create API route `apps/nextjs/src/app/api/admin/ingredients/promote/route.ts` — POST handler: admin auth check, Zod validation (`spanId: uuid, promotions: [{name: string, category: IngredientCategory}]`), validate categories against 30-item enum, batch insert via `adminDb.insert(ingredients).values(...).onConflictDoNothing()` (lowercase names), call `markSpanAsReviewed({ spanId })` (GET-then-PATCH), return `{ promoted, skipped, spanTagged }`. Ref: contracts/admin-api.md §POST /api/admin/ingredients/promote, data-model.md Workflow 2
+- [ ] T011 [US4] Add promote functionality to `apps/nextjs/src/app/(admin)/admin/unrecognized/page.tsx` — "Promote" button: collects `promotions[]` from state, POST to `/api/admin/ingredients/promote` with `{ spanId, promotions }`, show toast with promoted/skipped counts, reset state for next span. Disable button when no items remain. Ref: spec.md US4 acceptance scenarios
 
 **Checkpoint**: Full promote workflow functional. Ingredients enter DB, spans get tagged.
 
@@ -98,8 +99,8 @@
 
 ### Implementation
 
-- [ ] T011 [US5] Create API route `apps/nextjs/src/app/api/admin/spans/mark-reviewed/route.ts` — POST handler: admin auth check, Zod validation (`spanId: uuid`), call `markSpanAsReviewed({ spanId })` (GET-then-PATCH), return `{ spanTagged }`. Ref: contracts/admin-api.md §POST /api/admin/spans/mark-reviewed, data-model.md Workflow 3
-- [ ] T012 [US5] Add dismiss functionality to `apps/nextjs/src/app/(admin)/admin/unrecognized/page.tsx` — per-item "X" button removes item from `promotions` state. "Dismiss All" button: confirm dialog, POST to `/api/admin/spans/mark-reviewed` with `{ spanId }`, reset state. Ref: spec.md US5 acceptance scenarios
+- [ ] T012 [US5] Create API route `apps/nextjs/src/app/api/admin/spans/mark-reviewed/route.ts` — POST handler: admin auth check, Zod validation (`spanId: uuid`), call `markSpanAsReviewed({ spanId })` (GET-then-PATCH), return `{ spanTagged }`. Ref: contracts/admin-api.md §POST /api/admin/spans/mark-reviewed, data-model.md Workflow 3
+- [ ] T013 [US5] Add dismiss functionality to `apps/nextjs/src/app/(admin)/admin/unrecognized/page.tsx` — per-item "X" button removes item from `promotions` state. "Dismiss All" button: confirm dialog, POST to `/api/admin/spans/mark-reviewed` with `{ spanId }`, reset state. Ref: spec.md US5 acceptance scenarios
 
 **Checkpoint**: Admin can dismiss items individually or in bulk. Span lifecycle complete.
 
@@ -113,7 +114,7 @@
 
 ### Implementation
 
-- [ ] T013 [US6] Add "Load Next Span" CTA to `apps/nextjs/src/app/(admin)/admin/unrecognized/page.tsx` — after successful promote or dismiss-all (state reset, `loadedSpan` is null), show "Load Next Span" CTA (reuse `handleLoadSpan`). Show completion message when API returns `spanId: null`. Ref: spec.md US6 acceptance scenarios, FR-015, FR-016
+- [ ] T014 [US6] Add "Load Next Span" CTA to `apps/nextjs/src/app/(admin)/admin/unrecognized/page.tsx` — after successful promote or dismiss-all (state reset, `loadedSpan` is null), show "Load Next Span" CTA (reuse `handleLoadSpan`). Show completion message when API returns `spanId: null`. Ref: spec.md US6 acceptance scenarios, FR-015, FR-016
 
 **Checkpoint**: Sequential span processing fully functional. Admin can process 20+ spans in a single session.
 
@@ -123,10 +124,10 @@
 
 **Purpose**: Error handling, edge cases, UX refinements
 
-- [ ] T014 [P] Error handling audit — verify all 3 API routes return proper HTTP status codes (400/401/500) with error messages per contracts/admin-api.md §Error Handling
-- [ ] T015 [P] Loading states — verify all async operations show loading indicators (disable buttons, show "Loading..." / "Processing..." text) per quickstart.md UI patterns
-- [ ] T016 Edge case: malformed span metadata — if `metadata.unrecognized` is missing or not an array, skip span and log warning. Ref: spec.md Edge Cases
-- [ ] T017 Manual testing pass — run through quickstart.md Testing Guide checklist: Opik connectivity, all 3 API routes via curl, full UI workflow (load → promote → next, load → dismiss → next, empty queue)
+- [ ] T015 [P] Error handling audit — verify all 3 API routes return proper HTTP status codes (400/401/500) with error messages per contracts/admin-api.md §Error Handling
+- [ ] T016 [P] Loading states — verify all async operations show loading indicators (disable buttons, show "Loading..." / "Processing..." text) per quickstart.md UI patterns
+- [ ] T017 Edge case: malformed span metadata — if `metadata.unrecognized` is missing or not an array, skip span and log warning. Ref: spec.md Edge Cases
+- [ ] T018 Manual testing pass — run through quickstart.md Testing Guide checklist: Opik connectivity, all 3 API routes via curl, full UI workflow (load → promote → next, load → dismiss → next, empty queue)
 
 ---
 
@@ -160,14 +161,14 @@ Phase 1 → Phase 2
               Phase 8
 ```
 
-- T005 and T006 can run in parallel (different files)
-- T009 and T011 can run in parallel (different API route files)
-- T014 and T015 can run in parallel (different concerns)
+- T006 and T007 can run in parallel (different files)
+- T010 and T012 can run in parallel (different API route files)
+- T015 and T016 can run in parallel (different concerns)
 - Phase 3 and Phase 4 can run in parallel (no file overlap)
 
 ### Within Each Phase
 
-- Auth helper (T004) and Opik service (T003) can be built in parallel
+- Auth helper (T005) and Opik service (T004) can be built in parallel
 - API route must be created before its corresponding UI integration
 - Core implementation before polish
 
