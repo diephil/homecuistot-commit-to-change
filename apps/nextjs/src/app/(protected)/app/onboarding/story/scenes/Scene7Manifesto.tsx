@@ -106,7 +106,7 @@ export function Scene7Manifesto({
         {SCENE_TEXT.scene7.map((segment, i) => (
           <p
             key={`r-${i}`}
-            className="text-lg font-bold leading-relaxed opacity-0 animate-[fadeIn_0.5s_ease-in_forwards]"
+            className="text-lg font-bold leading-relaxed animate-[fadeIn_0.5s_ease-in_both]"
             style={{ animationDelay: `${i * 0.4}s` }}
           >
             {segment}
@@ -117,7 +117,7 @@ export function Scene7Manifesto({
         {SCENE_TEXT.scene7Manifesto.map((segment, i) => (
           <p
             key={`m-${i}`}
-            className="text-xl font-black leading-snug opacity-0 animate-[fadeIn_0.5s_ease-in_forwards]"
+            className="text-xl font-black leading-snug animate-[fadeIn_0.5s_ease-in_both]"
             style={{ animationDelay: `${manifestoStart + i * 0.4}s` }}
           >
             {segment}
@@ -128,7 +128,7 @@ export function Scene7Manifesto({
         {SCENE_TEXT.scene7Closing.map((segment, i) => (
           <p
             key={`c-${i}`}
-            className="text-lg font-bold leading-relaxed opacity-0 animate-[fadeIn_0.5s_ease-in_forwards]"
+            className="text-lg font-bold leading-relaxed animate-[fadeIn_0.5s_ease-in_both]"
             style={{ animationDelay: `${closingStart + i * 0.4}s` }}
           >
             {segment}
@@ -137,7 +137,7 @@ export function Scene7Manifesto({
 
         {/* CTAs */}
         <div
-          className="space-y-3 pt-4 opacity-0 animate-[fadeIn_0.5s_ease-in_forwards]"
+          className="space-y-3 pt-4 animate-[fadeIn_0.5s_ease-in_both]"
           style={{ animationDelay: `${ctaDelay}s` }}
         >
           <Button

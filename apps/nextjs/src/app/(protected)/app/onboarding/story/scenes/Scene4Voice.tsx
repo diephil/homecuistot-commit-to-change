@@ -137,7 +137,7 @@ export function Scene4Voice({
       <div className="max-w-md w-full space-y-6">
         {/* Time/place setting */}
         <p
-          className="text-sm font-mono font-semibold uppercase tracking-widest text-black/50 opacity-0 animate-[fadeIn_0.5s_ease-in_forwards]"
+          className="text-sm font-mono font-semibold uppercase tracking-widest text-black/50 animate-[fadeIn_0.5s_ease-in_both]"
           style={{ animationDelay: "0s" }}
         >
           {setting}
@@ -147,7 +147,7 @@ export function Scene4Voice({
         {dialogue.map((segment, i) => (
           <p
             key={i}
-            className="text-lg font-bold leading-relaxed opacity-0 animate-[fadeIn_0.5s_ease-in_forwards]"
+            className="text-lg font-bold leading-relaxed animate-[fadeIn_0.5s_ease-in_both]"
             style={{ animationDelay: `${(i + 1) * 0.4}s` }}
           >
             {segment}
@@ -156,7 +156,7 @@ export function Scene4Voice({
 
         {/* Instructions */}
         <div
-          className="space-y-1 opacity-0 animate-[fadeIn_0.5s_ease-in_forwards]"
+          className="space-y-1 animate-[fadeIn_0.5s_ease-in_both]"
           style={{ animationDelay: `${SCENE_TEXT.scene4Intro.length * 0.4}s` }}
         >
           {SCENE_TEXT.scene4Instructions.map((segment, i) => (
@@ -175,7 +175,7 @@ export function Scene4Voice({
 
         {/* Voice/text input */}
         <div
-          className="opacity-0 animate-[fadeIn_0.5s_ease-in_forwards]"
+          className="animate-[fadeIn_0.5s_ease-in_both]"
           style={{
             animationDelay: `${(SCENE_TEXT.scene4Intro.length + 1) * 0.4}s`,
           }}
@@ -191,7 +191,7 @@ export function Scene4Voice({
 
         {/* Hint after 5s inactivity */}
         {/* {showHint && !hasInputOnce && (
-          <p className="text-sm text-black/40 text-center animate-[fadeIn_0.5s_ease-in_forwards]">
+          <p className="text-sm text-black/40 text-center animate-[fadeIn_0.5s_ease-in_both]">
             Try saying &quot;I bought parmesan, eggs, and some bananas&quot;
           </p>
         )} */}
@@ -205,7 +205,7 @@ export function Scene4Voice({
 
         {/* Updated inventory display */}
         {hasInputOnce && (
-          <div className="space-y-2 animate-[fadeIn_0.5s_ease-in_forwards]">
+          <div className="space-y-2 animate-[fadeIn_0.5s_ease-in_both]">
             <h3 className="text-lg font-black">Updated Inventory</h3>
             <div className="flex flex-wrap gap-2">
               {trackedItems.map((item, i) => (
