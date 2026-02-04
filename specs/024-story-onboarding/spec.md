@@ -143,17 +143,23 @@ For **returning users** (already have inventory or recipes), tapping "Get starte
 
 ### Session 2026-02-04
 
-- Q: How do users enter the story onboarding (route/entry point)? → A: New dedicated route (e.g., `/app/onboarding/story`), coexists separately from current onboarding.
+- Q: How do users enter the story onboarding (route/entry point)? → A: New dedicated route `/app/onboarding/story`. **Replaces** `/app/onboarding` as the default redirect for brand-new users.
+- Q: What happens on "Restart demo"? → A: Clears localStorage only. No server call. Redirects to Scene 1.
+- Q: Where does Scene 7 "Get started" redirect? → A: Pre-fills demo data for brand-new users, then redirects to `/app`. Second CTA "Tell us what you can cook blindfolded!" redirects to `/app/recipes`.
+- Q: What if brand-new user visits /inventory or /recipes directly? → A: Redirect to `/app/onboarding/story`.
+- Q: Scene text content source? → A: Defined in `new-onboarding.md` at repo root. Loading screen copy to be created.
+- Q: Quantity scale mapping to QuantityLevel (0-3)? → A: critical=0, low=1, enough/some=2, plenty=3. Eggs and Parmesan at critical (0) → count as "missing" for recipe availability.
 
 ## Assumptions
 
-- The quantity scale is: plenty > some > enough > low > critical. This matches the display in the spec scenes.
-- Voice input reuses the existing `/api/onboarding/process-voice` endpoint and ingredient extractor agent.
+- Quantity mapping: plenty=3, some=2, enough=2, low=1, critical=0. Maps to existing `QuantityLevel` (0|1|2|3).
+- Voice input uses dedicated `/api/onboarding/story/process-voice` route (near-copy of existing process-voice, no DB persistence).
 - Authentication is required before entering this flow (same as current onboarding).
 - Scene transitions use fade-in/fade-out animations.
 - No back navigation — forward-only linear flow.
 - No skip option — the flow is short (~2 min) and the interactive moments are essential for product understanding.
-- Newly added items (via voice) default to "plenty" quantity level.
+- Newly added items (via voice) default to "plenty" (quantityLevel=3).
+- Story onboarding **replaces** old onboarding as default for brand-new users. Redirect in `app/(protected)/app/page.tsx` changes from `/app/onboarding` to `/app/onboarding/story`.
 
 ## Scope Boundaries
 

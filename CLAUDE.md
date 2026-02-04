@@ -39,6 +39,8 @@
 - Supabase PostgreSQL (user_inventory, unrecognized_items, ingredients tables) (001-unrecognized-items-display)
 - TypeScript 5+ (strict mode), React 19, Next.js 16 App Router + Next.js 16, React 19, Tailwind CSS v4, existing shared components (Button, Text from `@/components/shared`) (022-homepage-revamp)
 - N/A (no data persistence) (022-homepage-revamp)
+- TypeScript 5+ (strict mode) + React 19, Next.js 16 App Router, Tailwind CSS v4, Drizzle ORM 0.45.1, @google/genai (Gemini), Zod (024-story-onboarding)
+- localStorage (during flow) + Supabase PostgreSQL via Drizzle (on completion) (024-story-onboarding)
 
 - TypeScript 5+ (strict mode) + React 19, Next.js 16, Drizzle ORM 0.45.1, Zod, @google/genai (Gemini) (010-user-pantry-staples)
 - Supabase PostgreSQL via Drizzle (010-user-pantry-staples)
@@ -155,7 +157,7 @@ components/
 - Purpose: Generate SQL migration from CSV data
 
 ## Recent Changes
+- 024-story-onboarding: Added TypeScript 5+ (strict mode) + React 19, Next.js 16 App Router, Tailwind CSS v4, Drizzle ORM 0.45.1, @google/genai (Gemini), Zod
 - 023-admin-ingredient-promotion: Added [if applicable, e.g., PostgreSQL, CoreData, files or N/A]
 - 022-homepage-revamp: Added TypeScript 5+ (strict mode), React 19, Next.js 16 App Router + Next.js 16, React 19, Tailwind CSS v4, existing shared components (Button, Text from `@/components/shared`)
-- 001-unrecognized-items-display: Added TypeScript 5+ (strict mode), React 19, Next.js 16 App Router + Drizzle ORM 0.45.1, @supabase/supabase-js, Tailwind CSS v4, RetroUI components, lucide-react icons
 
