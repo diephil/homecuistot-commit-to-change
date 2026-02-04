@@ -54,7 +54,7 @@ As an admin, I want to click a CTA on the `/admin/unrecognized` page to load the
 1. **Given** I am on `/admin/unrecognized` and no span is loaded, **When** the page renders, **Then** I see a CTA button to load the first span (no auto-loading)
 2. **Given** there are unprocessed spans tagged `unrecognized_items` (without `promotion_reviewed`), **When** I click the load CTA, **Then** the system fetches the most recent span and displays a list of unrecognized ingredient names
 3. **Given** a span contains duplicate ingredient names, **When** the span is loaded, **Then** duplicates are removed and each ingredient appears only once
-4. **Given** a span contains ingredients that already exist in the ingredients database, **When** the span is loaded, **Then** those ingredients are filtered out and only truly unrecognized items are displayed
+4. **Given** a span contains ingredients that already exist in the ingredients database, **When** the span is loaded, **Then** those ingredients are displayed as read-only with an "Already in database" indicator (no category dropdown, no dismiss button)
 5. **Given** no unprocessed spans remain, **When** I click the load CTA, **Then** the system displays a message indicating all spans have been reviewed
 
 ---
@@ -86,8 +86,9 @@ As an admin, I want to dismiss items that are not real ingredients (e.g., "car",
 
 **Acceptance Scenarios**:
 
-1. **Given** an unrecognized item is displayed, **When** I click "Skip/Dismiss", **Then** the item is removed from the current review list without being added to the database
-2. **Given** all items in a span are dismissed (none promoted), **When** the last item is dismissed, **Then** the span is still tagged `promotion_reviewed`
+1. **Given** an unrecognized item is displayed, **When** I click "Skip/Dismiss", **Then** the item is visually dimmed (not removed) and its category dropdown is hidden, indicating it won't be promoted
+2. **Given** a dismissed item is displayed dimmed, **When** I click "Undo" on it, **Then** the item is restored to active state with its category dropdown visible again
+3. **Given** all items in a span are dismissed (none promoted), **When** I click "Mark as Reviewed", **Then** the span is tagged `promotion_reviewed` without any DB inserts
 
 ---
 
@@ -111,7 +112,7 @@ As an admin, after finishing review of a span, I want to click a CTA to load the
 
 - What happens when the Opik service is unavailable? → Display error message on the CTA area, allow retry
 - What happens when a span's metadata is malformed (missing `unrecognized` array)? → Skip the span, tag it as reviewed, fetch next
-- What happens when all items in a span already exist in the database after deduplication? → Show empty state for that span, auto-tag as reviewed, offer "Load Next Span" CTA
+- What happens when all items in a span already exist in the database after deduplication? → Show all items as read-only with "Already in database" indicator. Admin must explicitly click "Mark as Reviewed" to tag the span. No silent auto-tagging.
 - What happens when the admin session expires mid-review? → Existing admin auth handles redirect to login; unfinished span remains untagged for next session
 - What happens when two admins review simultaneously? → Span tagging is idempotent; duplicate ingredient inserts handled gracefully
 - What happens when admin navigates away from `/admin/unrecognized` mid-review and comes back? → Page resets to initial state (no span loaded), admin clicks CTA to load again
@@ -134,11 +135,15 @@ As an admin, after finishing review of a span, I want to click a CTA to load the
 - **FR-007**: System MUST fetch the most recent unprocessed Opik span tagged `unrecognized_items` that is NOT tagged `promotion_reviewed`
 - **FR-008**: System MUST extract ingredient names from span metadata field `metadata.unrecognized` (string array)
 - **FR-009**: System MUST deduplicate ingredient names within a span (case-insensitive)
-- **FR-010**: System MUST check each ingredient name against the existing ingredients database using case-insensitive matching and only display items not already present
-- **FR-011**: System MUST present a category dropdown with all 30 ingredient categories for each unrecognized item, defaulting to `non_classified` (admin can override)
+- **FR-010**: System MUST check each ingredient name against the existing ingredients database using case-insensitive matching and annotate each item with its DB status (`existsInDb: boolean`)
+- **FR-010a**: Items already in the database MUST be displayed as read-only with an "Already in database" indicator — no category dropdown, no dismiss button
+- **FR-010b**: System MUST NOT silently auto-review spans. Admin must always see the span contents and explicitly trigger review tagging.
+- **FR-011**: System MUST present a category dropdown with all 30 ingredient categories for each new (not-in-DB) unrecognized item, defaulting to `non_classified` (admin can override)
 - **FR-012**: System MUST insert promoted ingredients into the ingredients database table with the admin-selected category, storing names in lowercase
 - **FR-013**: System MUST tag processed spans with `promotion_reviewed` via Opik API after all items are handled
-- **FR-014**: System MUST allow admins to dismiss/skip items without promoting them to the database
+- **FR-014**: System MUST allow admins to dismiss/skip new items without promoting them to the database. Dismissed items MUST remain visible but dimmed (not removed), with an "Undo" option to restore them.
+- **FR-014a**: The "Promote" action MUST only send non-dismissed new items to the backend. Dismissed items are excluded from promotion.
+- **FR-014b**: When zero promotable items remain (all dismissed or all existing), the system MUST show a "Mark as Reviewed" CTA to explicitly tag the span.
 - **FR-015**: After a span is fully reviewed, system MUST display a "Load Next Span" CTA (no auto-loading)
 - **FR-016**: System MUST display a completion message when no unprocessed spans remain
 - **FR-017**: System MUST handle duplicate ingredient conflicts gracefully when promoting (skip and inform admin)
@@ -177,6 +182,14 @@ As an admin, after finishing review of a span, I want to click a CTA to load the
 - Q: Should spans auto-load? → A: No auto-loading; admin clicks CTA to load first span and each subsequent span
 - Q: Where does the promotion feature live? → A: Dedicated page at `/admin/unrecognized`, accessible via header nav tab
 - Q: What happens to the existing `/admin` placeholder? → A: Replaced with welcome page listing available admin features
+
+### Session 2026-02-04 (Phase 9 — post-manual-testing)
+
+- Q: Should spans where all items already exist in DB be silently auto-reviewed? → A: No. Admin must always see span contents. Existing items shown read-only with "Already in database" indicator. Admin explicitly clicks "Mark as Reviewed".
+- Q: Should dismissed items disappear from the list? → A: No. Dismissed items stay visible but dimmed (reduced opacity, category dropdown hidden). "Undo" button to restore.
+- Q: What are the 3 item visual states? → A: (1) New/active: category dropdown + dismiss "X", full opacity. (2) New/dismissed: dimmed, no dropdown, "Undo" button. (3) Existing in DB: read-only, "Already in database" badge, no controls.
+- Q: What does "Promote" send? → A: Only non-dismissed new items. Dismissed and existing items excluded.
+- Q: When does "Mark as Reviewed" appear? → A: When zero promotable items remain (all new items dismissed, or all items already exist in DB).
 
 ## Assumptions
 

@@ -15,7 +15,7 @@ All endpoints require admin authorization:
 
 Fetch the next unprocessed Opik span containing unrecognized ingredients.
 
-**Purpose**: Backend queries Opik for spans tagged `unrecognized_items` but not `promotion_reviewed`, extracts and deduplicates ingredient names from metadata, filters out items already in ingredients DB, returns cleaned result.
+**Purpose**: Backend queries Opik for spans tagged `unrecognized_items` but not `promotion_reviewed`, extracts and deduplicates ingredient names from metadata, annotates each item with its DB existence status, returns full list. No silent auto-review — always returns the span for admin review.
 
 **Request**:
 - Method: `GET`
@@ -29,9 +29,9 @@ Fetch the next unprocessed Opik span containing unrecognized ingredients.
   "spanId": "550e8400-e29b-41d4-a716-446655440000",
   "traceId": "660e8400-e29b-41d4-a716-446655440001",
   "items": [
-    "truffle oil",
-    "smoked paprika",
-    "pomegranate molasses"
+    { "name": "truffle oil", "existsInDb": false },
+    { "name": "smoked paprika", "existsInDb": true },
+    { "name": "pomegranate molasses", "existsInDb": false }
   ],
   "totalInSpan": 5
 }
@@ -40,8 +40,14 @@ Fetch the next unprocessed Opik span containing unrecognized ingredients.
 **Field descriptions**:
 - `spanId`: Opik span UUID (needed for promote/mark-reviewed operations)
 - `traceId`: Opik trace UUID (informational; backend re-fetches span before PATCH)
-- `items`: Deduplicated, DB-filtered unrecognized ingredient names (lowercase)
+- `items`: Deduplicated unrecognized ingredient names with DB status (lowercase). Items where `existsInDb: true` are shown read-only in the UI; items where `existsInDb: false` are new and can be promoted or dismissed.
 - `totalInSpan`: Original count from span metadata.totalUnrecognized (informational)
+
+**Backend behavior**:
+- Deduplicates items (case-insensitive) from span metadata
+- Checks each item against DB and annotates with `existsInDb` boolean
+- **Never** silently auto-reviews spans — always returns the span even if all items exist in DB
+- Skips spans with malformed/empty metadata (auto-tags these as reviewed, fetches next)
 
 **Response 200 - No spans remaining**:
 ```json

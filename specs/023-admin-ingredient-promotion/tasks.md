@@ -133,6 +133,18 @@
 
 ---
 
+## Phase 9: Item Visibility & Explicit Review
+
+**Purpose**: Admin always sees every span's contents. Items annotated with DB status. No silent auto-review. Dismissed items dimmed (not removed).
+
+- [ ] T021 [US3] Modify API route `apps/nextjs/src/app/api/admin/spans/next/route.ts` — change response shape from `items: string[]` to `items: Array<{ name: string, existsInDb: boolean }>`. Remove all silent auto-review paths (no more `markSpanAsReviewed` calls inside this route). Always return `spanId` + full item list when a span exists, even if all items are already in DB. Only auto-tag+skip spans with truly malformed/empty metadata. Ref: contracts/admin-api.md §GET /api/admin/spans/next, spec.md FR-010, FR-010a, FR-010b
+- [ ] T022 [US3+US5] Modify `apps/nextjs/src/app/(admin)/admin/unrecognized/page.tsx` — update state model to handle 3 item visual states: (1) **New/active**: full opacity, category dropdown + dismiss "X" button. (2) **New/dismissed**: dimmed row, category dropdown hidden, "Undo" button to restore. (3) **Existing in DB**: read-only, "Already in database" indicator, no controls. Track dismissed items in a `Set<string>` state. "Promote" button only sends non-dismissed new items. Show "Mark as Reviewed" CTA when zero promotable items remain (all dismissed or all existing). Ref: spec.md FR-010a, FR-014, FR-014a, FR-014b
+- [ ] T023 [US3] Modify `apps/nextjs/src/components/admin/ItemReviewRow.tsx` — add support for 3 visual states via props: `status: 'active' | 'dismissed' | 'existing'`. Active: current behavior. Dismissed: dimmed opacity, hide category select, show "Undo" button. Existing: read-only, "Already in database" badge, no category select, no dismiss button. Ref: spec.md FR-010a, FR-019
+
+**Checkpoint**: Admin sees all items in every span. Existing items shown read-only. Dismissed items dimmed. No silent auto-review.
+
+---
+
 ## Dependencies & Execution Order
 
 ### Phase Dependencies
@@ -145,6 +157,7 @@
 - **Phase 6 (US5)**: Depends on Phase 4 (span loading page exists), can run in parallel with Phase 5
 - **Phase 7 (US6)**: Depends on Phase 5 or Phase 6 (post-action state exists)
 - **Phase 8 (Polish)**: Depends on all user stories complete
+- **Phase 9 (Item Visibility)**: Depends on Phase 8 — changes API response shape and frontend state model
 
 ### Parallel Opportunities
 
@@ -161,6 +174,8 @@ Phase 1 → Phase 2
          │      Phase 7 (P5)
          └────────┬────┘
               Phase 8
+                 ↓
+              Phase 9
 ```
 
 - T007 and T008 can run in parallel (different files, after T006 components)
@@ -198,6 +213,9 @@ git commit -m "feat(admin): add load next span CTA for sequential processing"
 
 # Phase 8
 git commit -m "feat(admin): polish error handling and edge cases"
+
+# Phase 9
+git commit -m "feat(admin): show all items with DB status, no silent auto-review"
 ```
 
 ---

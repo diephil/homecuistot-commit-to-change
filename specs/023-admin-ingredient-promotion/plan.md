@@ -77,6 +77,17 @@ apps/nextjs/src/
 
 **Structure Decision**: Next.js App Router convention. New files placed in existing directory patterns: API routes under `app/api/admin/`, service under `lib/services/`, pages under `app/(admin)/admin/`. No new top-level directories.
 
+## Phase 9: Item Visibility & Explicit Review
+
+**Trigger**: During manual testing (Phase 8), discovered that spans whose items already exist in DB were silently auto-reviewed — admin never saw them. This violates the principle that admins should have full visibility and explicit control over span processing.
+
+**Changes**:
+1. **API response shape**: `GET /api/admin/spans/next` returns `items: Array<{ name: string, existsInDb: boolean }>` instead of `items: string[]`. No silent auto-review paths.
+2. **3 item visual states**: New/active (editable), New/dismissed (dimmed, undo-able), Existing in DB (read-only indicator).
+3. **Explicit review**: "Promote" only sends non-dismissed new items. "Mark as Reviewed" CTA appears when zero promotable items remain. Admin always sees every span.
+
+**Files modified**: `api/admin/spans/next/route.ts`, `admin/unrecognized/page.tsx`, `components/admin/ItemReviewRow.tsx`
+
 ## Complexity Tracking
 
 No constitution violations. All gates pass.
