@@ -51,9 +51,9 @@ Returns full span object including current `tags`, `trace_id`, `metadata`. Used 
 **Local (self-hosted)**: No auth headers required
 - Base URL: `http://localhost:5173/api`
 
-**Production (Opik Cloud)**: Headers required
-- `Comet-Workspace: <workspace-name>`
-- `authorization: <OPIK_API_KEY>` (no Bearer prefix)
+**Production (Opik Cloud)**: Two headers required on every request
+- `Comet-Workspace: philippe-diep` (from `OPIK_WORKSPACE` env var)
+- `authorization: <OPIK_API_KEY>` (from `OPIK_API_KEY` env var, no Bearer prefix)
 
 ### Environment Variables
 
@@ -62,6 +62,7 @@ Returns full span object including current `tags`, `trace_id`, `metadata`. Used 
 | `OPIK_URL_OVERRIDE` | `http://localhost:5173/api` | `https://www.comet.com/opik/api` |
 | `OPIK_PROJECT_NAME` | `homecuistot-hackathon` | `homecuistot-commit-to-change` |
 | `OPIK_API_KEY` | Not set | Set in secrets |
+| `OPIK_WORKSPACE` | Not set | `philippe-diep` |
 
 ---
 

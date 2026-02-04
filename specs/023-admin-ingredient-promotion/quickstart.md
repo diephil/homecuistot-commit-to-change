@@ -47,6 +47,7 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=eyJ...
 OPIK_URL_OVERRIDE=http://localhost:5173/api
 OPIK_PROJECT_NAME=homecuistot-hackathon
 OPIK_API_KEY=                              # Local: empty. Production: set from secrets
+OPIK_WORKSPACE=                            # Local: empty. Production: philippe-diep
 
 ADMIN_USER_IDS=user-id-1,user-id-2        # Comma-separated admin UUIDs
 ```
@@ -85,6 +86,7 @@ import { logger } from '@/lib/logger'
 const OPIK_URL = process.env.OPIK_URL_OVERRIDE || 'http://localhost:5173/api'
 const OPIK_PROJECT_NAME = process.env.OPIK_PROJECT_NAME || 'homecuistot-hackathon'
 const OPIK_API_KEY = process.env.OPIK_API_KEY
+const OPIK_WORKSPACE = process.env.OPIK_WORKSPACE
 
 interface OpikSpan {
   id: string
@@ -112,9 +114,13 @@ function getOpikHeaders(): Record<string, string> {
     'Content-Type': 'application/json',
   }
 
-  // Production uses Opik Cloud API key
+  // Production (Opik Cloud): API key + workspace header
+  // NOTE: authorization value has NO "Bearer " prefix
   if (OPIK_API_KEY) {
     headers['authorization'] = OPIK_API_KEY
+  }
+  if (OPIK_WORKSPACE) {
+    headers['Comet-Workspace'] = OPIK_WORKSPACE
   }
 
   return headers

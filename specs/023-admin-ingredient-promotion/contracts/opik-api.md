@@ -4,8 +4,32 @@ External Opik REST API contracts used by admin backend service for span manageme
 
 ## Base URL
 
-- **Local development**: `http://localhost:5173/api` (via `OPIK_URL_OVERRIDE`)
-- **Production**: Opik cloud endpoint (configured via environment)
+- **Local (Open-Source)**: `http://localhost:5173/api` (via `OPIK_URL_OVERRIDE`)
+- **Production (Opik Cloud)**: `https://www.comet.com/opik/api` (via `OPIK_URL_OVERRIDE`)
+
+## Authentication
+
+**Local (Open-Source)**: No additional headers required.
+
+```bash
+curl -X GET 'http://localhost:5173/api/v1/private/projects'
+```
+
+**Production (Opik Cloud)**: Two headers required on every request:
+
+| Header | Value | Source |
+|--------|-------|--------|
+| `Comet-Workspace` | `philippe-diep` | `OPIK_WORKSPACE` env var |
+| `authorization` | `<OPIK_API_KEY>` | `OPIK_API_KEY` env var |
+
+**WARNING**: The `authorization` header value does NOT include the `Bearer ` prefix. Send the raw API key.
+
+```bash
+curl -X GET 'https://www.comet.com/opik/api/v1/private/projects' \
+  -H 'Accept: application/json' \
+  -H 'Comet-Workspace: philippe-diep' \
+  -H 'authorization: <your-api-key>'
+```
 
 ---
 
@@ -20,9 +44,7 @@ Search for spans matching filters.
 - Headers:
   - `Content-Type: application/json`
   - **Local**: No additional headers
-  - **Production**:
-    - `Comet-Workspace: <workspace-name>` (Opik workspace identifier)
-    - `authorization: <OPIK_API_KEY>` (Bearer token from env)
+  - **Production**: `Comet-Workspace: philippe-diep` + `authorization: <OPIK_API_KEY>` (no Bearer prefix)
 
 **Request body**:
 ```json
@@ -142,8 +164,7 @@ Get a span by ID.
 - Headers:
   - **Local**: No additional headers
   - **Production**:
-    - `Comet-Workspace: <workspace-name>`
-    - `authorization: <OPIK_API_KEY>`
+    - `Comet-Workspace: philippe-diep` + `authorization: <OPIK_API_KEY>` (no Bearer prefix)
 
 **Response 200**:
 ```json
@@ -181,8 +202,7 @@ Update span tags.
   - `Content-Type: application/json`
   - **Local**: No additional headers
   - **Production**:
-    - `Comet-Workspace: <workspace-name>`
-    - `authorization: <OPIK_API_KEY>`
+    - `Comet-Workspace: philippe-diep` + `authorization: <OPIK_API_KEY>` (no Bearer prefix)
 
 **Request body**:
 ```json
