@@ -145,6 +145,20 @@
 
 ---
 
+## Phase 10: Opik Filter Compatibility — Tag Swap
+
+**Purpose**: Opik `not_contains` filter operator may not be supported. Replace append-tag approach with swap-tag: `markSpanAsReviewed` removes `unrecognized_items` and adds `promotion_reviewed`. Search simplified to single `contains` filter.
+
+**Trigger**: Opik documentation does not confirm `not_contains` support. Tag swap avoids reliance on unsupported operator.
+
+- [ ] T024 [US-INFRA] Modify `apps/nextjs/src/lib/services/opik-spans.ts` — **`getNextUnprocessedSpan()`**: remove `not_contains` filter for `promotion_reviewed`, keep only single `contains: "unrecognized_items"` filter. Update JSDoc.
+- [ ] T025 [US-INFRA] Modify `apps/nextjs/src/lib/services/opik-spans.ts` — **`markSpanAsReviewed()`**: change from appending `promotion_reviewed` to swapping: remove `unrecognized_items` from current tags, add `promotion_reviewed`. Guard condition: return early if `unrecognized_items` not present (already swapped). Metadata untouched.
+- [ ] T026 Manual verification — test full flow: load span → promote/dismiss → verify span no longer appears in next search. Verify other tags (e.g., `user:<uuid>`) preserved. Verify metadata untouched.
+
+**Checkpoint**: Search uses only `contains` operator. Reviewed spans lose `unrecognized_items` tag. No reliance on `not_contains`.
+
+---
+
 ## Dependencies & Execution Order
 
 ### Phase Dependencies
@@ -158,6 +172,7 @@
 - **Phase 7 (US6)**: Depends on Phase 5 or Phase 6 (post-action state exists)
 - **Phase 8 (Polish)**: Depends on all user stories complete
 - **Phase 9 (Item Visibility)**: Depends on Phase 8 — changes API response shape and frontend state model
+- **Phase 10 (Tag Swap)**: Depends on Phase 9 — modifies Opik service layer only (`opik-spans.ts`)
 
 ### Parallel Opportunities
 
@@ -176,6 +191,8 @@ Phase 1 → Phase 2
               Phase 8
                  ↓
               Phase 9
+                 ↓
+              Phase 10
 ```
 
 - T007 and T008 can run in parallel (different files, after T006 components)
@@ -216,6 +233,9 @@ git commit -m "feat(admin): polish error handling and edge cases"
 
 # Phase 9
 git commit -m "feat(admin): show all items with DB status, no silent auto-review"
+
+# Phase 10
+git commit -m "fix(admin): swap unrecognized_items tag instead of appending promotion_reviewed"
 ```
 
 ---
@@ -241,6 +261,7 @@ git commit -m "feat(admin): show all items with DB status, no silent auto-review
 ## Notes
 
 - All Opik PATCH operations use GET-then-PATCH pattern (re-fetch span before updating tags)
+- `markSpanAsReviewed` swaps `unrecognized_items` → `promotion_reviewed` (not append); search uses single `contains` filter
 - Frontend only sends `spanId` — backend handles re-fetching current span state
 - `adminDb` bypasses RLS for ingredient operations (global catalog, not user-scoped)
 - Category dropdown defaults to `non_classified`

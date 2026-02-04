@@ -88,6 +88,14 @@ apps/nextjs/src/
 
 **Files modified**: `api/admin/spans/next/route.ts`, `admin/unrecognized/page.tsx`, `components/admin/ItemReviewRow.tsx`
 
+## Phase 10: Opik Filter Compatibility — Tag Swap
+
+**Trigger**: Opik `not_contains` filter operator may not be supported. Current search uses two filters (`contains` + `not_contains`); reviewed spans keep both tags. This is fragile.
+
+**Change**: Swap tag instead of appending. `markSpanAsReviewed` removes `unrecognized_items` and adds `promotion_reviewed`. Search simplified to single `contains: "unrecognized_items"` filter. Metadata stays untouched.
+
+**Files modified**: `lib/services/opik-spans.ts` only (2 functions: `getNextUnprocessedSpan`, `markSpanAsReviewed`)
+
 ## Complexity Tracking
 
 No constitution violations. All gates pass.

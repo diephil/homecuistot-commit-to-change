@@ -52,7 +52,7 @@ As an admin, I want to click a CTA on the `/admin/unrecognized` page to load the
 **Acceptance Scenarios**:
 
 1. **Given** I am on `/admin/unrecognized` and no span is loaded, **When** the page renders, **Then** I see a CTA button to load the first span (no auto-loading)
-2. **Given** there are unprocessed spans tagged `unrecognized_items` (without `promotion_reviewed`), **When** I click the load CTA, **Then** the system fetches the most recent span and displays a list of unrecognized ingredient names
+2. **Given** there are spans tagged `unrecognized_items` (unprocessed — reviewed spans have this tag swapped out), **When** I click the load CTA, **Then** the system fetches the most recent span and displays a list of unrecognized ingredient names
 3. **Given** a span contains duplicate ingredient names, **When** the span is loaded, **Then** duplicates are removed and each ingredient appears only once
 4. **Given** a span contains ingredients that already exist in the ingredients database, **When** the span is loaded, **Then** those ingredients are displayed as read-only with an "Already in database" indicator (no category dropdown, no dismiss button)
 5. **Given** no unprocessed spans remain, **When** I click the load CTA, **Then** the system displays a message indicating all spans have been reviewed
@@ -70,7 +70,7 @@ As an admin, I want to assign a category to each unrecognized ingredient and pro
 **Acceptance Scenarios**:
 
 1. **Given** an unrecognized ingredient is displayed, **When** I select a category from the dropdown and click "Save/Promote", **Then** the ingredient is inserted into the ingredients database with the selected category
-2. **Given** I promote all items in a span, **When** the promote action completes, **Then** the span is tagged `promotion_reviewed` so it won't appear again
+2. **Given** I promote all items in a span, **When** the promote action completes, **Then** the span's `unrecognized_items` tag is swapped to `promotion_reviewed` so it won't appear again
 3. **Given** I promote some items and skip others, **When** the promote action completes, **Then** only selected items are inserted and the span is still tagged `promotion_reviewed`
 4. **Given** I try to promote an ingredient that was added to the database by another process since the span was loaded, **When** the promote action runs, **Then** the system handles the conflict gracefully (skip duplicate, inform admin)
 
@@ -88,7 +88,7 @@ As an admin, I want to dismiss items that are not real ingredients (e.g., "car",
 
 1. **Given** an unrecognized item is displayed, **When** I click "Skip/Dismiss", **Then** the item is visually dimmed (not removed) and its category dropdown is hidden, indicating it won't be promoted
 2. **Given** a dismissed item is displayed dimmed, **When** I click "Undo" on it, **Then** the item is restored to active state with its category dropdown visible again
-3. **Given** all items in a span are dismissed (none promoted), **When** I click "Mark as Reviewed", **Then** the span is tagged `promotion_reviewed` without any DB inserts
+3. **Given** all items in a span are dismissed (none promoted), **When** I click "Mark as Reviewed", **Then** the span's `unrecognized_items` tag is swapped to `promotion_reviewed` without any DB inserts
 
 ---
 
@@ -132,7 +132,7 @@ As an admin, after finishing review of a span, I want to click a CTA to load the
 **Unrecognized Items Page (`/admin/unrecognized`)**:
 
 - **FR-006**: The page MUST initially display a CTA to load the first span (no auto-loading on page load)
-- **FR-007**: System MUST fetch the most recent unprocessed Opik span tagged `unrecognized_items` that is NOT tagged `promotion_reviewed`
+- **FR-007**: System MUST fetch the most recent Opik span tagged `unrecognized_items` (reviewed spans have this tag swapped to `promotion_reviewed`, so only unprocessed spans match)
 - **FR-008**: System MUST extract ingredient names from span metadata field `metadata.unrecognized` (string array)
 - **FR-009**: System MUST deduplicate ingredient names within a span (case-insensitive)
 - **FR-010**: System MUST check each ingredient name against the existing ingredients database using case-insensitive matching and annotate each item with its DB status (`existsInDb: boolean`)
@@ -140,7 +140,7 @@ As an admin, after finishing review of a span, I want to click a CTA to load the
 - **FR-010b**: System MUST NOT silently auto-review spans. Admin must always see the span contents and explicitly trigger review tagging.
 - **FR-011**: System MUST present a category dropdown with all 30 ingredient categories for each new (not-in-DB) unrecognized item, defaulting to `non_classified` (admin can override)
 - **FR-012**: System MUST insert promoted ingredients into the ingredients database table with the admin-selected category, storing names in lowercase
-- **FR-013**: System MUST tag processed spans with `promotion_reviewed` via Opik API after all items are handled
+- **FR-013**: System MUST mark processed spans as reviewed by swapping the `unrecognized_items` tag with `promotion_reviewed` via Opik API (GET-then-PATCH: remove `unrecognized_items`, add `promotion_reviewed`; metadata stays untouched)
 - **FR-014**: System MUST allow admins to dismiss/skip new items without promoting them to the database. Dismissed items MUST remain visible but dimmed (not removed), with an "Undo" option to restore them.
 - **FR-014a**: The "Promote" action MUST only send non-dismissed new items to the backend. Dismissed items are excluded from promotion.
 - **FR-014b**: When zero promotable items remain (all dismissed or all existing), the system MUST show a "Mark as Reviewed" CTA to explicitly tag the span.
@@ -191,15 +191,20 @@ As an admin, after finishing review of a span, I want to click a CTA to load the
 - Q: What does "Promote" send? → A: Only non-dismissed new items. Dismissed and existing items excluded.
 - Q: When does "Mark as Reviewed" appear? → A: When zero promotable items remain (all new items dismissed, or all items already exist in DB).
 
+### Session 2026-02-04 (Phase 10 — Opik filter compatibility)
+
+- Q: Opik `not_contains` filter operator may not be supported. How to avoid showing reviewed spans? → A: Swap tag instead of appending. `markSpanAsReviewed` removes `unrecognized_items` and adds `promotion_reviewed`. Search only needs `contains: "unrecognized_items"` (single filter). Metadata stays untouched.
+- Q: Should both tags coexist on reviewed spans? → A: No. Swap (remove old, add new). Reviewed spans lose `unrecognized_items` tag entirely.
+
 ## Assumptions
 
 - Existing admin layout at `(admin)/admin/layout.tsx` provides sufficient authentication and access control
 - Admin header will be updated in the layout to include navigation items and "Go To App" CTA
 - Opik API is accessible from the application server at the configured URL
-- Span search API supports filtering by tag presence and absence
+- Span search API supports filtering by tag presence (`contains` operator)
 - The 30 ingredient categories are stable and do not change frequently
 - Spans are processed one at a time (no batch multi-span processing needed for MVP)
-- The `promotion_reviewed` tag is sufficient to track processing status (no separate database tracking needed)
+- Tag swap (`unrecognized_items` → `promotion_reviewed`) is sufficient to track processing status (no separate database tracking needed)
 - Dismissed items do not need to be tracked separately (they are implicitly handled by the span being marked reviewed)
 - Promoting ingredients does NOT update the `unrecognized_items` DB table; the two systems remain independent (deferred to future feature)
 - The Opik project name is available via environment configuration

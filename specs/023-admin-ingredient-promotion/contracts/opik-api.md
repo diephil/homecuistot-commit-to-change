@@ -37,7 +37,7 @@ curl -X GET 'https://www.comet.com/opik/api/v1/private/projects' \
 
 Search for spans matching filters.
 
-**Purpose**: Fetch the next unprocessed span containing unrecognized ingredients. Returns spans tagged `unrecognized_items` that have NOT been tagged `promotion_reviewed`.
+**Purpose**: Fetch the next unprocessed span containing unrecognized ingredients. Returns spans tagged `unrecognized_items` (reviewed spans have this tag swapped to `promotion_reviewed`, so only unprocessed spans match).
 
 **Request**:
 - Method: `POST`
@@ -55,11 +55,6 @@ Search for spans matching filters.
       "field": "tags",
       "operator": "contains",
       "value": "unrecognized_items"
-    },
-    {
-      "field": "tags",
-      "operator": "not_contains",
-      "value": "promotion_reviewed"
     }
   ],
   "limit": 1,
@@ -72,13 +67,13 @@ Search for spans matching filters.
 }
 ```
 
+> **Note**: Only a single `contains` filter is needed. Reviewed spans have `unrecognized_items` swapped to `promotion_reviewed`, so they no longer match. The previous `not_contains` filter was removed because Opik may not support that operator.
+
 **Field descriptions**:
 - `project_name`: Opik project name (from `OPIK_PROJECT_NAME` env)
 - `filters`: Array of filter conditions (AND logic)
   - `field`: Span attribute to filter on (use `tags` for tag-based filtering)
-  - `operator`: Filter operator
-    - `contains`: Tag exists in span's tag list
-    - `not_contains`: Tag does NOT exist in span's tag list
+  - `operator`: Filter operator (`contains`: tag exists in span's tag list)
   - `value`: Tag name to match
 - `limit`: Max spans to return (use `1` to fetch one at a time)
 - `sort_by`: Sort order (descending created_at = most recent first, per spec)
@@ -180,12 +175,12 @@ Get a span by ID.
 
 Update span tags.
 
-**Purpose**: Mark a span as reviewed by adding the `promotion_reviewed` tag. Tags array replaces existing tags entirely, so the current tags must be fetched first via GET.
+**Purpose**: Mark a span as reviewed by swapping `unrecognized_items` → `promotion_reviewed`. Tags array replaces existing tags entirely, so the current tags must be fetched first via GET.
 
 **Required flow before PATCH**:
 1. `GET /v1/private/spans/{id}` → get current `tags` and `trace_id`
-2. Append `promotion_reviewed` to the current tags array
-3. `PATCH /v1/private/spans/{id}` with the merged tags
+2. Remove `unrecognized_items` from tags, add `promotion_reviewed`
+3. `PATCH /v1/private/spans/{id}` with the updated tags
 
 **Request**:
 - Method: `PATCH`
@@ -203,18 +198,19 @@ Update span tags.
   "project_name": "<OPIK_PROJECT_NAME>",
   "trace_id": "660e8400-e29b-41d4-a716-446655440001",
   "tags": [
-    "unrecognized_items",
     "user:abc123def456",
     "promotion_reviewed"
   ]
 }
 ```
 
+> **Note**: `unrecognized_items` is removed and `promotion_reviewed` is added. Other tags (e.g., `user:<uuid>`) are preserved.
+
 **Field descriptions**:
 - `project_name`: **REQUIRED** — must match the span's project. Without this, Opik returns `409 Conflict`.
 - `trace_id`: From the GET response (freshly fetched)
 - `tags`: Complete array of tags (replaces all existing tags)
-  - **CRITICAL**: Must be built from the GET response's current tags + `promotion_reviewed`
+  - **CRITICAL**: Must be built from the GET response's current tags, with `unrecognized_items` removed and `promotion_reviewed` added
   - Never rely on stale tags from the initial search — always re-fetch first
 
 **Important**: Tags are replaced, not merged. The GET-then-PATCH pattern prevents losing tags that were added between the initial search and the review completion.
@@ -267,7 +263,6 @@ Common operators for spans/search:
 | Operator | Meaning | Example |
 |----------|---------|---------|
 | `contains` | Field contains value | `tags contains "unrecognized_items"` |
-| `not_contains` | Field does NOT contain value | `tags not_contains "promotion_reviewed"` |
 | `equals` | Field equals value | `name equals "my_span"` |
 | `not_equals` | Field does NOT equal value | `status not_equals "error"` |
 | `in` | Field value in list | `status in ["completed", "pending"]` |
@@ -282,8 +277,8 @@ Tags used in this feature follow conventions:
 
 | Tag | Purpose | Example |
 |-----|---------|---------|
-| `unrecognized_items` | Span contains unrecognized ingredients | Applied when extraction detects unknowns |
-| `promotion_reviewed` | Span has been admin-reviewed | Applied after admin processes the span |
+| `unrecognized_items` | Span contains unrecognized ingredients (unprocessed) | Applied when extraction detects unknowns; removed when admin reviews |
+| `promotion_reviewed` | Span has been admin-reviewed | Replaces `unrecognized_items` after admin processes the span |
 | `user:<uuid>` | User who triggered the span | `user:abc123def456` |
 
 ---
@@ -329,20 +324,19 @@ curl -X POST http://localhost:5173/api/v1/private/spans/search \
   -d '{
     "project_name": "homecuistot",
     "filters": [
-      {"field": "tags", "operator": "contains", "value": "unrecognized_items"},
-      {"field": "tags", "operator": "not_contains", "value": "promotion_reviewed"}
+      {"field": "tags", "operator": "contains", "value": "unrecognized_items"}
     ],
     "limit": 1
   }'
 ```
 
-Patch endpoint (local):
+Patch endpoint (local — note `unrecognized_items` removed, `promotion_reviewed` added):
 ```bash
 curl -X PATCH http://localhost:5173/api/v1/private/spans/SPAN_UUID \
   -H "Content-Type: application/json" \
   -d '{
     "project_name": "homecuistot-hackathon",
     "trace_id": "TRACE_UUID",
-    "tags": ["unrecognized_items", "user:abc123", "promotion_reviewed"]
+    "tags": ["user:abc123", "promotion_reviewed"]
   }'
 ```
