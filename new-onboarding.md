@@ -303,7 +303,7 @@ She didn't end up ordering takeout because she couldn't decide.
 
 She already knew how to make carbonara.
 
-She just needed to know she could make it tonight.
+She just needed a hand to make it tonight.
 
 ───────────────────────────────────
 

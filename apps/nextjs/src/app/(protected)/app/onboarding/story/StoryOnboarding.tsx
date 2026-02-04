@@ -10,12 +10,13 @@ import { Scene3Store } from "./scenes/Scene3Store";
 import { Scene4Voice } from "./scenes/Scene4Voice";
 import { Scene5Ready } from "./scenes/Scene5Ready";
 import { Scene6Cooked } from "./scenes/Scene6Cooked";
+import { Scene7Manifesto } from "./scenes/Scene7Manifesto";
 import { CARBONARA_RECIPE } from "@/lib/story-onboarding/constants";
 import type { StoryOnboardingState, DemoInventoryItem } from "@/lib/story-onboarding/types";
 import type { QuantityLevel } from "@/types/inventory";
 
 export function StoryOnboarding() {
-  const { state, hydrated, goToScene, updateInventory } = useStoryState();
+  const { state, hydrated, goToScene, updateInventory, reset } = useStoryState();
   const { className: fadeClassName, triggerTransition } = useFadeTransition();
   const [preDecrementInventory, setPreDecrementInventory] = useState<DemoInventoryItem[]>([]);
 
@@ -97,9 +98,14 @@ export function StoryOnboarding() {
           />
         )}
         {state.currentScene === 7 && (
-          <div className="flex items-center justify-center min-h-[80vh] px-6">
-            <p className="text-lg font-bold text-gray-500">Scene 7: Manifesto (coming next phase)</p>
-          </div>
+          <Scene7Manifesto
+            inventory={state.demoInventory}
+            recipe={state.demoRecipe}
+            onRestart={() => {
+              reset();
+              handleNavigate(1);
+            }}
+          />
         )}
       </div>
     </div>

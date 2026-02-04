@@ -106,7 +106,7 @@ export const SCENE_TEXT = {
   ],
   scene5: [
     '"We have everything for carbonara—let me cook it!" 🎉',
-    "Help Sarah log that she made it.",
+    "Help Sarah log in HomeCuistot that she made it.",
   ],
   scene7: [
     "That's HomeCuistot.",
@@ -116,7 +116,7 @@ export const SCENE_TEXT = {
   ],
   scene7Manifesto: [
     "She already knew how to make carbonara.",
-    "She just needed to know she could make it tonight. ✨",
+    "She just needed a hand to make it tonight. ✨",
   ],
   scene7Closing: [
     "HomeCuistot isn't a recipe app.",
