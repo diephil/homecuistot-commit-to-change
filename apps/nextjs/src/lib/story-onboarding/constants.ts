@@ -87,29 +87,29 @@ export const CARBONARA_RECIPE: DemoRecipe = {
 export const SCENE_TEXT = {
   scene1: [
     "5:47pm. Office.",
-    "Sarah's hungry. She doesn't feel like scrolling through Uber Eats again.",
+    "Sarah's hungry. She doesn't feel like scrolling through Uber Eats again. 😩",
     "She knows how to cook. Carbonara, stir fry, a couple of other dishes she's made a hundred times. She's not looking for new recipes or inspiration.",
-    "The problem: she has no idea what's actually in her fridge right now.",
+    "The problem: she has no idea what's actually in her fridge right now. 🤷‍♀️",
     "Can she make carbonara tonight? Or does she need to stop at the store? For what exactly?",
-    "This uncertainty is enough to make her give up and order pad thai for the third time this week...",
-    "She opens HomeCuistot instead.",
+    "Tonight, she's not going to give up. She's going to commit to changing her takeout-ordering habits.",
+    "She opens HomeCuistot instead. 💡",
   ],
   scene2Intro: ["SARAH'S KITCHEN"],
   scene2Outro: [
-    "Sarah wants carbonara, but she's missing eggs and parmesan. She's also running low on milk.",
+    "Sarah wants carbonara, but she's missing {eggs} and {parmesan} to cook it.",
   ],
   scene3: [
-    "She stops at the store on her way home.",
+    "She stops at the store on her way home. 🛒",
     "Grabs what's missing (eggs and parmesan) plus a few other things.",
   ],
   scene4Intro: ["6:30pm. Home.", 'Partner: "What\'d you get?"'],
   scene4Instructions: [
-    "Help Sarah add what she bought.",
+    "Help Sarah say what she bought.",
     "Tap and say:",
     '"I bought parmesan, eggs, and milk"',
   ],
   scene5: [
-    '"We have everything for carbonara—let me cook it!"',
+    '"We have everything for carbonara—let me cook it!" 🎉',
     "Help Sarah log that she made it.",
   ],
   scene7: [
@@ -120,13 +120,13 @@ export const SCENE_TEXT = {
   ],
   scene7Manifesto: [
     "She already knew how to make carbonara.",
-    "She just needed to know she could make it tonight.",
+    "She just needed to know she could make it tonight. ✨",
   ],
   scene7Closing: [
     "HomeCuistot isn't a recipe app.",
     "It's your inventory clerk.",
     "You bring the skills.",
     "We track the ingredients.",
-    "Let's commit to change our ordering takeout habits and cook more!",
+    "Let's commit to change our ordering takeout habits and cook more! 🍳",
   ],
 } as const;

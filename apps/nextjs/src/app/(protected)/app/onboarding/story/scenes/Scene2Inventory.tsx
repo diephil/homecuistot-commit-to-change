@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/shared/Button";
-import { InventorySection } from "@/components/inventory/InventorySection";
+import { InventoryItemBadge } from "@/components/shared/InventoryItemBadge";
 import { RecipeAvailabilityCard } from "@/components/app/RecipeAvailabilityCard";
 import {
   SCENE_TEXT,
@@ -9,23 +9,13 @@ import {
   SARAH_PANTRY_STAPLES,
   CARBONARA_RECIPE,
 } from "@/lib/story-onboarding/constants";
-import { toInventoryDisplayItem, toRecipeWithAvailability } from "@/lib/story-onboarding/transforms";
+import { toRecipeWithAvailability } from "@/lib/story-onboarding/transforms";
 
 interface Scene2InventoryProps {
   onContinue: () => void;
 }
 
-// No-op callbacks for read-only InventorySection
-const noop = () => {};
-const noopQuantity = () => {};
-
 export function Scene2Inventory({ onContinue }: Scene2InventoryProps) {
-  const trackedDisplayItems = SARAH_TRACKED_INGREDIENTS.map((item, i) =>
-    toInventoryDisplayItem({ item, index: i }),
-  );
-  const stapleDisplayItems = SARAH_PANTRY_STAPLES.map((item, i) =>
-    toInventoryDisplayItem({ item, index: i + 100 }),
-  );
   const recipeData = toRecipeWithAvailability({
     recipe: CARBONARA_RECIPE,
     inventory: [...SARAH_TRACKED_INGREDIENTS, ...SARAH_PANTRY_STAPLES],
@@ -45,36 +35,42 @@ export function Scene2Inventory({ onContinue }: Scene2InventoryProps) {
           </h2>
         ))}
 
-        {/* Inventory sections */}
+        {/* Tracked ingredients — read-only badges (no action buttons) */}
         <div
-          className="opacity-0 animate-[fadeIn_0.5s_ease-in_forwards]"
+          className="space-y-2 opacity-0 animate-[fadeIn_0.5s_ease-in_forwards]"
           style={{ animationDelay: "0.4s" }}
         >
-          <InventorySection
-            title="Tracked Ingredients"
-            items={trackedDisplayItems}
-            groupByCategory={false}
-            useWord={true}
-            onQuantityChange={noopQuantity}
-            onToggleStaple={noop}
-            onDelete={noop}
-          />
+          <h3 className="text-lg font-black">Tracked Ingredients</h3>
+          <div className="flex flex-wrap gap-2">
+            {SARAH_TRACKED_INGREDIENTS.map((item, i) => (
+              <InventoryItemBadge
+                key={i}
+                name={item.name}
+                level={item.quantityLevel}
+                isStaple={false}
+                useWord
+              />
+            ))}
+          </div>
         </div>
 
+        {/* Staples — read-only badges */}
         <div
-          className="opacity-0 animate-[fadeIn_0.5s_ease-in_forwards]"
+          className="space-y-2 opacity-0 animate-[fadeIn_0.5s_ease-in_forwards]"
           style={{ animationDelay: "0.8s" }}
         >
-          <InventorySection
-            title="Staples (always available)"
-            items={stapleDisplayItems}
-            isPantrySection
-            groupByCategory={false}
-            useWord={true}
-            onQuantityChange={noopQuantity}
-            onToggleStaple={noop}
-            onDelete={noop}
-          />
+          <h3 className="text-lg font-black">Staples (always available)</h3>
+          <div className="flex flex-wrap gap-2">
+            {SARAH_PANTRY_STAPLES.map((item, i) => (
+              <InventoryItemBadge
+                key={i}
+                name={item.name}
+                level={3}
+                isStaple
+                useWord
+              />
+            ))}
+          </div>
         </div>
 
         {/* Recipe card */}
@@ -89,14 +85,27 @@ export function Scene2Inventory({ onContinue }: Scene2InventoryProps) {
           />
         </div>
 
-        {/* Outro text */}
+        {/* Outro text — {word} tokens rendered as highlighted inline badges */}
         {SCENE_TEXT.scene2Outro.map((segment, i) => (
           <p
             key={i}
             className="text-lg font-bold leading-relaxed opacity-0 animate-[fadeIn_0.5s_ease-in_forwards]"
             style={{ animationDelay: `${1.6 + i * 0.4}s` }}
           >
-            {segment}
+            {segment.split(/(\{[^}]+\})/).map((part, j) => {
+              const match = part.match(/^\{(.+)\}$/);
+              if (match) {
+                return (
+                  <span
+                    key={j}
+                    className="inline-block bg-red-100 border-2 border-red-400 rounded px-1.5 py-0.5 text-red-700 font-black"
+                  >
+                    {match[1]}
+                  </span>
+                );
+              }
+              return <span key={j}>{part}</span>;
+            })}
           </p>
         ))}
 
