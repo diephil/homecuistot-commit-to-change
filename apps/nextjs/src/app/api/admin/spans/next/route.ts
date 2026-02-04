@@ -8,6 +8,11 @@ import {
 import { requireAdmin } from "@/lib/services/admin-auth";
 import { sql } from "drizzle-orm";
 
+export interface SpanItemWithDbStatus {
+  name: string;
+  existsInDb: boolean;
+}
+
 export async function GET() {
   const auth = await requireAdmin();
   if (!auth.ok) return auth.response;
@@ -35,6 +40,7 @@ export async function GET() {
       console.warn("Span has malformed or empty metadata.unrecognized", {
         spanId: span.id,
       });
+      // Auto-tag only truly malformed/empty spans
       try {
         await markSpanAsReviewed({ spanId: span.id });
       } catch (tagError) {
@@ -79,7 +85,7 @@ export async function GET() {
       });
     }
 
-    // Filter out items already in database
+    // Check which items already exist in DB
     const existingNames = await adminDb
       .select({ name: ingredients.name })
       .from(ingredients)
@@ -93,30 +99,19 @@ export async function GET() {
     const existingSet = new Set(
       existingNames.map((row) => row.name.toLowerCase()),
     );
-    const newItems = deduplicatedItems.filter((item) => !existingSet.has(item));
 
-    // If all items already exist, auto-tag and return empty
-    if (newItems.length === 0) {
-      try {
-        await markSpanAsReviewed({ spanId: span.id });
-      } catch (tagError) {
-        console.error("Failed to auto-tag fully-existing span", {
-          spanId: span.id,
-          error: tagError,
-        });
-      }
-      return NextResponse.json({
-        spanId: null,
-        traceId: null,
-        items: [],
-        totalInSpan: span.metadata?.totalUnrecognized ?? rawItems.length,
-      });
-    }
+    // Return ALL items annotated with DB status — no silent auto-review
+    const items: SpanItemWithDbStatus[] = deduplicatedItems.map((name) => ({
+      name,
+      existsInDb: existingSet.has(name),
+    }));
 
     return NextResponse.json({
       spanId: span.id,
+      spanName: span.name,
       traceId: span.trace_id,
-      items: newItems,
+      tags: span.tags ?? [],
+      items,
       totalInSpan: span.metadata?.totalUnrecognized ?? rawItems.length,
     });
   } catch (error) {
