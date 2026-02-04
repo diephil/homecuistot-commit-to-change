@@ -6,7 +6,6 @@ import {
   recipeIngredients,
 } from "@/db/schema";
 import { matchIngredients } from "@/lib/services/ingredient-matcher";
-import { ensureRecipeIngredientsAtQuantity } from "@/db/services/ensure-recipe-ingredients-at-quantity";
 import type { StoryCompleteRequest } from "@/lib/story-onboarding/types";
 
 /**
@@ -190,19 +189,10 @@ export async function prefillDemoData(params: {
 
     if (riValues.length > 0) {
       await tx.insert(recipeIngredients).values(riValues);
-
-      const knownIds = riValues
-        .map((v) => v.ingredientId)
-        .filter((id): id is string => id !== null);
-
-      if (knownIds.length > 0) {
-        await ensureRecipeIngredientsAtQuantity({
-          tx,
-          userId,
-          ingredientIds: knownIds,
-          quantityLevel: 1,
-        });
-      }
+      // Note: We intentionally do NOT call ensureRecipeIngredientsAtQuantity here.
+      // Recipe ingredients should only appear in inventory if the user explicitly
+      // added them during onboarding. Otherwise optional ingredients like "black truffle"
+      // would appear in inventory even though the user never selected them.
     }
   }
 

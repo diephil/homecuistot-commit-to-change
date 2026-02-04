@@ -13,7 +13,6 @@ import {
   type CompleteResponse,
 } from "@/types/onboarding";
 import { matchIngredients } from "@/lib/services/ingredient-matcher";
-import { ensureRecipeIngredientsAtQuantity } from "@/db/services/ensure-recipe-ingredients-at-quantity";
 
 /**
  * Onboarding Complete Route
@@ -249,20 +248,9 @@ export async function POST(request: NextRequest) {
 
         if (recipeIngredientValues.length > 0) {
           await tx.insert(recipeIngredients).values(recipeIngredientValues);
-
-          // Ensure recipe ingredients exist in inventory with quantity=3
-          const recipeIngredientIds = recipeIngredientValues
-            .map((v) => v.ingredientId)
-            .filter((id): id is string => id !== null);
-
-          if (recipeIngredientIds.length > 0) {
-            await ensureRecipeIngredientsAtQuantity({
-              tx,
-              userId,
-              ingredientIds: recipeIngredientIds,
-              quantityLevel: 1,
-            });
-          }
+          // Note: We intentionally do NOT call ensureRecipeIngredientsAtQuantity here.
+          // Recipe ingredients should only appear in inventory if the user explicitly
+          // added them during onboarding.
         }
       }
 
