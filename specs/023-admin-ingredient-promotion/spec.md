@@ -144,6 +144,11 @@ As an admin, after finishing review of a span, I want to click a CTA to load the
 - **FR-017**: System MUST handle duplicate ingredient conflicts gracefully when promoting (skip and inform admin)
 - **FR-018**: System MUST be accessible only to authorized admin users (using existing admin layout authentication)
 
+### Design & Component Requirements
+
+- **FR-019**: All admin pages MUST follow the Vibrant Neobrutalism design system (thick black borders, bold shadows, vibrant gradients, uppercase headings, font-black weight) per project constitution Principle VII
+- **FR-020**: Reusable UI components (e.g., `AdminNavLink`, `ItemReviewRow`, `CategorySelect`) MUST be created as shared components in `components/admin/` before being referenced in page files. Components are designed for reuse across future admin features.
+
 ### Key Entities
 
 - **Opik Span**: An external tracing record containing metadata about unrecognized ingredients encountered during recipe operations. Key attributes: span ID, trace ID, tags, metadata (totalUnrecognized, unrecognized items array)

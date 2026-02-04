@@ -16,7 +16,7 @@ Admin page to review unrecognized ingredients captured during recipe operations 
 **Target Platform**: Web (browser), Vercel deployment
 **Project Type**: Web application (Next.js monorepo)
 **Performance Goals**: Span review < 60s per span, 20+ spans per session
-**Constraints**: Opik API rate limit 2000 req/min; admin-only access via ADMIN_USER_IDS env var
+**Constraints**: Opik API (no documented rate limits); admin-only access via ADMIN_USER_IDS env var
 **Scale/Scope**: Single admin user, ~100s of unprocessed spans, 5931 existing ingredients
 
 ## Constitution Check

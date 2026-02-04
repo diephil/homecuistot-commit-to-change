@@ -144,7 +144,7 @@ export async function getNextUnprocessedSpan(): Promise<OpikSpan | null> {
           { field: 'tags', operator: 'not_contains', value: 'promotion_reviewed' },
         ],
         limit: 1,
-        sort_by: 'created_at DESC', // Most recent first
+        sort_by: [{ field: 'created_at', direction: 'desc' }], // Most recent first
       }),
     })
 
@@ -297,15 +297,15 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/utils/supabase/server'
 import { adminDb } from '@/db/client'
 import { ingredients } from '@/db/schema'
-import { getNextUnprocessedSpan } from '@/lib/services/opik-spans'
+import { getNextUnprocessedSpan, markSpanAsReviewed } from '@/lib/services/opik-spans'
 import { sql } from 'drizzle-orm'
 import { logger } from '@/lib/logger'
 
 interface SpanResponse {
   spanId: string
   traceId: string
-  existingTags: string[]
-  unrecognizedItems: string[]
+  items: string[]
+  totalInSpan: number
 }
 
 export async function GET(request: NextRequest) {
@@ -328,8 +328,9 @@ export async function GET(request: NextRequest) {
     if (!span) {
       return NextResponse.json({
         spanId: null,
-        unrecognizedItems: [],
-        message: 'No unprocessed spans found',
+        traceId: null,
+        items: [],
+        totalInSpan: 0,
       })
     }
 
@@ -340,8 +341,9 @@ export async function GET(request: NextRequest) {
       logger.warn('Span has malformed metadata', { spanId: span.id })
       return NextResponse.json({
         spanId: null,
-        unrecognizedItems: [],
-        message: 'Span metadata malformed, skipping',
+        traceId: null,
+        items: [],
+        totalInSpan: 0,
       })
     }
 
@@ -371,25 +373,21 @@ export async function GET(request: NextRequest) {
       })
 
       // Auto-tag as reviewed since there's nothing to do
-      await updateSpanTags({
-        spanId: span.id,
-        traceId: span.trace_id,
-        existingTags: span.tags,
-        newTags: ['promotion_reviewed'],
-      })
+      await markSpanAsReviewed({ spanId: span.id })
 
       return NextResponse.json({
         spanId: null,
-        unrecognizedItems: [],
-        message: 'All items in span already in database, auto-reviewed',
+        traceId: null,
+        items: [],
+        totalInSpan: span.metadata?.totalUnrecognized ?? 0,
       })
     }
 
     const response: SpanResponse = {
       spanId: span.id,
       traceId: span.trace_id,
-      existingTags: span.tags,
-      unrecognizedItems: newItems,
+      items: newItems,
+      totalInSpan: span.metadata?.totalUnrecognized ?? rawItems.length,
     }
 
     return NextResponse.json(response)
@@ -414,14 +412,12 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/utils/supabase/server'
 import { adminDb } from '@/db/client'
 import { ingredients } from '@/db/schema'
-import { updateSpanTags } from '@/lib/services/opik-spans'
+import { markSpanAsReviewed } from '@/lib/services/opik-spans'
 import { z } from 'zod'
 import { logger } from '@/lib/logger'
 
 const PromoteRequestSchema = z.object({
   spanId: z.string().uuid(),
-  traceId: z.string().uuid(),
-  existingTags: z.array(z.string()).min(1),
   promotions: z.array(
     z.object({
       name: z.string().min(1),
@@ -429,15 +425,6 @@ const PromoteRequestSchema = z.object({
     })
   ).min(1),
 })
-
-type PromoteRequest = z.infer<typeof PromoteRequestSchema>
-
-interface PromoteResponse {
-  status: 'success' | 'error'
-  promotedCount: number
-  skippedCount: number
-  spanUpdated: boolean
-}
 
 const VALID_CATEGORIES = [
   'meat', 'cereal', 'fish', 'molluscs', 'crustaceans', 'bee_ingredients', 'synthesized',
@@ -498,28 +485,20 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Update span tags
-    const spanUpdated = await updateSpanTags({
-      spanId: validated.spanId,
-      traceId: validated.traceId,
-      existingTags: validated.existingTags,
-      newTags: ['promotion_reviewed'],
-    })
+    // Mark span as reviewed (GET-then-PATCH pattern)
+    const spanTagged = await markSpanAsReviewed({ spanId: validated.spanId })
 
-    if (!spanUpdated) {
-      logger.error('Failed to update span tags after promotion', {
+    if (!spanTagged) {
+      logger.error('Failed to tag span after promotion', {
         spanId: validated.spanId
       })
     }
 
-    const response: PromoteResponse = {
-      status: 'success',
-      promotedCount,
-      skippedCount,
-      spanUpdated,
-    }
-
-    return NextResponse.json(response)
+    return NextResponse.json({
+      promoted: promotedCount,
+      skipped: skippedCount,
+      spanTagged,
+    })
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -546,17 +525,13 @@ Tags span as reviewed without promoting any ingredients (dismiss-all case):
 ```typescript
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/utils/supabase/server'
-import { updateSpanTags } from '@/lib/services/opik-spans'
+import { markSpanAsReviewed } from '@/lib/services/opik-spans'
 import { z } from 'zod'
 import { logger } from '@/lib/logger'
 
 const MarkReviewedSchema = z.object({
   spanId: z.string().uuid(),
-  traceId: z.string().uuid(),
-  existingTags: z.array(z.string()).min(1),
 })
-
-type MarkReviewedRequest = z.infer<typeof MarkReviewedSchema>
 
 export async function POST(request: NextRequest) {
   // Authentication check
@@ -576,16 +551,10 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const validated = MarkReviewedSchema.parse(body)
 
-    const spanUpdated = await updateSpanTags({
-      spanId: validated.spanId,
-      traceId: validated.traceId,
-      existingTags: validated.existingTags,
-      newTags: ['promotion_reviewed'],
-    })
+    const spanTagged = await markSpanAsReviewed({ spanId: validated.spanId })
 
     return NextResponse.json({
-      status: 'success',
-      spanUpdated,
+      spanTagged,
     })
   } catch (error) {
     if (error instanceof z.ZodError) {

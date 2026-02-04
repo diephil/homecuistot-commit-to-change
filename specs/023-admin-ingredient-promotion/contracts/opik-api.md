@@ -66,7 +66,7 @@ Search for spans matching filters.
   "sort_by": [
     {
       "field": "created_at",
-      "direction": "asc"
+      "direction": "desc"
     }
   ]
 }
@@ -81,7 +81,7 @@ Search for spans matching filters.
     - `not_contains`: Tag does NOT exist in span's tag list
   - `value`: Tag name to match
 - `limit`: Max spans to return (use `1` to fetch one at a time)
-- `sort_by`: Sort order (optional, recommended: ascending created_at for FIFO)
+- `sort_by`: Sort order (descending created_at = most recent first, per spec)
 
 **Response 200 - Spans found**:
 ```json
@@ -97,7 +97,7 @@ Search for spans matching filters.
       ],
       "metadata": {
         "totalUnrecognized": 5,
-        "unrecognizedItems": [
+        "unrecognized": [
           "truffle oil",
           "truffle oil",
           "smoked paprika",
@@ -118,7 +118,7 @@ Search for spans matching filters.
 - `trace_id`: Trace UUID (needed for PATCH operations)
 - `tags`: Array of span tags (preserving this is critical for PATCH)
 - `metadata.totalUnrecognized`: Original count of unrecognized items detected
-- `metadata.unrecognizedItems`: Array of ingredient names (may have duplicates, may include items already in DB)
+- `metadata.unrecognized`: Array of ingredient names (may have duplicates, may include items already in DB)
 
 **Response 200 - No spans found**:
 ```json
