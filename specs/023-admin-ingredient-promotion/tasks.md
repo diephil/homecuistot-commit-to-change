@@ -54,9 +54,9 @@
 
 ### Implementation
 
-- [ ] T006 [US1+US2] Create reusable admin components in `apps/nextjs/src/components/admin/` — `AdminNavLink.tsx` (nav link with active state highlighting, neobrutalist styling: bold border, yellow bg when active, white bg default), `AdminFeatureCard.tsx` (clickable card linking to a feature page, gradient bg, thick borders, shadow offset, hover effect). Export via `components/admin/index.ts`. All components follow Vibrant Neobrutalism design (constitution VII). Ref: spec.md FR-019, FR-020
-- [ ] T007 [P] [US1] Modify `apps/nextjs/src/app/(admin)/admin/page.tsx` — replace placeholder "Demo In Progress" with welcome page: hero section with title, use `AdminFeatureCard` for "Review Unrecognized Items" linking to `/admin/unrecognized`, "Coming Soon" section. Neobrutalist styling. Ref: quickstart.md Phase 4
-- [ ] T008 [P] [US2] Modify `apps/nextjs/src/app/(admin)/admin/layout.tsx` — add navigation bar below title row using `AdminNavLink` for "Unrecognized Items" (`/admin/unrecognized`). Add "Go To App" CTA linking to `/app` (cyan bg, neobrutalist shadow). Keep existing `LogoutButton`. Ref: quickstart.md Phase 3
+- [X] T006 [US1+US2] Create reusable admin components in `apps/nextjs/src/components/admin/` — `AdminNavLink.tsx` (nav link with active state highlighting, neobrutalist styling: bold border, yellow bg when active, white bg default), `AdminFeatureCard.tsx` (clickable card linking to a feature page, gradient bg, thick borders, shadow offset, hover effect). Export via `components/admin/index.ts`. All components follow Vibrant Neobrutalism design (constitution VII). Ref: spec.md FR-019, FR-020
+- [X] T007 [P] [US1] Modify `apps/nextjs/src/app/(admin)/admin/page.tsx` — replace placeholder "Demo In Progress" with welcome page: hero section with title, use `AdminFeatureCard` for "Review Unrecognized Items" linking to `/admin/unrecognized`, "Coming Soon" section. Neobrutalist styling. Ref: quickstart.md Phase 4
+- [X] T008 [P] [US2] Modify `apps/nextjs/src/app/(admin)/admin/layout.tsx` — add navigation bar below title row using `AdminNavLink` for "Unrecognized Items" (`/admin/unrecognized`). Add "Go To App" CTA linking to `/app` (cyan bg, neobrutalist shadow). Keep existing `LogoutButton`. Ref: quickstart.md Phase 3
 
 **Checkpoint**: Admin welcome page and header navigation functional. Admin can navigate between `/admin`, `/admin/unrecognized`, and `/app`.
 
