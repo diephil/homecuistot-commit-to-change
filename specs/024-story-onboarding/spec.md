@@ -3,7 +3,7 @@
 **Feature Branch**: `024-story-onboarding`
 **Created**: 2026-02-04
 **Status**: Draft
-**Input**: New guided simulation onboarding flow. Users learn HomeCuistot by participating in Sarah's story — a 7-scene narrative with 2 interactive moments (voice input + cook action). No data persisted. Coexists alongside current onboarding.
+**Input**: New guided simulation onboarding flow. Users learn HomeCuistot by participating in Sarah's story — a 7-scene narrative with 2 interactive moments (voice input + cook action). For brand-new users, demo data is pre-filled into their account on completion. Coexists alongside current onboarding.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -61,17 +61,22 @@ After the voice step, Scene 5 shows the carbonara recipe card as "READY" with al
 
 ### User Story 4 - Manifesto and Transition to App (Priority: P2)
 
-Scene 7 delivers the product message and offers two CTAs: "Get started" to enter the real app, or "Restart demo" to replay the story from Scene 1.
+Scene 7 delivers the product message and offers two CTAs: "Get started" or "Restart demo".
 
-**Why this priority**: Important for conversion but the core learning happens in Scenes 1-6.
+For **brand-new users** (no existing inventory or recipes in the database), tapping "Get started" shows a loading screen that pre-fills their account with the demo data viewed during onboarding (Sarah's inventory items + carbonara recipe). The loading screen reassures the user: they can start adding their own recipes via voice and manage their inventory later to update or remove items they didn't actually have.
 
-**Independent Test**: User reads manifesto, taps "Get started" to land on /recipes, or taps "Restart demo" to return to Scene 1.
+For **returning users** (already have inventory or recipes), tapping "Get started" skips the loading screen and goes directly to the app — the user has already completed onboarding.
+
+**Why this priority**: Important for conversion and ensures new users start with useful data rather than an empty app.
+
+**Independent Test**: New user reads manifesto, taps "Get started", sees loading screen with pre-fill messaging, lands in the app with demo data populated. Returning user taps "Get started" and goes straight to the app.
 
 **Acceptance Scenarios**:
 
 1. **Given** Scene 7 is active, **When** user reads the content, **Then** they see the manifesto text differentiating HomeCuistot from recipe apps.
-2. **Given** Scene 7 is active, **When** user taps "Get started", **Then** they are redirected to the /recipes route.
-3. **Given** Scene 7 is active, **When** user taps "Restart demo", **Then** all demo state resets and the flow returns to Scene 1.
+2. **Given** Scene 7 is active and user has no inventory/recipes in DB, **When** user taps "Get started", **Then** a loading screen appears explaining demo data is being pre-filled, demo inventory and carbonara recipe are persisted to the user's account, and user is redirected to the app.
+3. **Given** Scene 7 is active and user already has inventory/recipes in DB, **When** user taps "Get started", **Then** they are redirected directly to the app (no loading screen, no data pre-fill).
+4. **Given** Scene 7 is active, **When** user taps "Restart demo", **Then** all demo state resets and the flow returns to Scene 1.
 
 ---
 
@@ -82,6 +87,8 @@ Scene 7 delivers the product message and offers two CTAs: "Get started" to enter
 - What happens when voice transcription returns empty? Show error, allow retry.
 - What happens if user navigates away mid-flow and returns? Flow resets to Scene 1 (all state is client-side, no persistence).
 - What happens on slow network during voice processing? Show loading state on mic button; timeout after reasonable duration with retry option.
+- What happens if pre-fill persistence fails on "Get started"? Show error with retry option; do not leave user stuck on loading screen.
+- What happens if a returning user (with existing data) replays the demo via "Restart demo" then taps "Get started"? They already have data, so skip loading screen and go directly to the app.
 
 ## Requirements *(mandatory)*
 
@@ -99,15 +106,20 @@ Scene 7 delivers the product message and offers two CTAs: "Get started" to enter
 - **FR-010**: Scene 5 MUST display the carbonara recipe card as "READY" with all ingredients checked, including "just added" labels on eggs and parmesan.
 - **FR-011**: Scene 5 MUST provide an "I made this" button that triggers Scene 6.
 - **FR-012**: Scene 6 MUST display a modal showing each used ingredient with before/after quantity levels, and list staples as "NOT TRACKED".
-- **FR-013**: Scene 7 MUST offer two CTAs: "Get started" (redirects to /recipes) and "Restart demo" (resets all demo state and returns to Scene 1).
-- **FR-014**: All state MUST be client-side only. No user data is persisted during this flow.
+- **FR-013**: Scene 7 MUST offer two CTAs: "Get started" and "Restart demo" (resets all demo state and returns to Scene 1).
+- **FR-014**: All scene state during the flow (Scenes 1-7) MUST be client-side only. No data is persisted until the user taps "Get started".
+- **FR-017**: When a brand-new user (no existing user_inventory rows and no existing user_recipes rows) taps "Get started", the system MUST show a loading screen and pre-fill their account with the demo inventory items and the carbonara recipe.
+- **FR-018**: The loading screen MUST inform the user that demo data is being added to their account, and that they can add their own recipes via voice and manage their inventory later to update or remove pre-filled items.
+- **FR-019**: When a returning user (has existing inventory or recipes) taps "Get started", the system MUST skip the loading screen and redirect directly to the app.
+- **FR-020**: If pre-fill persistence fails, the system MUST show an error with a retry option rather than leaving the user stuck on the loading screen.
 - **FR-015**: This flow MUST live at a new dedicated route (e.g., `/app/onboarding/story`), coexisting alongside the current onboarding with no modifications to existing OnboardingPageContent.
 - **FR-016**: Scene 4 voice input MUST reuse the existing ingredient extractor agent for LLM extraction.
 
 ### Key Entities
 
-- **Sarah's Inventory**: 7 tracked ingredients with quantity levels (plenty/some/enough/low/critical) + 3 staples (Salt, Black pepper, Olive oil). Demo-only, client-side.
-- **Carbonara Recipe**: Name, 4 anchor ingredients (Pasta, Bacon, Eggs, Parmesan), 2 staples used (Black pepper, Salt). Readiness derived from inventory state.
+- **Sarah's Inventory**: 7 tracked ingredients with quantity levels (plenty/some/enough/low/critical) + 3 staples (Salt, Black pepper, Olive oil). Client-side during demo; persisted to user_inventory for brand-new users on "Get started".
+- **Carbonara Recipe**: Name, 4 anchor ingredients (Pasta, Bacon, Eggs, Parmesan), 2 staples used (Black pepper, Salt). Readiness derived from inventory state. Persisted to user_recipes for brand-new users on "Get started".
+- **Brand-new user**: A user with zero rows in both user_inventory and user_recipes tables. This is the condition that triggers the pre-fill loading screen.
 - **Required Progression Items**: Eggs and Parmesan — must be present in inventory for Scene 4 → Scene 5 transition.
 - **Quantity Scale**: plenty > some > enough > low > critical (descending).
 
@@ -143,13 +155,14 @@ Scene 7 delivers the product message and offers two CTAs: "Get started" to enter
 - 7-scene linear narrative flow
 - Voice input with LLM extraction in Scene 4
 - Text fallback for Scene 4
-- Client-side demo state management
+- Client-side demo state management during Scenes 1-7
 - Recipe readiness display
 - Inventory decrement modal
-- Redirect to /recipes on completion
+- Pre-fill persistence of demo data for brand-new users on "Get started"
+- Loading screen with reassurance messaging during pre-fill
+- Conditional redirect: loading screen for new users, direct redirect for returning users
 
 **Out of scope**:
-- Persisting any demo data to the database
 - Modifying the existing onboarding flow
 - Back navigation between scenes
 - Skip functionality
