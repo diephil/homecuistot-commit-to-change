@@ -43,11 +43,16 @@ export function Scene7Manifesto({
         ],
       };
 
-      const response = await fetch("/api/onboarding/story/complete", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+      const minDelay = new Promise((resolve) => setTimeout(resolve, 5000));
+
+      const [response] = await Promise.all([
+        fetch("/api/onboarding/story/complete", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        }),
+        minDelay,
+      ]);
 
       if (!response.ok) {
         const data = await response.json().catch(() => ({}));
