@@ -126,9 +126,9 @@
 
 **Purpose**: Error handling, edge cases, UX refinements
 
-- [ ] T017 [P] Error handling audit — verify all 3 API routes return proper HTTP status codes (400/401/500) with error messages per contracts/admin-api.md §Error Handling
-- [ ] T018 [P] Loading states — verify all async operations show loading indicators (disable buttons, show "Loading..." / "Processing..." text) per quickstart.md UI patterns
-- [ ] T019 Edge case: malformed span metadata — if `metadata.unrecognized` is missing or not an array, skip span and log warning. Ref: spec.md Edge Cases
+- [X] T017 [P] Error handling audit — verify all 3 API routes return proper HTTP status codes (400/401/500) with error messages per contracts/admin-api.md §Error Handling
+- [X] T018 [P] Loading states — verify all async operations show loading indicators (disable buttons, show "Loading..." / "Processing..." text) per quickstart.md UI patterns
+- [X] T019 Edge case: malformed span metadata — if `metadata.unrecognized` is missing or not an array, skip span and log warning. Ref: spec.md Edge Cases
 - [ ] T020 Manual testing pass — run through quickstart.md Testing Guide checklist: Opik connectivity, all 3 API routes via curl, full UI workflow (load → promote → next, load → dismiss → next, empty queue)
 
 ---

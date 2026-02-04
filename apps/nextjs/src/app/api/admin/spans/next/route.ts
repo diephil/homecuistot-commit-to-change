@@ -32,7 +32,14 @@ export async function GET() {
         spanId: span.id,
       });
       // Auto-mark as reviewed since nothing to process
-      await markSpanAsReviewed({ spanId: span.id });
+      try {
+        await markSpanAsReviewed({ spanId: span.id });
+      } catch (tagError) {
+        console.error("Failed to auto-tag malformed span", {
+          spanId: span.id,
+          error: tagError,
+        });
+      }
       return NextResponse.json({
         spanId: null,
         traceId: null,
@@ -41,10 +48,33 @@ export async function GET() {
       });
     }
 
-    // Deduplicate items (case-insensitive)
-    const deduplicatedItems = Array.from(
-      new Set(rawItems.map((item) => item.toLowerCase())),
+    // Filter non-string entries and deduplicate (case-insensitive)
+    const stringItems = rawItems.filter(
+      (item): item is string => typeof item === "string" && item.trim() !== "",
     );
+    const deduplicatedItems = Array.from(
+      new Set(stringItems.map((item) => item.toLowerCase().trim())),
+    );
+
+    if (deduplicatedItems.length === 0) {
+      console.warn("Span had items but none were valid strings", {
+        spanId: span.id,
+      });
+      try {
+        await markSpanAsReviewed({ spanId: span.id });
+      } catch (tagError) {
+        console.error("Failed to auto-tag span with invalid items", {
+          spanId: span.id,
+          error: tagError,
+        });
+      }
+      return NextResponse.json({
+        spanId: null,
+        traceId: null,
+        items: [],
+        totalInSpan: 0,
+      });
+    }
 
     // Filter out items already in database
     const existingNames = await adminDb
@@ -69,7 +99,14 @@ export async function GET() {
       console.info("All items in span already in DB, marking as reviewed", {
         spanId: span.id,
       });
-      await markSpanAsReviewed({ spanId: span.id });
+      try {
+        await markSpanAsReviewed({ spanId: span.id });
+      } catch (tagError) {
+        console.error("Failed to auto-tag fully-existing span", {
+          spanId: span.id,
+          error: tagError,
+        });
+      }
       return NextResponse.json({
         spanId: null,
         traceId: null,

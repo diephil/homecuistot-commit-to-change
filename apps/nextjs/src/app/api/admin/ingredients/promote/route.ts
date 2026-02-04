@@ -56,13 +56,16 @@ export async function POST(request: NextRequest) {
     const skipped = validated.promotions.length - promoted;
 
     // Mark span as reviewed (GET-then-PATCH)
-    const spanTagged = await markSpanAsReviewed({
-      spanId: validated.spanId,
-    });
-
-    if (!spanTagged) {
+    // Wrapped separately: if tagging fails, we still report insertion results
+    let spanTagged = false;
+    try {
+      spanTagged = await markSpanAsReviewed({
+        spanId: validated.spanId,
+      });
+    } catch (tagError) {
       console.error("Failed to tag span after promotion", {
         spanId: validated.spanId,
+        error: tagError,
       });
     }
 

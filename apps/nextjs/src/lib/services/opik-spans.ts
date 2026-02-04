@@ -4,6 +4,16 @@ const OPIK_PROJECT_NAME =
 const OPIK_API_KEY = process.env.OPIK_API_KEY;
 const OPIK_WORKSPACE = process.env.OPIK_WORKSPACE;
 
+export class OpikApiError extends Error {
+  constructor(
+    public status: number,
+    message: string,
+  ) {
+    super(message);
+    this.name = "OpikApiError";
+  }
+}
+
 export interface OpikSpan {
   id: string;
   trace_id: string;
@@ -43,46 +53,37 @@ function getOpikHeaders(): Record<string, string> {
  * Returns the most recent unprocessed span or null if none found.
  */
 export async function getNextUnprocessedSpan(): Promise<OpikSpan | null> {
-  try {
-    const response = await fetch(
-      `${OPIK_URL}/v1/private/spans/search`,
-      {
-        method: "POST",
-        headers: getOpikHeaders(),
-        body: JSON.stringify({
-          project_name: OPIK_PROJECT_NAME,
-          filters: [
-            {
-              field: "tags",
-              operator: "contains",
-              value: "unrecognized_items",
-            },
-            {
-              field: "tags",
-              operator: "not_contains",
-              value: "promotion_reviewed",
-            },
-          ],
-          limit: 1,
-          sort_by: [{ field: "created_at", direction: "desc" }],
-        }),
-      },
+  const response = await fetch(`${OPIK_URL}/v1/private/spans/search`, {
+    method: "POST",
+    headers: getOpikHeaders(),
+    body: JSON.stringify({
+      project_name: OPIK_PROJECT_NAME,
+      filters: [
+        {
+          field: "tags",
+          operator: "contains",
+          value: "unrecognized_items",
+        },
+        {
+          field: "tags",
+          operator: "not_contains",
+          value: "promotion_reviewed",
+        },
+      ],
+      limit: 1,
+      sort_by: [{ field: "created_at", direction: "desc" }],
+    }),
+  });
+
+  if (!response.ok) {
+    throw new OpikApiError(
+      response.status,
+      `Opik search spans failed: ${response.status} ${response.statusText}`,
     );
-
-    if (!response.ok) {
-      console.error("Opik search spans failed", {
-        status: response.status,
-        statusText: response.statusText,
-      });
-      return null;
-    }
-
-    const data: SearchSpansResponse = await response.json();
-    return data.data?.[0] ?? null;
-  } catch (error) {
-    console.error("Opik search spans error", error);
-    return null;
   }
+
+  const data: SearchSpansResponse = await response.json();
+  return data.data?.[0] ?? null;
 }
 
 /**
@@ -91,29 +92,23 @@ export async function getNextUnprocessedSpan(): Promise<OpikSpan | null> {
  */
 export async function getSpanById(params: {
   spanId: string;
-}): Promise<OpikSpan | null> {
-  try {
-    const response = await fetch(
-      `${OPIK_URL}/v1/private/spans/${params.spanId}`,
-      {
-        method: "GET",
-        headers: getOpikHeaders(),
-      },
+}): Promise<OpikSpan> {
+  const response = await fetch(
+    `${OPIK_URL}/v1/private/spans/${params.spanId}`,
+    {
+      method: "GET",
+      headers: getOpikHeaders(),
+    },
+  );
+
+  if (!response.ok) {
+    throw new OpikApiError(
+      response.status,
+      `Opik get span failed: ${response.status} (spanId: ${params.spanId})`,
     );
-
-    if (!response.ok) {
-      console.error("Opik get span failed", {
-        spanId: params.spanId,
-        status: response.status,
-      });
-      return null;
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error("Opik get span error", error);
-    return null;
   }
+
+  return await response.json();
 }
 
 /**
@@ -126,42 +121,34 @@ export async function getSpanById(params: {
 export async function markSpanAsReviewed(params: {
   spanId: string;
 }): Promise<boolean> {
-  try {
-    // Step 1: Re-fetch span to get current state
-    const span = await getSpanById({ spanId: params.spanId });
-    if (!span) return false;
+  // Step 1: Re-fetch span to get current state
+  const span = await getSpanById({ spanId: params.spanId });
 
-    // Step 2: Append promotion_reviewed to current tags
-    const currentTags = span.tags || [];
-    if (currentTags.includes("promotion_reviewed")) return true; // already tagged
+  // Step 2: Append promotion_reviewed to current tags
+  const currentTags = span.tags || [];
+  if (currentTags.includes("promotion_reviewed")) return true; // already tagged
 
-    const newTags = [...currentTags, "promotion_reviewed"];
+  const newTags = [...currentTags, "promotion_reviewed"];
 
-    // Step 3: PATCH with merged tags (response is 204 No Content)
-    const response = await fetch(
-      `${OPIK_URL}/v1/private/spans/${params.spanId}`,
-      {
-        method: "PATCH",
-        headers: getOpikHeaders(),
-        body: JSON.stringify({
-          trace_id: span.trace_id,
-          tags: newTags,
-        }),
-      },
+  // Step 3: PATCH with merged tags (response is 204 No Content)
+  const response = await fetch(
+    `${OPIK_URL}/v1/private/spans/${params.spanId}`,
+    {
+      method: "PATCH",
+      headers: getOpikHeaders(),
+      body: JSON.stringify({
+        trace_id: span.trace_id,
+        tags: newTags,
+      }),
+    },
+  );
+
+  if (!response.ok) {
+    throw new OpikApiError(
+      response.status,
+      `Opik PATCH span failed: ${response.status} ${response.statusText} (spanId: ${params.spanId})`,
     );
-
-    if (!response.ok) {
-      console.error("Opik update span failed", {
-        spanId: params.spanId,
-        status: response.status,
-        statusText: response.statusText,
-      });
-      return false;
-    }
-
-    return true;
-  } catch (error) {
-    console.error("Opik mark span reviewed error", error);
-    return false;
   }
+
+  return true;
 }
