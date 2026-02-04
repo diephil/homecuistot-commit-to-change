@@ -46,15 +46,9 @@ export const SARAH_TRACKED_INGREDIENTS: DemoInventoryItem[] = [
   { name: "Egg", category: "eggs", quantityLevel: 0, isPantryStaple: false },
 ];
 
-// Sarah's 3 pantry staples
+// Sarah's 2 pantry staples (Black pepper intentionally excluded — it's optional in carbonara but not tracked)
 export const SARAH_PANTRY_STAPLES: DemoInventoryItem[] = [
   { name: "Salt", category: "salt", quantityLevel: 3, isPantryStaple: true },
-  {
-    name: "Black pepper",
-    category: "aroma",
-    quantityLevel: 3,
-    isPantryStaple: true,
-  },
   {
     name: "Olive oil",
     category: "oils_and_fats",
@@ -71,14 +65,16 @@ export const SARAH_INITIAL_INVENTORY: DemoInventoryItem[] = [
 
 // Carbonara recipe
 export const CARBONARA_RECIPE: DemoRecipe = {
-  name: "Pasta Carbonara",
-  description: "Classic Italian pasta with eggs, cheese, and bacon",
+  name: "Sarah's Pasta Carbonara",
+  description:
+    "My family's version of a Classic Italian pasta with eggs, cheese, and bacon",
   ingredients: [
     { name: "Pasta", type: "anchor" },
     { name: "Bacon", type: "anchor" },
+    { name: "Olive oil", type: "anchor" },
     { name: "Egg", type: "anchor" },
     { name: "Parmesan", type: "anchor" },
-    { name: "Black pepper", type: "optional" },
+    { name: "Black truffle", type: "optional" },
     { name: "Salt", type: "optional" },
   ],
 };
@@ -96,7 +92,7 @@ export const SCENE_TEXT = {
   ],
   scene2Intro: ["SARAH'S KITCHEN"],
   scene2Outro: [
-    "Sarah wants carbonara, but she's missing {eggs} and {parmesan} to cook it.",
+    "Sarah wants carbonara, but she's missing {eggs} and {parmesan} to cook it. She uses black truffle sometimes but she will not use it tonight.",
   ],
   scene3: [
     "She stops at the store on her way home. 🛒",
@@ -106,7 +102,7 @@ export const SCENE_TEXT = {
   scene4Instructions: [
     "Help Sarah say what she bought.",
     "Tap and say:",
-    '"I bought parmesan, eggs, and milk"',
+    '"I bought parmesan, eggs, and some bananas"',
   ],
   scene5: [
     '"We have everything for carbonara—let me cook it!" 🎉',

@@ -5,7 +5,7 @@
 **Status**: Draft
 **Input**: New guided simulation onboarding flow. Users learn HomeCuistot by participating in Sarah's story — a 7-scene narrative with 2 interactive moments (voice input + cook action). For brand-new users, demo data is pre-filled into their account on completion. Coexists alongside current onboarding.
 
-## User Scenarios & Testing *(mandatory)*
+## User Scenarios & Testing _(mandatory)_
 
 ### User Story 1 - Follow Sarah's Story (Priority: P1)
 
@@ -34,7 +34,7 @@ In Scene 4, the user role-plays as Sarah adding groceries. They tap the mic butt
 
 **Acceptance Scenarios**:
 
-1. **Given** Scene 4 is active with mic button and disabled "Continue", **When** user taps mic and says "I bought parmesan, eggs, and milk", **Then** inventory updates to show parmesan and eggs at "plenty" and milk at "plenty", and "Continue" becomes enabled.
+1. **Given** Scene 4 is active with mic button and disabled "Continue", **When** user taps mic and says "I bought parmesan, eggs, and some bananas", **Then** inventory updates to show parmesan and eggs at "plenty" and milk at "plenty", and "Continue" becomes enabled.
 2. **Given** Scene 4 is active, **When** user says only "eggs", **Then** eggs update in inventory but "Continue" stays disabled (parmesan still missing).
 3. **Given** user said eggs in a previous pass, **When** user taps mic again and says "parmesan", **Then** parmesan updates and "Continue" becomes enabled.
 4. **Given** user is silent for 5 seconds after tapping mic, **Then** a hint appears: "Try saying: I bought parmesan, eggs, and a cheesecake".
@@ -90,7 +90,7 @@ For **returning users** (already have inventory or recipes), tapping "Get starte
 - What happens if pre-fill persistence fails on "Get started"? Show error with retry option; do not leave user stuck on loading screen.
 - What happens if a returning user (with existing data) replays the demo via "Restart demo" then taps "Get started"? They already have data, so skip loading screen and go directly to the app.
 
-## Requirements *(mandatory)*
+## Requirements _(mandatory)_
 
 ### Functional Requirements
 
@@ -129,7 +129,7 @@ For **returning users** (already have inventory or recipes), tapping "Get starte
 - **Required Progression Items**: Eggs and Parmesan — must be present in inventory for Scene 4 → Scene 5 transition.
 - **Quantity Scale**: plenty > some > enough > low > critical (descending).
 
-## Success Criteria *(mandatory)*
+## Success Criteria _(mandatory)_
 
 ### Measurable Outcomes
 
@@ -164,6 +164,7 @@ For **returning users** (already have inventory or recipes), tapping "Get starte
 ## Scope Boundaries
 
 **In scope**:
+
 - 7-scene linear narrative flow
 - Voice input with LLM extraction in Scene 4
 - Text fallback for Scene 4
@@ -175,6 +176,7 @@ For **returning users** (already have inventory or recipes), tapping "Get starte
 - Conditional redirect: loading screen for new users, direct redirect for returning users
 
 **Out of scope**:
+
 - Modifying the existing onboarding flow
 - Back navigation between scenes
 - Skip functionality

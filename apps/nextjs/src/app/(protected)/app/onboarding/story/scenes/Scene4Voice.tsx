@@ -184,17 +184,17 @@ export function Scene4Voice({
             onSubmit={processInput}
             processing={processing}
             voiceLabel={hasInputOnce ? "Add more" : "Hold to record"}
-            textPlaceholder='e.g. I bought parmesan, eggs, and milk'
+            textPlaceholder='e.g. I bought parmesan, eggs, and some bananas'
             lastTranscription={lastTranscription}
           />
         </div>
 
         {/* Hint after 5s inactivity */}
-        {showHint && !hasInputOnce && (
+        {/* {showHint && !hasInputOnce && (
           <p className="text-sm text-black/40 text-center animate-[fadeIn_0.5s_ease-in_forwards]">
-            Try saying &quot;I bought parmesan, eggs, and milk&quot;
+            Try saying &quot;I bought parmesan, eggs, and some bananas&quot;
           </p>
-        )}
+        )} */}
 
         {/* Error */}
         {error && (
@@ -243,7 +243,7 @@ export function Scene4Voice({
           <Button
             variant="default"
             size="lg"
-            className="w-full justify-center"
+            className={`w-full justify-center ${!canContinue ? "opacity-40" : ""}`}
             onClick={onContinue}
             disabled={!canContinue}
           >
