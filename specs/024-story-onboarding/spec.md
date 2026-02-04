@@ -61,16 +61,17 @@ After the voice step, Scene 5 shows the carbonara recipe card as "READY" with al
 
 ### User Story 4 - Manifesto and Transition to App (Priority: P2)
 
-Scene 7 delivers the product message and offers a CTA to enter the real app. User taps "Get started" and is redirected to the /recipes route.
+Scene 7 delivers the product message and offers two CTAs: "Get started" to enter the real app, or "Restart demo" to replay the story from Scene 1.
 
 **Why this priority**: Important for conversion but the core learning happens in Scenes 1-6.
 
-**Independent Test**: User reads manifesto, taps "Get started", lands on /recipes page.
+**Independent Test**: User reads manifesto, taps "Get started" to land on /recipes, or taps "Restart demo" to return to Scene 1.
 
 **Acceptance Scenarios**:
 
 1. **Given** Scene 7 is active, **When** user reads the content, **Then** they see the manifesto text differentiating HomeCuistot from recipe apps.
 2. **Given** Scene 7 is active, **When** user taps "Get started", **Then** they are redirected to the /recipes route.
+3. **Given** Scene 7 is active, **When** user taps "Restart demo", **Then** all demo state resets and the flow returns to Scene 1.
 
 ---
 
@@ -98,7 +99,7 @@ Scene 7 delivers the product message and offers a CTA to enter the real app. Use
 - **FR-010**: Scene 5 MUST display the carbonara recipe card as "READY" with all ingredients checked, including "just added" labels on eggs and parmesan.
 - **FR-011**: Scene 5 MUST provide an "I made this" button that triggers Scene 6.
 - **FR-012**: Scene 6 MUST display a modal showing each used ingredient with before/after quantity levels, and list staples as "NOT TRACKED".
-- **FR-013**: Scene 7 MUST redirect to /recipes when user taps "Get started".
+- **FR-013**: Scene 7 MUST offer two CTAs: "Get started" (redirects to /recipes) and "Restart demo" (resets all demo state and returns to Scene 1).
 - **FR-014**: All state MUST be client-side only. No user data is persisted during this flow.
 - **FR-015**: This flow MUST live at a new dedicated route (e.g., `/app/onboarding/story`), coexisting alongside the current onboarding with no modifications to existing OnboardingPageContent.
 - **FR-016**: Scene 4 voice input MUST reuse the existing ingredient extractor agent for LLM extraction.
