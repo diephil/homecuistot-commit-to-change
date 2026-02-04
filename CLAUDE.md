@@ -155,7 +155,7 @@ components/
 - Purpose: Generate SQL migration from CSV data
 
 ## Recent Changes
+- 023-admin-ingredient-promotion: Added [if applicable, e.g., PostgreSQL, CoreData, files or N/A]
 - 022-homepage-revamp: Added TypeScript 5+ (strict mode), React 19, Next.js 16 App Router + Next.js 16, React 19, Tailwind CSS v4, existing shared components (Button, Text from `@/components/shared`)
 - 001-unrecognized-items-display: Added TypeScript 5+ (strict mode), React 19, Next.js 16 App Router + Drizzle ORM 0.45.1, @supabase/supabase-js, Tailwind CSS v4, RetroUI components, lucide-react icons
 
-- 019-onboarding-revamp: Added TypeScript 5+ (strict mode) + React 19, Next.js 16, Drizzle ORM 0.45.1, @google/genai (Gemini 2.0 Flash), Zod, opik-gemini
