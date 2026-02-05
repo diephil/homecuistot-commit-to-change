@@ -3,7 +3,7 @@
 **Feature ID**: 028-onboarding-finale-revamp
 **Status**: Draft
 **Created**: 2026-02-05
-**Last Updated**: 2026-02-05
+**Last Updated**: 2026-02-05 (clarifications completed)
 
 ---
 
@@ -19,6 +19,14 @@ The current onboarding story concludes with Scene 7 (Your Recipes) followed by S
 - **Better narrative flow**: Users transition naturally from learning to doing to understanding
 - **Clearer progression**: Button text explicitly states what comes next ("Add your go-to recipes" vs. generic "Continue")
 - **Stronger closure**: The manifesto becomes the final inspiring message before users enter the app, rather than being followed by recipe input
+
+---
+
+## Clarifications
+
+### Session 2026-02-05
+
+- Q: Should scene transitions be tracked with analytics events to measure the impact of the new scene order? → A: Defer analytics decisions to implementation phase
 
 ---
 
@@ -195,6 +203,7 @@ The current onboarding story concludes with Scene 7 (Your Recipes) followed by S
 3. **Button Text Update**: Button text is not hardcoded in multiple places; single update point per button
 4. **No Route Changes**: Scene navigation uses state/component switching, not URL routing that would require path updates
 5. **Testing Coverage**: Existing tests validate scene flow and can be updated to reflect new order
+6. **Analytics & Measurement**: Implementation phase will determine appropriate analytics instrumentation strategy for validating Success Criteria #2 (button clarity) and #3 (completion rate); may leverage existing onboarding analytics or add targeted events as needed
 
 ---
 
