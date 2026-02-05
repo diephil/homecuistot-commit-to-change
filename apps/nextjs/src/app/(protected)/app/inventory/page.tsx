@@ -494,13 +494,22 @@ export default function InventoryPage() {
         <InventorySection
           title="Tracked Ingredients"
           description={
-            <>
-              Tap the ingredient to adjust quantities from{" "}
-              <span className="font-bold text-green-600">Plenty</span> →{" "}
-              <span className="font-bold text-yellow-600">Some</span> →{" "}
-              <span className="font-bold text-orange-600">Enough</span> →{" "}
-              <span className="font-bold text-red-600">No More</span>
-            </>
+            <div className="space-y-1">
+              <div>
+                Tap the ingredient to adjust quantities from{" "}
+                <span className="font-bold text-green-600">Plenty</span> →{" "}
+                <span className="font-bold text-yellow-600">Some</span> →{" "}
+                <span className="font-bold text-orange-600">Enough</span> →{" "}
+                <span className="font-bold text-red-600">No More</span>
+              </div>
+              <div className="text-sm font-medium">
+                <span className="inline-flex items-center gap-1">
+                  <span>Tap </span>
+                  <span className="font-bold text-blue-600 text-base">∞</span>
+                  <span>to move to Pantry Staples</span>
+                </span>
+              </div>
+            </div>
           }
           items={inventory.available}
           isPantrySection={false}
@@ -519,7 +528,19 @@ export default function InventoryPage() {
         <div className="space-y-2">
           <InventorySection
             title="Pantry Staples"
-            description="Basic or important foods you have a supply of. They are always considered available in recipe matching"
+            description={
+              <div className="space-y-1">
+                <div>
+                  Basic or important foods you have a supply of. They are always considered available in recipe matching
+                </div>
+                <div className="text-sm font-medium">
+                  <span className="inline-flex items-center gap-1">
+                    <span>Tap the ingredient to move it back to Tracked Ingredients</span>
+                  </span>
+
+                </div>
+              </div>
+            }
             items={inventory.pantryStaples}
             isPantrySection={true}
             useWord={useWord}
