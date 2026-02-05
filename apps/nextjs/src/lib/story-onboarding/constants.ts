@@ -95,16 +95,19 @@ export const SCENE_TEXT = {
     "Sarah wants carbonara, let's skip the truffle this time, but she's missing {eggs} and {parmesan} to cook it tonight.",
   ],
   scene3: [
-    "She doesn't need step-by-step instructions for the carbonara she's made a hundred times.👩‍🍳",
-    'She doesn\'t need precise measurements — she knows what "some eggs" means.',
+    "6:05pm. At the store.",
     "She stops at the store on her way home. 🛒",
-    "Grabs what's missing (eggs and parmesan) plus a few other things.",
+    "Grabs what's missing for her carbonara (eggs and parmesan) plus a few other things.",
   ],
-  scene4Intro: ["6:30pm. Home.", 'Partner: "What\'d you get?"'],
+  scene4Intro: [
+    "6:30pm. Home.",
+    "Sarah just arrived home. Her hands are full of groceries.",
+    "She needs to tell HomeCuistot what she bought.",
+  ],
   scene4Instructions: [
-    "Help Sarah say what she bought.",
+    "Help Sarah tell the app what she just bought from the store:",
     "Tap and say:",
-    '"I bought parmesan, eggs, and some bananas"',
+    '"I just bought parmesan, eggs, and some bananas"',
   ],
   scene5: [
     '"We have everything for carbonara—let me cook it!" 🎉',
