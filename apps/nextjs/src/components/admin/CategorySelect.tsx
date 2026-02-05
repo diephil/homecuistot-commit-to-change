@@ -12,11 +12,13 @@ export function CategorySelect({ value, onChange }: CategorySelectProps) {
       onChange={(e) => onChange(e.target.value)}
       className="w-full border-2 border-black p-2 font-bold bg-white"
     >
-      {INGREDIENT_CATEGORIES.map((cat) => (
-        <option key={cat} value={cat}>
-          {cat.replace(/_/g, " ")}
-        </option>
-      ))}
+      {[...INGREDIENT_CATEGORIES]
+        .sort((a, b) => a.localeCompare(b))
+        .map((cat) => (
+          <option key={cat} value={cat}>
+            {cat.replace(/_/g, " ")}
+          </option>
+        ))}
     </select>
   );
 }
