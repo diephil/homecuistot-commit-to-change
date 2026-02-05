@@ -83,7 +83,7 @@ export function Scene4Voice({
               "",
             ),
           );
-          body = { audioBase64: base64, currentIngredients };
+          body = { audioBase64: base64, mimeType: input.audioBlob.type, currentIngredients };
         } else {
           body = { text: input.text, currentIngredients };
         }

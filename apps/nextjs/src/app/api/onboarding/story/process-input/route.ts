@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { audioBase64, text, currentIngredients = [] } = body;
+    const { audioBase64, mimeType, text, currentIngredients = [] } = body;
 
     if (!audioBase64 && !text) {
       return NextResponse.json(
@@ -50,6 +50,7 @@ export async function POST(request: NextRequest) {
         userId: user.id,
         input: text || undefined,
         audioBase64: audioBase64 || undefined,
+        mimeType: mimeType || undefined,
         currentInventory,
         model: "gemini-2.5-flash-lite",
         additionalTags: ["onboarding-story"],

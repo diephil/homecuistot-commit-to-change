@@ -144,6 +144,7 @@ export function OnboardingPageContent() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               audioBase64: base64,
+              mimeType: input.audioBlob.type,
               currentContext: {
                 ingredients: state.selectedIngredients,
                 pantryStaples: state.selectedPantryStaples,

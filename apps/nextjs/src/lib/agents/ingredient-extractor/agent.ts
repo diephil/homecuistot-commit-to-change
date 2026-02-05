@@ -68,15 +68,26 @@ export async function ingredientExtractorAgent(
     // Convert base64 to Buffer
     const audioBuffer = Buffer.from(audioBase64, "base64");
 
-    // Determine file extension from mimeType
-    const extension =
-      mimeType === "audio/webm"
-        ? "webm"
-        : mimeType === "audio/mp3"
-          ? "mp3"
-          : mimeType === "audio/wav"
-            ? "wav"
-            : "webm";
+    // Determine file extension from mimeType (supports iOS formats)
+    const getMimeTypeExtension = (mime: string): string => {
+      // Handle base MIME types and variants with codecs
+      const baseType = mime.split(";")[0].trim();
+
+      const mapping: Record<string, string> = {
+        "audio/webm": "webm",
+        "audio/mp4": "mp4",
+        "audio/m4a": "m4a",
+        "audio/mpeg": "mp3",
+        "audio/mp3": "mp3",
+        "audio/wav": "wav",
+        "audio/wave": "wav",
+        "audio/ogg": "ogg",
+      };
+
+      return mapping[baseType] || "mp4"; // Default to mp4 for iOS compatibility
+    };
+
+    const extension = getMimeTypeExtension(mimeType);
 
     // Create a File object from the buffer
     const audioFile = new File([audioBuffer], `audio.${extension}`, {

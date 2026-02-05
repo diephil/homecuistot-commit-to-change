@@ -338,7 +338,7 @@ export default function InventoryPage() {
     setIsProcessing(true);
 
     try {
-      let requestBody: { input?: string; audioBase64?: string };
+      let requestBody: { input?: string; audioBase64?: string; mimeType?: string };
 
       if (result.type === "voice") {
         // Convert blob to base64
@@ -350,7 +350,7 @@ export default function InventoryPage() {
             resolve(dataUrl.split(",")[1]);
           };
         });
-        requestBody = { audioBase64 };
+        requestBody = { audioBase64, mimeType: result.audioBlob.type };
       } else {
         requestBody = { input: result.text };
       }

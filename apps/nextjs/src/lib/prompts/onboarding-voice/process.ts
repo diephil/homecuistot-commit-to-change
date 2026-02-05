@@ -9,6 +9,7 @@ import { createAgentTrace, getOpikClient } from "@/lib/tracing/opik-agent";
 
 interface ProcessVoiceInputParams {
   audioBase64: string;
+  mimeType?: string;
   currentContext: {
     ingredients: string[];
   };
@@ -18,7 +19,7 @@ interface ProcessVoiceInputParams {
 export async function processVoiceInput(
   params: ProcessVoiceInputParams,
 ): Promise<IngredientExtractionResponse> {
-  const { audioBase64, currentContext, userId } = params;
+  const { audioBase64, mimeType, currentContext, userId } = params;
 
   const userTag = userId ? [`user:${userId}`] : [];
 
@@ -38,6 +39,7 @@ export async function processVoiceInput(
   try {
     const result = await ingredientExtractorAgent({
       audioBase64,
+      mimeType,
       currentIngredients: currentContext.ingredients,
       parentTrace: traceCtx.trace,
       opikClient: getOpikClient(),

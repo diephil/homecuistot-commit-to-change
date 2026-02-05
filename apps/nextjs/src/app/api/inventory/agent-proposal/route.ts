@@ -19,9 +19,10 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json();
-    const { input, audioBase64 } = body as {
+    const { input, audioBase64, mimeType } = body as {
       input?: string;
       audioBase64?: string;
+      mimeType?: string;
     };
 
     // Validate input presence
@@ -75,6 +76,7 @@ export async function POST(request: Request) {
       userId: user.id,
       input,
       audioBase64,
+      mimeType,
       currentInventory,
       model: "gemini-2.5-flash-lite",
     });

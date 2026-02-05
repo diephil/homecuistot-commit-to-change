@@ -204,7 +204,7 @@ export default function RecipesPage() {
       setIsProcessing(true);
 
       try {
-        let body: { input?: string; audioBase64?: string };
+        let body: { input?: string; audioBase64?: string; mimeType?: string };
 
         if (result.type === "voice") {
           // Convert blob to base64
@@ -215,7 +215,7 @@ export default function RecipesPage() {
               ""
             )
           );
-          body = { audioBase64: base64 };
+          body = { audioBase64: base64, mimeType: result.audioBlob.type };
         } else {
           body = { input: result.text };
         }

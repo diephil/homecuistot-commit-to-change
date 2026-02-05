@@ -23,6 +23,7 @@ interface CreateRecipeProposalParams {
   userId: string;
   input?: string;
   audioBase64?: string;
+  mimeType?: string;
   trackedRecipes: RecipeSessionItem[];
   trackedIngredients?: IngredientSessionItem[];
   model: "gemini-2.0-flash" | "gemini-2.5-flash-lite";
@@ -48,6 +49,7 @@ export async function createRecipeManagerAgentProposal(
     userId,
     input,
     audioBase64,
+    mimeType,
     trackedRecipes,
     trackedIngredients,
     model,
@@ -87,6 +89,7 @@ export async function createRecipeManagerAgentProposal(
     if (audioBase64) {
       const { text } = await voiceTranscriptorAgent({
         audioBase64,
+        mimeType,
         parentTrace: traceCtx.trace,
         userId,
       });

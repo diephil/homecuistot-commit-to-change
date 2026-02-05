@@ -54,6 +54,7 @@ export async function POST(request: NextRequest) {
     // Process via Gemini with opik tracing
     const result = await processVoiceInput({
       audioBase64: body.audioBase64,
+      mimeType: body.mimeType,
       currentContext,
       userId: user.id,
     });
