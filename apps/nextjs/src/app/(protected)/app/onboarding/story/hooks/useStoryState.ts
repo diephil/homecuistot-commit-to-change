@@ -23,7 +23,7 @@ function readState(): StoryOnboardingState {
   try {
     const raw = localStorage.getItem(LOCALSTORAGE_KEY);
     if (!raw) return DEFAULT_STATE;
-    return JSON.parse(raw) as StoryOnboardingState;
+    return { ...DEFAULT_STATE, ...JSON.parse(raw) };
   } catch {
     return DEFAULT_STATE;
   }
