@@ -158,5 +158,5 @@ export const SCENE_TEXT = {
     "Other apps show you dishes you'll never make.",
     "HomeCuistot tells you which of yours is ready right now.",
   ],
-  scene8Closing: ["No more scrolling. No more takeout. Let's cook. 🍳"],
+  scene8Closing: ["Let's commit to cook more with us. 🍳"],
 } as const;
