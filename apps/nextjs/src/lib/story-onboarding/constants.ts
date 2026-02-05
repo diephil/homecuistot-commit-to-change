@@ -9,6 +9,9 @@ import type { QuantityLevel } from "@/types/inventory";
 // localStorage key for story onboarding state
 export const LOCALSTORAGE_KEY = "homecuistot:story-onboarding";
 
+// localStorage key for story completion flag (persists across resets)
+export const COMPLETION_FLAG_KEY = "homecuistot:story-completed";
+
 // Items required to unlock Scene 5 progression
 export const REQUIRED_ITEMS = ["egg", "parmesan"];
 

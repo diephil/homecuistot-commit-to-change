@@ -222,14 +222,27 @@ export function Scene4Voice({
           <VoiceTextInput
             onSubmit={processInput}
             processing={processing}
+            disabled={canContinue}
             voiceLabel={hasInputOnce ? "Add more" : "Hold to record"}
             textPlaceholder='e.g. I bought parmesan, eggs, and some bananas'
             lastTranscription={lastTranscription}
           />
+
+          {/* Success message when required items detected */}
+          {canContinue && (
+            <div className="mt-4 bg-green-100 border-4 border-green-600 p-4 rounded-none animate-[fadeIn_0.5s_ease-in_both] shadow-[4px_4px_0px_0px_rgba(22,163,74,1)]">
+              <p className="text-lg font-black text-green-600 text-center">
+                ✅ Perfect! We detected the ingredients Sarah needed!
+              </p>
+              <p className="text-sm font-semibold text-green-700 text-center mt-2">
+                Click Continue to help Sarah cook her carbonara
+              </p>
+            </div>
+          )}
         </div>
 
-        {/* Urgency banner after 3 attempts */}
-        {attemptCount >= 3 && (
+        {/* Urgency banner after 3 attempts (hide when complete) */}
+        {attemptCount >= 3 && !canContinue && (
           <div className="bg-pink-100 border-4 border-pink-600 p-4 rounded-none animate-[fadeIn_0.5s_ease-in_both] shadow-[4px_4px_0px_0px_rgba(219,39,119,1)]">
             <p className="text-lg font-black text-pink-600 text-center">
               🍝 Hurry up, Sarah is hungry!
@@ -291,7 +304,11 @@ export function Scene4Voice({
           <Button
             variant="default"
             size="lg"
-            className={`w-full justify-center ${!canContinue ? "opacity-40" : ""}`}
+            className={`w-full justify-center transition-all ${
+              !canContinue
+                ? "opacity-40"
+                : "animate-pulse shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
+            }`}
             onClick={onContinue}
             disabled={!canContinue}
           >

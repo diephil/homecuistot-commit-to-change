@@ -4,12 +4,21 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
-import { Home, Book, Package, Menu, X } from 'lucide-react'
+import { Home, Book, Package, Menu, X, Sparkles } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 
-const navItems = [
+type NavItem = {
+  href: string
+  label: string
+  icon: LucideIcon
+  clearStoryState?: boolean
+}
+
+const navItems: NavItem[] = [
   { href: '/app', label: 'Home', icon: Home },
   { href: '/app/recipes', label: 'My Cookbook', icon: Book },
   { href: '/app/inventory', label: 'Inventory', icon: Package },
+  { href: '/app/onboarding/story', label: "Sarah's Story", icon: Sparkles, clearStoryState: true },
 ]
 
 function isActive(params: { pathname: string; href: string }): boolean {
@@ -22,6 +31,15 @@ function isActive(params: { pathname: string; href: string }): boolean {
 export function AppNavigation() {
   const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
+
+  const handleNavClick = (item: NavItem) => {
+    if (item.clearStoryState) {
+      // Clear story state but preserve completion flag
+      localStorage.removeItem('homecuistot:story-onboarding')
+      // Keep 'homecuistot:story-completed' flag intact
+    }
+    setIsOpen(false)
+  }
 
   return (
     <nav className="max-w-7xl mx-auto mt-3" aria-label="App navigation">
@@ -51,7 +69,7 @@ export function AppNavigation() {
               <Link
                 key={item.href}
                 href={item.href}
-                onClick={() => setIsOpen(false)}
+                onClick={() => handleNavClick(item)}
                 className={cn(
                   'inline-flex items-center gap-2 px-4 py-3 font-bold border-2 border-black transition-all',
                   'shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] ',
@@ -78,6 +96,7 @@ export function AppNavigation() {
             <Link
               key={item.href}
               href={item.href}
+              onClick={() => handleNavClick(item)}
               className={cn(
                 'inline-flex items-center gap-2 px-4 py-2 font-bold border-2 border-black transition-all',
                 'shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]',

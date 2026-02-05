@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/shared/Button";
 import { Loader2 } from "lucide-react";
-import { SCENE_TEXT, LOCALSTORAGE_KEY } from "@/lib/story-onboarding/constants";
+import { SCENE_TEXT, LOCALSTORAGE_KEY, COMPLETION_FLAG_KEY } from "@/lib/story-onboarding/constants";
 import type { DemoInventoryItem, DemoRecipe } from "@/lib/story-onboarding/types";
 
 interface Scene7ManifestoProps {
@@ -59,7 +59,10 @@ export function Scene7Manifesto({
         throw new Error(data.error || "Something went wrong.");
       }
 
-      // Clear localStorage on successful completion
+      // Set completion flag (persists across resets)
+      localStorage.setItem(COMPLETION_FLAG_KEY, "true");
+
+      // Clear story state on successful completion
       localStorage.removeItem(LOCALSTORAGE_KEY);
 
       router.push("/app/recipes");
