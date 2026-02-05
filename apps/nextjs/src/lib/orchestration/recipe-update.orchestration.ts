@@ -29,6 +29,7 @@ interface CreateRecipeProposalParams {
   model: "gemini-2.0-flash" | "gemini-2.5-flash-lite";
   provider?: string;
   isOnBoarding?: boolean;
+  additionalTags?: string[];
 }
 
 interface CreateRecipeProposalResult {
@@ -55,6 +56,7 @@ export async function createRecipeManagerAgentProposal(
     model,
     provider = "google",
     isOnBoarding = false,
+    additionalTags = [],
   } = params;
   const inputType = audioBase64 ? "voice" : "text";
 
@@ -66,6 +68,7 @@ export async function createRecipeManagerAgentProposal(
     model,
     `user:${userId}`,
     ...(isOnBoarding ? ["onboarding"] : []),
+    ...additionalTags,
   ];
 
   // 1. Create parent trace

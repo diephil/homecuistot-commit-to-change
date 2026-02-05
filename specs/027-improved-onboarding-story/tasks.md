@@ -27,8 +27,8 @@
 
 **Purpose**: Enable recipe extraction with scene-specific Opik tags. MUST complete before any scene work.
 
-- [ ] T001 [P] Add `additionalTags?: string[]` to `CreateRecipeProposalParams` interface and spread into `traceTags` in `apps/nextjs/src/lib/orchestration/recipe-update.orchestration.ts`
-- [ ] T002 [P] Add `additionalTags: z.array(z.string()).optional()` to request schema and pass through to `createRecipeManagerAgentProposal()` in `apps/nextjs/src/app/api/onboarding/process-recipe/route.ts`
+- [X] T001 [P] Add `additionalTags?: string[]` to `CreateRecipeProposalParams` interface and spread into `traceTags` in `apps/nextjs/src/lib/orchestration/recipe-update.orchestration.ts`
+- [X] T002 [P] Add `additionalTags: z.array(z.string()).optional()` to request schema and pass through to `createRecipeManagerAgentProposal()` in `apps/nextjs/src/app/api/onboarding/process-recipe/route.ts`
 
 **Checkpoint**: API accepts `additionalTags` and propagates to Opik traces.
 
