@@ -115,15 +115,6 @@ export function Scene6Cooked({
           </div>
         </div>
 
-        {/* Next recipe suggestion */}
-        <p
-          className="text-base font-semibold text-black/70 animate-[fadeIn_0.5s_ease-in_both]"
-          style={{ animationDelay: "2.0s" }}
-        >
-          There are still ingredients left—time to add more recipes and
-          plan what to cook next! 🍳
-        </p>
-
         <div
           className="pt-4 animate-[fadeIn_0.5s_ease-in_both]"
           style={{ animationDelay: "2.4s" }}

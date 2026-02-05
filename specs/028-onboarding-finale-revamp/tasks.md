@@ -21,7 +21,7 @@
 
 **Purpose**: Verify development environment ready
 
-- [ ] T001 Verify on branch `028-onboarding-finale-revamp` and dependencies installed (`pnpm install` from apps/nextjs/)
+- [x] T001 Verify on branch `028-onboarding-finale-revamp` and dependencies installed (`pnpm install` from apps/nextjs/)
 
 ---
 
@@ -33,7 +33,7 @@
 
 ### Scene Rendering Swap
 
-- [ ] T002 [P] Swap scene 7 and 8 conditional rendering blocks in `apps/nextjs/src/app/(protected)/app/onboarding/story/StoryOnboarding.tsx` (lines 103-119)
+- [x] T002 [P] Swap scene 7 and 8 conditional rendering blocks in `apps/nextjs/src/app/(protected)/app/onboarding/story/StoryOnboarding.tsx` (lines 103-119)
 
 **Details for T002**:
 - Scene 7 conditional: Change from `<Scene7YourRecipes>` to `<Scene8Manifesto>`
@@ -44,13 +44,13 @@
 
 ### Scene8Manifesto Updates (New Scene 7 Position)
 
-- [ ] T003 [P] Add `onContinue: () => void` to Scene8Manifesto props interface in `apps/nextjs/src/app/(protected)/app/onboarding/story/scenes/Scene8Manifesto.tsx` (line 10-14)
+- [x] T003 [P] Add `onContinue: () => void` to Scene8Manifesto props interface in `apps/nextjs/src/app/(protected)/app/onboarding/story/scenes/Scene8Manifesto.tsx` (line 10-14)
 
 **Details for T003**:
 - Update `Scene8ManifestoProps` interface to include `onContinue: () => void`
 - Add `onContinue` to destructured props (line 16-20)
 
-- [ ] T004 Update Scene8Manifesto primary button in `apps/nextjs/src/app/(protected)/app/onboarding/story/scenes/Scene8Manifesto.tsx` (line 167-179)
+- [x] T004 Update Scene8Manifesto primary button in `apps/nextjs/src/app/(protected)/app/onboarding/story/scenes/Scene8Manifesto.tsx` (line 167-179)
 
 **Details for T004** (depends on T003):
 - Change button `onClick` from `handleComplete` to `onContinue`
@@ -64,7 +64,7 @@
 
 ### Scene7YourRecipes Updates (New Scene 8 Position)
 
-- [ ] T005 [P] Update enabled button text in `apps/nextjs/src/app/(protected)/app/onboarding/story/scenes/Scene7YourRecipes.tsx` (line 273)
+- [x] T005 [P] Update enabled button text in `apps/nextjs/src/app/(protected)/app/onboarding/story/scenes/Scene7YourRecipes.tsx` (line 273)
 
 **Details for T005**:
 - Change enabled button text from `"Continue →"` to `"Finish your setup"`
@@ -80,11 +80,11 @@
 
 ### TypeScript Validation
 
-- [ ] T006 Run TypeScript compilation check: `pnpm tsc --noEmit` from apps/nextjs/ (expect 0 errors)
+- [x] T006 Run TypeScript compilation check: `pnpm tsc --noEmit` from apps/nextjs/ (expect 0 errors)
 
 ### Manual Testing - Primary Flow
 
-- [ ] T007 Complete onboarding scenes 1-8 and verify new flow
+- [x] T007 Complete onboarding scenes 1-8 and verify new flow
 
 **Test Steps for T007**:
 1. Start dev server: `pnpm dev` from apps/nextjs/
@@ -103,7 +103,7 @@
 
 ### Manual Testing - Edge Cases
 
-- [ ] T008 Test refresh scenarios on scenes 7 and 8
+- [x] T008 Test refresh scenarios on scenes 7 and 8
 
 **Test Steps for T008**:
 
@@ -129,7 +129,7 @@
 
 ### Final Review
 
-- [ ] T009 Complete quickstart.md verification checklist
+- [x] T009 Complete quickstart.md verification checklist
 
 **Checklist for T009** (from quickstart.md):
 - [ ] Scene 7 renders manifesto content (not recipe input)

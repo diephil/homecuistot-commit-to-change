@@ -29,12 +29,14 @@ interface Scene7YourRecipesProps {
   userRecipes: DemoRecipe[];
   onSetUserRecipes: (recipes: DemoRecipe[]) => void;
   onContinue: () => void;
+  onRestart: () => void;
 }
 
 export function Scene7YourRecipes({
   userRecipes,
   onSetUserRecipes,
   onContinue,
+  onRestart,
 }: Scene7YourRecipesProps) {
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -258,22 +260,30 @@ export function Scene7YourRecipes({
         )}
 
         {/* Continue button */}
-        <div className="pt-4">
+        <div className="pt-4 space-y-3">
           <Button
             variant="default"
             size="lg"
             className={`w-full justify-center transition-all ${
               !canContinue
                 ? "opacity-40"
-                : "animate-pulse shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
+                : "bg-pink-400 text-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
             }`}
             onClick={onContinue}
             disabled={!canContinue}
           >
             {canContinue
-              ? "Continue →"
+              ? "Start cooking ! 🎉"
               : "Add at least one recipe to continue"}
           </Button>
+
+          {/* Restart demo */}
+          <button
+            onClick={onRestart}
+            className="w-full text-sm text-black/40 hover:text-black/70 font-semibold py-2 cursor-pointer"
+          >
+            Restart demo
+          </button>
         </div>
       </div>
     </div>
