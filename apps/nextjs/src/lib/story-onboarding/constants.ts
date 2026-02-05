@@ -32,14 +32,14 @@ export const SARAH_TRACKED_INGREDIENTS: DemoInventoryItem[] = [
     isPantryStaple: false,
   },
   { name: "Bacon", category: "meat", quantityLevel: 1, isPantryStaple: false },
-  { name: "Rice", category: "cereal", quantityLevel: 2, isPantryStaple: false },
-  {
-    name: "Butter",
-    category: "dairy",
-    quantityLevel: 2,
-    isPantryStaple: false,
-  },
-  { name: "Milk", category: "dairy", quantityLevel: 1, isPantryStaple: false },
+  // { name: "Rice", category: "cereal", quantityLevel: 2, isPantryStaple: false },
+  // {
+  //   name: "Butter",
+  //   category: "dairy",
+  //   quantityLevel: 2,
+  //   isPantryStaple: false,
+  // },
+  // { name: "Milk", category: "dairy", quantityLevel: 1, isPantryStaple: false },
   {
     name: "Parmesan",
     category: "cheeses",
@@ -82,25 +82,39 @@ export const CARBONARA_RECIPE: DemoRecipe = {
   ],
 };
 
+// Items required in recipe to unlock Scene 2 progression
+export const REQUIRED_RECIPE_ITEMS = [
+  "egg",
+  "parmesan",
+  "pasta",
+  "bacon",
+] as const;
+
 // Scene text content — arrays of segments for progressive fade-in
 export const SCENE_TEXT = {
   scene1: [
     "5:47pm. Office.",
     "Sarah's hungry. She doesn't feel like scrolling through Uber Eats again. 😩",
     "She knows how to cook a couple dishes she's made a hundred times. She's not looking for new recipes or inspiration.",
-    '"I can cook my family\'s pasta carbonara with some bacon and parmesan — I even add a bit of black truffle sometimes."',
     "The problem: she has no idea what's actually in her fridge right now. 🤷‍♀️",
     "Tonight, she's not going to give up. She's going to commit to changing her takeout-ordering habits.",
     "She opens HomeCuistot instead. 💡",
   ],
-  scene2Intro: ["Here's what HomeCuistot shows Sarah:", "SARAH'S KITCHEN"],
-  scene2Outro: [
-    "Sarah wants carbonara, let's skip the truffle this time, but she's missing {eggs} and {parmesan} to cook it tonight.",
+  scene2RecipeIntro: ["Sarah wants to tell HomeCuistot her recipe."],
+  scene2RecipeInstructions: [
+    "Help Sarah tell the app about her carbonara recipe:",
+    "Tap and say:",
+    '🎙️ "I do a Pasta Carbonara with bacon, eggs and parmesan"',
   ],
-  scene3: [
-    "6:05pm. At the store.",
+  scene3Intro: [
     "She stops at the store on her way home. 🛒",
-    "Grabs what's missing for her carbonara (eggs and parmesan) plus a few other things.",
+    "Here's what HomeCuistot shows Sarah:",
+  ],
+  scene3Outro: [
+    "She grabs what's missing for her carbonara (eggs and parmesan) plus a few other things.",
+  ],
+  scene2Outro: [
+    "Sarah wants carbonara, but she's missing {eggs} and {parmesan} to cook it tonight.",
   ],
   scene4Intro: [
     "6:30pm. Home.",
@@ -110,27 +124,39 @@ export const SCENE_TEXT = {
   scene4Instructions: [
     "Help Sarah tell the app what she just bought from the store:",
     "Tap and say:",
-    '"I have eggs, parmesan and some bananas"',
+    '"I just came back from the store, now I have eggs, parmesan and some bananas"',
   ],
   scene5: [
     '"We have everything for carbonara—let me cook it!" 🎉',
     "Help Sarah log in HomeCuistot that she made it.",
   ],
-  scene7: [
+  scene7YourRecipes: [
+    "Now it's your turn! 🎉",
+    "Tell HomeCuistot about your own recipes — the dishes you already know how to make.",
+  ],
+  scene7YourRecipesExamples: {
+    prompt: "Add at least one recipe you can do:",
+    items: [
+      "I cook a traditional egg fried rice with tons of green onions",
+      "I do a scrambled eggs with my favorite garlic salt",
+    ],
+    closing: "etc... you name it!",
+  },
+  scene8: [
     "That's HomeCuistot.",
-    "Sarah didn't scroll through hundreds of recipes.",
-    "She didn't watch a 10-minute video to learn something new.",
-    "She didn't end up ordering takeout because she couldn't decide.",
+    "She didn't scroll through suggestions, search inspiration, or watch dozens of videos for dishes she'll never make.",
   ],
-  scene7Manifesto: [
-    "She already knew how to make carbonara.",
-    "She just needed to know she could make it tonight. ✨",
+  scene8Manifesto: [
+    "She already knew her go-to recipes.",
+    "She just needed to know she had everything to make one tonight — and take action. ✨",
   ],
-  scene7Closing: [
-    "HomeCuistot isn't a recipe library.",
-    "It's your inventory clerk.",
-    "You bring the skills and your beloved recipies you've mastered already.",
-    "We track the ingredients.",
-    "Let's commit to change, let's cook more today 🍳",
+  scene8Opposition: [
+    "Other apps ask you to scan receipts or photograph your fridge.",
+    "HomeCuistot listens. Just say what you bought.",
+    "Recipe apps make you browse.",
+    "HomeCuistot makes you cook.",
+    "Other apps show you dishes you'll never make.",
+    "HomeCuistot tells you which of yours is ready right now.",
   ],
+  scene8Closing: ["No more scrolling. No more takeout. Let's cook. 🍳"],
 } as const;

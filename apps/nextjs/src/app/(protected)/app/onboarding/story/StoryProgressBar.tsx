@@ -1,6 +1,6 @@
 "use client";
 
-const TOTAL_SCENES = 7;
+const TOTAL_SCENES = 8;
 
 interface StoryProgressBarProps {
   currentScene: number;

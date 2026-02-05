@@ -14,7 +14,7 @@ export function SectionHeader({ title, description, action }: SectionHeaderProps
         {action}
       </div>
       {description && (
-        <p className="mt-1 text-sm text-gray-600">{description}</p>
+        <div className="mt-1 text-sm text-gray-600">{description}</div>
       )}
     </div>
   );

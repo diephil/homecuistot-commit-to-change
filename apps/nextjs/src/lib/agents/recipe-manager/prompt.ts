@@ -68,15 +68,6 @@ ACTION: IMMEDIATELY call create_recipes tool - NO text response, NO confirmation
 - Each recipe can have 1-10 ingredients
 - Recognize phrases: "I can do/make/cook X", "Let me add X", "Add X recipe", "X with [ingredients]"
 
-## Suggest Recipes from Inventory
-WHEN TO SUGGEST: User asks what they can cook, what to make, or requests recipe ideas based on what they have
-- Use trackedIngredients to identify available ingredients (quantityLevel >= 1)
-- Prioritize ingredients with higher quantityLevel (3=full > 2=some > 1=low)
-- Avoid ingredients with quantityLevel=0 (out of stock) as required ingredients
-- Create recipes that maximize use of available inventory
-- Prefer recipes where most required ingredients are in stock
-- do NOT suggest recipie that are close to existing recipes in trackedRecipes
-
 ## Update Recipe Rules
 WHEN TO UPDATE: User mentions a dish that ALREADY exists in trackedRecipes
 ACTION: IMMEDIATELY call update_recipes tool - NO text response, NO confirmation, NO conversation
@@ -113,7 +104,7 @@ ACTION: IMMEDIATELY call update_recipes tool - NO text response, NO confirmation
     }]
   })
 
-"Create a pasta carbonara with bacon, eggs, parmesan, and black pepper", "I can cook pasta carbonara with..."
+"Create a pasta carbonara with bacon, eggs, parmesan, and black pepper", "I can cook pasta carbonara with...", "I do a pasta carbonara with..."
 → create_recipes({
     recipes: [{
       title: "Pasta Carbonara",
@@ -153,21 +144,6 @@ ACTION: IMMEDIATELY call update_recipes tool - NO text response, NO confirmation
         { name: "onion", isRequired: true },
         { name: "garlic", isRequired: true },
         { name: "cream", isRequired: true }
-      ]
-    }]
-  })
-
-"What can I cook with what I have?" (user has egg:3, butter:2, flour:3, sugar:2, milk:1)
-→ create_recipes({
-    recipes: [{
-      title: "Pancakes",
-      description: "Simple fluffy pancakes from pantry staples",
-      ingredients: [
-        { name: "flour", isRequired: true },
-        { name: "egg", isRequired: true },
-        { name: "milk", isRequired: true },
-        { name: "butter", isRequired: true },
-        { name: "sugar", isRequired: false }
       ]
     }]
   })

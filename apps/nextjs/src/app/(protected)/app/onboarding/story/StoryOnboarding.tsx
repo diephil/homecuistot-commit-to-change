@@ -5,18 +5,18 @@ import { useStoryState } from "./hooks/useStoryState";
 import { useFadeTransition } from "./hooks/useFadeTransition";
 import { StoryProgressBar } from "./StoryProgressBar";
 import { Scene1Dilemma } from "./scenes/Scene1Dilemma";
-import { Scene2Inventory } from "./scenes/Scene2Inventory";
-import { Scene3Store } from "./scenes/Scene3Store";
+import { Scene2RecipeVoice } from "./scenes/Scene2RecipeVoice";
+import { Scene3StoreKitchen } from "./scenes/Scene3StoreKitchen";
 import { Scene4Voice } from "./scenes/Scene4Voice";
 import { Scene5Ready } from "./scenes/Scene5Ready";
 import { Scene6Cooked } from "./scenes/Scene6Cooked";
-import { Scene7Manifesto } from "./scenes/Scene7Manifesto";
-import { CARBONARA_RECIPE } from "@/lib/story-onboarding/constants";
+import { Scene7YourRecipes } from "./scenes/Scene7YourRecipes";
+import { Scene8Manifesto } from "./scenes/Scene8Manifesto";
 import type { StoryOnboardingState, DemoInventoryItem } from "@/lib/story-onboarding/types";
 import type { QuantityLevel } from "@/types/inventory";
 
 export function StoryOnboarding() {
-  const { state, hydrated, goToScene, updateInventory, reset } = useStoryState();
+  const { state, hydrated, goToScene, updateInventory, updateDemoRecipe, setDemoRecipes, reset } = useStoryState();
   const { className: fadeClassName, triggerTransition } = useFadeTransition();
   const [preDecrementInventory, setPreDecrementInventory] = useState<DemoInventoryItem[]>([]);
 
@@ -34,7 +34,7 @@ export function StoryOnboarding() {
 
     // Apply decrement: non-staple recipe ingredients lose 1 level (floor at 0)
     const recipeIngredientNames = new Set(
-      CARBONARA_RECIPE.ingredients.map((ing) => ing.name.toLowerCase()),
+      state.demoRecipe.ingredients.map((ing) => ing.name.toLowerCase()),
     );
 
     const decremented = state.demoInventory.map((item) => {
@@ -70,10 +70,15 @@ export function StoryOnboarding() {
           <Scene1Dilemma onContinue={() => handleNavigate(2)} />
         )}
         {state.currentScene === 2 && (
-          <Scene2Inventory onContinue={() => handleNavigate(3)} />
+          <Scene2RecipeVoice
+            onUpdateDemoRecipe={updateDemoRecipe}
+            onContinue={() => handleNavigate(3)}
+          />
         )}
         {state.currentScene === 3 && (
-          <Scene3Store onContinue={() => handleNavigate(4)} />
+          <Scene3StoreKitchen
+            onContinue={() => handleNavigate(4)}
+          />
         )}
         {state.currentScene === 4 && (
           <Scene4Voice
@@ -96,9 +101,16 @@ export function StoryOnboarding() {
           />
         )}
         {state.currentScene === 7 && (
-          <Scene7Manifesto
+          <Scene7YourRecipes
+            userRecipes={state.demoRecipes}
+            onSetUserRecipes={setDemoRecipes}
+            onContinue={() => handleNavigate(8)}
+          />
+        )}
+        {state.currentScene === 8 && (
+          <Scene8Manifesto
             inventory={state.demoInventory}
-            recipe={state.demoRecipe}
+            demoRecipes={state.demoRecipes}
             onRestart={() => {
               reset();
               handleNavigate(1);

@@ -31,7 +31,7 @@ const RecipeInputSchema = z.object({
     .string()
     .min(1)
     .max(200)
-    .describe("Brief recipe description, max 200 chars"),
+    .describe("Up to 3 sentences describing the recipe, max 200 chars"),
   ingredients: z
     .array(IngredientInputSchema)
     .min(1)

@@ -13,7 +13,7 @@ export const recipeExtractionSchema = z.object({
     .string()
     .min(1)
     .max(200)
-    .describe("brief description, max 200 chars"),
+    .describe("Up to 3 sentences describing the recipe, max 200 chars"),
   ingredients: z
     .array(recipeIngredientSchema)
     .min(1)
@@ -28,7 +28,7 @@ export const validationResultSchema = z.object({
       id: z.string().uuid(),
       name: z.string(),
       isOptional: z.boolean(),
-    })
+    }),
   ),
   unrecognized: z.array(z.string()),
 });
@@ -56,5 +56,9 @@ export type RecipeIngredient = z.infer<typeof recipeIngredientSchema>;
 export type RecipeExtraction = z.infer<typeof recipeExtractionSchema>;
 export type ValidationResult = z.infer<typeof validationResultSchema>;
 export type RecipeState = z.infer<typeof recipeStateSchema>;
-export type RecipeUpdateVoiceRequest = z.infer<typeof recipeUpdateVoiceRequestSchema>;
-export type RecipeUpdateTextRequest = z.infer<typeof recipeUpdateTextRequestSchema>;
+export type RecipeUpdateVoiceRequest = z.infer<
+  typeof recipeUpdateVoiceRequestSchema
+>;
+export type RecipeUpdateTextRequest = z.infer<
+  typeof recipeUpdateTextRequestSchema
+>;

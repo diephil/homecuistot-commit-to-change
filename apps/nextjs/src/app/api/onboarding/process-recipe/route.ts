@@ -36,6 +36,7 @@ const requestBodySchema = z
     audioBase64: z.string().optional(),
     text: z.string().optional(),
     trackedRecipes: z.array(trackedRecipeSchema).default([]),
+    additionalTags: z.array(z.string()).optional(),
   })
   .refine((data) => data.audioBase64 || data.text, {
     message: "Either audioBase64 or text must be provided",
@@ -130,7 +131,8 @@ export async function POST(request: Request) {
       );
     }
 
-    const { audioBase64, text, trackedRecipes } = validationResult.data;
+    const { audioBase64, text, trackedRecipes, additionalTags } =
+      validationResult.data;
 
     // 2. Auth check
     const supabase = await createClient();
@@ -171,7 +173,10 @@ export async function POST(request: Request) {
       trackedRecipes: sessionRecipes,
       model: "gemini-2.5-flash-lite",
       isOnBoarding: true,
+      additionalTags,
     });
+
+    console.log("Agent result", JSON.stringify(result, null, 2));
 
     // 5. Apply proposal in-memory
     const updatedRecipes = applyProposalInMemory(

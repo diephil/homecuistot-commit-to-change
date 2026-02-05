@@ -120,8 +120,8 @@ export function Scene6Cooked({
           className="text-base font-semibold text-black/70 animate-[fadeIn_0.5s_ease-in_both]"
           style={{ animationDelay: "2.0s" }}
         >
-          There are still ingredients available for a next recipe—maybe some egg
-          fried rice for next time? 🍚
+          There are still ingredients left—time to add more recipes and
+          plan what to cook next! 🍳
         </p>
 
         <div

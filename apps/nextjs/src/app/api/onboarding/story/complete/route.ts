@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/utils/supabase/server";
 import { createUserDb, decodeSupabaseToken } from "@/db/client";
 import { StoryCompleteRequestSchema } from "@/lib/story-onboarding/types";
+import { CARBONARA_RECIPE } from "@/lib/story-onboarding/constants";
 import { isNewUser } from "@/lib/services/brand-new-user";
 import { prefillDemoData } from "@/lib/services/demo-data-prefill";
 
@@ -53,6 +54,16 @@ export async function POST(request: NextRequest) {
 
     const { ingredients, pantryStaples, recipes } = parseResult.data;
 
+    // Always include Sarah's carbonara as the default recipe + user recipes from scene 7
+    const allRecipes = [
+      {
+        name: CARBONARA_RECIPE.name,
+        description: CARBONARA_RECIPE.description,
+        ingredients: CARBONARA_RECIPE.ingredients,
+      },
+      ...recipes,
+    ];
+
     // Execute in single transaction
     const result = await db(async (tx) => {
       const brandNew = await isNewUser({ tx, userId });
@@ -72,7 +83,7 @@ export async function POST(request: NextRequest) {
         userId,
         ingredients,
         pantryStaples,
-        recipes,
+        recipes: allRecipes,
       });
 
       return { isNewUser: true as const, ...prefillResult };
