@@ -245,6 +245,7 @@ export async function createRecipeManagerAgentProposal(
         : [],
     );
     const hasUnrecognized = allUnrecognized.length > 0;
+    const hasResults = recipes.length > 0;
     traceCtx.trace.update({
       output: { recipes, noChangesDetected: proposal.noChangesDetected },
       metadata: hasUnrecognized ? { unrecognized: allUnrecognized } : {},
@@ -258,7 +259,7 @@ export async function createRecipeManagerAgentProposal(
 
     return {
       proposal,
-      transcribedText: audioBase64 ? textInput : undefined,
+      transcribedText: audioBase64 && hasResults ? textInput : undefined,
       assistantResponse: lastAssistantMessageEvent ?? undefined,
       usage,
     };
