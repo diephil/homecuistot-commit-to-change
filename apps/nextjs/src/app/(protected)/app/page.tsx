@@ -1,5 +1,6 @@
 import { redirect, RedirectType } from 'next/navigation'
 import { getRecipesWithAvailability, getCookingHistory, getUserCounts } from '@/app/actions/cooking-log'
+import Link from 'next/link'
 
 export const dynamic = 'force-dynamic'
 import { RecipeSection } from './recipe-section'
@@ -45,7 +46,15 @@ export default async function AppPage() {
           subtitle="You have all the ingredients in your inventory for these recipes, start cooking!"
           recipes={availableRecipes}
           variant="available"
-          emptyMessage="No recipes available with your current inventory."
+          emptyMessage={
+            <>
+              No recipes available with your current inventory.{' '}
+              <Link href="/app/inventory" className="underline font-bold hover:text-black">
+                Update your inventory
+              </Link>{' '}
+              to see what you can cook!
+            </>
+          }
         />
 
         <RecipeSection

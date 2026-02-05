@@ -11,7 +11,7 @@ export interface RecipeSectionProps {
   subtitle?: string
   recipes: RecipeWithAvailability[]
   variant: 'available' | 'almost-available'
-  emptyMessage: string
+  emptyMessage: React.ReactNode
 }
 
 export function RecipeSection(props: RecipeSectionProps) {
@@ -53,7 +53,7 @@ export function RecipeSection(props: RecipeSectionProps) {
 
       {recipes.length === 0 ? (
         <div className="p-6 border-4 border-dashed border-gray-300 text-center">
-          <p className="font-bold text-gray-500">{emptyMessage}</p>
+          <div className="font-bold text-gray-500">{emptyMessage}</div>
         </div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">

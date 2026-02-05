@@ -110,7 +110,7 @@ export const SCENE_TEXT = {
   scene4Instructions: [
     "Help Sarah tell the app what she just bought from the store:",
     "Tap and say:",
-    '"I just bought parmesan, eggs, and some bananas"',
+    '"I have eggs, parmesan and some bananas"',
   ],
   scene5: [
     '"We have everything for carbonara—let me cook it!" 🎉',
