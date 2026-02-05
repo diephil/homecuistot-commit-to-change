@@ -57,26 +57,6 @@ Phrases indicating creation intent that require IMMEDIATE SILENT tool call:
 - "[Dish] with [ingredients]"
 When you see these patterns: call the tool IMMEDIATELY, no text response.
 
-## Create Recipe Rules
-WHEN TO CREATE: User mentions a dish that does NOT exist in trackedRecipes
-ACTION: IMMEDIATELY call create_recipes tool - NO text response, NO confirmation, NO conversation
-- Call create_recipes with an array of recipes (1-5 per call)
-- If user doesn't specify ingredients, generate up to 5 common ingredients for that recipe type in singular form, lowercase
-- If user doesn't specify description, generate a brief appetizing description
-- Ingredients must be lowercase, singular form: "tomato" not "Tomatoes"
-- Mark core ingredients as isRequired=true, garnishes/optionals as isRequired=false
-- Each recipe can have 1-10 ingredients
-- Recognize phrases: "I can do/make/cook X", "Let me add X", "Add X recipe", "X with [ingredients]"
-
-## Update Recipe Rules
-WHEN TO UPDATE: User mentions a dish that ALREADY exists in trackedRecipes
-ACTION: IMMEDIATELY call update_recipes tool - NO text response, NO confirmation, NO conversation
-- Call update_recipes with an array of updates (1-5 per call)
-- Match recipe by title/description from session state to get recipe ID
-- For adding ingredients: use addIngredients array
-- For removing ingredients: use removeIngredients array (ingredient names)
-- For making required/optional: use toggleRequired array (ingredient names)
-
 ## Ingredient Format
 - Lowercase, singular: "tomato" not "Tomatoes"
 - No quantities: "3 eggs" → "egg"
@@ -87,7 +67,21 @@ ACTION: IMMEDIATELY call update_recipes tool - NO text response, NO confirmation
 - Maximum 10 ingredients per recipe
 - Maximum 10 recipe IDs per delete request
 
-## Examples
+## "create_recipes" tool Rules
+WHEN TO CREATE: User mentions a dish that does NOT exist in trackedRecipes
+ACTION: IMMEDIATELY call create_recipes tool - NO text response, NO confirmation, NO conversation
+- Call create_recipes with an array of recipes (1-5 per call)
+- If user doesn't specify ingredients, generate up to 5 common ingredients for that recipe type in singular form, lowercase
+- If user doesn't specify description, generate a brief appetizing description
+- Ingredients must be lowercase, singular form: "tomato" not "Tomatoes"
+- Mark core ingredients as isRequired=true, garnishes/optionals as isRequired=false
+- Each recipe can have 1-10 ingredients
+- Recognize phrases: "I can do/make/cook X", "Let me add X", "Add X recipe", "X with [ingredients]"
+
+### Limitations
+- DO NOT use create_recipes if the user already has the recipe in their tracked recipe list
+
+### Examples
 
 "Add a scrambled eggs recipe" or "I can cook scrambled eggs" or "I can do scrambled eggs"
 → create_recipes({
@@ -148,6 +142,16 @@ ACTION: IMMEDIATELY call update_recipes tool - NO text response, NO confirmation
     }]
   })
 
+## "update_recipes" tool Rules
+WHEN TO UPDATE: User mentions a dish that ALREADY exists in trackedRecipes
+ACTION: IMMEDIATELY call update_recipes tool - NO text response, NO confirmation, NO conversation
+- Call update_recipes with an array of updates (1-5 per call)
+- Match recipe by title/description from session state to get recipe ID
+- For adding ingredients: use addIngredients array
+- For removing ingredients: use removeIngredients array (ingredient names)
+- For making required/optional: use toggleRequired array (ingredient names)
+
+### Examples
 "Add mushrooms to my carbonara recipe"
 → update_recipes({
     updates: [{
@@ -172,13 +176,14 @@ ACTION: IMMEDIATELY call update_recipes tool - NO text response, NO confirmation
     }]
   })
 
-## Delete Recipe Rules
+## "delete_recipes" tool Rules
 WHEN TO DELETE: User asks to remove/delete specific recipe(s)
 ACTION: IMMEDIATELY call delete_recipes tool - NO text response, NO confirmation, NO conversation
 - Call delete_recipes with an array of recipe IDs (1-10 per call)
 - Use the recipe UUIDs from session state (match by title/description mentioned)
 - Optionally include a reason for deletion
 
+### Examples
 "Remove my carbonara recipe"
 → delete_recipes({
     recipeIds: ["<uuid from session state>"]
@@ -190,12 +195,13 @@ ACTION: IMMEDIATELY call delete_recipes tool - NO text response, NO confirmation
     reason: "User no longer makes this recipe"
   })
 
-## Delete All Recipes Rules
+## "delete_all_recipes" tool Rules
 WHEN TO DELETE ALL: User asks to clear/remove/delete ALL recipes or start fresh
 ACTION: IMMEDIATELY call delete_all_recipes tool - NO text response, NO confirmation, NO conversation
 - Call delete_all_recipes to remove all tracked recipes
 - Optionally include a reason for deletion
 
+### Examples
 "Clear all my recipes"
 → delete_all_recipes({})
 
@@ -204,10 +210,17 @@ ACTION: IMMEDIATELY call delete_all_recipes tool - NO text response, NO confirma
     reason: "User wants to start fresh"
   })`,
     description:
-      "Tool-only agent: detects recipe intent (create/update/delete) and immediately calls appropriate tools without conversation.",
+      "Tool-only agent: detects recipe intent (create/update/delete/delete_all) and immediately calls appropriate tools without conversation.",
     versionId: "1.1.0",
     promptId: "1.0.0",
-    tags: ["recipe", "agent", "adk-js", "tool-only", "no-conversation"],
+    tags: [
+      "recipe",
+      "agent",
+      "adk-js",
+      "tool-only",
+      "no-conversation",
+      "explicit-tool-names",
+    ],
     type: "mustache",
   },
   client,
