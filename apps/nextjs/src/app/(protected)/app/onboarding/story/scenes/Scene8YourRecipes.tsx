@@ -25,19 +25,19 @@ interface ProcessRecipeResponse {
   noChangesDetected: boolean;
 }
 
-interface Scene7YourRecipesProps {
+interface Scene8YourRecipesProps {
   userRecipes: DemoRecipe[];
   onSetUserRecipes: (recipes: DemoRecipe[]) => void;
   onContinue: () => void;
   onRestart: () => void;
 }
 
-export function Scene7YourRecipes({
+export function Scene8YourRecipes({
   userRecipes,
   onSetUserRecipes,
   onContinue,
   onRestart,
-}: Scene7YourRecipesProps) {
+}: Scene8YourRecipesProps) {
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [lastTranscription, setLastTranscription] = useState<string>();

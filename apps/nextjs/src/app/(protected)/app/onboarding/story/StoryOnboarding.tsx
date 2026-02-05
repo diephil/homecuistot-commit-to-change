@@ -11,8 +11,8 @@ import { Scene3StoreKitchen } from "./scenes/Scene3StoreKitchen";
 import { Scene4Voice } from "./scenes/Scene4Voice";
 import { Scene5Ready } from "./scenes/Scene5Ready";
 import { Scene6Cooked } from "./scenes/Scene6Cooked";
-import { Scene7YourRecipes } from "./scenes/Scene7YourRecipes";
-import { Scene8Manifesto } from "./scenes/Scene8Manifesto";
+import { Scene8YourRecipes } from "./scenes/Scene8YourRecipes";
+import { Scene7Manifesto } from "./scenes/Scene7Manifesto";
 import { LOCALSTORAGE_KEY, COMPLETION_FLAG_KEY } from "@/lib/story-onboarding/constants";
 import type { StoryOnboardingState, DemoInventoryItem } from "@/lib/story-onboarding/types";
 import type { QuantityLevel } from "@/types/inventory";
@@ -175,14 +175,14 @@ export function StoryOnboarding() {
           />
         )}
         {state.currentScene === 7 && (
-          <Scene8Manifesto
+          <Scene7Manifesto
             inventory={state.demoInventory}
             demoRecipes={state.demoRecipes}
             onContinue={() => handleNavigate(8)}
           />
         )}
         {state.currentScene === 8 && (
-          <Scene7YourRecipes
+          <Scene8YourRecipes
             userRecipes={state.demoRecipes}
             onSetUserRecipes={setDemoRecipes}
             onContinue={handleCompleteOnboarding}

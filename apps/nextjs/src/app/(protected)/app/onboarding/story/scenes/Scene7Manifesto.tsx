@@ -4,19 +4,19 @@ import { Button } from "@/components/shared/Button";
 import { SCENE_TEXT } from "@/lib/story-onboarding/constants";
 import type { DemoInventoryItem, DemoRecipe } from "@/lib/story-onboarding/types";
 
-interface Scene8ManifestoProps {
+interface Scene7ManifestoProps {
   inventory: DemoInventoryItem[];
   demoRecipes: DemoRecipe[];
   onContinue: () => void;
   onRestart?: () => void;
 }
 
-export function Scene8Manifesto({
+export function Scene7Manifesto({
   inventory,
   demoRecipes,
   onContinue,
   onRestart,
-}: Scene8ManifestoProps) {
+}: Scene7ManifestoProps) {
   // Compute stagger delays
   const scene8Len = SCENE_TEXT.scene8.length;
   const manifestoStart = scene8Len * 0.4;
