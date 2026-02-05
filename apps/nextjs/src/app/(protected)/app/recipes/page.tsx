@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { PageContainer } from "@/components/PageContainer";
 import { RecipeCard } from "@/components/recipes/RecipeCard";
+import { AddRecipePlaceholderCard } from "@/components/recipes/AddRecipePlaceholderCard";
 import { RecipeHelpModal } from "@/components/recipes/HelpModal";
 import { RecipeVoiceGuidanceCard } from "@/components/recipes/VoiceGuidanceCard";
 import { RecipeProposalModal } from "@/components/recipes/RecipeProposalModal";
@@ -354,15 +355,11 @@ export default function RecipesPage() {
             }
           />
 
-          {recipes.length === 0 ? (
-          <div className="text-center py-4 space-y-2">
-            <p className="text-lg text-gray-600">No recipes yet</p>
-            <p className="text-sm text-gray-500">
-              Speak or type to add your first recipe
-            </p>
-          </div>
-        ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
+            {/* Show placeholder card only if 1 or fewer recipes */}
+            {recipes.length <= 1 && <AddRecipePlaceholderCard />}
+
+            {/* Show actual recipes */}
             {recipes.map((recipe) => (
               <RecipeCard
                 key={recipe.id}
@@ -372,7 +369,6 @@ export default function RecipesPage() {
               />
             ))}
           </div>
-        )}
         </section>
       </div>
 
