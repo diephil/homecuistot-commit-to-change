@@ -16,11 +16,10 @@ export function VoiceGuidanceCard({ onDismiss }: VoiceGuidanceCardProps) {
     <InfoCard
       variant="cyan"
       emoji="💬"
-      heading="Speak to update the list"
+      heading="Try this"
       onDismiss={onDismiss}
     >
       <ul className="list-disc list-inside space-y-1 text-sm">
-        <li>&quot;I just bought milk and eggs&quot;</li>
         <li>&quot;I have enough onions for at least 2 meals&quot;</li>
         <li>&quot;Running low on eggs&quot;</li>
         <li>&quot;I always have pasta in my pantry.&quot;</li>

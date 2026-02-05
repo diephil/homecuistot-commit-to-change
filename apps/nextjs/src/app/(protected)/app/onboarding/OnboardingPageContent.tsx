@@ -675,7 +675,7 @@ export function OnboardingPageContent() {
             </div>
 
             {/* T031, T034: Instructions with add/remove examples */}
-            <InfoCard variant="cyan" emoji="💬" heading="Speak to update the list">
+            <InfoCard variant="cyan" emoji="💬" heading="Try this">
               <div className="space-y-1 text-sm">
                 <p>&quot;Add sausage, mustard and ketchup&quot;</p>
                 <p>&quot;Actually I ran out of steack, I do have chicken breast&quot;</p>
