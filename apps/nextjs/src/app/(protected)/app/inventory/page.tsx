@@ -8,12 +8,10 @@ import { NeoHelpButton } from "@/components/shared/NeoHelpButton";
 import { ProposalConfirmationModal } from "@/components/inventory/ProposalConfirmationModal";
 import { DeleteConfirmationModal } from "@/components/shared/DeleteConfirmationModal";
 import { UnrecognizedItemRow } from "@/components/shared/UnrecognizedItemRow";
-import { VoiceGuidanceCard } from "@/components/inventory/VoiceGuidanceCard";
-import { VoiceTextInput, Separator } from "@/components/shared";
+import { VoiceTextInput, Separator, PageCallout } from "@/components/shared";
 import { InventoryDisplayItem, QuantityLevel, InventoryGroups, InventoryUpdateProposal } from "@/types/inventory";
 import { deleteUnrecognizedItem } from "@/app/actions/inventory";
 import { createClient } from "@/utils/supabase/client";
-import { Info } from "lucide-react";
 import { toast } from "sonner";
 
 // Feature 021: Unrecognized item type
@@ -51,24 +49,6 @@ export default function InventoryPage() {
       return localStorage.getItem("inventory:useWord") !== "false";
     } catch { return true; }
   });
-
-  // Banner dismiss state (persisted in localStorage)
-  const [bannerDismissed, setBannerDismissed] = useState(() => {
-    try {
-      if (typeof window === "undefined") return false;
-      return localStorage.getItem("banner:inventory:dismissed") === "true";
-    } catch { return false; }
-  });
-
-  const handleBannerDismiss = () => {
-    try { localStorage.setItem("banner:inventory:dismissed", "true"); } catch {}
-    setBannerDismissed(true);
-  };
-
-  const handleBannerRestore = () => {
-    try { localStorage.removeItem("banner:inventory:dismissed"); } catch {}
-    setBannerDismissed(false);
-  };
 
   useEffect(() => {
     try { localStorage.setItem("inventory:groupByCategory", String(groupByCategory)); } catch {}
@@ -416,34 +396,26 @@ export default function InventoryPage() {
         gradientTo="to-orange-50"
       >
         <div className="space-y-8">
-          <div className="flex items-center justify-between">
-            <h1 className="text-3xl font-bold">My Inventory</h1>
-            <NeoHelpButton
-              renderModal={({ isOpen, onClose }) => (
-                <HelpModal isOpen={isOpen} onClose={onClose} />
-              )}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <h1 className="text-3xl font-bold">My Inventory</h1>
+              <NeoHelpButton
+                renderModal={({ isOpen, onClose }) => (
+                  <HelpModal isOpen={isOpen} onClose={onClose} />
+                )}
+              />
+            </div>
+
+            {/* Description */}
+            <PageCallout
+              emoji="🎤"
+              title="Tell us what's in your fridge and pantry!"
+              description="Describe what ingredients you have on hand — we'll track them and show you what you can cook."
+              bgColor="pink"
             />
           </div>
 
           <div className="space-y-4">
-            {!bannerDismissed ? (
-              <VoiceGuidanceCard
-                onDismiss={handleBannerDismiss}
-              />
-            ) : (
-              <div className="flex justify-end">
-                <button
-                  type="button"
-                  onClick={handleBannerRestore}
-                  className="cursor-pointer border-2 border-black bg-cyan-200 p-1.5 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
-                  aria-label="Show voice guidance"
-                  title="Show voice guidance"
-                >
-                  <Info className="h-4 w-4" />
-                </button>
-              </div>
-            )}
-
             <VoiceTextInput
               onSubmit={handleVoiceTextSubmit}
               disabled={isProcessing}
@@ -486,35 +458,29 @@ export default function InventoryPage() {
     >
       <div className="space-y-8">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold">My Inventory</h1>
-          <NeoHelpButton
-            renderModal={({ isOpen, onClose }) => (
-              <HelpModal isOpen={isOpen} onClose={onClose} />
-            )}
-          />
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h1 className="text-3xl font-bold">My Inventory</h1>
+            <NeoHelpButton
+              renderModal={({ isOpen, onClose }) => (
+                <HelpModal isOpen={isOpen} onClose={onClose} />
+              )}
+            />
+          </div>
+
+          {/* Description */}
+          <div className="bg-pink-50 border-2 border-black p-4 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+            <p className="text-base font-semibold text-black/80">
+              🎤 Tell us what&apos;s in your fridge and pantry!
+            </p>
+            <p className="text-sm text-black/60 mt-1">
+              Describe what ingredients you have on hand — we&apos;ll track them and show you what you can cook.
+            </p>
+          </div>
         </div>
 
         {/* Voice Input Section */}
         <div className="space-y-4">
-          {!bannerDismissed ? (
-            <VoiceGuidanceCard
-              onDismiss={handleBannerDismiss}
-            />
-          ) : (
-            <div className="flex justify-end">
-              <button
-                type="button"
-                onClick={handleBannerRestore}
-                className="cursor-pointer border-2 border-black bg-cyan-200 p-1.5 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
-                aria-label="Show voice guidance"
-                title="Show voice guidance"
-              >
-                <Info className="h-4 w-4" />
-              </button>
-            </div>
-          )}
-
           <VoiceTextInput
             onSubmit={handleVoiceTextSubmit}
             disabled={isProcessing}
