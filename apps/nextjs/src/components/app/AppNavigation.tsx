@@ -16,7 +16,7 @@ type NavItem = {
 
 const navItems: NavItem[] = [
   { href: '/app', label: 'Home', icon: Home },
-  { href: '/app/recipes', label: 'My Cookbook', icon: Book },
+  { href: '/app/recipes', label: 'My Recipes', icon: Book },
   { href: '/app/inventory', label: 'Inventory', icon: Package },
   { href: '/app/onboarding/story', label: "Sarah's Story", icon: Sparkles, clearStoryState: true },
 ]
