@@ -1,7 +1,7 @@
 import type { InventoryDisplayItem, QuantityLevel } from '@/types/inventory'
 import type { RecipeWithAvailability, IngredientWithAvailability } from '@/types/cooking'
 import type { DemoInventoryItem, DemoRecipe } from './types'
-import { REQUIRED_ITEMS } from './constants'
+import { REQUIRED_ITEMS, REQUIRED_RECIPE_ITEMS } from './constants'
 
 /**
  * Story Onboarding Data Transformations
@@ -65,4 +65,34 @@ export function hasRequiredItems(inventory: DemoInventoryItem[]): boolean {
       item.name.toLowerCase() === required.toLowerCase() && item.quantityLevel > 0
     )
   )
+}
+
+export function hasRequiredRecipeItems(recipe: DemoRecipe): boolean {
+  const ingredientNames = recipe.ingredients.map(i => i.name.toLowerCase())
+
+  return REQUIRED_RECIPE_ITEMS.every(required =>
+    ingredientNames.includes(required.toLowerCase())
+  )
+}
+
+interface ApiRecipeResponse {
+  id: string
+  name: string
+  description?: string
+  ingredients: Array<{
+    id: string
+    name: string
+    type: 'anchor' | 'optional'
+  }>
+}
+
+export function toDemoRecipeFromApiResponse(apiRecipe: ApiRecipeResponse): DemoRecipe {
+  return {
+    name: apiRecipe.name,
+    description: apiRecipe.description || '',
+    ingredients: apiRecipe.ingredients.map(ing => ({
+      name: ing.name,
+      type: ing.type,
+    })),
+  }
 }

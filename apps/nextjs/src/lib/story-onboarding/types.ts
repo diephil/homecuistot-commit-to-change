@@ -27,10 +27,13 @@ export interface DemoRecipe {
 }
 
 export interface StoryOnboardingState {
-  currentScene: 1 | 2 | 3 | 4 | 5 | 6 | 7
+  currentScene: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8
   demoInventory: DemoInventoryItem[]
   demoRecipe: DemoRecipe
+  demoRecipes: DemoRecipe[]
   voiceInputsDone: boolean
+  recipeVoiceDone: boolean
+  userRecipesAdded: boolean
 }
 
 export interface StoryCompleteRequest {

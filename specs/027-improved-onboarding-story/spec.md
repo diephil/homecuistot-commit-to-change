@@ -9,7 +9,7 @@
 
 ### User Story 1 - Recipe Voice Input Scene (Priority: P1)
 
-A new user follows Sarah's story and is prompted to help Sarah tell HomeCuistot her carbonara recipe using voice/text input. The system extracts recipe ingredients via AI and validates that the required carbonara ingredients (egg, parmesan, pasta, bacon/guanciale) are present before allowing progression.
+A new user follows Sarah's story and is prompted to help Sarah tell HomeCuistot her carbonara recipe using voice/text input. The system extracts recipe ingredients via AI and validates that the exact required carbonara ingredients (egg, parmesan, pasta, bacon) are present before allowing progression. The extracted recipe is displayed using `RecipeAvailabilityCard` against Sarah's current kitchen inventory.
 
 **Why this priority**: Core new interactive scene (Scene 2) that replaces passive narrative with active engagement. Introduces the recipe concept early, making the rest of the flow (store, inventory, cooking) meaningful. Without this, remaining changes lose context.
 
@@ -17,26 +17,26 @@ A new user follows Sarah's story and is prompted to help Sarah tell HomeCuistot 
 
 **Acceptance Scenarios**:
 
-1. **Given** the user is on Scene 2 (Recipe Voice), **When** they describe a carbonara recipe containing egg, parmesan, pasta, and bacon, **Then** the system extracts recipe data, displays the recipe name and ingredients, and enables the Continue button.
+1. **Given** the user is on Scene 2 (Recipe Voice), **When** they describe a carbonara recipe containing egg, parmesan, pasta, and bacon, **Then** the system extracts recipe data, displays it via `RecipeAvailabilityCard` (showing availability against Sarah's kitchen), and enables the Continue button with outro text about missing ingredients.
 2. **Given** the user is on Scene 2, **When** they describe a recipe missing required ingredients (e.g., no egg), **Then** the Continue button remains disabled, the microphone stays active, and they must retry.
-3. **Given** the user has failed 3+ attempts on Scene 2, **When** the next attempt starts, **Then** a help/urgency banner is displayed to guide them.
-4. **Given** the user successfully passes Scene 2, **When** they proceed, **Then** the extracted recipe is stored locally and available for Scene 3's kitchen display and Scene 8's completion payload.
+3. **Given** the user has failed 2 attempts on Scene 2, **When** the 2nd failed result is shown, **Then** after a brief delay the system auto-provides Sarah's carbonara recipe, disables the microphone, and enables Continue with an assisted message.
+4. **Given** the user successfully passes Scene 2, **When** they proceed, **Then** the extracted recipe is stored locally and available for Scene 8's completion payload.
 
 ---
 
 ### User Story 2 - Merged Store + Kitchen Scene (Priority: P1)
 
-After Scene 2, the user sees the store narrative (Sarah stops at the store) immediately followed by the kitchen display (tracked ingredients, staples, and recipe availability with missing ingredients highlighted). This contextually places the kitchen view at the moment Sarah needs it -- while shopping.
+After Scene 2, the user sees the store narrative (Sarah stops at the store) followed by Sarah's kitchen display (tracked ingredients and staples only — no recipe card). The scene ends with Sarah grabbing what's missing. This contextually shows what Sarah has before she shops.
 
-**Why this priority**: Merges two previously separate scenes into one coherent narrative moment. Essential for story flow: Sarah is at the store checking what she's missing.
+**Why this priority**: Merges two previously separate scenes into one coherent narrative moment. Essential for story flow: Sarah is at the store checking what she has.
 
-**Independent Test**: Complete Scene 2, navigate to Scene 3, verify both store narrative and kitchen display (ingredients badges, recipe card with missing items) render correctly in sequence.
+**Independent Test**: Complete Scene 2, navigate to Scene 3, verify store narrative and kitchen display (ingredient badges, staples) render correctly in sequence without recipe card.
 
 **Acceptance Scenarios**:
 
-1. **Given** the user arrives at Scene 3, **When** the scene loads, **Then** the store narrative text appears first, followed by the kitchen display showing tracked ingredients and staples.
-2. **Given** the kitchen display is shown, **When** the recipe availability card renders, **Then** it shows the carbonara recipe with egg and parmesan marked as missing.
-3. **Given** Scene 2 was completed with an AI-extracted recipe, **When** Scene 3 displays the recipe card, **Then** it uses the AI-extracted recipe data from Scene 2 (not hardcoded data).
+1. **Given** the user arrives at Scene 3, **When** the scene loads, **Then** the store narrative appears first, followed by Sarah's kitchen (tracked ingredients + staples badges).
+2. **Given** the kitchen display is shown, **Then** it does NOT include a recipe availability card — only ingredient badges.
+3. **Given** the kitchen display is shown, **When** the outro renders, **Then** it says Sarah grabs what's missing (eggs and parmesan).
 
 ---
 
@@ -120,11 +120,11 @@ The carbonara quote is removed from Scene 1 (Dilemma) and relocated to Scene 2 a
 
 - **FR-001**: System MUST remove the carbonara quote from Scene 1 narrative text.
 - **FR-002**: System MUST provide a new Scene 2 where users describe a recipe via voice or text input, with AI-powered ingredient extraction.
-- **FR-003**: System MUST validate that Scene 2's extracted recipe contains egg (or eggs), parmesan, pasta, and bacon (or guanciale) before allowing progression.
-- **FR-004**: System MUST display the prompted sentence ("I can cook my family's pasta carbonara...") as a visual guide in Scene 2.
-- **FR-005**: System MUST show a help/urgency banner after 3+ failed validation attempts in Scene 2.
-- **FR-006**: System MUST merge the store narrative and kitchen display into a single Scene 3, showing the store text first followed by the kitchen view.
-- **FR-007**: Scene 3 MUST display the AI-extracted recipe from Scene 2 in the recipe availability card (not hardcoded data).
+- **FR-003**: System MUST validate that Scene 2's extracted recipe contains exact ingredient names: egg, parmesan, pasta, and bacon (no alternate names accepted) before allowing progression.
+- **FR-004**: System MUST display the prompted sentence as a visual guide in Scene 2, guiding the user to say the exact required ingredients.
+- **FR-005**: After 2 failed validation attempts in Scene 2, system MUST auto-provide Sarah's carbonara recipe, disable voice/text input, and show an assisted message enabling continuation.
+- **FR-006**: System MUST merge the store narrative and kitchen display into a single Scene 3, showing the store text first followed by tracked ingredients and staples badges (no recipe card).
+- **FR-007**: Scene 2 MUST display the AI-extracted recipe using `RecipeAvailabilityCard` showing availability against Sarah's current kitchen inventory. When gate passes, show outro text about missing eggs and parmesan above the Continue button.
 - **FR-008**: System MUST provide a new Scene 7 where users add their own recipes via voice or text input.
 - **FR-009**: Scene 7 MUST require at least 1 recipe before enabling progression.
 - **FR-010**: Scene 7 MUST display a count of added recipes and show each recipe as a card or list item.
@@ -166,3 +166,5 @@ The carbonara quote is removed from Scene 1 (Dilemma) and relocated to Scene 2 a
 - Scene 2 accepts any recipe name as long as required ingredients are present (ingredient-gated, not name-gated).
 - Scene 7 has no upper limit on recipes -- users can add as many as they want.
 - Both voice and text input are supported in Scene 2 and Scene 7, matching existing Scene 4 behavior.
+- Sarah's demo inventory is reduced to 4 tracked items (Pasta, Bacon, Parmesan, Egg) — Rice, Butter, and Milk removed for a cleaner demo.
+- Scene 2 fallback after 2 failed attempts auto-provides the constant CARBONARA_RECIPE, not an AI-generated recipe.

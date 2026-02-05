@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import type { StoryOnboardingState, DemoInventoryItem } from "@/lib/story-onboarding/types";
+import type { StoryOnboardingState, DemoInventoryItem, DemoRecipe } from "@/lib/story-onboarding/types";
 import {
   LOCALSTORAGE_KEY,
   SARAH_INITIAL_INVENTORY,
@@ -12,7 +12,10 @@ const DEFAULT_STATE: StoryOnboardingState = {
   currentScene: 1,
   demoInventory: SARAH_INITIAL_INVENTORY,
   demoRecipe: CARBONARA_RECIPE,
+  demoRecipes: [],
   voiceInputsDone: false,
+  recipeVoiceDone: false,
+  userRecipesAdded: false,
 };
 
 function readState(): StoryOnboardingState {
@@ -67,6 +70,32 @@ export function useStoryState() {
     setState((prev) => ({ ...prev, voiceInputsDone: true }));
   }, []);
 
+  const updateDemoRecipe = useCallback((recipe: DemoRecipe) => {
+    setState((prev) => ({
+      ...prev,
+      demoRecipe: recipe,
+    }));
+  }, []);
+
+  const addDemoRecipe = useCallback((recipe: DemoRecipe) => {
+    setState((prev) => ({
+      ...prev,
+      demoRecipes: [...prev.demoRecipes, recipe],
+    }));
+  }, []);
+
+  const setDemoRecipes = useCallback((recipes: DemoRecipe[]) => {
+    setState((prev) => ({ ...prev, demoRecipes: recipes }));
+  }, []);
+
+  const setRecipeVoiceDone = useCallback(() => {
+    setState((prev) => ({ ...prev, recipeVoiceDone: true }));
+  }, []);
+
+  const setUserRecipesAdded = useCallback(() => {
+    setState((prev) => ({ ...prev, userRecipesAdded: true }));
+  }, []);
+
   const reset = useCallback(() => {
     if (typeof window !== "undefined") {
       localStorage.removeItem(LOCALSTORAGE_KEY);
@@ -80,6 +109,11 @@ export function useStoryState() {
     goToScene,
     updateInventory,
     markVoiceDone,
+    updateDemoRecipe,
+    addDemoRecipe,
+    setDemoRecipes,
+    setRecipeVoiceDone,
+    setUserRecipesAdded,
     reset,
   };
 }

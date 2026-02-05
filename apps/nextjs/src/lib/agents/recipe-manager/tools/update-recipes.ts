@@ -35,7 +35,9 @@ const UpdateInputSchema = z.object({
       .min(1)
       .max(200)
       .optional()
-      .describe("New recipe description"),
+      .describe(
+        "New recipe description, up to 3 sentences describing the recipe",
+      ),
     addIngredients: z
       .array(IngredientInputSchema)
       .max(10)

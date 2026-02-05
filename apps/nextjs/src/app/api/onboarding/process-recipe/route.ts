@@ -176,6 +176,8 @@ export async function POST(request: Request) {
       additionalTags,
     });
 
+    console.log("Agent result", JSON.stringify(result, null, 2));
+
     // 5. Apply proposal in-memory
     const updatedRecipes = applyProposalInMemory(
       sessionRecipes,
