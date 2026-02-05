@@ -33,8 +33,8 @@ export function createDeleteRecipesTool(params: {
 
   return new FunctionTool({
     name: "delete_recipes",
-    description: `Delete one or more existing recipes from the tracked recipes.
-Call this when user wants to remove recipes entirely or when describing recipies they don't make.
+    description: `Delete one or more specific recipes from the tracked recipes.
+Call this when user wants to remove specific recipes by name or description.
 Use recipe IDs from the session state context.
 Accepts 1-10 recipe IDs per call.`,
     parameters: DeleteRecipesInput,

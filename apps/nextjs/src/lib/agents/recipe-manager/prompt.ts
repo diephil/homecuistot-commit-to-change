@@ -173,7 +173,7 @@ ACTION: IMMEDIATELY call update_recipes tool - NO text response, NO confirmation
   })
 
 ## Delete Recipe Rules
-WHEN TO DELETE: User asks to remove/delete a recipe
+WHEN TO DELETE: User asks to remove/delete specific recipe(s)
 ACTION: IMMEDIATELY call delete_recipes tool - NO text response, NO confirmation, NO conversation
 - Call delete_recipes with an array of recipe IDs (1-10 per call)
 - Use the recipe UUIDs from session state (match by title/description mentioned)
@@ -188,6 +188,20 @@ ACTION: IMMEDIATELY call delete_recipes tool - NO text response, NO confirmation
 → delete_recipes({
     recipeIds: ["<uuid from session state>"],
     reason: "User no longer makes this recipe"
+  })
+
+## Delete All Recipes Rules
+WHEN TO DELETE ALL: User asks to clear/remove/delete ALL recipes or start fresh
+ACTION: IMMEDIATELY call delete_all_recipes tool - NO text response, NO confirmation, NO conversation
+- Call delete_all_recipes to remove all tracked recipes
+- Optionally include a reason for deletion
+
+"Clear all my recipes"
+→ delete_all_recipes({})
+
+"Delete everything and start fresh"
+→ delete_all_recipes({
+    reason: "User wants to start fresh"
   })`,
     description:
       "Tool-only agent: detects recipe intent (create/update/delete) and immediately calls appropriate tools without conversation.",
