@@ -198,6 +198,9 @@ export async function createInventoryManagerAgentProposal(
     // 5. Set output and end trace
     const finalProposal = proposal ?? { recognized: [], unrecognized: [] };
     const hasUnrecognized = finalProposal.unrecognized.length > 0;
+    const hasResults =
+      finalProposal.recognized.length > 0 ||
+      finalProposal.unrecognized.length > 0;
     traceCtx.trace.update({
       output: {
         recognized: finalProposal.recognized,
@@ -215,7 +218,7 @@ export async function createInventoryManagerAgentProposal(
 
     return {
       proposal: finalProposal,
-      transcribedText: audioBase64 ? textInput : undefined,
+      transcribedText: audioBase64 && hasResults ? textInput : undefined,
       usage,
     };
   } catch (error) {

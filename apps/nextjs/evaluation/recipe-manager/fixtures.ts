@@ -62,4 +62,12 @@ export const ING = {
   garlic: "1923cfa3-14d6-45fe-badb-d7db1abdcc1c",
   onion: "7fba37ba-ff5c-486b-824b-83e9c57f0a06",
   pepper: "3e490c4e-9369-447a-8864-78de4e1cdbca",
+  broccoli: "1c1e8203-ec07-4393-93c6-7ab1a42ed31d",
+  goat_cheese: "8515c1bf-766a-4321-9051-fe0c959cf803",
+  flour: "11a6e154-80b8-4a51-a0ea-66a425bb0463",
+  yeast: "d1294dc4-7bcc-44ec-ad62-f15aa223a2d8",
+  veal: "df33110d-95f5-4a70-a11f-ebb3fd2569db",
+  dill: "d40d6274-7bb2-4bd5-b639-d27621d28858",
+  cream: "db14db58-77f9-4482-9948-8fbe3f7ce2f9",
+  carrot: "3b9c7bff-f86c-42fa-af74-e0ad6fe883cd",
 };

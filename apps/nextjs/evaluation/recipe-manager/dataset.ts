@@ -1,6 +1,6 @@
 /**
  * Dataset: Recipe Manager Evaluation Test Cases
- * 33 test cases covering create, update, delete, delete_all operations
+ * 35 test cases covering create, update, delete, delete_all operations
  */
 
 import { Dataset } from "../types";
@@ -11,7 +11,7 @@ export type { RecipeDatasetItem };
 
 const DATASET_ENTRIES: RecipeDatasetItem[] = [
   // ============================================================================
-  // Basic Create (3 examples)
+  // Basic Create (5 examples)
   // ============================================================================
   {
     input: "Add scrambled eggs",
@@ -128,6 +128,120 @@ const DATASET_ENTRIES: RecipeDatasetItem[] = [
       input_locale: "en",
       category: "basic_create",
       comment: "Multiple create",
+      version: 1,
+    },
+  },
+  {
+    input:
+      "Okay, so I can do a quiche that is made of broccoli and goat cheese, and I need eggs and flour to do that, and I need also some levure. I don't know how to say that in English",
+    expected_output: {
+      recipes: [
+        {
+          operation: "create_batch",
+          results: [
+            {
+              operation: "create",
+              index: 0,
+              title: "Quiche",
+              description: "Quiche with broccoli and goat cheese",
+              ingredients: [
+                {
+                  ingredientId: ING.broccoli,
+                  name: "broccoli",
+                  isRequired: true,
+                },
+                {
+                  ingredientId: ING.goat_cheese,
+                  name: "goat cheese",
+                  isRequired: true,
+                },
+                { ingredientId: ING.egg, name: "egg", isRequired: true },
+                { ingredientId: ING.flour, name: "flour", isRequired: true },
+                { ingredientId: ING.yeast, name: "yeast", isRequired: true },
+              ],
+              matched: [
+                {
+                  ingredientId: ING.broccoli,
+                  name: "broccoli",
+                  isRequired: true,
+                },
+                {
+                  ingredientId: ING.goat_cheese,
+                  name: "goat cheese",
+                  isRequired: true,
+                },
+                { ingredientId: ING.egg, name: "egg", isRequired: true },
+                { ingredientId: ING.flour, name: "flour", isRequired: true },
+                { ingredientId: ING.yeast, name: "yeast", isRequired: true },
+              ],
+              unrecognized: [],
+            },
+          ],
+          totalCreated: 1,
+          totalUnrecognized: 0,
+        },
+      ],
+      noChangesDetected: false,
+    },
+    metadata: {
+      trackedRecipes: new RecipeFixture().build(),
+      input_locale: "en",
+      category: "basic_create",
+      comment:
+        "Single create - 'I can do' phrasing with all ingredients specified with french words",
+      version: 1,
+    },
+  },
+  {
+    input:
+      "I can do some blanquette de veau, and in the blanquette de veau, there is dill, cream, and some other ingredients that I don't know, but help me add those.",
+    expected_output: {
+      recipes: [
+        {
+          operation: "create_batch",
+          results: [
+            {
+              operation: "create",
+              index: 0,
+              title: "Blanquette de veau",
+              description: "Traditional French veal stew with dill and cream.",
+              ingredients: [
+                { ingredientId: ING.veal, name: "veal", isRequired: true },
+                { ingredientId: ING.dill, name: "dill", isRequired: true },
+                { ingredientId: ING.cream, name: "cream", isRequired: true },
+                { ingredientId: ING.onion, name: "onion", isRequired: true },
+                { ingredientId: ING.butter, name: "butter", isRequired: true },
+                { ingredientId: ING.flour, name: "flour", isRequired: true },
+                { ingredientId: ING.carrot, name: "carrot", isRequired: true },
+                { ingredientId: ING.salt, name: "salt", isRequired: true },
+                { ingredientId: ING.pepper, name: "pepper", isRequired: true },
+              ],
+              matched: [
+                { ingredientId: ING.veal, name: "veal", isRequired: true },
+                { ingredientId: ING.dill, name: "dill", isRequired: true },
+                { ingredientId: ING.cream, name: "cream", isRequired: true },
+                { ingredientId: ING.onion, name: "onion", isRequired: true },
+                { ingredientId: ING.butter, name: "butter", isRequired: true },
+                { ingredientId: ING.flour, name: "flour", isRequired: true },
+                { ingredientId: ING.carrot, name: "carrot", isRequired: true },
+                { ingredientId: ING.salt, name: "salt", isRequired: true },
+                { ingredientId: ING.pepper, name: "pepper", isRequired: true },
+              ],
+              unrecognized: [],
+            },
+          ],
+          totalCreated: 1,
+          totalUnrecognized: 0,
+        },
+      ],
+      noChangesDetected: false,
+    },
+    metadata: {
+      trackedRecipes: new RecipeFixture().build(),
+      input_locale: "en",
+      category: "basic_create",
+      comment:
+        "Single create - French dish, partial ingredients + request for LLM to add missing ingredients",
       version: 1,
     },
   },
