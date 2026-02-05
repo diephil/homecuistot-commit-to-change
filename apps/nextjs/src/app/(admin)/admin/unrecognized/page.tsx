@@ -15,7 +15,7 @@ interface SpanItem {
   existsInDb: boolean;
 }
 
-interface LoadedSpan {
+interface SpanEntry {
   spanId: string;
   spanName: string;
   traceId: string;
@@ -31,15 +31,20 @@ interface PromotionEntry {
 
 export default function UnrecognizedItemsPage() {
   const [opikInfo, setOpikInfo] = useState<OpikInfo | null>(null);
-  const [loadedSpan, setLoadedSpan] = useState<LoadedSpan | null>(null);
-  const [promotions, setPromotions] = useState<Record<string, PromotionEntry>>(
-    {},
-  );
-  const [dismissedItems, setDismissedItems] = useState<Set<string>>(new Set());
+  const [spans, setSpans] = useState<SpanEntry[]>([]);
+  const [promotions, setPromotions] = useState<
+    Record<string, Record<string, PromotionEntry>>
+  >({});
+  const [dismissedItems, setDismissedItems] = useState<
+    Record<string, Set<string>>
+  >({});
   const [isLoading, setIsLoading] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [processingSpans, setProcessingSpans] = useState<Set<string>>(
+    new Set(),
+  );
   const [error, setError] = useState<string | null>(null);
-  const [hasReviewedSpan, setHasReviewedSpan] = useState(false);
+  const [queueEmpty, setQueueEmpty] = useState(false);
+  const [hasLoaded, setHasLoaded] = useState(false);
 
   useEffect(() => {
     fetch("/api/admin/opik-info")
@@ -47,14 +52,13 @@ export default function UnrecognizedItemsPage() {
       .then(setOpikInfo)
       .catch(() => {});
   }, []);
-  const [queueEmpty, setQueueEmpty] = useState(false);
 
-  const handleLoadSpan = async () => {
+  const handleLoadSpans = async () => {
     setIsLoading(true);
     setError(null);
-    setLoadedSpan(null);
+    setSpans([]);
     setPromotions({});
-    setDismissedItems(new Set());
+    setDismissedItems({});
     setQueueEmpty(false);
 
     try {
@@ -62,73 +66,89 @@ export default function UnrecognizedItemsPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.error || "Failed to load span");
+        setError(data.error || "Failed to load spans");
         return;
       }
 
-      if (!data.spanId) {
+      const loadedSpans: SpanEntry[] = data.spans ?? [];
+
+      if (loadedSpans.length === 0) {
         setQueueEmpty(true);
         toast.info("No more spans to review");
         return;
       }
 
-      setLoadedSpan(data);
+      setSpans(loadedSpans);
 
-      // Initialize promotions for NEW items only (not existing in DB)
-      const initial: Record<string, PromotionEntry> = {};
-      for (const item of data.items as SpanItem[]) {
-        if (!item.existsInDb) {
-          initial[item.name] = { name: item.name, category: "non_classified" };
+      // Initialize promotions per span
+      const initialPromotions: Record<string, Record<string, PromotionEntry>> =
+        {};
+      for (const span of loadedSpans) {
+        const spanPromos: Record<string, PromotionEntry> = {};
+        for (const item of span.items) {
+          if (!item.existsInDb) {
+            spanPromos[item.name] = {
+              name: item.name,
+              category: "non_classified",
+            };
+          }
         }
+        initialPromotions[span.spanId] = spanPromos;
       }
-      setPromotions(initial);
+      setPromotions(initialPromotions);
 
-      const newCount = data.items.filter(
-        (i: SpanItem) => !i.existsInDb,
-      ).length;
-      const existingCount = data.items.length - newCount;
-      const parts: string[] = [`${newCount} new`];
-      if (existingCount > 0) parts.push(`${existingCount} already in DB`);
-      toast.success(`Loaded ${data.items.length} items (${parts.join(", ")})`);
+      toast.success(`Loaded ${loadedSpans.length} span(s)`);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Unknown error";
       setError(message);
     } finally {
       setIsLoading(false);
+      setHasLoaded(true);
     }
   };
 
-  const handleCategoryChange = (itemName: string, category: string) => {
+  const handleCategoryChange = (params: {
+    spanId: string;
+    itemName: string;
+    category: string;
+  }) => {
     setPromotions((prev) => ({
       ...prev,
-      [itemName]: { name: itemName, category },
+      [params.spanId]: {
+        ...prev[params.spanId],
+        [params.itemName]: { name: params.itemName, category: params.category },
+      },
     }));
   };
 
-  const handleDismissItem = (itemName: string) => {
-    setDismissedItems((prev) => new Set(prev).add(itemName));
-  };
-
-  const handleUndoDismiss = (itemName: string) => {
+  const handleDismissItem = (params: { spanId: string; itemName: string }) => {
     setDismissedItems((prev) => {
-      const next = new Set(prev);
-      next.delete(itemName);
-      return next;
+      const spanSet = new Set(prev[params.spanId] ?? []);
+      spanSet.add(params.itemName);
+      return { ...prev, [params.spanId]: spanSet };
     });
   };
 
-  // Promotable = new items that are NOT dismissed
-  const promotableItems = loadedSpan
-    ? loadedSpan.items.filter(
-        (item) => !item.existsInDb && !dismissedItems.has(item.name),
-      )
-    : [];
+  const handleUndoDismiss = (params: { spanId: string; itemName: string }) => {
+    setDismissedItems((prev) => {
+      const spanSet = new Set(prev[params.spanId] ?? []);
+      spanSet.delete(params.itemName);
+      return { ...prev, [params.spanId]: spanSet };
+    });
+  };
 
-  const handlePromote = async () => {
-    if (!loadedSpan) return;
+  const getPromotableItems = (span: SpanEntry) => {
+    const dismissed = dismissedItems[span.spanId] ?? new Set();
+    return span.items.filter(
+      (item) => !item.existsInDb && !dismissed.has(item.name),
+    );
+  };
 
-    const items = promotableItems
-      .map((item) => promotions[item.name])
+  const handlePromoteSpan = async (span: SpanEntry) => {
+    const promotable = getPromotableItems(span);
+    const spanPromos = promotions[span.spanId] ?? {};
+    const items = promotable
+      .map((item) => spanPromos[item.name])
       .filter(Boolean);
 
     if (items.length === 0) {
@@ -136,17 +156,14 @@ export default function UnrecognizedItemsPage() {
       return;
     }
 
-    setIsProcessing(true);
+    setProcessingSpans((prev) => new Set(prev).add(span.spanId));
     setError(null);
 
     try {
       const response = await fetch("/api/admin/ingredients/promote", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          spanId: loadedSpan.spanId,
-          promotions: items,
-        }),
+        body: JSON.stringify({ spanId: span.spanId, promotions: items }),
       });
 
       const data = await response.json();
@@ -161,29 +178,28 @@ export default function UnrecognizedItemsPage() {
         toast.info(`${data.skipped} duplicate(s) skipped`);
       }
 
-      setLoadedSpan(null);
-      setPromotions({});
-      setDismissedItems(new Set());
-      setHasReviewedSpan(true);
+      removeSpan(span.spanId);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Unknown error";
       setError(message);
     } finally {
-      setIsProcessing(false);
+      setProcessingSpans((prev) => {
+        const next = new Set(prev);
+        next.delete(span.spanId);
+        return next;
+      });
     }
   };
 
-  const handleMarkReviewed = async () => {
-    if (!loadedSpan) return;
-
-    setIsProcessing(true);
+  const handleMarkReviewed = async (spanId: string) => {
+    setProcessingSpans((prev) => new Set(prev).add(spanId));
     setError(null);
 
     try {
       const response = await fetch("/api/admin/spans/mark-reviewed", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ spanId: loadedSpan.spanId }),
+        body: JSON.stringify({ spanId }),
       });
 
       if (!response.ok) {
@@ -193,40 +209,42 @@ export default function UnrecognizedItemsPage() {
       }
 
       toast.success("Span marked as reviewed");
-      setLoadedSpan(null);
-      setPromotions({});
-      setDismissedItems(new Set());
-      setHasReviewedSpan(true);
+      removeSpan(spanId);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Unknown error";
       setError(message);
     } finally {
-      setIsProcessing(false);
+      setProcessingSpans((prev) => {
+        const next = new Set(prev);
+        next.delete(spanId);
+        return next;
+      });
     }
   };
 
-  const handleDismissAll = async () => {
-    if (!loadedSpan) return;
-    if (!confirm("Dismiss all items without promoting? This cannot be undone."))
-      return;
-
-    await handleMarkReviewed();
+  const removeSpan = (spanId: string) => {
+    setSpans((prev) => prev.filter((s) => s.spanId !== spanId));
+    setPromotions((prev) => {
+      const next = { ...prev };
+      delete next[spanId];
+      return next;
+    });
+    setDismissedItems((prev) => {
+      const next = { ...prev };
+      delete next[spanId];
+      return next;
+    });
   };
 
-  const getItemStatus = (
-    item: SpanItem,
-  ): "active" | "dismissed" | "existing" => {
-    if (item.existsInDb) return "existing";
-    if (dismissedItems.has(item.name)) return "dismissed";
+  const getItemStatus = (params: {
+    span: SpanEntry;
+    item: SpanItem;
+  }): "active" | "dismissed" | "existing" => {
+    if (params.item.existsInDb) return "existing";
+    if (dismissedItems[params.span.spanId]?.has(params.item.name))
+      return "dismissed";
     return "active";
   };
-
-  const newItemCount = loadedSpan
-    ? loadedSpan.items.filter((i) => !i.existsInDb).length
-    : 0;
-  const existingItemCount = loadedSpan
-    ? loadedSpan.items.filter((i) => i.existsInDb).length
-    : 0;
 
   return (
     <PageContainer
@@ -246,9 +264,11 @@ export default function UnrecognizedItemsPage() {
           </p>
           {opikInfo && (
             <p className="mt-3 text-sm font-mono font-bold text-black/50">
-              Opik workspace: <span className="text-black/70">{opikInfo.workspace}</span>
+              Opik workspace:{" "}
+              <span className="text-black/70">{opikInfo.workspace}</span>
               {" / "}
-              project: <span className="text-black/70">{opikInfo.projectName}</span>
+              project:{" "}
+              <span className="text-black/70">{opikInfo.projectName}</span>
             </p>
           )}
         </div>
@@ -260,8 +280,8 @@ export default function UnrecognizedItemsPage() {
           </div>
         )}
 
-        {/* Load CTA, queue empty, or review list */}
-        {!loadedSpan ? (
+        {/* Load CTA or queue empty */}
+        {spans.length === 0 ? (
           queueEmpty ? (
             <div className="border-4 md:border-6 border-black bg-gradient-to-br from-green-200 to-emerald-300 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] md:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-6 md:p-10">
               <div className="text-center space-y-4">
@@ -274,7 +294,7 @@ export default function UnrecognizedItemsPage() {
                   recipes are created.
                 </p>
                 <button
-                  onClick={handleLoadSpan}
+                  onClick={handleLoadSpans}
                   disabled={isLoading}
                   className="bg-cyan-300 hover:bg-cyan-400 disabled:opacity-50 border-4 border-black px-8 py-4 font-black uppercase text-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] cursor-pointer transition"
                 >
@@ -285,152 +305,190 @@ export default function UnrecognizedItemsPage() {
           ) : (
             <div className="border-4 md:border-6 border-black bg-gradient-to-br from-blue-200 to-blue-300 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] md:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-6 md:p-10">
               <div className="text-center space-y-4">
-                {hasReviewedSpan && (
+                {hasLoaded && (
                   <p className="text-2xl font-black uppercase text-green-700 mb-2">
-                    ✓ Span complete
+                    ✓ Batch complete
                   </p>
                 )}
                 <p className="text-lg font-bold">
-                  {hasReviewedSpan
-                    ? "Ready for the next span"
-                    : "Click below to load the next unrecognized ingredient span"}
+                  {hasLoaded
+                    ? "Ready for the next batch"
+                    : "Click below to load up to 5 unrecognized ingredient spans"}
                 </p>
                 <button
-                  onClick={handleLoadSpan}
+                  onClick={handleLoadSpans}
                   disabled={isLoading}
                   className="bg-cyan-300 hover:bg-cyan-400 disabled:opacity-50 border-4 border-black px-8 py-4 font-black uppercase text-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] cursor-pointer transition"
                 >
-                  {isLoading ? "Loading..." : "↓ Load Next Span"}
+                  {isLoading ? "Loading..." : "↓ Load Next 5 Spans"}
                 </button>
               </div>
             </div>
           )
         ) : (
           <div className="space-y-6">
-            {/* Span info */}
-            <div className="border-4 md:border-6 border-black bg-white shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] md:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-6 md:p-8">
-              <div className="flex justify-between items-start mb-4 gap-4">
-                <h2 className="text-2xl md:text-3xl font-black uppercase">
-                  {loadedSpan.items.length} Item(s) to Review
-                </h2>
-                <div className="flex gap-3 text-center shrink-0">
-                  {existingItemCount > 0 && (
-                    <div className="border-3 border-black bg-gray-100 px-3 py-2 min-w-[56px] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-                      <div className="text-lg font-black leading-tight">{existingItemCount}</div>
-                      <div className="text-[10px] font-bold uppercase tracking-wide text-gray-600">in DB</div>
-                    </div>
-                  )}
-                  <div className="border-3 border-black bg-lime-200 px-3 py-2 min-w-[56px] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-                    <div className="text-lg font-black leading-tight">{newItemCount}</div>
-                    <div className="text-[10px] font-bold uppercase tracking-wide text-gray-700">new</div>
-                  </div>
-                  <div className="border-3 border-black bg-purple-100 px-3 py-2 min-w-[56px] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-                    <div className="text-lg font-black leading-tight">{loadedSpan.totalInSpan}</div>
-                    <div className="text-[10px] font-bold uppercase tracking-wide text-gray-600">total</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Span metadata */}
-              <div className="border-2 border-gray-200 bg-gray-50 rounded p-3 mb-4 space-y-2 text-xs">
-                <div className="flex items-center gap-2 font-mono text-gray-500">
-                  <span className="font-bold uppercase text-[10px] tracking-wider text-gray-400 w-10 shrink-0">Span</span>
-                  <span className="font-bold text-gray-600">{loadedSpan.spanName}</span>
-                  <span className="text-gray-300">|</span>
-                  <button
-                    onClick={() => {
-                      navigator.clipboard.writeText(loadedSpan.spanId);
-                      toast.success("Span ID copied");
-                    }}
-                    className="hover:text-black hover:bg-gray-100 px-1.5 py-0.5 rounded border border-transparent hover:border-gray-300 transition cursor-pointer truncate"
-                    title="Click to copy span ID"
-                  >
-                    {loadedSpan.spanId}
-                  </button>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="font-bold uppercase text-[10px] tracking-wider text-gray-400 w-10 shrink-0">Tags</span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {loadedSpan.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="bg-white border border-gray-300 px-2 py-0.5 rounded font-mono text-gray-600"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-                <p className="text-gray-400 italic text-[11px] pl-12">
-                  Promoting or marking as reviewed will add the <code className="bg-gray-200 px-1 rounded text-gray-600 not-italic">promotion_reviewed</code> tag so this span won&apos;t appear again.
-                </p>
-              </div>
-
-              {/* Item rows */}
-              <div className="space-y-4 mb-6">
-                {loadedSpan.items.map((item) => {
-                  const status = getItemStatus(item);
-                  return (
-                    <ItemReviewRow
-                      key={item.name}
-                      itemName={item.name}
-                      status={status}
-                      category={promotions[item.name]?.category}
-                      onCategoryChange={
-                        status === "active"
-                          ? (cat) => handleCategoryChange(item.name, cat)
-                          : undefined
-                      }
-                      onRemove={
-                        status === "active"
-                          ? () => handleDismissItem(item.name)
-                          : undefined
-                      }
-                      onUndo={
-                        status === "dismissed"
-                          ? () => handleUndoDismiss(item.name)
-                          : undefined
-                      }
-                    />
-                  );
-                })}
-              </div>
+            {/* Summary bar */}
+            <div className="flex items-center justify-between border-4 border-black bg-white p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+              <p className="font-black uppercase text-lg">
+                {spans.length} span(s) remaining
+              </p>
+              <button
+                onClick={handleLoadSpans}
+                disabled={isLoading}
+                className="bg-cyan-300 hover:bg-cyan-400 disabled:opacity-50 border-3 border-black px-4 py-2 font-black uppercase text-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] cursor-pointer transition"
+              >
+                {isLoading ? "Loading..." : "↻ Reload"}
+              </button>
             </div>
 
-            {/* Action buttons */}
-            <div className="flex gap-4 flex-wrap">
-              {promotableItems.length > 0 ? (
-                <>
-                  <button
-                    onClick={handlePromote}
-                    disabled={isProcessing}
-                    className="flex-1 bg-green-300 hover:bg-green-400 disabled:opacity-50 border-4 border-black px-6 py-4 font-black uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] cursor-pointer transition"
-                  >
-                    {isProcessing
-                      ? "Processing..."
-                      : `✓ Promote (${promotableItems.length})`}
-                  </button>
+            {/* Span cards */}
+            {spans.map((span) => {
+              const isProcessing = processingSpans.has(span.spanId);
+              const newCount = span.items.filter((i) => !i.existsInDb).length;
+              const existingCount = span.items.length - newCount;
+              const promotable = getPromotableItems(span);
 
-                  <button
-                    onClick={handleDismissAll}
-                    disabled={isProcessing}
-                    className="flex-1 bg-red-300 hover:bg-red-400 disabled:opacity-50 border-4 border-black px-6 py-4 font-black uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] cursor-pointer transition"
-                  >
-                    {isProcessing ? "Processing..." : "✗ Dismiss All"}
-                  </button>
-                </>
-              ) : (
-                <button
-                  onClick={handleMarkReviewed}
-                  disabled={isProcessing}
-                  className="flex-1 bg-orange-300 hover:bg-orange-400 disabled:opacity-50 border-4 border-black px-6 py-4 font-black uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] cursor-pointer transition"
+              return (
+                <div
+                  key={span.spanId}
+                  className="border-4 md:border-6 border-black bg-white shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] md:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-6 md:p-8"
                 >
-                  {isProcessing
-                    ? "Processing..."
-                    : "→ Mark as Reviewed (no items to promote)"}
-                </button>
-              )}
-            </div>
+                  {/* Span header */}
+                  <div className="flex justify-between items-start mb-4 gap-4">
+                    <h2 className="text-xl md:text-2xl font-black uppercase">
+                      {span.items.length} Item(s)
+                    </h2>
+                    <div className="flex gap-3 text-center shrink-0">
+                      {existingCount > 0 && (
+                        <div className="border-3 border-black bg-gray-100 px-3 py-2 min-w-[56px] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                          <div className="text-lg font-black leading-tight">
+                            {existingCount}
+                          </div>
+                          <div className="text-[10px] font-bold uppercase tracking-wide text-gray-600">
+                            in DB
+                          </div>
+                        </div>
+                      )}
+                      <div className="border-3 border-black bg-lime-200 px-3 py-2 min-w-[56px] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                        <div className="text-lg font-black leading-tight">
+                          {newCount}
+                        </div>
+                        <div className="text-[10px] font-bold uppercase tracking-wide text-gray-700">
+                          new
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Span metadata */}
+                  <div className="border-2 border-gray-200 bg-gray-50 rounded p-3 mb-4 space-y-2 text-xs">
+                    <div className="flex items-center gap-2 font-mono text-gray-500">
+                      <span className="font-bold uppercase text-[10px] tracking-wider text-gray-400 w-10 shrink-0">
+                        Span
+                      </span>
+                      <span className="font-bold text-gray-600">
+                        {span.spanName}
+                      </span>
+                      <span className="text-gray-300">|</span>
+                      <button
+                        onClick={() => {
+                          navigator.clipboard.writeText(span.spanId);
+                          toast.success("Span ID copied");
+                        }}
+                        className="hover:text-black hover:bg-gray-100 px-1.5 py-0.5 rounded border border-transparent hover:border-gray-300 transition cursor-pointer truncate"
+                        title="Click to copy span ID"
+                      >
+                        {span.spanId}
+                      </button>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold uppercase text-[10px] tracking-wider text-gray-400 w-10 shrink-0">
+                        Tags
+                      </span>
+                      <div className="flex flex-wrap gap-1.5">
+                        {span.tags.map((tag) => (
+                          <span
+                            key={tag}
+                            className="bg-white border border-gray-300 px-2 py-0.5 rounded font-mono text-gray-600"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Item rows */}
+                  <div className="space-y-4 mb-6">
+                    {span.items.map((item) => {
+                      const status = getItemStatus({ span, item });
+                      return (
+                        <ItemReviewRow
+                          key={item.name}
+                          itemName={item.name}
+                          status={status}
+                          category={
+                            promotions[span.spanId]?.[item.name]?.category
+                          }
+                          onCategoryChange={
+                            status === "active"
+                              ? (cat) =>
+                                  handleCategoryChange({
+                                    spanId: span.spanId,
+                                    itemName: item.name,
+                                    category: cat,
+                                  })
+                              : undefined
+                          }
+                          onRemove={
+                            status === "active"
+                              ? () =>
+                                  handleDismissItem({
+                                    spanId: span.spanId,
+                                    itemName: item.name,
+                                  })
+                              : undefined
+                          }
+                          onUndo={
+                            status === "dismissed"
+                              ? () =>
+                                  handleUndoDismiss({
+                                    spanId: span.spanId,
+                                    itemName: item.name,
+                                  })
+                              : undefined
+                          }
+                        />
+                      );
+                    })}
+                  </div>
+
+                  {/* Per-span action buttons */}
+                  <div className="flex gap-3 flex-wrap">
+                    {promotable.length > 0 && (
+                      <button
+                        onClick={() => handlePromoteSpan(span)}
+                        disabled={isProcessing}
+                        className="flex-1 bg-green-300 hover:bg-green-400 disabled:opacity-50 border-4 border-black px-4 py-3 font-black uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] cursor-pointer transition"
+                      >
+                        {isProcessing
+                          ? "Processing..."
+                          : `✓ Promote (${promotable.length})`}
+                      </button>
+                    )}
+                    <button
+                      onClick={() => handleMarkReviewed(span.spanId)}
+                      disabled={isProcessing}
+                      className="flex-1 bg-orange-300 hover:bg-orange-400 disabled:opacity-50 border-4 border-black px-4 py-3 font-black uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] cursor-pointer transition"
+                    >
+                      {isProcessing
+                        ? "Processing..."
+                        : "→ Mark as Reviewed"}
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
