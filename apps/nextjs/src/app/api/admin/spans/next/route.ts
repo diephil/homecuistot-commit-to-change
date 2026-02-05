@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { adminDb } from "@/db/client";
 import { ingredients } from "@/db/schema";
 import {
-  getNextUnprocessedSpan,
+  getNextUnprocessedSpans,
   markSpanAsReviewed,
 } from "@/lib/services/opik-spans";
 import { requireAdmin } from "@/lib/services/admin-auth";
@@ -13,105 +13,101 @@ export interface SpanItemWithDbStatus {
   existsInDb: boolean;
 }
 
+export interface SpanEntry {
+  spanId: string;
+  spanName: string;
+  traceId: string;
+  tags: string[];
+  items: SpanItemWithDbStatus[];
+  totalInSpan: number;
+}
+
 export async function GET() {
   const auth = await requireAdmin();
   if (!auth.ok) return auth.response;
 
   try {
-    const span = await getNextUnprocessedSpan();
+    const spans = await getNextUnprocessedSpans({ limit: 5 });
 
-    if (!span) {
-      return NextResponse.json({
-        spanId: null,
-        traceId: null,
-        items: [],
-        totalInSpan: 0,
-      });
+    if (spans.length === 0) {
+      return NextResponse.json({ spans: [] });
     }
 
-    // Extract unrecognized items from metadata
-    const rawItems = span.metadata?.unrecognized ?? [];
+    const entries: SpanEntry[] = [];
 
-    if (!Array.isArray(rawItems) || rawItems.length === 0) {
-      console.warn("Span has malformed or empty metadata.unrecognized", {
-        spanId: span.id,
-      });
-      // Auto-tag only truly malformed/empty spans
-      try {
-        await markSpanAsReviewed({ spanId: span.id });
-      } catch (tagError) {
-        console.error("Failed to auto-tag malformed span", {
+    for (const span of spans) {
+      const rawItems = span.metadata?.unrecognized ?? [];
+
+      if (!Array.isArray(rawItems) || rawItems.length === 0) {
+        console.warn("Span has malformed or empty metadata.unrecognized", {
           spanId: span.id,
-          error: tagError,
         });
+        try {
+          await markSpanAsReviewed({ spanId: span.id });
+        } catch (tagError) {
+          console.error("Failed to auto-tag malformed span", {
+            spanId: span.id,
+            error: tagError,
+          });
+        }
+        continue;
       }
-      return NextResponse.json({
-        spanId: null,
-        traceId: null,
-        items: [],
-        totalInSpan: 0,
-      });
-    }
 
-    // Filter non-string entries and deduplicate (case-insensitive)
-    const stringItems = rawItems.filter(
-      (item): item is string => typeof item === "string" && item.trim() !== "",
-    );
-    const deduplicatedItems = Array.from(
-      new Set(stringItems.map((item) => item.toLowerCase().trim())),
-    );
-
-    if (deduplicatedItems.length === 0) {
-      console.warn("Span had items but none were valid strings", {
-        spanId: span.id,
-      });
-      try {
-        await markSpanAsReviewed({ spanId: span.id });
-      } catch (tagError) {
-        console.error("Failed to auto-tag span with invalid items", {
-          spanId: span.id,
-          error: tagError,
-        });
-      }
-      return NextResponse.json({
-        spanId: null,
-        traceId: null,
-        items: [],
-        totalInSpan: 0,
-      });
-    }
-
-    // Check which items already exist in DB
-    const existingNames = await adminDb
-      .select({ name: ingredients.name })
-      .from(ingredients)
-      .where(
-        sql`LOWER(${ingredients.name}) IN (${sql.join(
-          deduplicatedItems.map((name) => sql`${name}`),
-          sql`, `,
-        )})`,
+      const stringItems = rawItems.filter(
+        (item): item is string => typeof item === "string" && item.trim() !== "",
+      );
+      const deduplicatedItems = Array.from(
+        new Set(stringItems.map((item) => item.toLowerCase().trim())),
       );
 
-    const existingSet = new Set(
-      existingNames.map((row) => row.name.toLowerCase()),
-    );
+      if (deduplicatedItems.length === 0) {
+        console.warn("Span had items but none were valid strings", {
+          spanId: span.id,
+        });
+        try {
+          await markSpanAsReviewed({ spanId: span.id });
+        } catch (tagError) {
+          console.error("Failed to auto-tag span with invalid items", {
+            spanId: span.id,
+            error: tagError,
+          });
+        }
+        continue;
+      }
 
-    // Return ALL items annotated with DB status — no silent auto-review
-    const items: SpanItemWithDbStatus[] = deduplicatedItems.map((name) => ({
-      name,
-      existsInDb: existingSet.has(name),
-    }));
+      // Check which items already exist in DB
+      const existingNames = await adminDb
+        .select({ name: ingredients.name })
+        .from(ingredients)
+        .where(
+          sql`LOWER(${ingredients.name}) IN (${sql.join(
+            deduplicatedItems.map((name) => sql`${name}`),
+            sql`, `,
+          )})`,
+        );
 
-    return NextResponse.json({
-      spanId: span.id,
-      spanName: span.name,
-      traceId: span.trace_id,
-      tags: span.tags ?? [],
-      items,
-      totalInSpan: span.metadata?.totalUnrecognized ?? rawItems.length,
-    });
+      const existingSet = new Set(
+        existingNames.map((row) => row.name.toLowerCase()),
+      );
+
+      const items: SpanItemWithDbStatus[] = deduplicatedItems.map((name) => ({
+        name,
+        existsInDb: existingSet.has(name),
+      }));
+
+      entries.push({
+        spanId: span.id,
+        spanName: span.name,
+        traceId: span.trace_id,
+        tags: span.tags ?? [],
+        items,
+        totalInSpan: span.metadata?.totalUnrecognized ?? rawItems.length,
+      });
+    }
+
+    return NextResponse.json({ spans: entries });
   } catch (error) {
-    console.error("Error fetching next span", error);
+    console.error("Error fetching next spans", error);
     return NextResponse.json(
       { error: "Failed to fetch spans" },
       { status: 500 },

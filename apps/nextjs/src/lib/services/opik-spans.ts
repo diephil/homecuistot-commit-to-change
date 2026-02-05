@@ -65,7 +65,7 @@ export async function getNextUnprocessedSpan(): Promise<OpikSpan | null> {
           value: "unrecognized_items",
         },
       ],
-      limit: 100,
+      limit: 5,
       sort_by: [{ field: "created_at", direction: "desc" }],
     }),
   });
@@ -110,6 +110,69 @@ export async function getNextUnprocessedSpan(): Promise<OpikSpan | null> {
   }
 
   return null;
+}
+
+/**
+ * Return up to `limit` verified unprocessed spans.
+ * Searches Opik then verifies each via GET-by-ID.
+ */
+export async function getNextUnprocessedSpans(params: {
+  limit?: number;
+}): Promise<OpikSpan[]> {
+  const limit = params.limit ?? 5;
+
+  const response = await fetch(`${OPIK_URL}/v1/private/spans/search`, {
+    method: "POST",
+    headers: getOpikHeaders(),
+    body: JSON.stringify({
+      project_name: OPIK_PROJECT_NAME,
+      filters: [
+        {
+          field: "tags",
+          operator: "contains",
+          value: "unrecognized_items",
+        },
+      ],
+      limit: Math.max(limit * 2, 10), // over-fetch to account for stale index
+      sort_by: [{ field: "created_at", direction: "desc" }],
+    }),
+  });
+
+  if (!response.ok) {
+    throw new OpikApiError(
+      response.status,
+      `Opik search spans failed: ${response.status} ${response.statusText}`,
+    );
+  }
+
+  const text = await response.text();
+
+  let candidates: OpikSpan[] = [];
+  try {
+    const json = JSON.parse(text);
+    if (Array.isArray(json?.data)) {
+      candidates = json.data as OpikSpan[];
+    } else if (json?.id) {
+      candidates = [json as OpikSpan];
+    }
+  } catch {
+    candidates = text
+      .split("\n")
+      .filter((line) => line.trim())
+      .map((line) => JSON.parse(line) as OpikSpan)
+      .filter((span) => span.id);
+  }
+
+  const verified: OpikSpan[] = [];
+  for (const candidate of candidates) {
+    if (verified.length >= limit) break;
+    const fresh = await getSpanById({ spanId: candidate.id });
+    if (fresh.tags?.includes("unrecognized_items")) {
+      verified.push(fresh);
+    }
+  }
+
+  return verified;
 }
 
 /**
