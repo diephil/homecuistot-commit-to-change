@@ -15,7 +15,7 @@ export function RecipeVoiceGuidanceCard({ onDismiss }: RecipeVoiceGuidanceCardPr
     <InfoCard
       variant="cyan"
       emoji="💬"
-      heading="Speak to manage recipes"
+      heading="Try this"
       onDismiss={onDismiss}
     >
       <div className="space-y-3 text-sm">

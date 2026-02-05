@@ -33,11 +33,11 @@ export function AddRecipePlaceholderCard() {
       </div>
 
       <h3 className="text-xl font-black mb-1 text-purple-800 group-hover:text-purple-900 transition-colors">
-        Add Your Recipe
+        Manage Recipes
       </h3>
 
       <p className="text-sm font-bold text-purple-700/70 mb-3">
-        Describe your recipe using the voice or text input above
+        Add, edit, or remove recipes using voice or text input above
       </p>
 
       {/* Fields guide */}
