@@ -9,6 +9,9 @@ import type { QuantityLevel } from "@/types/inventory";
 // localStorage key for story onboarding state
 export const LOCALSTORAGE_KEY = "homecuistot:story-onboarding";
 
+// localStorage key for story completion flag (persists across resets)
+export const COMPLETION_FLAG_KEY = "homecuistot:story-completed";
+
 // Items required to unlock Scene 5 progression
 export const REQUIRED_ITEMS = ["egg", "parmesan"];
 
@@ -107,7 +110,7 @@ export const SCENE_TEXT = {
   scene4Instructions: [
     "Help Sarah tell the app what she just bought from the store:",
     "Tap and say:",
-    '"I just bought parmesan, eggs, and some bananas"',
+    '"I have eggs, parmesan and some bananas"',
   ],
   scene5: [
     '"We have everything for carbonara—let me cook it!" 🎉',

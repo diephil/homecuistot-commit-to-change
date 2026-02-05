@@ -27,7 +27,7 @@ export function VoiceGuidanceCard({ onDismiss }: VoiceGuidanceCardProps) {
       <p className="mt-3 text-sm font-medium">
         Then, visit{" "}
         <Link href="/app/recipes" className="underline font-semibold">
-          My Cookbook
+          My Recipes
         </Link>{" "}
         to see what you can cook!
       </p>

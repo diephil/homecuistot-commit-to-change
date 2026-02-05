@@ -5,13 +5,11 @@ import { PageContainer } from "@/components/PageContainer";
 import { RecipeCard } from "@/components/recipes/RecipeCard";
 import { AddRecipePlaceholderCard } from "@/components/recipes/AddRecipePlaceholderCard";
 import { RecipeHelpModal } from "@/components/recipes/HelpModal";
-import { RecipeVoiceGuidanceCard } from "@/components/recipes/VoiceGuidanceCard";
 import { RecipeProposalModal } from "@/components/recipes/RecipeProposalModal";
 import { NeoHelpButton } from "@/components/shared/NeoHelpButton";
 import { DeleteConfirmationModal } from "@/components/shared/DeleteConfirmationModal";
-import { VoiceTextInput, Separator, SectionHeader } from "@/components/shared";
+import { VoiceTextInput, Separator, SectionHeader, PageCallout } from "@/components/shared";
 import { getRecipes, deleteRecipe, toggleIngredientType } from "@/app/actions/recipes";
-import { Info } from "lucide-react";
 import { toast } from "sonner";
 import type {
   RecipeManagerProposal,
@@ -56,24 +54,6 @@ export default function RecipesPage() {
   // Proposal modal state
   const [proposalModalOpen, setProposalModalOpen] = useState(false);
   const [currentProposal, setCurrentProposal] = useState<RecipeManagerProposal | null>(null);
-
-  // Banner dismiss state (persisted in localStorage)
-  const [bannerDismissed, setBannerDismissed] = useState(() => {
-    try {
-      if (typeof window === "undefined") return false;
-      return localStorage.getItem("banner:recipes:dismissed") === "true";
-    } catch { return false; }
-  });
-
-  const handleBannerDismiss = () => {
-    try { localStorage.setItem("banner:recipes:dismissed", "true"); } catch {}
-    setBannerDismissed(true);
-  };
-
-  const handleBannerRestore = () => {
-    try { localStorage.removeItem("banner:recipes:dismissed"); } catch {}
-    setBannerDismissed(false);
-  };
 
   useEffect(() => {
     loadRecipes();
@@ -303,35 +283,27 @@ export default function RecipesPage() {
     >
       <div className="space-y-8">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold">My Cookbook</h1>
-          <NeoHelpButton
-            renderModal={({ isOpen, onClose }) => (
-              <RecipeHelpModal isOpen={isOpen} onClose={onClose} />
-            )}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h1 className="text-3xl font-bold">My Recipes</h1>
+            <NeoHelpButton
+              renderModal={({ isOpen, onClose }) => (
+                <RecipeHelpModal isOpen={isOpen} onClose={onClose} />
+              )}
+            />
+          </div>
+
+          {/* Description */}
+          <PageCallout
+            emoji="🎤"
+            title="Tell us what recipes you already know how to cook!"
+            description="No need to search for new recipes — just describe the dishes you've mastered. Navigate to Cook Now to see what you can make with your current ingredients."
+            bgColor="cyan"
           />
         </div>
 
         {/* Voice Input Section */}
         <div className="space-y-4">
-          {!bannerDismissed ? (
-            <RecipeVoiceGuidanceCard
-              onDismiss={handleBannerDismiss}
-            />
-          ) : (
-            <div className="flex justify-end">
-              <button
-                type="button"
-                onClick={handleBannerRestore}
-                className="cursor-pointer border-2 border-black bg-cyan-200 p-1.5 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
-                aria-label="Show voice guidance"
-                title="Show voice guidance"
-              >
-                <Info className="h-4 w-4" />
-              </button>
-            </div>
-          )}
-
           <VoiceTextInput
             onSubmit={handleVoiceTextSubmit}
             disabled={isProcessing}

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { resetUserData } from '@/app/actions/user-data'
 import { ConfirmationModal } from './ConfirmationModal'
+import { COMPLETION_FLAG_KEY } from '@/lib/story-onboarding/constants'
 
 export function ResetUserDataButton() {
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -17,6 +18,7 @@ export function ResetUserDataButton() {
       localStorage.removeItem('inventory:groupByCategory')
       localStorage.removeItem('inventory:showEmptyOnly')
       localStorage.removeItem('homecuistot:story-onboarding')
+      localStorage.removeItem(COMPLETION_FLAG_KEY)
     } catch {}
 
     const result = await resetUserData()
