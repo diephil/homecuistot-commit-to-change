@@ -182,7 +182,7 @@ export const IngredientBadge = React.forwardRef<HTMLButtonElement, IngredientBad
   ) => {
     const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
       if (interactive && onLevelChange) {
-        const nextLevel = ((level + 1) % 4) as QuantityLevel;
+        const nextLevel = ((level - 1 + 4) % 4) as QuantityLevel;
         onLevelChange(nextLevel);
       }
       onClick?.(e);
