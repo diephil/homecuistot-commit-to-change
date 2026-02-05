@@ -410,7 +410,7 @@ export default function InventoryPage() {
             <PageCallout
               emoji="🎤"
               title="Tell us what's in your fridge and pantry!"
-              description="Describe what ingredients you have on hand — we'll track them and show you what you can cook."
+              description="Describe what ingredients you have on hand. Navigate to Cook Now to see what you can make with them."
               bgColor="pink"
             />
           </div>
@@ -469,14 +469,12 @@ export default function InventoryPage() {
           </div>
 
           {/* Description */}
-          <div className="bg-pink-50 border-2 border-black p-4 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-            <p className="text-base font-semibold text-black/80">
-              🎤 Tell us what&apos;s in your fridge and pantry!
-            </p>
-            <p className="text-sm text-black/60 mt-1">
-              Describe what ingredients you have on hand — we&apos;ll track them and show you what you can cook.
-            </p>
-          </div>
+          <PageCallout
+            emoji="🎤"
+            title="Tell us what's in your fridge and pantry!"
+            description="Describe what ingredients you have on hand. Navigate to Cook Now to see what you can make with them."
+            bgColor="pink"
+          />
         </div>
 
         {/* Voice Input Section */}

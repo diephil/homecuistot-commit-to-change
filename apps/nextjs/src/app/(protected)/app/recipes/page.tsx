@@ -297,7 +297,7 @@ export default function RecipesPage() {
           <PageCallout
             emoji="🎤"
             title="Tell us what recipes you already know how to cook!"
-            description="No need to search for new recipes — just describe the dishes you've mastered. We'll track what you can make with your current ingredients."
+            description="No need to search for new recipes — just describe the dishes you've mastered. Navigate to Cook Now to see what you can make with your current ingredients."
             bgColor="cyan"
           />
         </div>
