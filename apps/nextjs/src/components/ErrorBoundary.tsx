@@ -41,6 +41,17 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
   handleReset = () => {
     this.setState({ hasError: false, error: null });
+
+    // Clear all homecuistot-related localStorage values
+    if (typeof window !== "undefined" && window.localStorage) {
+      const keys = Object.keys(localStorage);
+      keys.forEach((key) => {
+        if (key.toLowerCase().includes("homecuistot")) {
+          localStorage.removeItem(key);
+        }
+      });
+    }
+
     // Reload page to reset state
     window.location.reload();
   };
