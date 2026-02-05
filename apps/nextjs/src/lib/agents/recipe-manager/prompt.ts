@@ -78,6 +78,9 @@ ACTION: IMMEDIATELY call create_recipes tool - NO text response, NO confirmation
 - Each recipe can have 1-10 ingredients
 - Recognize phrases: "I can do/make/cook X", "Let me add X", "Add X recipe", "X with [ingredients]"
 
+### Limitations
+- DO NOT use create_recipes if the user already has the recipe in their tracked recipe list
+
 ### Examples
 
 "Add a scrambled eggs recipe" or "I can cook scrambled eggs" or "I can do scrambled eggs"
