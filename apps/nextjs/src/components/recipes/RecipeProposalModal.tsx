@@ -407,31 +407,34 @@ function RecipeProposalCard({
 
       {/* Ingredients */}
       <div className="flex flex-wrap gap-2">
-        {ingredients.map((ing, idx) => (
-          <div key={idx} className="relative inline-flex">
-            <Badge
-              variant="outline"
-              size="sm"
-              className="bg-white/50 cursor-pointer hover:bg-white/80 transition-colors"
-              onClick={() => onToggleRequired(idx)}
-            >
-              <span className={cn("mr-1", ing.isRequired ? "text-amber-500" : "text-gray-300")}>
-                ★
-              </span>
-              {ing.name}
-            </Badge>
-            <SmallActionButton
-              icon={X}
-              variant="red"
-              onClick={(e) => {
-                e.stopPropagation();
-                onRemoveIngredient(idx);
-              }}
-              title="Remove ingredient"
-              className="absolute -top-3 -right-2"
-            />
-          </div>
-        ))}
+        {ingredients
+          .map((ing, originalIdx) => ({ ing, originalIdx }))
+          .filter(({ ing }) => ing.ingredientId)
+          .map(({ ing, originalIdx }) => (
+            <div key={originalIdx} className="relative inline-flex">
+              <Badge
+                variant="outline"
+                size="sm"
+                className="bg-white/50 cursor-pointer hover:bg-white/80 transition-colors"
+                onClick={() => onToggleRequired(originalIdx)}
+              >
+                <span className={cn("mr-1", ing.isRequired ? "text-amber-500" : "text-gray-300")}>
+                  ★
+                </span>
+                {ing.name}
+              </Badge>
+              <SmallActionButton
+                icon={X}
+                variant="red"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onRemoveIngredient(originalIdx);
+                }}
+                title="Remove ingredient"
+                className="absolute -top-3 -right-2"
+              />
+            </div>
+          ))}
       </div>
 
       {/* Warning for unmatched ingredients in this recipe */}
