@@ -137,15 +137,14 @@ export const SCENE_TEXT = {
   scene7YourRecipesExamples: {
     prompt: "Add at least one recipe you can do:",
     items: [
-      "I cook a traditional egg fried rice with green onions",
+      "I cook a traditional egg fried rice with tons of green onions",
       "I do a scrambled eggs with my favorite garlic salt",
     ],
     closing: "etc... you name it!",
   },
   scene8: [
     "That's HomeCuistot.",
-    "Sarah didn't open a recipe app.",
-    "She didn't scroll through suggestions, save ideas, or watch dozens of videos for dishes she'll never make.",
+    "She didn't scroll through suggestions, search inspiration, or watch dozens of videos for dishes she'll never make.",
   ],
   scene8Manifesto: [
     "She already knew her go-to recipes.",
@@ -159,9 +158,5 @@ export const SCENE_TEXT = {
     "Other apps show you dishes you'll never make.",
     "HomeCuistot tells you which of yours is ready right now.",
   ],
-  scene8Closing: [
-    "You bring the recipes you've mastered.",
-    "We track what's in your kitchen.",
-    "No more scrolling. No more takeout. Let's cook. 🍳",
-  ],
+  scene8Closing: ["No more scrolling. No more takeout. Let's cook. 🍳"],
 } as const;

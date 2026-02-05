@@ -60,6 +60,7 @@ export function Scene7YourRecipes({
           return {
             id: idMap.get(i)!,
             name: r.name,
+            description: r.description || undefined,
             ingredients: r.ingredients.map((ing) => ({
               id: crypto.randomUUID(),
               name: ing.name,
