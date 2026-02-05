@@ -49,10 +49,22 @@ export function Scene6Cooked({
           Here&apos;s what changed in Sarah&apos;s inventory after cooking the recipe:
         </p>
 
+        {/* Quantity scale legend */}
+        <div
+          className="p-3 bg-blue-50 border-2 border-blue-200 rounded-lg animate-[fadeIn_0.5s_ease-in_both]"
+          style={{ animationDelay: "0.8s" }}
+        >
+          <p className="text-sm font-semibold text-blue-900">
+            The quantity levels show how many times each ingredient can be used
+            in recipes: <strong>Plenty → Some → Low → Critical</strong> (out of
+            stock).
+          </p>
+        </div>
+
         {/* Tracked ingredients with diff badges on decremented items */}
         <div
           className="space-y-2 animate-[fadeIn_0.5s_ease-in_both]"
-          style={{ animationDelay: "0.8s" }}
+          style={{ animationDelay: "1.2s" }}
         >
           <div className="flex flex-wrap gap-2">
             {trackedItems.map((item, i) => {
@@ -87,7 +99,7 @@ export function Scene6Cooked({
         {/* Staples */}
         <div
           className="space-y-2 animate-[fadeIn_0.5s_ease-in_both]"
-          style={{ animationDelay: "1.2s" }}
+          style={{ animationDelay: "1.6s" }}
         >
           <h3 className="text-lg font-black">Staples (always available)</h3>
           <div className="flex flex-wrap gap-2">
@@ -105,7 +117,7 @@ export function Scene6Cooked({
 
         <div
           className="pt-4 animate-[fadeIn_0.5s_ease-in_both]"
-          style={{ animationDelay: "2.0s" }}
+          style={{ animationDelay: "2.4s" }}
         >
           <Button
             variant="default"
