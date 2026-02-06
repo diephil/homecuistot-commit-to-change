@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/utils/supabase/server";
+import { NextResponse } from "next/server";
+import { withUser } from "@/lib/services/route-auth";
 import { createInventoryManagerAgentProposal } from "@/lib/orchestration/inventory-update.orchestration";
 import type { InventorySessionItem } from "@/lib/agents/inventory-manager/tools/update-matching-ingredients";
 
@@ -11,17 +11,8 @@ import type { InventorySessionItem } from "@/lib/agents/inventory-manager/tools/
 
 export const maxDuration = 15;
 
-export async function POST(request: NextRequest) {
+export const POST = withUser(async ({ user, request }) => {
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     const body = await request.json();
     const { audioBase64, mimeType, text, currentIngredients = [] } = body;
 
@@ -106,4 +97,4 @@ export async function POST(request: NextRequest) {
       { status: 500 },
     );
   }
-}
+});

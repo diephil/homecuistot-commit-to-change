@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/utils/supabase/server';
+import { NextResponse } from 'next/server';
+import { withUser } from '@/lib/services/route-auth';
 import { processTextInput } from '@/lib/prompts/onboarding-text/process';
 import { IngredientExtractionSchema } from '@/types/onboarding';
 import { validateIngredientNames } from '@/lib/services/ingredient-matcher';
@@ -14,19 +14,8 @@ import { validateIngredientNames } from '@/lib/services/ingredient-matcher';
 
 export const maxDuration = 15; // 15 second timeout
 
-export async function POST(request: NextRequest) {
+export const POST = withUser(async ({ user, request }) => {
   try {
-    // Get user ID from session
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
     const body = await request.json();
 
     // Validate request body
@@ -111,4 +100,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

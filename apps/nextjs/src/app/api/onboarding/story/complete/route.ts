@@ -1,7 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
-import { createClient } from "@/utils/supabase/server";
-import { createUserDb, decodeSupabaseToken } from "@/db/client";
+import { withAuth } from "@/lib/services/route-auth";
 import { StoryCompleteRequestSchema } from "@/lib/story-onboarding/types";
 import { CARBONARA_RECIPE } from "@/lib/story-onboarding/constants";
 import { isNewUser } from "@/lib/services/brand-new-user";
@@ -17,29 +16,8 @@ import { prefillDemoData } from "@/lib/services/demo-data-prefill";
 
 export const maxDuration = 30;
 
-export async function POST(request: NextRequest) {
+export const POST = withAuth(async ({ userId, db, request }) => {
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-
-    if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const userId = session.user.id;
-    const token = decodeSupabaseToken(session.access_token);
-    const db = createUserDb(token);
-
     // Parse request body
     const body = await request.json();
     const parseResult = StoryCompleteRequestSchema.safeParse(body);
@@ -101,4 +79,4 @@ export async function POST(request: NextRequest) {
       { status: 500 },
     );
   }
-}
+});

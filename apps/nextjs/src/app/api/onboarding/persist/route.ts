@@ -1,6 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/utils/supabase/server';
-import { createUserDb, decodeSupabaseToken } from '@/db/client';
+import { NextResponse } from 'next/server';
+import { withAuth } from '@/lib/services/route-auth';
 import { userInventory, unrecognizedItems } from '@/db/schema';
 import { PersistRequestSchema, type PersistResponse } from '@/types/onboarding';
 import { matchIngredients } from '@/lib/services/ingredient-matcher';
@@ -14,30 +13,8 @@ import { matchIngredients } from '@/lib/services/ingredient-matcher';
 
 export const maxDuration = 30;
 
-export async function POST(request: NextRequest) {
+export const POST = withAuth(async ({ userId, db, request }) => {
   try {
-    // Auth validation
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const userId = session.user.id;
-    const token = decodeSupabaseToken(session.access_token);
-    const db = createUserDb(token);
-
     // T038: Parse request with cookingSkill
     const body = await request.json();
     const parseResult = PersistRequestSchema.safeParse(body);
@@ -206,4 +183,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

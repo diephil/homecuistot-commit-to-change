@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { withUser } from "@/lib/services/route-auth";
 import { hasCompletedOnboarding } from "@/app/actions/inventory";
 
 /**
@@ -6,7 +7,7 @@ import { hasCompletedOnboarding } from "@/app/actions/inventory";
  * Returns whether user has completed onboarding
  * Used by client-side guard to prevent bfcache issues
  */
-export async function GET() {
+export const GET = withUser(async () => {
   try {
     const completed = await hasCompletedOnboarding();
 
@@ -25,4 +26,4 @@ export async function GET() {
       { status: 500 }
     );
   }
-}
+});

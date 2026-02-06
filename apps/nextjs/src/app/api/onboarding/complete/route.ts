@@ -1,7 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
-import { createClient } from "@/utils/supabase/server";
-import { createUserDb, decodeSupabaseToken } from "@/db/client";
+import { withAuth } from "@/lib/services/route-auth";
 import {
   userInventory,
   unrecognizedItems,
@@ -23,30 +22,8 @@ import { matchIngredients } from "@/lib/services/ingredient-matcher";
 
 export const maxDuration = 30;
 
-export async function POST(request: NextRequest) {
+export const POST = withAuth(async ({ userId, db, request }) => {
   try {
-    // Auth validation
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-
-    if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const userId = session.user.id;
-    const token = decodeSupabaseToken(session.access_token);
-    const db = createUserDb(token);
-
     // Parse request
     const body = await request.json();
     const parseResult = CompleteRequestSchema.safeParse(body);
@@ -248,9 +225,6 @@ export async function POST(request: NextRequest) {
 
         if (recipeIngredientValues.length > 0) {
           await tx.insert(recipeIngredients).values(recipeIngredientValues);
-          // Note: We intentionally do NOT call ensureRecipeIngredientsAtQuantity here.
-          // Recipe ingredients should only appear in inventory if the user explicitly
-          // added them during onboarding.
         }
       }
 
@@ -280,4 +254,4 @@ export async function POST(request: NextRequest) {
       { status: 500 },
     );
   }
-}
+});

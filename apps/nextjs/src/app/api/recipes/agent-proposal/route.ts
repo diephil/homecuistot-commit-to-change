@@ -8,8 +8,7 @@
  */
 
 import { NextResponse } from "next/server";
-import { createClient } from "@/utils/supabase/server";
-import { createUserDb, decodeSupabaseToken } from "@/db/client";
+import { withAuth } from "@/lib/services/route-auth";
 import { createRecipeManagerAgentProposal } from "@/lib/orchestration/recipe-update.orchestration";
 import { userRecipes } from "@/db/schema";
 import { eq, desc } from "drizzle-orm";
@@ -21,7 +20,7 @@ import type {
 
 export const maxDuration = 30; // 30 second timeout for voice processing
 
-export async function POST(request: Request) {
+export const POST = withAuth(async ({ userId, db, request }) => {
   const requestId = request.headers.get("x-request-id") ?? crypto.randomUUID();
 
   try {
@@ -43,31 +42,10 @@ export async function POST(request: Request) {
       );
     }
 
-    // Auth check
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-
-    if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     // Get user's current recipes
-    const token = decodeSupabaseToken(session.access_token);
-    const db = createUserDb(token);
-
     const recipes = await db((tx) =>
       tx.query.userRecipes.findMany({
-        where: eq(userRecipes.userId, session.user.id),
+        where: eq(userRecipes.userId, userId),
         with: {
           recipeIngredients: {
             with: { ingredient: true },
@@ -104,7 +82,7 @@ export async function POST(request: Request) {
 
     // Process via traced agent
     const result = await createRecipeManagerAgentProposal({
-      userId: user.id,
+      userId,
       input,
       audioBase64,
       mimeType,
@@ -126,4 +104,4 @@ export async function POST(request: Request) {
       { status: 500 },
     );
   }
-}
+});
