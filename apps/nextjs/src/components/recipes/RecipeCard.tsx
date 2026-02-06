@@ -70,10 +70,12 @@ export function RecipeCard(props: RecipeCardProps) {
         />
       )}
 
-      <h3 className="text-xl font-black truncate mb-1">{recipe.name}</h3>
+      <h3 className="text-xl font-black truncate mb-1" title={recipe.name}>
+        {recipe.name}
+      </h3>
 
       {recipe.description && (
-        <p className="text-sm font-bold text-black/70 mb-3 line-clamp-2">
+        <p className="text-sm font-bold text-black/70 mb-3 line-clamp-2" title={recipe.description}>
           {recipe.description}
         </p>
       )}
