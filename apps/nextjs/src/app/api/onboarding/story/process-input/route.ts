@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { withUser } from "@/lib/services/route-auth";
 import { createInventoryManagerAgentProposal } from "@/lib/orchestration/inventory-update.orchestration";
 import type { InventorySessionItem } from "@/lib/agents/inventory-manager/tools/update-matching-ingredients";
+import { classifyLlmError } from "@/lib/services/api-error-handler";
 
 /**
  * Unified process-input route for story onboarding Scene 4.
@@ -48,14 +49,11 @@ export const POST = withUser(async ({ user, request }) => {
       });
 
     // Transform response to match Scene4Voice expectations
-    // ValidatedInventoryUpdate[] → { name, quantityLevel }[]
     const add = proposal.recognized.map((item) => ({
       name: item.ingredientName,
       quantityLevel: item.proposedQuantity,
     }));
 
-    // For removals, extract names only (orchestration doesn't return removals separately)
-    // Items with proposedQuantity = 0 are removals
     const rm = proposal.recognized
       .filter((item) => item.proposedQuantity === 0)
       .map((item) => item.ingredientName);
@@ -71,30 +69,6 @@ export const POST = withUser(async ({ user, request }) => {
     return NextResponse.json(response);
   } catch (error) {
     console.error("[story/process-input] Error:", error);
-
-    if (error instanceof Error) {
-      if (
-        error.message.includes("timeout") ||
-        error.message.includes("ETIMEDOUT") ||
-        error.message.includes("ECONNABORTED")
-      ) {
-        return NextResponse.json(
-          { error: "Request timeout. Please try again." },
-          { status: 408 },
-        );
-      }
-
-      if (error.name === "ZodError") {
-        return NextResponse.json(
-          { error: "Processing failed. Please try again." },
-          { status: 500 },
-        );
-      }
-    }
-
-    return NextResponse.json(
-      { error: "Processing failed. Please try again." },
-      { status: 500 },
-    );
+    return classifyLlmError(error);
   }
 });

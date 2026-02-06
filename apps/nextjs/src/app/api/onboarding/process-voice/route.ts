@@ -3,6 +3,7 @@ import { withUser } from '@/lib/services/route-auth';
 import { processVoiceInput } from '@/lib/prompts/onboarding-voice/process';
 import { IngredientExtractionSchema } from '@/types/onboarding';
 import { validateIngredientNames } from '@/lib/services/ingredient-matcher';
+import { classifyLlmError } from '@/lib/services/api-error-handler';
 
 /**
  * T026-T027: API route for voice processing
@@ -67,39 +68,7 @@ export const POST = withUser(async ({ user, request }) => {
 
     return NextResponse.json(validated);
   } catch (error) {
-    // T053: Log all errors to console (no external service for MVP)
     console.error('[process-voice] Error:', error);
-
-    if (error instanceof Error) {
-      // T049: Check if it's a timeout error (408 Request Timeout)
-      if (error.message.includes('timeout') || error.message.includes('ETIMEDOUT') || error.message.includes('ECONNABORTED')) {
-        return NextResponse.json(
-          { error: 'Request timeout. Please try again.' },
-          { status: 408 }
-        );
-      }
-
-      // T050: Check if it's a validation error (unparseable NLP response)
-      if (error.name === 'ZodError') {
-        return NextResponse.json(
-          { error: 'Invalid response format from NLP service' },
-          { status: 500 }
-        );
-      }
-
-      // Network errors
-      if (error.message.includes('fetch') || error.message.includes('network')) {
-        return NextResponse.json(
-          { error: 'Network error. Please check your connection.' },
-          { status: 503 }
-        );
-      }
-    }
-
-    // Generic error
-    return NextResponse.json(
-      { error: 'NLP processing failed. Please try again.' },
-      { status: 500 }
-    );
+    return classifyLlmError(error);
   }
 });
