@@ -1,6 +1,24 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 
+function getAdminIds(): string[] {
+  return process.env.ADMIN_USER_IDS?.split(",").map((id) => id.trim()) || [];
+}
+
+/**
+ * Check if the current authenticated user is an admin.
+ * Lightweight boolean check — no NextResponse coupling.
+ */
+export async function checkIsAdmin(): Promise<boolean> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return false;
+  return getAdminIds().includes(user.id);
+}
+
 type AdminAuthSuccess = {
   user: { id: string; email?: string };
 };
@@ -11,11 +29,7 @@ type AdminAuthResult =
 
 /**
  * Verify the current request is from an authenticated admin user.
- *
- * Checks session via Supabase, then validates user.id against
- * ADMIN_USER_IDS env var (comma-separated).
- *
- * @returns `{ ok: true, data: { user } }` or `{ ok: false, response: NextResponse(401) }`
+ * Returns a typed result with NextResponse for API route handlers.
  */
 export async function requireAdmin(): Promise<AdminAuthResult> {
   const supabase = await createClient();
@@ -33,10 +47,7 @@ export async function requireAdmin(): Promise<AdminAuthResult> {
     };
   }
 
-  const adminIds =
-    process.env.ADMIN_USER_IDS?.split(",").map((id) => id.trim()) || [];
-
-  if (!adminIds.includes(user.id)) {
+  if (!getAdminIds().includes(user.id)) {
     return {
       ok: false,
       response: NextResponse.json(
