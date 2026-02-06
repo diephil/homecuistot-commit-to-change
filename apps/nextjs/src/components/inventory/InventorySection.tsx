@@ -108,16 +108,13 @@ export function InventorySection({
           <span className={`text-xs font-bold ${!useWord ? "line-through" : ""}`}>abc</span>
         </Toggle>
       )}
-      {onToggleEmpty && (
+      {onToggleEmpty && hasCriticalItems && (
         <Toggle
           pressed={showEmptyOnly}
           onPressedChange={onToggleEmpty}
           aria-label="Show empty only"
           size="sm"
-          disabled={!hasCriticalItems}
-          className={`border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] rounded-md bg-white data-[state=on]:bg-red-200 data-[state=on]:text-black ${
-            hasCriticalItems ? 'cursor-pointer' : 'opacity-40 cursor-not-allowed'
-          }`}
+          className="cursor-pointer border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] rounded-md bg-white data-[state=on]:bg-red-200 data-[state=on]:text-black"
         >
           <CircleOff className="h-4 w-4" />
         </Toggle>
