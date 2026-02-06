@@ -62,7 +62,7 @@ export function InventoryItemBadge({
             onToggleStaple();
           }}
           title="Move to Pantry Staples"
-          className="absolute -top-2 right-5"
+          className="absolute -top-2 right-5 !h-6 !w-6 [&_svg]:!h-4 [&_svg]:!w-4"
         />
       )}
 
