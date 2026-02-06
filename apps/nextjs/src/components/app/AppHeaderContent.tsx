@@ -5,7 +5,7 @@ import { Logo } from '@/components/shared/Logo'
 import { LogoutButton } from '@/components/app/LogoutButton'
 import { AppNavigation } from '@/components/app/AppNavigation'
 
-export function AppHeaderContent() {
+export function AppHeaderContent({ isAdmin }: { isAdmin: boolean }) {
   const pathname = usePathname()
 
   // Hide nav only during first-time onboarding (/app/onboarding exact),
@@ -18,7 +18,7 @@ export function AppHeaderContent() {
         <Logo href={isFirstTimeOnboarding ? undefined : "/app"} size="md" />
         <LogoutButton />
       </div>
-      {!isFirstTimeOnboarding && <AppNavigation />}
+      {!isFirstTimeOnboarding && <AppNavigation isAdmin={isAdmin} />}
     </>
   )
 }

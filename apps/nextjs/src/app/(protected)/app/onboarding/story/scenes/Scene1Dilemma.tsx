@@ -5,9 +5,10 @@ import { SCENE_TEXT } from "@/lib/story-onboarding/constants";
 
 interface Scene1DilemmaProps {
   onContinue: () => void;
+  onSkip: () => void;
 }
 
-export function Scene1Dilemma({ onContinue }: Scene1DilemmaProps) {
+export function Scene1Dilemma({ onContinue, onSkip }: Scene1DilemmaProps) {
   // First segment is the time/place setting
   const [setting, ...narrative] = SCENE_TEXT.scene1;
 
@@ -45,6 +46,13 @@ export function Scene1Dilemma({ onContinue }: Scene1DilemmaProps) {
           >
             Continue →
           </Button>
+          <button
+            type="button"
+            onClick={onSkip}
+            className="w-full text-center text-sm font-medium text-black/40 hover:text-black/60 transition-colors mt-2"
+          >
+            Skip the story, go to the app →
+          </button>
         </div>
       </div>
     </div>

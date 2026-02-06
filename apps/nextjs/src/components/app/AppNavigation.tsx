@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
-import { Home, Book, Package, Menu, X, Sparkles } from 'lucide-react'
+import { Home, Book, Package, Menu, X, Sparkles, Shield } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
 type NavItem = {
@@ -14,12 +14,14 @@ type NavItem = {
   clearStoryState?: boolean
 }
 
-const navItems: NavItem[] = [
+const baseNavItems: NavItem[] = [
   { href: '/app', label: 'Cook Now!', icon: Home },
   { href: '/app/recipes', label: 'My Recipes', icon: Book },
   { href: '/app/inventory', label: 'Inventory', icon: Package },
   { href: '/app/onboarding/story', label: "Sarah's Story", icon: Sparkles, clearStoryState: true },
 ]
+
+const adminNavItem: NavItem = { href: '/admin', label: 'Admin Dashboard', icon: Shield }
 
 function isActive(params: { pathname: string; href: string }): boolean {
   if (params.href === '/app') {
@@ -28,9 +30,10 @@ function isActive(params: { pathname: string; href: string }): boolean {
   return params.pathname.startsWith(params.href)
 }
 
-export function AppNavigation() {
+export function AppNavigation({ isAdmin }: { isAdmin: boolean }) {
   const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
+  const navItems = isAdmin ? [...baseNavItems, adminNavItem] : baseNavItems
 
   const handleNavClick = (item: NavItem) => {
     if (item.clearStoryState) {
