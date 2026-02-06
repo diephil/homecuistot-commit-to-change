@@ -25,8 +25,8 @@ const LANDING_RECIPES = [
     ingredients: [
       { name: "Chicken", type: "anchor" as const, available: true },
       { name: "Rice", type: "anchor" as const, available: true },
-      { name: "Soy sauce", type: "anchor" as const, available: true },
-      { name: "Bell pepper", type: "anchor" as const, available: false },
+      { name: "Soy sauce", type: "anchor" as const, available: false },
+      { name: "Green Onion", type: "anchor" as const, available: true },
       { name: "Garlic", type: "optional" as const, available: true },
       { name: "Ginger", type: "optional" as const, available: true },
     ],
