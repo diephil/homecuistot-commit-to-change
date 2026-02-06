@@ -70,13 +70,13 @@ export function RecipeCard(props: RecipeCardProps) {
         />
       )}
 
-      <h3 className="text-xl font-black truncate mb-1">{recipe.name}</h3>
+      <h3 className="text-xl font-black line-clamp-2 mb-1 min-h-[3.5rem]" title={recipe.name}>
+        {recipe.name}
+      </h3>
 
-      {recipe.description && (
-        <p className="text-sm font-bold text-black/70 mb-3 line-clamp-2">
-          {recipe.description}
-        </p>
-      )}
+      <p className="text-sm font-bold text-black/70 mb-3 line-clamp-3 min-h-[3.75rem]" title={recipe.description ?? undefined}>
+        {recipe.description || '\u00A0'}
+      </p>
 
       {/* Ingredients list with star system */}
       <div className="flex flex-wrap gap-2">

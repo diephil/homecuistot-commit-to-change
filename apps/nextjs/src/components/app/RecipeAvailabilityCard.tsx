@@ -37,7 +37,7 @@ export function RecipeAvailabilityCard(props: RecipeAvailabilityCardProps) {
   return (
     <div
       className={cn(
-        'relative border-4 border-black p-4 flex flex-col h-full',
+        'relative border-4 border-black p-4 flex flex-col h-full min-w-0',
         'sm:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]',
         gradientClass
       )}
@@ -68,23 +68,23 @@ export function RecipeAvailabilityCard(props: RecipeAvailabilityCardProps) {
         />
       )}
 
-      <h3 className="text-xl font-black truncate mb-1">{recipe.name}</h3>
+      <h3 className="text-xl font-black line-clamp-2 mb-1 break-words">{recipe.name}</h3>
 
       {recipe.description && (
-        <p className="text-sm font-bold text-black/70 mb-3 line-clamp-2">
+        <p className="text-sm font-bold text-black/70 mb-3 line-clamp-2 break-words">
           {recipe.description}
         </p>
       )}
 
       {/* Available anchor ingredients */}
       {variant === 'available' && anchorIngredients.length > 0 && (
-        <div className="flex flex-wrap gap-2 mb-3">
+        <div className="flex flex-wrap gap-2 mb-3 min-w-0">
           {anchorIngredients.map((ing) => (
             <Badge
               key={ing.id}
               variant="outline"
               size="sm"
-              className="bg-green-200 border-green-400"
+              className="bg-green-200 border-green-400 break-words"
             >
               {ing.name}
             </Badge>
@@ -92,13 +92,13 @@ export function RecipeAvailabilityCard(props: RecipeAvailabilityCardProps) {
         </div>
       )}
       {variant === 'almost-available' && availableIngredients.length > 0 && (
-        <div className="flex flex-wrap gap-2 mb-3">
+        <div className="flex flex-wrap gap-2 mb-3 min-w-0">
           {availableIngredients.map((ing) => (
             <Badge
               key={ing.id}
               variant="outline"
               size="sm"
-              className="bg-green-200 border-green-400"
+              className="bg-green-200 border-green-400 break-words"
             >
               {ing.name}
             </Badge>
@@ -111,14 +111,15 @@ export function RecipeAvailabilityCard(props: RecipeAvailabilityCardProps) {
 
       {/* Optional ingredients - shown first without background/borders */}
       {(variant === 'available' || variant === 'almost-available') && optionalIngredients.length > 0 && (
-        <div className="flex flex-wrap gap-2 items-center mb-3">
-          <span className="text-sm font-black mr-1">Optional</span>
+        <div className="flex flex-wrap gap-2 items-center mb-3 min-w-0">
+          <span className="text-sm font-black mr-1 shrink-0">Optional</span>
           {optionalIngredients.map((ing) => (
             <Badge
               key={ing.id}
               variant="outline"
               size="sm"
               className={cn(
+                'break-words',
                 ing.inInventory ? 'bg-green-200 border-green-400' : 'bg-orange-200 border-orange-400'
               )}
             >
@@ -130,15 +131,15 @@ export function RecipeAvailabilityCard(props: RecipeAvailabilityCardProps) {
 
       {/* Missing anchor ingredients for almost-available */}
       {variant === 'almost-available' && missingIngredients.length > 0 && (
-        <div className="p-2 bg-white/50 border-2 border-black mb-3">
-          <div className="flex flex-wrap gap-2 items-center">
-            <span className="text-sm font-black mr-1">Missing</span>
+        <div className="p-2 bg-white/50 border-2 border-black mb-3 min-w-0">
+          <div className="flex flex-wrap gap-2 items-center min-w-0">
+            <span className="text-sm font-black mr-1 shrink-0">Missing</span>
             {missingIngredients.map((ing) => (
               <Badge
                 key={ing.id}
                 variant="outline"
                 size="sm"
-                className="bg-red-100 border-red-400"
+                className="bg-red-100 border-red-400 break-words"
               >
                 {ing.name}
               </Badge>
