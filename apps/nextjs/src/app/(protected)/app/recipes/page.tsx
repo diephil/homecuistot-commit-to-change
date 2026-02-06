@@ -182,6 +182,7 @@ export default function RecipesPage() {
       result: { type: "voice"; audioBlob: Blob } | { type: "text"; text: string }
     ) => {
       setIsProcessing(true);
+      setLastTranscription(undefined); // Clear previous transcription
 
       try {
         let body: { input?: string; audioBase64?: string; mimeType?: string };

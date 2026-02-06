@@ -316,6 +316,7 @@ export default function InventoryPage() {
     result: { type: "voice"; audioBlob: Blob } | { type: "text"; text: string }
   ) => {
     setIsProcessing(true);
+    setLastTranscription(undefined); // Clear previous transcription
 
     try {
       let requestBody: { input?: string; audioBase64?: string; mimeType?: string };
