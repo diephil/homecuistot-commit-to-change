@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { randomUUID } from "crypto";
-import { createClient } from "@/utils/supabase/server";
+import { withUser } from "@/lib/services/route-auth";
 import { createRecipeManagerAgentProposal } from "@/lib/orchestration/recipe-update.orchestration";
 import {
   isCreateRecipeResult,
@@ -111,7 +111,7 @@ function applyProposalInMemory(
   return recipes;
 }
 
-export async function POST(request: Request) {
+export const POST = withUser(async ({ user, request }) => {
   try {
     // 1. Validate request body
     const rawBody = await request.json();
@@ -134,17 +134,7 @@ export async function POST(request: Request) {
     const { audioBase64, text, trackedRecipes, additionalTags } =
       validationResult.data;
 
-    // 2. Auth check
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    // 3. Transform Zod types to orchestration types
+    // 2. Transform Zod types to orchestration types
     const sessionRecipes: RecipeSessionItem[] = trackedRecipes.map(
       (recipe) => ({
         id: recipe.id,
@@ -165,7 +155,7 @@ export async function POST(request: Request) {
       `[onboarding/recipe] Tracked recipes: ${sessionRecipes.length}`,
     );
 
-    // 4. Call orchestration
+    // 3. Call orchestration
     const result = await createRecipeManagerAgentProposal({
       userId: user.id,
       input: text,
@@ -178,13 +168,13 @@ export async function POST(request: Request) {
 
     console.log("Agent result", JSON.stringify(result, null, 2));
 
-    // 5. Apply proposal in-memory
+    // 4. Apply proposal in-memory
     const updatedRecipes = applyProposalInMemory(
       sessionRecipes,
       result.proposal,
     );
 
-    // 6. Transform back to frontend format
+    // 5. Transform back to frontend format
     const frontendRecipes = updatedRecipes.map((recipe) => ({
       id: recipe.id,
       name: recipe.title, // Map title → name for frontend
@@ -200,7 +190,7 @@ export async function POST(request: Request) {
       `[onboarding/recipe] Updated recipes: ${updatedRecipes.length} (${result.proposal.recipes.length} operations)`,
     );
 
-    // 7. Return response
+    // 6. Return response
     return NextResponse.json({
       recipes: frontendRecipes,
       transcribedText: result.transcribedText,
@@ -219,4 +209,4 @@ export async function POST(request: Request) {
       { status: 500 },
     );
   }
-}
+});

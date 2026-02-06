@@ -1,10 +1,11 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
+import { withUser } from "@/lib/services/route-auth";
 import { processVoiceRecipe } from "@/lib/prompts/recipe-editor/process";
 import { recipeExtractionSchema } from "@/types/recipes";
 
 export const maxDuration = 15; // 15 second timeout
 
-export async function POST(request: NextRequest) {
+export const POST = withUser(async ({ request }) => {
   try {
     const body = await request.json();
 
@@ -31,4 +32,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

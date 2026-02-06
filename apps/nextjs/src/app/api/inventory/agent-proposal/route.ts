@@ -8,13 +8,12 @@
  */
 
 import { NextResponse } from "next/server";
-import { createClient } from "@/utils/supabase/server";
-import { createUserDb, decodeSupabaseToken } from "@/db/client";
+import { withAuth } from "@/lib/services/route-auth";
 import { createInventoryManagerAgentProposal } from "@/lib/orchestration/inventory-update.orchestration";
 import { getUserInventory } from "@/lib/services/user-inventory";
 import type { InventorySessionItem } from "@/lib/agents/inventory-manager/tools/update-matching-ingredients";
 
-export async function POST(request: Request) {
+export const POST = withAuth(async ({ userId, db, request }) => {
   const requestId = request.headers.get("x-request-id") ?? crypto.randomUUID();
 
   try {
@@ -36,27 +35,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // Auth check
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-
-    if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     // Get user's current inventory
-    const token = decodeSupabaseToken(session.access_token);
-    const db = createUserDb(token);
     const inventoryRows = await getUserInventory({ db });
 
     // Map to minimal session state
@@ -73,7 +52,7 @@ export async function POST(request: Request) {
 
     // Process via traced agent
     const result = await createInventoryManagerAgentProposal({
-      userId: user.id,
+      userId,
       input,
       audioBase64,
       mimeType,
@@ -92,4 +71,4 @@ export async function POST(request: Request) {
       { status: 500 },
     );
   }
-}
+});

@@ -371,11 +371,24 @@ function RecipeProposalCard({
   }
 
   const isCreate = recipe.operation === "create";
+  const isUpdate = recipe.operation === "update";
   const title = isCreate ? recipe.title : recipe.proposedState.title;
   const description = isCreate ? recipe.description : recipe.proposedState.description;
   const ingredients: ProposedRecipeIngredient[] = isCreate
     ? recipe.ingredients
     : recipe.proposedState.ingredients;
+
+  // For updates, compute added/removed ingredient names
+  const previousNames = isUpdate
+    ? new Set(recipe.previousState.ingredients.map((i) => i.name.toLowerCase()))
+    : new Set<string>();
+  const proposedNames = new Set(ingredients.map((i) => i.name.toLowerCase()));
+  const removedIngredients = isUpdate
+    ? recipe.previousState.ingredients.filter((i) => !proposedNames.has(i.name.toLowerCase()))
+    : [];
+  const addedNames = isUpdate
+    ? new Set([...proposedNames].filter((n) => !previousNames.has(n)))
+    : new Set<string>();
 
   return (
     <div
@@ -410,31 +423,52 @@ function RecipeProposalCard({
         {ingredients
           .map((ing, originalIdx) => ({ ing, originalIdx }))
           .filter(({ ing }) => ing.ingredientId)
-          .map(({ ing, originalIdx }) => (
-            <div key={originalIdx} className="relative inline-flex">
-              <Badge
-                variant="outline"
-                size="sm"
-                className="bg-white/50 cursor-pointer hover:bg-white/80 transition-colors"
-                onClick={() => onToggleRequired(originalIdx)}
-              >
-                <span className={cn("mr-1", ing.isRequired ? "text-amber-500" : "text-gray-300")}>
-                  ★
-                </span>
-                {ing.name}
-              </Badge>
-              <SmallActionButton
-                icon={X}
-                variant="red"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onRemoveIngredient(originalIdx);
-                }}
-                title="Remove ingredient"
-                className="absolute -top-3 -right-2"
-              />
-            </div>
-          ))}
+          .map(({ ing, originalIdx }) => {
+            const isAdded = addedNames.has(ing.name.toLowerCase());
+            return (
+              <div key={originalIdx} className="relative inline-flex">
+                <Badge
+                  variant="outline"
+                  size="sm"
+                  className={cn(
+                    "bg-white/50 cursor-pointer hover:bg-white/80 transition-colors",
+                    isAdded && "ring-2 ring-green-600 bg-green-50/80"
+                  )}
+                  onClick={() => onToggleRequired(originalIdx)}
+                >
+                  <span className={cn("mr-1", ing.isRequired ? "text-amber-500" : "text-gray-300")}>
+                    ★
+                  </span>
+                  {ing.name}
+                </Badge>
+                <SmallActionButton
+                  icon={X}
+                  variant="red"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onRemoveIngredient(originalIdx);
+                  }}
+                  title="Remove ingredient"
+                  className="absolute -top-3 -right-2"
+                />
+              </div>
+            );
+          })}
+
+        {/* Removed ingredients (update only) */}
+        {removedIngredients.map((ing, idx) => (
+          <Badge
+            key={`removed-${idx}`}
+            variant="outline"
+            size="sm"
+            className="bg-white/30 opacity-60 line-through"
+          >
+            <span className={cn("mr-1", ing.isRequired ? "text-amber-500" : "text-gray-300")}>
+              ★
+            </span>
+            {ing.name}
+          </Badge>
+        ))}
       </div>
 
       {/* Warning for unmatched ingredients in this recipe */}

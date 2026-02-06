@@ -1,41 +1,11 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@/utils/supabase/server';
-import { createUserDb, decodeSupabaseToken } from '@/db/client';
+import { withAuth } from '@/lib/services/route-auth';
 import { userInventory } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
 
-export async function PATCH(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export const PATCH = withAuth(async ({ userId, db, params }) => {
   try {
-    const supabase = await createClient();
-
-    // Verify user authenticity
-    const { data: { user } } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
-    // Get session for JWT token
-    const { data: { session } } = await supabase.auth.getSession();
-
-    if (!session) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
     const { id } = await params;
-
-    // Decode JWT token for Drizzle RLS
-    const token = decodeSupabaseToken(session.access_token);
-    const db = createUserDb(token);
 
     // Get current item
     const [currentItem] = await db((tx) =>
@@ -45,7 +15,7 @@ export async function PATCH(
         .where(
           and(
             eq(userInventory.id, id),
-            eq(userInventory.userId, session.user.id)
+            eq(userInventory.userId, userId)
           )
         )
     );
@@ -68,7 +38,7 @@ export async function PATCH(
         .where(
           and(
             eq(userInventory.id, id),
-            eq(userInventory.userId, session.user.id)
+            eq(userInventory.userId, userId)
           )
         )
         .returning()
@@ -88,4 +58,4 @@ export async function PATCH(
       { status: 500 }
     );
   }
-}
+});

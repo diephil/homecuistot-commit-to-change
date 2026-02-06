@@ -1,8 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/utils/supabase/server';
+import { NextResponse } from 'next/server';
+import { withUser } from '@/lib/services/route-auth';
 import { processTextInput } from '@/lib/prompts/onboarding-text/process';
 import { IngredientExtractionSchema } from '@/types/onboarding';
 import { validateIngredientNames } from '@/lib/services/ingredient-matcher';
+import { classifyLlmError } from '@/lib/services/api-error-handler';
 
 /**
  * T035: API route for text-based onboarding input processing
@@ -14,19 +15,8 @@ import { validateIngredientNames } from '@/lib/services/ingredient-matcher';
 
 export const maxDuration = 15; // 15 second timeout
 
-export async function POST(request: NextRequest) {
+export const POST = withUser(async ({ user, request }) => {
   try {
-    // Get user ID from session
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
     const body = await request.json();
 
     // Validate request body
@@ -78,37 +68,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(validated);
   } catch (error) {
     console.error('[process-text] Error:', error);
-
-    if (error instanceof Error) {
-      // Timeout error
-      if (error.message.includes('timeout') || error.message.includes('ETIMEDOUT') || error.message.includes('ECONNABORTED')) {
-        return NextResponse.json(
-          { error: 'Request timeout. Please try again.' },
-          { status: 408 }
-        );
-      }
-
-      // Validation error (unparseable NLP response)
-      if (error.name === 'ZodError') {
-        return NextResponse.json(
-          { error: 'Invalid response format from NLP service' },
-          { status: 500 }
-        );
-      }
-
-      // Network errors
-      if (error.message.includes('fetch') || error.message.includes('network')) {
-        return NextResponse.json(
-          { error: 'Network error. Please check your connection.' },
-          { status: 503 }
-        );
-      }
-    }
-
-    // Generic error
-    return NextResponse.json(
-      { error: 'Text processing failed. Please try again.' },
-      { status: 500 }
-    );
+    return classifyLlmError(error);
   }
-}
+});

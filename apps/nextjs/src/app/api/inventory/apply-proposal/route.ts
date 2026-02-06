@@ -5,13 +5,12 @@
  */
 
 import { NextResponse } from 'next/server';
-import { createClient } from '@/utils/supabase/server';
-import { createUserDb, decodeSupabaseToken } from '@/db/client';
+import { withAuth } from '@/lib/services/route-auth';
 import { userInventory } from '@/db/schema';
 import { sql } from 'drizzle-orm';
 import type { InventoryUpdateProposal } from '@/types/inventory';
 
-export async function POST(request: Request) {
+export const POST = withAuth(async ({ userId, db, request }) => {
   try {
     const body = await request.json();
     const { proposal } = body as { proposal?: InventoryUpdateProposal };
@@ -27,24 +26,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: true, updated: 0 });
     }
 
-    // Auth check
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const { data: { session } } = await supabase.auth.getSession();
-
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
     // Apply updates via RLS-aware DB connection
-    const token = decodeSupabaseToken(session.access_token);
-    const db = createUserDb(token);
-
     await db(async (tx) => {
       for (const update of proposal.recognized) {
         // Build values/set with optional isPantryStaple
@@ -53,7 +35,7 @@ export async function POST(request: Request) {
         await tx
           .insert(userInventory)
           .values({
-            userId: user.id,
+            userId,
             ingredientId: update.ingredientId,
             quantityLevel: update.proposedQuantity,
             ...(hasPantryStapleChange && {
@@ -86,4 +68,4 @@ export async function POST(request: Request) {
       { status: 500 }
     );
   }
-}
+});

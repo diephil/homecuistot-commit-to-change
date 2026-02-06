@@ -6,8 +6,7 @@
 
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
-import { createClient } from "@/utils/supabase/server";
-import { createUserDb, decodeSupabaseToken } from "@/db/client";
+import { withAuth } from "@/lib/services/route-auth";
 import { userRecipes, recipeIngredients } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 import type {
@@ -19,10 +18,8 @@ import type {
   DeleteAllRecipesResult,
 } from "@/types/recipe-agent";
 import type { IngredientType } from "@/db/schema/enums";
-// DISABLED: auto-adding recipe ingredients to user inventory
-// import { ensureIngredientsInInventory } from "@/db/services/ensure-ingredients-in-inventory";
 
-export async function POST(request: Request) {
+export const POST = withAuth(async ({ userId, db, request }) => {
   try {
     const body = await request.json();
     const { recipes } = body as { recipes?: RecipeToolResult[] };
@@ -41,27 +38,6 @@ export async function POST(request: Request) {
       return NextResponse.json(response);
     }
 
-    // Auth check
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-
-    if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const token = decodeSupabaseToken(session.access_token);
-    const db = createUserDb(token);
-
     let createdCount = 0;
     let updatedCount = 0;
     let deletedCount = 0;
@@ -71,16 +47,16 @@ export async function POST(request: Request) {
       for (const recipe of recipes) {
         try {
           if (recipe.operation === "create") {
-            await handleCreate(tx, user.id, recipe);
+            await handleCreate(tx, userId, recipe);
             createdCount++;
           } else if (recipe.operation === "update") {
-            await handleUpdate(tx, user.id, recipe);
+            await handleUpdate(tx, userId, recipe);
             updatedCount++;
           } else if (recipe.operation === "delete") {
-            await handleDelete(tx, user.id, recipe);
+            await handleDelete(tx, userId, recipe);
             deletedCount++;
           } else if (recipe.operation === "delete_all") {
-            const count = await handleDeleteAll(tx, user.id, recipe);
+            const count = await handleDeleteAll(tx, userId, recipe);
             deletedCount += count;
           }
         } catch (err) {
@@ -109,7 +85,7 @@ export async function POST(request: Request) {
       { status: 500 }
     );
   }
-}
+});
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function handleCreate(tx: any, userId: string, recipe: CreateRecipeResult) {
@@ -133,17 +109,6 @@ async function handleCreate(tx: any, userId: string, recipe: CreateRecipeResult)
         ingredientType: (ing.isRequired ? "anchor" : "optional") as IngredientType,
       }))
     );
-
-    // DISABLED: auto-adding recipe ingredients to user inventory
-    // const ingredientIds = validIngredients
-    //   .map((ing) => ing.ingredientId)
-    //   .filter((id): id is string => id !== null && id !== undefined);
-    //
-    // await ensureIngredientsInInventory({
-    //   tx,
-    //   userId,
-    //   ingredientIds,
-    // });
   }
 }
 
@@ -186,17 +151,6 @@ async function handleUpdate(tx: any, userId: string, recipe: UpdateRecipeResult)
         ingredientType: (ing.isRequired ? "anchor" : "optional") as IngredientType,
       }))
     );
-
-    // DISABLED: auto-adding recipe ingredients to user inventory
-    // const ingredientIds = validIngredients
-    //   .map((ing) => ing.ingredientId)
-    //   .filter((id): id is string => id !== null && id !== undefined);
-    //
-    // await ensureIngredientsInInventory({
-    //   tx,
-    //   userId,
-    //   ingredientIds,
-    // });
   }
 }
 

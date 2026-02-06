@@ -1,8 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
+import { withUser } from "@/lib/services/route-auth";
 import { recipeUpdateVoiceRequestSchema } from "@/types/recipes";
 import { processVoiceRecipeUpdate } from "@/lib/prompts/recipe-updater/process";
 
-export async function POST(request: NextRequest) {
+export const POST = withUser(async ({ request }) => {
   try {
     const body = await request.json();
 
@@ -31,4 +32,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
