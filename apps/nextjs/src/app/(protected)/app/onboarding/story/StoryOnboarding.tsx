@@ -13,7 +13,7 @@ import { Scene5Ready } from "./scenes/Scene5Ready";
 import { Scene6Cooked } from "./scenes/Scene6Cooked";
 import { Scene8YourRecipes } from "./scenes/Scene8YourRecipes";
 import { Scene7Manifesto } from "./scenes/Scene7Manifesto";
-import { LOCALSTORAGE_KEY, COMPLETION_FLAG_KEY } from "@/lib/story-onboarding/constants";
+import { LOCALSTORAGE_KEY, COMPLETION_FLAG_KEY, SARAH_TRACKED_INGREDIENTS, SARAH_PANTRY_STAPLES } from "@/lib/story-onboarding/constants";
 import type { StoryOnboardingState, DemoInventoryItem } from "@/lib/story-onboarding/types";
 import type { QuantityLevel } from "@/types/inventory";
 
@@ -23,6 +23,47 @@ export function StoryOnboarding() {
   const { className: fadeClassName, triggerTransition } = useFadeTransition();
   const [preDecrementInventory, setPreDecrementInventory] = useState<DemoInventoryItem[]>([]);
   const [completingOnboarding, setCompletingOnboarding] = useState(false);
+
+  const handleSkipOnboarding = async () => {
+    setCompletingOnboarding(true);
+
+    try {
+      const payload = {
+        ingredients: SARAH_TRACKED_INGREDIENTS.map((i) => ({
+          name: i.name,
+          quantityLevel: i.quantityLevel,
+        })),
+        pantryStaples: SARAH_PANTRY_STAPLES.map((i) => ({
+          name: i.name,
+          quantityLevel: i.quantityLevel,
+        })),
+        recipes: [],
+      };
+
+      const minDelay = new Promise((resolve) => setTimeout(resolve, 6000));
+
+      const [response] = await Promise.all([
+        fetch("/api/onboarding/story/complete", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        }),
+        minDelay,
+      ]);
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.error || "Something went wrong.");
+      }
+
+      localStorage.setItem(COMPLETION_FLAG_KEY, "true");
+      localStorage.removeItem(LOCALSTORAGE_KEY);
+      router.push("/app");
+    } catch (err) {
+      console.error("Skip onboarding failed:", err);
+      setCompletingOnboarding(false);
+    }
+  };
 
   const handleNavigate = (scene: StoryOnboardingState["currentScene"]) => {
     triggerTransition(() => {
@@ -141,7 +182,7 @@ export function StoryOnboarding() {
 
       <div className={fadeClassName}>
         {state.currentScene === 1 && (
-          <Scene1Dilemma onContinue={() => handleNavigate(2)} />
+          <Scene1Dilemma onContinue={() => handleNavigate(2)} onSkip={handleSkipOnboarding} />
         )}
         {state.currentScene === 2 && (
           <Scene2RecipeVoice
