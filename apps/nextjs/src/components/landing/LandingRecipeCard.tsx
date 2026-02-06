@@ -39,7 +39,7 @@ export function LandingRecipeCard({
 
   const badgeText =
     status === "cookable"
-      ? "✅ Ready tonight"
+      ? "✅ Ready"
       : `${status === "almost" ? "⚠️" : "❌"} Missing ${missingCount}`;
 
   return (

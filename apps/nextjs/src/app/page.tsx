@@ -45,7 +45,7 @@ export default function Home() {
           <div className="text-center space-y-6 md:space-y-8">
             <div className="inline-block bg-yellow-300 border-2 border-black px-4 md:px-6 py-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] md:rotate-2">
               <span className="text-sm md:text-xl font-black uppercase font-head">
-                Not a recipe app.
+                Stop scrolling. Start cooking.
               </span>
             </div>
             <Text as="h2" className="text-3xl md:text-7xl lg:text-8xl font-black uppercase leading-tight md:leading-none tracking-tight md:tracking-tighter md:transform md:-rotate-1 px-2">
@@ -89,20 +89,7 @@ export default function Home() {
           </Text>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 px-4">
-            {/* HomeCuistot column — first on mobile */}
-            <div className="order-first border-4 md:border-6 border-black bg-gradient-to-br from-green-200 to-green-300 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] p-6 md:p-10">
-              <Text as="h4" className="text-xl md:text-3xl font-black uppercase mb-4 md:mb-6">
-                ✅ HomeCuistot
-              </Text>
-              <ul className="space-y-3">
-                <li className="text-lg md:text-2xl font-bold">Your 15 go-to dishes</li>
-                <li className="text-lg md:text-2xl font-bold">Update inventory by voice in seconds</li>
-                <li className="text-lg md:text-2xl font-bold">Only your own recipes, ever</li>
-                <li className="text-lg md:text-2xl font-bold">Open the app, see what&rsquo;s ready</li>
-              </ul>
-            </div>
-
-            {/* Recipe Apps column — second on mobile */}
+            {/* Recipe Apps column — first on all screens */}
             <div className="border-4 md:border-6 border-black bg-gray-100 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] p-6 md:p-10">
               <Text as="h4" className="text-xl md:text-3xl font-black uppercase text-gray-600 mb-4 md:mb-6">
                 ❌ Recipe Apps
@@ -112,6 +99,19 @@ export default function Home() {
                 <li className="text-lg md:text-2xl font-bold text-gray-600 line-through decoration-red-400/50 decoration-3">Scan receipts to track inventory</li>
                 <li className="text-lg md:text-2xl font-bold text-gray-600 line-through decoration-red-400/50 decoration-3">Suggest strangers&rsquo; dishes</li>
                 <li className="text-lg md:text-2xl font-bold text-gray-600 line-through decoration-red-400/50 decoration-3">You open the app, you scroll</li>
+              </ul>
+            </div>
+
+            {/* HomeCuistot column — second on all screens */}
+            <div className="border-4 md:border-6 border-black bg-gradient-to-br from-green-200 to-green-300 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] p-6 md:p-10">
+              <Text as="h4" className="text-xl md:text-3xl font-black uppercase mb-4 md:mb-6">
+                ✅ HomeCuistot
+              </Text>
+              <ul className="space-y-3">
+                <li className="text-lg md:text-2xl font-bold">Your 15 go-to dishes</li>
+                <li className="text-lg md:text-2xl font-bold">Update inventory by voice in seconds</li>
+                <li className="text-lg md:text-2xl font-bold">Only your own recipes, ever</li>
+                <li className="text-lg md:text-2xl font-bold">Open the app, see what&rsquo;s ready</li>
               </ul>
             </div>
           </div>
