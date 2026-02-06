@@ -41,7 +41,7 @@ export function RecipeCard(props: RecipeCardProps) {
       className={cn(
         'relative border-4 border-black p-4 flex flex-col h-full',
         'sm:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]',
-        'bg-gradient-to-br from-green-200 to-green-300'
+        'bg-cyan-200'
       )}
     >
       {/* Action buttons on top-right card border */}
