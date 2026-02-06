@@ -19,7 +19,7 @@
 
 **Purpose**: Create directory structure for the new landing component domain
 
-- [ ] T001 Create `src/components/landing/` directory in `apps/nextjs/`
+- [x] T001 Create `src/components/landing/` directory in `apps/nextjs/`
 
 ---
 
@@ -27,7 +27,7 @@
 
 **Purpose**: Build the LandingRecipeCard component FIRST (per user directive: create reusable components before using them)
 
-- [ ] T002 Create `LandingRecipeCard` component in `apps/nextjs/src/components/landing/LandingRecipeCard.tsx` with props interface `{ name, description, ingredients: Array<{ name, type: 'anchor' | 'optional', available: boolean }>, status: 'cookable' | 'almost' | 'missing' }`. Implement: status-based background gradient (cookable=green-200/300, almost=yellow-200/300, missing=gray-100/200), status badge at top-right (cookable="Ready tonight" green, almost="Missing N" yellow, missing="Missing N" gray) using `Badge` from `@/components/shared`, recipe name (`text-xl font-black truncate`), description (`text-sm font-bold text-black/70 line-clamp-2`), ingredient list as flex-wrap of `Badge` components (available=`bg-white/50` outline, missing=`bg-red-200 text-red-800`), anchor star indicator (amber for anchor, gray for optional). Neo-brutal card frame: `border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]`. No interactivity. Static read-only presentation.
+- [x] T002 Create `LandingRecipeCard` component in `apps/nextjs/src/components/landing/LandingRecipeCard.tsx` with props interface `{ name, description, ingredients: Array<{ name, type: 'anchor' | 'optional', available: boolean }>, status: 'cookable' | 'almost' | 'missing' }`. Implement: status-based background gradient (cookable=green-200/300, almost=yellow-200/300, missing=gray-100/200), status badge at top-right (cookable="Ready tonight" green, almost="Missing N" yellow, missing="Missing N" gray) using `Badge` from `@/components/shared`, recipe name (`text-xl font-black truncate`), description (`text-sm font-bold text-black/70 line-clamp-2`), ingredient list as flex-wrap of `Badge` components (available=`bg-white/50` outline, missing=`bg-red-200 text-red-800`), anchor star indicator (amber for anchor, gray for optional). Neo-brutal card frame: `border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]`. No interactivity. Static read-only presentation.
 
 **Checkpoint**: LandingRecipeCard component ready to be consumed by page.tsx
 
@@ -41,10 +41,10 @@
 
 ### Implementation for User Story 1
 
-- [ ] T003 [US1] Rewrite Section 1 (Hero) in `apps/nextjs/src/app/page.tsx`: Replace eyebrow with "Not a recipe app." (yellow chip, `inline-block bg-yellow-300 border-2 border-black px-4 md:px-6 py-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] md:rotate-2`), headline with "Your kitchen already knows what&rsquo;s for dinner" via `<Text as="h2">`, subheadline with "You have 15 go-to dishes and a fridge full of ingredients. HomeCuistot connects the two.", CTA with "Start with your recipes &rarr;" linking to `/login`
-- [ ] T004 [US1] Rewrite Section 2 (Reframe) in `apps/nextjs/src/app/page.tsx`: Replace "problem" section. Headline: "You know those 10&ndash;15 dinners you rotate through?" Body: "The ones you could make in your sleep? HomeCuistot is the only app that starts there &mdash; with your dishes, not someone else&rsquo;s. Tell it what you cook, keep your kitchen updated, and it shows you which of your meals are ready tonight." Same white card with neo-brutal styling.
-- [ ] T005 [US1] Add Section 3 (Anti-Positioning) in `apps/nextjs/src/app/page.tsx`: NEW section after Reframe. Background `bg-gradient-to-br from-cyan-300 via-blue-300 to-cyan-300`. Title "What makes this different". Two-column grid (`grid-cols-1 md:grid-cols-2`). Left column "Recipe Apps" (gray-100, gray-400 text, line-through items). Right column "HomeCuistot" (green-200/300, positive items). HomeCuistot column uses `order-first` for mobile-first display. Knockout line below: "Your dishes. Your inventory. Suggestions from strangers, never."
-- [ ] T006 [US1] Rewrite Section 7 (Final CTA) in `apps/nextjs/src/app/page.tsx`: Headline "Your dishes. Your kitchen. Always knowing what&rsquo;s for dinner." Body "Every meal you cook instead of ordering is a win. We just remove the thinking." CTA "Start with your recipes &rarr;" linking to `/login`
+- [x] T003 [US1] Rewrite Section 1 (Hero) in `apps/nextjs/src/app/page.tsx`: Replace eyebrow with "Not a recipe app." (yellow chip, `inline-block bg-yellow-300 border-2 border-black px-4 md:px-6 py-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] md:rotate-2`), headline with "Your kitchen already knows what&rsquo;s for dinner" via `<Text as="h2">`, subheadline with "You have 15 go-to dishes and a fridge full of ingredients. HomeCuistot connects the two.", CTA with "Start with your recipes &rarr;" linking to `/login`
+- [x] T004 [US1] Rewrite Section 2 (Reframe) in `apps/nextjs/src/app/page.tsx`: Replace "problem" section. Headline: "You know those 10&ndash;15 dinners you rotate through?" Body: "The ones you could make in your sleep? HomeCuistot is the only app that starts there &mdash; with your dishes, not someone else&rsquo;s. Tell it what you cook, keep your kitchen updated, and it shows you which of your meals are ready tonight." Same white card with neo-brutal styling.
+- [x] T005 [US1] Add Section 3 (Anti-Positioning) in `apps/nextjs/src/app/page.tsx`: NEW section after Reframe. Background `bg-gradient-to-br from-cyan-300 via-blue-300 to-cyan-300`. Title "What makes this different". Two-column grid (`grid-cols-1 md:grid-cols-2`). Left column "Recipe Apps" (gray-100, gray-400 text, line-through items). Right column "HomeCuistot" (green-200/300, positive items). HomeCuistot column uses `order-first` for mobile-first display. Knockout line below: "Your dishes. Your inventory. Suggestions from strangers, never."
+- [x] T006 [US1] Rewrite Section 7 (Final CTA) in `apps/nextjs/src/app/page.tsx`: Headline "Your dishes. Your kitchen. Always knowing what&rsquo;s for dinner." Body "Every meal you cook instead of ordering is a win. We just remove the thinking." CTA "Start with your recipes &rarr;" linking to `/login`
 
 **Checkpoint**: Sections 1, 2, 3, 7 complete. Core positioning message delivered. All CTAs link to `/login`.
 
@@ -58,7 +58,7 @@
 
 ### Implementation for User Story 4
 
-- [ ] T007 [US4] Rewrite Section 4 (How It Works) in `apps/nextjs/src/app/page.tsx`: Background `bg-gradient-to-br from-orange-300 via-orange-400 to-orange-300`. Title "Three steps. Your voice. That&rsquo;s it." Subtitle "Your hands are full and your brain is tired. Just talk." Card 1 (pink): "Tell us what you cook" / "I make carbonara, stir-fry, shakshuka... Add the dishes you already know by voice." Card 2 (yellow): "Keep your kitchen current" / "I just bought eggs, parmesan and bananas. Update your inventory by voice after shopping." Card 3 (cyan): "See what&rsquo;s ready tonight" / "Open the app &mdash; HomeCuistot shows you which of your dishes you can cook right now." Keep existing card visual pattern (numbered blocks, accent colors, hard shadows, hover rotation).
+- [x] T007 [US4] Rewrite Section 4 (How It Works) in `apps/nextjs/src/app/page.tsx`: Background `bg-gradient-to-br from-orange-300 via-orange-400 to-orange-300`. Title "Three steps. Your voice. That&rsquo;s it." Subtitle "Your hands are full and your brain is tired. Just talk." Card 1 (pink): "Tell us what you cook" / "I make carbonara, stir-fry, shakshuka... Add the dishes you already know by voice." Card 2 (yellow): "Keep your kitchen current" / "I just bought eggs, parmesan and bananas. Update your inventory by voice after shopping." Card 3 (cyan): "See what&rsquo;s ready tonight" / "Open the app &mdash; HomeCuistot shows you which of your dishes you can cook right now." Keep existing card visual pattern (numbered blocks, accent colors, hard shadows, hover rotation).
 
 **Checkpoint**: How It Works section updated with new copy. Visual pattern preserved.
 
@@ -72,8 +72,8 @@
 
 ### Implementation for User Story 2
 
-- [ ] T008 [US2] Add `LANDING_RECIPES` mock data constant at top of `apps/nextjs/src/app/page.tsx`: 3 recipe objects — Pasta Carbonara (cookable, 6 ingredients, 0 missing), Chicken Stir-Fry (almost, 6 ingredients, 1 missing: Bell pepper), Shakshuka (missing, 6 ingredients, 3 missing: Tomato, Onion, Cumin). Use exact data from final-spec.md.
-- [ ] T009 [US2] Add Section 5 (Product Demo) in `apps/nextjs/src/app/page.tsx`: NEW section after How It Works. Background `bg-gradient-to-br from-pink-200 via-yellow-100 to-cyan-200` with `border-b-4 md:border-b-8 border-black`. Title "Your recipes. Your ingredients. Instant answers." Subtitle "This is what HomeCuistot looks like when you open it." 3-column card grid (`grid-cols-1 md:grid-cols-3 gap-6 md:gap-10`). Import and render `LandingRecipeCard` for each item in `LANDING_RECIPES`.
+- [x] T008 [US2] Add `LANDING_RECIPES` mock data constant at top of `apps/nextjs/src/app/page.tsx`: 3 recipe objects — Pasta Carbonara (cookable, 6 ingredients, 0 missing), Chicken Stir-Fry (almost, 6 ingredients, 1 missing: Bell pepper), Shakshuka (missing, 6 ingredients, 3 missing: Tomato, Onion, Cumin). Use exact data from final-spec.md.
+- [x] T009 [US2] Add Section 5 (Product Demo) in `apps/nextjs/src/app/page.tsx`: NEW section after How It Works. Background `bg-gradient-to-br from-pink-200 via-yellow-100 to-cyan-200` with `border-b-4 md:border-b-8 border-black`. Title "Your recipes. Your ingredients. Instant answers." Subtitle "This is what HomeCuistot looks like when you open it." 3-column card grid (`grid-cols-1 md:grid-cols-3 gap-6 md:gap-10`). Import and render `LandingRecipeCard` for each item in `LANDING_RECIPES`.
 
 **Checkpoint**: Product demo section renders 3 cards with distinct status states.
 
@@ -87,7 +87,7 @@
 
 ### Implementation for User Story 3
 
-- [ ] T010 [US3] Add Section 6 (Sarah Story Teaser) in `apps/nextjs/src/app/page.tsx`: NEW section after Product Demo. Background `bg-gradient-to-br from-yellow-100 via-amber-100 to-orange-100` with `border-b-4 md:border-b-8 border-black`. Centered card with thick border and hard shadow. Line 1: "5:47pm. Office." (`text-lg md:text-2xl font-black`). Line 2: "Sarah&rsquo;s hungry. She doesn&rsquo;t feel like scrolling through Uber Eats again." (`text-base md:text-xl font-bold text-black/80`). Line 3: "She opens HomeCuistot instead." (`text-base md:text-xl font-bold text-black/80`). CTA: "See Sarah&rsquo;s story &rarr;" linking to `/login` with `Button bg-yellow-400 hover:bg-yellow-500 border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]` + press animation. Smaller than hero CTA.
+- [x] T010 [US3] Add Section 6 (Sarah Story Teaser) in `apps/nextjs/src/app/page.tsx`: NEW section after Product Demo. Background `bg-gradient-to-br from-yellow-100 via-amber-100 to-orange-100` with `border-b-4 md:border-b-8 border-black`. Centered card with thick border and hard shadow. Line 1: "5:47pm. Office." (`text-lg md:text-2xl font-black`). Line 2: "Sarah&rsquo;s hungry. She doesn&rsquo;t feel like scrolling through Uber Eats again." (`text-base md:text-xl font-bold text-black/80`). Line 3: "She opens HomeCuistot instead." (`text-base md:text-xl font-bold text-black/80`). CTA: "See Sarah&rsquo;s story &rarr;" linking to `/login` with `Button bg-yellow-400 hover:bg-yellow-500 border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]` + press animation. Smaller than hero CTA.
 
 **Checkpoint**: Sarah teaser section renders narrative + CTA.
 
