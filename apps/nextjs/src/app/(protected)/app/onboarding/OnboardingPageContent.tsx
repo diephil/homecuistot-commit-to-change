@@ -178,9 +178,6 @@ export function OnboardingPageContent() {
 
         const result: IngredientExtractionResponse = await response.json();
 
-        // DEBUG: Log API response
-        console.log("[onboarding] API result:", { add: result.add, rm: result.rm });
-
         // Update transcription if available
         if (result.transcribedText) {
           setLastTranscription(result.transcribedText);
@@ -204,11 +201,6 @@ export function OnboardingPageContent() {
 
         // Apply updates - simplified for merged list in Step 3
         setState((prev) => {
-          // DEBUG: Log current state before update
-          console.log("[onboarding] Before update:", {
-            selectedIngredients: prev.selectedIngredients,
-            selectedPantryStaples: prev.selectedPantryStaples,
-          });
           // Create merged list for duplicate checking
           const allCurrentIngredients = [
             ...prev.selectedIngredients,
@@ -254,15 +246,6 @@ export function OnboardingPageContent() {
             voiceAddedIngredients: [...updatedVoiceAdded, ...newIngredients],
             hasVoiceChanges: true,
           };
-
-          // DEBUG: Log new state after update
-          console.log("[onboarding] After update:", {
-            updatedIngredients,
-            updatedPantryStaples,
-            newIngredients,
-            finalSelectedIngredients: newState.selectedIngredients,
-            finalSelectedPantryStaples: newState.selectedPantryStaples,
-          });
 
           return newState;
         });
@@ -350,7 +333,6 @@ export function OnboardingPageContent() {
       }
 
       const result: RecipeInputResponse = await response.json();
-      console.log("[onboarding] Recipe input processed:", result);
 
       // Update transcription if available
       if (result.transcribedText) {
@@ -427,9 +409,6 @@ export function OnboardingPageContent() {
         const errorData = await response.json().catch(() => ({ error: "Unknown error" }));
         console.error("[onboarding] Complete error:", errorData);
         toast.error("Some data may not have been saved");
-      } else {
-        const result = await response.json();
-        console.log("[onboarding] Setup complete:", result);
       }
     } catch (error) {
       console.error("[onboarding] Complete failed:", error);
