@@ -272,3 +272,10 @@ DATABASE_URL_DIRECT=postgresql://postgres:postgres@localhost:54322/postgres
 # Admin access (comma-separated Supabase user UUIDs)
 ADMIN_USER_IDS=
 ```
+
+## Active Technologies
+- TypeScript 5.x (strict mode), Next.js 16 App Router + Drizzle ORM 0.45.1, Supabase Auth, Vercel AI SDK, Google ADK (030-unrecognized-items-support)
+- Supabase PostgreSQL with RLS, Drizzle-managed migrations (030-unrecognized-items-support)
+
+## Recent Changes
+- 030-unrecognized-items-support: Added TypeScript 5.x (strict mode), Next.js 16 App Router + Drizzle ORM 0.45.1, Supabase Auth, Vercel AI SDK, Google ADK
