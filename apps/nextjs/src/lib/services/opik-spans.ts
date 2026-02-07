@@ -65,7 +65,7 @@ export async function getNextUnprocessedSpan(): Promise<OpikSpan | null> {
           value: "unrecognized_items",
         },
       ],
-      limit: 5,
+      limit: 25,
       sort_by: [{ field: "created_at", direction: "desc" }],
     }),
   });
