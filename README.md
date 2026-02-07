@@ -35,7 +35,7 @@ This project demonstrates practical integration of sponsor technologies while co
 
 - This project shows usage of the Gemini capabilities I discovered during Google Deepmind Workshop (22nd of January 2026). This is an opportunity to grow my Google Gemini skills.
 
-**Example:** 🚀 Inside [this folder](./gemini-builds) you will find examples of built apps I did via AI Studio built, that helped me prototyping my ideas quickly
+**Example:** 🚀 Inside [this folder](./idea-prototypes-prototypes) you will find examples of built apps I did via AI Studio built, that helped me prototyping my ideas quickly
 
 ## Tech Stack
 

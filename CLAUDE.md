@@ -218,10 +218,10 @@ export const maxDuration = 30
 
 ## Gemini Builds Reference
 
-- `gemini-builds/` folder contains AI Studio mockups as reference
+- `idea-prototypes/` folder contains AI Studio mockups as reference
 - Code must NOT be used as-is - requires revision and proper integration following project standards
 - Use only as inspiration
-- **IMPORTANT**: Never modify code inside `gemini-builds/`, only read
+- **IMPORTANT**: Never modify code inside `idea-prototypes/`, only read
 
 ## Git Workflow
 
