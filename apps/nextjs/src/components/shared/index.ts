@@ -19,6 +19,7 @@ export { Footer } from "./Footer";
 export { FormModal } from "./FormModal";
 export { Header } from "./Header";
 export { HelpModal, HelpSection, HelpExampleList } from "./HelpModal";
+export { InstallPWAButton } from "./InstallPWAButton";
 export { IngredientChip } from "./IngredientChip";
 export { LastHeardDisplay } from "./LastHeardDisplay";
 export { Logo } from "./Logo";
