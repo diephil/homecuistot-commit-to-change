@@ -4,7 +4,7 @@ import { Button } from "@/components/shared/Button";
 import { InventoryItemBadge } from "@/components/shared/InventoryItemBadge";
 import {
   CARBONARA_RECIPE,
-  SARAH_PANTRY_STAPLES,
+  SAM_PANTRY_STAPLES,
 } from "@/lib/story-onboarding/constants";
 import type { DemoInventoryItem } from "@/lib/story-onboarding/types";
 
@@ -46,7 +46,7 @@ export function Scene6Cooked({
           className="text-base font-semibold text-black/70 animate-[fadeIn_0.5s_ease-in_both]"
           style={{ animationDelay: "0.4s" }}
         >
-          Here&apos;s what changed in Sarah&apos;s inventory after cooking the recipe:
+          Here&apos;s what changed in Sam&apos;s inventory after cooking the recipe:
         </p>
 
         {/* Quantity scale legend */}
@@ -103,7 +103,7 @@ export function Scene6Cooked({
         >
           <h3 className="text-lg font-black">Staples (always available)</h3>
           <div className="flex flex-wrap gap-2">
-            {SARAH_PANTRY_STAPLES.map((item, i) => (
+            {SAM_PANTRY_STAPLES.map((item, i) => (
               <InventoryItemBadge
                 key={i}
                 name={item.name}

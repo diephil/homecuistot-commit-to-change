@@ -4,13 +4,13 @@ import { useState, useEffect, useCallback } from "react";
 import type { StoryOnboardingState, DemoInventoryItem, DemoRecipe } from "@/lib/story-onboarding/types";
 import {
   LOCALSTORAGE_KEY,
-  SARAH_INITIAL_INVENTORY,
+  SAM_INITIAL_INVENTORY,
   CARBONARA_RECIPE,
 } from "@/lib/story-onboarding/constants";
 
 const DEFAULT_STATE: StoryOnboardingState = {
   currentScene: 1,
-  demoInventory: SARAH_INITIAL_INVENTORY,
+  demoInventory: SAM_INITIAL_INVENTORY,
   demoRecipe: CARBONARA_RECIPE,
   demoRecipes: [],
   voiceInputsDone: false,

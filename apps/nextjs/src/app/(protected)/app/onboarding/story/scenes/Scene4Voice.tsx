@@ -7,7 +7,7 @@ import { InventoryItemBadge } from "@/components/shared/InventoryItemBadge";
 import { Button } from "@/components/shared/Button";
 import {
   SCENE_TEXT,
-  SARAH_PANTRY_STAPLES,
+  SAM_PANTRY_STAPLES,
 } from "@/lib/story-onboarding/constants";
 import { hasRequiredItems } from "@/lib/story-onboarding/transforms";
 import type { DemoInventoryItem } from "@/lib/story-onboarding/types";
@@ -232,10 +232,10 @@ export function Scene4Voice({
           {canContinue && (
             <div className="mt-4 bg-green-100 border-4 border-green-600 p-4 rounded-none animate-[fadeIn_0.5s_ease-in_both] shadow-[4px_4px_0px_0px_rgba(22,163,74,1)]">
               <p className="text-lg font-black text-green-600 text-center">
-                ✅ Perfect! We detected the ingredients Sarah needed!
+                ✅ Perfect! We detected the ingredients Sam needed!
               </p>
               <p className="text-sm font-semibold text-green-700 text-center mt-2">
-                Click Continue to help Sarah cook her carbonara
+                Click Continue to help Sam cook his carbonara
               </p>
             </div>
           )}
@@ -245,7 +245,7 @@ export function Scene4Voice({
         {attemptCount >= 3 && !canContinue && (
           <div className="bg-pink-100 border-4 border-pink-600 p-4 rounded-none animate-[fadeIn_0.5s_ease-in_both] shadow-[4px_4px_0px_0px_rgba(219,39,119,1)]">
             <p className="text-lg font-black text-pink-600 text-center">
-              🍝 Hurry up, Sarah is hungry!
+              🍝 Hurry up, Sam is hungry!
             </p>
           </div>
         )}
@@ -286,7 +286,7 @@ export function Scene4Voice({
             {/* Staples always shown */}
             <h3 className="text-lg font-black mt-4">Staples (always available)</h3>
             <div className="flex flex-wrap gap-2">
-              {SARAH_PANTRY_STAPLES.map((item, i) => (
+              {SAM_PANTRY_STAPLES.map((item, i) => (
                 <InventoryItemBadge
                   key={i}
                   name={item.name}

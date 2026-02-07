@@ -4,8 +4,8 @@ import { Button } from "@/components/shared/Button";
 import { InventoryItemBadge } from "@/components/shared/InventoryItemBadge";
 import {
   SCENE_TEXT,
-  SARAH_TRACKED_INGREDIENTS,
-  SARAH_PANTRY_STAPLES,
+  SAM_TRACKED_INGREDIENTS,
+  SAM_PANTRY_STAPLES,
 } from "@/lib/story-onboarding/constants";
 
 interface Scene3StoreKitchenProps {
@@ -15,7 +15,7 @@ interface Scene3StoreKitchenProps {
 export function Scene3StoreKitchen({ onContinue }: Scene3StoreKitchenProps) {
   // Delay accumulator for staggered fade-in
   const introLen = SCENE_TEXT.scene3Intro.length;
-  const kitchenDelay = (introLen + 1) * 0.4; // +1 for SARAH'S KITCHEN heading
+  const kitchenDelay = (introLen + 1) * 0.4; // +1 for SAM'S KITCHEN heading
 
   return (
     <div className="flex flex-col items-center min-h-[80vh] px-6 py-8">
@@ -36,7 +36,7 @@ export function Scene3StoreKitchen({ onContinue }: Scene3StoreKitchenProps) {
           className="text-2xl font-black tracking-tight animate-[fadeIn_0.5s_ease-in_both]"
           style={{ animationDelay: `${introLen * 0.4}s` }}
         >
-          SARAH&apos;S KITCHEN
+          SAM&apos;S KITCHEN
         </h2>
 
         {/* Tracked ingredients */}
@@ -46,7 +46,7 @@ export function Scene3StoreKitchen({ onContinue }: Scene3StoreKitchenProps) {
         >
           <h3 className="text-lg font-black">Tracked Ingredients</h3>
           <div className="flex flex-wrap gap-2">
-            {SARAH_TRACKED_INGREDIENTS.map((item, i) => (
+            {SAM_TRACKED_INGREDIENTS.map((item, i) => (
               <InventoryItemBadge
                 key={i}
                 name={item.name}
@@ -65,7 +65,7 @@ export function Scene3StoreKitchen({ onContinue }: Scene3StoreKitchenProps) {
         >
           <h3 className="text-lg font-black">Staples (always available)</h3>
           <div className="flex flex-wrap gap-2">
-            {SARAH_PANTRY_STAPLES.map((item, i) => (
+            {SAM_PANTRY_STAPLES.map((item, i) => (
               <InventoryItemBadge
                 key={i}
                 name={item.name}
