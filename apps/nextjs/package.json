@@ -25,7 +25,9 @@
     "eval": "tsx --env-file=.env.local scripts/run-evaluation.ts",
     "eval:prod": "tsx --env-file=.env.prod scripts/run-evaluation.ts",
     "eval:all": "tsx --env-file=.env.local scripts/run-evaluations.ts",
-    "eval:all:prod": "tsx --env-file=.env.prod scripts/run-evaluations.ts"
+    "eval:all:prod": "tsx --env-file=.env.prod scripts/run-evaluations.ts",
+    "users": "tsx --env-file=.env.local scripts/list-users.ts",
+    "users:prod": "tsx --env-file=.env.prod scripts/list-users.ts"
   },
   "dependencies": {
     "@ai-sdk/google": "^3.0.10",
