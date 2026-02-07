@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { markSpanAsReviewed } from "@/lib/services/opik-spans";
-// DEMO: open to all authenticated users for project review
-// import { requireAdmin } from "@/lib/services/admin-auth";
-import { requireUser } from "@/lib/services/admin-auth";
+import { requireAdmin } from "@/lib/services/admin-auth";
 import { z } from "zod";
 
 const MarkReviewedSchema = z.object({
@@ -10,8 +8,7 @@ const MarkReviewedSchema = z.object({
 });
 
 export async function POST(request: NextRequest) {
-  // const auth = await requireAdmin();
-  const auth = await requireUser();
+  const auth = await requireAdmin();
   if (!auth.ok) return auth.response;
 
   try {
