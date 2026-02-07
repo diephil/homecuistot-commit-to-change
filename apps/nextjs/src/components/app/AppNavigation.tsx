@@ -18,7 +18,7 @@ const baseNavItems: NavItem[] = [
   { href: '/app', label: 'Cook Now!', icon: Home },
   { href: '/app/recipes', label: 'My Recipes', icon: Book },
   { href: '/app/inventory', label: 'Inventory', icon: Package },
-  { href: '/app/onboarding/story', label: "Sarah's Story", icon: Sparkles, clearStoryState: true },
+  { href: '/app/onboarding/story', label: "Sam's Story", icon: Sparkles, clearStoryState: true },
 ]
 
 const adminNavItem: NavItem = { href: '/admin', label: 'Admin Dashboard (demo)', icon: Shield }

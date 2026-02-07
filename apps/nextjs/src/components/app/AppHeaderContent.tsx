@@ -9,7 +9,7 @@ export function AppHeaderContent({ isAdmin }: { isAdmin: boolean }) {
   const pathname = usePathname()
 
   // Hide nav only during first-time onboarding (/app/onboarding exact),
-  // not when replaying Sarah's Story from the navbar (/app/onboarding/story)
+  // not when replaying Sam's Story from the navbar (/app/onboarding/story)
   const isFirstTimeOnboarding = pathname === '/app/onboarding'
 
   return (

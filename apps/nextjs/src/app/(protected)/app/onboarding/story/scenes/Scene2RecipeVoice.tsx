@@ -7,7 +7,7 @@ import { RecipeAvailabilityCard } from "@/components/app/RecipeAvailabilityCard"
 import { Button } from "@/components/shared/Button";
 import {
   SCENE_TEXT,
-  SARAH_INITIAL_INVENTORY,
+  SAM_INITIAL_INVENTORY,
   CARBONARA_RECIPE,
 } from "@/lib/story-onboarding/constants";
 import {
@@ -162,7 +162,7 @@ export function Scene2RecipeVoice({
           className="text-sm font-mono font-semibold uppercase tracking-widest text-black/50 animate-[fadeIn_0.5s_ease-in_both]"
           style={{ animationDelay: "0s" }}
         >
-          Sarah&apos;s Recipe
+          Sam&apos;s Recipe
         </p>
 
         {/* Narrative intro */}
@@ -232,7 +232,7 @@ export function Scene2RecipeVoice({
                 🤝 No worries, we got you!
               </p>
               <p className="text-sm font-semibold text-amber-800 text-center mt-2">
-                Here&apos;s Sarah&apos;s carbonara recipe to continue the story
+                Here&apos;s Sam&apos;s carbonara recipe to continue the story
               </p>
             </div>
           )}
@@ -245,13 +245,13 @@ export function Scene2RecipeVoice({
           </p>
         )}
 
-        {/* Extracted recipe display — shown against Sarah's current kitchen */}
+        {/* Extracted recipe display — shown against Sam's current kitchen */}
         {extractedRecipe && (
           <div className="animate-[fadeIn_0.5s_ease-in_both]">
             <RecipeAvailabilityCard
               recipe={toRecipeWithAvailability({
                 recipe: extractedRecipe,
-                inventory: SARAH_INITIAL_INVENTORY,
+                inventory: SAM_INITIAL_INVENTORY,
               })}
               variant="almost-available"
             />

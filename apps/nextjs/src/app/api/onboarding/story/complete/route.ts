@@ -32,7 +32,7 @@ export const POST = withAuth(async ({ userId, db, request }) => {
 
     const { ingredients, pantryStaples, recipes } = parseResult.data;
 
-    // Always include Sarah's carbonara as the default recipe + user recipes from scene 7
+    // Always include Sam's carbonara as the default recipe + user recipes from scene 7
     const allRecipes = [
       {
         name: CARBONARA_RECIPE.name,

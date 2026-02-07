@@ -13,7 +13,7 @@ import { Scene5Ready } from "./scenes/Scene5Ready";
 import { Scene6Cooked } from "./scenes/Scene6Cooked";
 import { Scene8YourRecipes } from "./scenes/Scene8YourRecipes";
 import { Scene7Manifesto } from "./scenes/Scene7Manifesto";
-import { LOCALSTORAGE_KEY, COMPLETION_FLAG_KEY, SARAH_TRACKED_INGREDIENTS, SARAH_PANTRY_STAPLES } from "@/lib/story-onboarding/constants";
+import { LOCALSTORAGE_KEY, COMPLETION_FLAG_KEY, SAM_TRACKED_INGREDIENTS, SAM_PANTRY_STAPLES } from "@/lib/story-onboarding/constants";
 import type { StoryOnboardingState, DemoInventoryItem } from "@/lib/story-onboarding/types";
 import type { QuantityLevel } from "@/types/inventory";
 
@@ -29,11 +29,11 @@ export function StoryOnboarding() {
 
     try {
       const payload = {
-        ingredients: SARAH_TRACKED_INGREDIENTS.map((i) => ({
+        ingredients: SAM_TRACKED_INGREDIENTS.map((i) => ({
           name: i.name,
           quantityLevel: i.quantityLevel,
         })),
-        pantryStaples: SARAH_PANTRY_STAPLES.map((i) => ({
+        pantryStaples: SAM_PANTRY_STAPLES.map((i) => ({
           name: i.name,
           quantityLevel: i.quantityLevel,
         })),
@@ -162,7 +162,7 @@ export function StoryOnboarding() {
       <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 flex items-center justify-center">
         <div className="max-w-md w-full space-y-6 text-center px-6">
           <div className="w-12 h-12 border-4 border-black border-t-transparent rounded-full animate-spin mx-auto" />
-          <h2 className="text-2xl font-black">Setting up your kitchen...</h2>
+          <h2 className="text-2xl font-black">Setting up your kitchen... We also leave you with Sam&apos;s pasta recipe 🍝</h2>
           <p className="text-base font-semibold text-black/70 leading-relaxed">
             We&apos;re adding your ingredients and recipes to your account so
             you can start cooking right away.

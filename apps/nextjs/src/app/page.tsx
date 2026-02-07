@@ -198,7 +198,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Section 6 — Sarah Story Teaser */}
+      {/* Section 6 — Sam Story Teaser */}
       <section className="py-12 md:py-28 border-b-4 md:border-b-8 border-black bg-gradient-to-br from-yellow-100 via-amber-100 to-orange-100 relative overflow-hidden">
         <div className="max-w-5xl mx-auto px-4 md:px-8 relative">
           <div className="bg-white border-4 md:border-8 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] md:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] p-6 md:p-16 md:transform md:-rotate-1">
@@ -207,15 +207,15 @@ export default function Home() {
                 5:47pm. Office.
               </Text>
               <Text as="p" className="text-base md:text-xl font-bold text-black/80">
-                Sarah&rsquo;s New Year&rsquo;s resolution: cook more. It&rsquo;s not going great.
+                Sam&rsquo;s New Year&rsquo;s resolution: cook more. It&rsquo;s not going great.
               </Text>
               <Text as="p" className="text-base md:text-xl font-bold text-black/80">
-                She opens HomeCuistot instead.
+                He opens HomeCuistot instead.
               </Text>
             </div>
             <div className="flex justify-center">
               <Button asChild size="md" className="text-base md:text-xl px-6 md:px-10 py-3 md:py-5 bg-yellow-400 hover:bg-yellow-500 border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all font-black uppercase">
-                <Link href="/login">See Sarah&rsquo;s story &rarr;</Link>
+                <Link href="/login">See Sam&rsquo;s story &rarr;</Link>
               </Button>
             </div>
           </div>

@@ -3,7 +3,7 @@ import type { QuantityLevel } from "@/types/inventory";
 
 /**
  * Story Onboarding Constants
- * Sarah's demo data + scene text content for progressive fade-in.
+ * Sam's demo data + scene text content for progressive fade-in.
  */
 
 // localStorage key for story onboarding state
@@ -23,8 +23,8 @@ export const QUANTITY_WORDS: Record<QuantityLevel, string> = {
   3: "plenty",
 };
 
-// Sarah's 7 tracked ingredients
-export const SARAH_TRACKED_INGREDIENTS: DemoInventoryItem[] = [
+// Sam's 7 tracked ingredients
+export const SAM_TRACKED_INGREDIENTS: DemoInventoryItem[] = [
   {
     name: "Pasta",
     category: "cereal",
@@ -49,8 +49,8 @@ export const SARAH_TRACKED_INGREDIENTS: DemoInventoryItem[] = [
   { name: "Egg", category: "eggs", quantityLevel: 0, isPantryStaple: false },
 ];
 
-// Sarah's 2 pantry staples (Black pepper intentionally excluded — it's optional in carbonara but not tracked)
-export const SARAH_PANTRY_STAPLES: DemoInventoryItem[] = [
+// Sam's 2 pantry staples (Black pepper intentionally excluded — it's optional in carbonara but not tracked)
+export const SAM_PANTRY_STAPLES: DemoInventoryItem[] = [
   { name: "Salt", category: "salt", quantityLevel: 3, isPantryStaple: true },
   {
     name: "Olive oil",
@@ -61,14 +61,14 @@ export const SARAH_PANTRY_STAPLES: DemoInventoryItem[] = [
 ];
 
 // Full initial inventory (tracked + staples)
-export const SARAH_INITIAL_INVENTORY: DemoInventoryItem[] = [
-  ...SARAH_TRACKED_INGREDIENTS,
-  ...SARAH_PANTRY_STAPLES,
+export const SAM_INITIAL_INVENTORY: DemoInventoryItem[] = [
+  ...SAM_TRACKED_INGREDIENTS,
+  ...SAM_PANTRY_STAPLES,
 ];
 
 // Carbonara recipe
 export const CARBONARA_RECIPE: DemoRecipe = {
-  name: "Sarah's Pasta Carbonara",
+  name: "Sam's Pasta Carbonara",
   description:
     "A family version of a Pasta Carbonara with eggs, bacon, parmesan and a bit of black truffle.",
   ingredients: [
@@ -94,41 +94,41 @@ export const REQUIRED_RECIPE_ITEMS = [
 export const SCENE_TEXT = {
   scene1: [
     "5:47pm. Office.",
-    "Sarah's hungry. She doesn't feel like scrolling through Uber Eats again. 😩",
-    "She knows how to cook a couple dishes she's made a hundred times. She's not looking for new recipes or inspiration.",
-    "The problem: she has no idea what's actually in her fridge right now. 🤷‍♀️",
-    "Tonight, she's not going to give up. She's going to commit to changing her takeout-ordering habits.",
-    "She opens HomeCuistot instead. 💡",
+    "Sam's hungry. He doesn't feel like scrolling through Uber Eats again. 😩",
+    "He knows how to cook a couple dishes he's made a hundred times. He's not looking for new recipes or inspiration.",
+    "The problem: he has no idea what's actually in his fridge right now. 🤷‍♂️",
+    "Tonight, he's not going to give up. He's going to commit to changing his takeout-ordering habits.",
+    "He opens HomeCuistot instead. 💡",
   ],
-  scene2RecipeIntro: ["Sarah wants to tell HomeCuistot her recipe."],
+  scene2RecipeIntro: ["Sam wants to tell HomeCuistot his recipe."],
   scene2RecipeInstructions: [
-    "Help Sarah tell the app about her carbonara recipe:",
+    "Help Sam tell the app about his carbonara recipe:",
     "Tap and say:",
     '🎙️ "I do a Pasta Carbonara with bacon, eggs and parmesan"',
   ],
   scene3Intro: [
-    "She stops at the store on her way home. 🛒",
-    "Here's what HomeCuistot shows Sarah:",
+    "He stops at the store on his way home. 🛒",
+    "Here's what HomeCuistot shows Sam:",
   ],
   scene3Outro: [
-    "She grabs what's missing for her carbonara (eggs and parmesan) plus a few other things.",
+    "He grabs what's missing for his carbonara (eggs and parmesan) plus a few other things.",
   ],
   scene2Outro: [
-    "Sarah wants carbonara, but she's missing {eggs} and {parmesan} to cook it tonight.",
+    "Sam wants carbonara, but he's missing {eggs} and {parmesan} to cook it tonight.",
   ],
   scene4Intro: [
     "6:30pm. Home.",
-    "Sarah just arrived home. Her hands are full of groceries.",
-    "She needs to tell HomeCuistot what she bought.",
+    "Sam just arrived home. His hands are full of groceries.",
+    "He needs to tell HomeCuistot what he bought.",
   ],
   scene4Instructions: [
-    "Help Sarah tell the app what she just bought from the store:",
+    "Help Sam tell the app what he just bought from the store:",
     "Tap and say:",
     '"I just came back from the store, now I have eggs, parmesan and some bananas"',
   ],
   scene5: [
     '"We have everything for carbonara—let me cook it!" 🎉',
-    "Help Sarah log in HomeCuistot that she made it.",
+    "Help Sam log in HomeCuistot that he made it.",
   ],
   scene7YourRecipes: [
     "Now it's your turn! 🎉",
@@ -144,11 +144,11 @@ export const SCENE_TEXT = {
   },
   scene8: [
     "That's HomeCuistot.",
-    "She didn't scroll through suggestions, search inspiration, or watch dozens of videos for dishes she'll never make.",
+    "He didn't scroll through suggestions, search inspiration, or watch dozens of videos for dishes he'll never make.",
   ],
   scene8Manifesto: [
-    "She already knew her go-to recipes.",
-    "She just needed to know she had everything to make one tonight — and take action. ✨",
+    "He already knew his go-to recipes.",
+    "He just needed to know he had everything to make one tonight — and take action. ✨",
   ],
   scene8Opposition: [
     "Other apps ask you to scan receipts or photograph your fridge.",
