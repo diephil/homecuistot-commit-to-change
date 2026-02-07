@@ -5,22 +5,22 @@ ADK-based agent for creating, updating, and deleting recipes via voice or text i
 ## Architecture
 
 ```
-recipe/
-├── index.ts                              # Public exports
-├── agent.ts                              # LlmAgent config + instruction prompt
-├── seq-agents-recipe-manager-proposal.ts # Orchestrator with Opik tracing
+recipe-manager/
+├── agent.ts                              # LlmAgent config
+├── prompt.ts                             # Instruction prompt (Opik registered)
 └── tools/
-    ├── create-recipe.ts                  # FunctionTool for new recipes
-    ├── update-recipe.ts                  # FunctionTool for recipe updates
-    └── delete-recipe.ts                  # FunctionTool for recipe deletion
+    ├── create-recipes.ts                 # FunctionTool for batch recipe creation
+    ├── update-recipes.ts                 # FunctionTool for batch recipe updates
+    ├── delete-recipes.ts                 # FunctionTool for batch recipe deletion
+    └── delete-all-recipes.ts             # FunctionTool to clear all recipes
 ```
 
 ## Flow
 
 1. **Input**: Voice (audio/webm base64) or text
 2. **Transcription**: If voice, transcribe via Gemini with Opik tracking
-3. **Agent Session**: Create ADK session with `{ trackedRecipes }` state (YAML injected)
-4. **Agent Execution**: LlmAgent parses intent, calls appropriate tool(s)
+3. **Agent Session**: Create ADK session with `{ trackedRecipes, trackedIngredients? }` state
+4. **Agent Execution**: LlmAgent parses intent, calls appropriate tool(s) - supports parallel tool calls
 5. **Tool Execution**: Validate ingredients against DB, return structured result
 6. **Result Merge**: Collect all tool responses into `RecipeManagerProposal`
 7. **Tracing**: Full Opik trace with spans for transcription, model calls, tool calls
@@ -43,38 +43,60 @@ Tracked recipes are injected into the conversation as YAML for the LLM to refere
 
 ## Tools
 
-### create_recipe
+### create_recipes
 
-Creates a new recipe. If user doesn't specify ingredients, generates sensible defaults.
+Creates one or more new recipes (batch operation). If user doesn't specify ingredients, generates sensible defaults.
 
-**Input**: `{ title, description, ingredients: [{ name, isRequired }] }`
+**Input**: `{ recipes: [{ title, description, ingredients: [{ name, isRequired }] }] }`
 
-**Output**: `CreateRecipeResult` with matched/unrecognized ingredients
+- Accepts 1-5 recipes per call
+- Each recipe: 1-10 ingredients
 
-### update_recipe
+**Output**: `CreateRecipesResult` with matched/unrecognized ingredients per recipe
 
-Updates an existing recipe from session state.
+### update_recipes
 
-**Input**: `{ recipeId (UUID), updates: { title?, description?, addIngredients?, removeIngredients?, toggleRequired? } }`
+Updates one or more existing recipes from session state (batch operation).
 
-**Output**: `UpdateRecipeResult` with previous/proposed states
+**Input**: `{ updates: [{ recipeId (UUID), updates: { title?, description?, addIngredients?, removeIngredients?, toggleRequired? } }] }`
 
-### delete_recipe
+- Accepts 1-5 updates per call
 
-Deletes an existing recipe from session state.
+**Output**: `UpdateRecipesResult` with previous/proposed states per recipe
 
-**Input**: `{ recipeId (UUID), reason? }`
+### delete_recipes
 
-**Output**: `DeleteRecipeResult` with recipe title
+Deletes one or more existing recipes from session state (batch operation).
+
+**Input**: `{ recipeIds: [UUID], reason? }`
+
+- Accepts 1-10 recipe IDs per call
+
+**Output**: `DeleteRecipesResult` with deleted recipe titles
+
+### delete_all_recipes
+
+Deletes all recipes from the user's tracked recipes.
+
+**Input**: `{ reason? }`
+
+**Output**: `DeleteAllRecipesResult` with count and list of deleted recipes
 
 ## Opik Tracing
 
 - Trace name: `recipe-manager-agent`
-- Tags: `recipe`, `agent`, `voice|text`, `gemini-2.0-flash`, `user:{id}`
-- Additional tag `unrecognized_item` added if any ingredient names don't match DB
+- Tags: `recipe`, `agent`, `voice|text`, `gemini-2.0-flash|gemini-2.5-flash-lite`, `user:{id}`
+- Additional tag `unrecognized_items` added if any ingredient names don't match DB
 - Tool spans keyed by ADK `functionCall.id` to support parallel tool calls
+- Prompt registered in Opik with version tracking
 
 ## Limits
 
-- Max 5 recipes per request
-- Max 6 ingredients per recipe
+- Max 5 recipes per tool call (create/update)
+- Max 10 ingredients per recipe
+- Max 10 recipe IDs per delete call
+
+## Model Support
+
+- `gemini-2.0-flash` (default)
+- `gemini-2.5-flash-lite` (faster, lower cost)

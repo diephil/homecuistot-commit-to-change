@@ -7,58 +7,7 @@ This document traces the iterative development of HomeCuistot, a voice-first mea
 
 ---
 
-## Development Philosophy
-
-The goal wasn't to architect the perfect and most complex AI agent in 3 weeks, but to iterate steadily with data-driven improvements. Start simple, measure with Opik, identify gaps, refine. Complex patterns—multi-agent delegation, elaborate guardrails, callback orchestration—are added only when measurements prove they're needed, not upfront. This approach keeps the system maintainable by limiting the improvement surface area at any stage.
-
-**Build → Measure → Learn**: 29 feature specs with explicit acceptance criteria, 400+ commits across 20 days, continuous Vercel deployment for rapid feedback
-
-**Evidence-Based Quality**: Opik tracing for all AI calls (OpenTelemetry → Opik exporter), dataset-driven evaluation, Row Level Security for multi-tenant isolation, type-safe TypeScript
-
----
-
-### Observability & Evaluation Stack
-
-**Tracing Pipeline**:
-1. **Vercel AI SDK calls** → OpenTelemetry → Opik exporter (automatic)
-2. **Google ADK-js agents** → Manual Opik tracing (custom wrapper functions) -> no native integration with Opik for Google TYPESCRIPT ADK.
-3. **All traces** → Opik Cloud for production monitoring, setting custom tags and metadata to post-processing and feedback loop implementation
-
-**Prompt Management**:
-- Prompts versioned in Opik Cloud
-- Registration via `pnpm prompt:all` (local) or `pnpm prompt:all:prod` (production)
-- Each agent has versioned prompt file (`prompt.ts`)
-
-**Dataset Framework**:
-- **Ingredient Extractor**: 200-item test dataset
-  - Multilingual input samples (English, French, Spanish)
-  - Edge cases (ambiguous items, brand names, quantities)
-  - Metrics: Precision, Recall, F1 Score
-- **Recipe Manager**: Custom dataset for ingredient update operations
-  - Add/remove ingredient scenarios
-  - Batch update operations
-  - Validation: Correct ingredient linking, optional vs required tracking
-- **Inventory Manager**: Evaluation dataset for voice-controlled operations
-  - Refill/delete/update quantity scenarios
-  - Bulk operations ("refill everything")
-  - Validation: Correct quantity level updates, pantry staple handling
-
-**Evaluation Execution**:
-```bash
-pnpm eval          # Run single evaluation (local Opik)
-pnpm eval:all      # Run all evaluations (local Opik)
-```
-
-**Continuous Improvement Loop**:
-1. Capture real user inputs via Opik traces
-2. Identify misclassifications in admin dashboard
-3. Add failing cases to evaluation datasets
-4. Refine prompts and re-evaluate
-5. Promote unrecognized items to ingredient database
-
----
-
-## Development Timeline: 3 Weeks, 29 Milestones
+## Development Timeline: 3 Weeks, 29+ Milestones
 
 ### Week 1 (Jan 17-24): Foundation & Infrastructure
 
