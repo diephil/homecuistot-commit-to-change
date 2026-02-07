@@ -223,5 +223,7 @@ Filter traces by `user:id` tag → Review test sessions → Annotate edge cases 
 ---
 
 **Built for**: Encode AI x Comet Opik Commit To Change Hackathon
+
 **Timeline**: 3 weeks (Jan 17 - Feb 8, 2026)
+
 **Philosophy**: Iterative, data-driven AI development

@@ -54,7 +54,9 @@ graph TB
 ```
 
 **Layer 1 (Automatic)**: Zero-config tracing via `instrumentation.ts` with OpikExporter
+
 **Layer 2 (Manual)**: Custom wrappers for ADK agents with span hierarchy -> Parent trace + child spans
+
 **Layer 3 (Feedback)**: Direct API integration for span querying and tag management -> leveraging Opik search index (eventually consistent)
 
 **Implementation**: [`apps/nextjs/src/instrumentation.ts`](../apps/nextjs/src/instrumentation.ts) | [`apps/nextjs/src/lib/tracing/opik-agent.ts`](../apps/nextjs/src/lib/tracing/opik-agent.ts) | [`apps/nextjs/src/lib/services/opik-spans.ts`](../apps/nextjs/src/lib/services/opik-spans.ts)
@@ -388,6 +390,7 @@ When testing the app with specific users (e.g. beta testers), we create annotati
 ### Benefits
 
 ✅ **Targeted analysis**: Focus on specific user journeys
+
 ✅ **Pattern identification**: Spot recurring issues across users
 
 **This complements the automated continuous improvement loop** - while the admin promotion workflow handles ingredient database enrichment automatically, annotation queues enable manual prompt refinement based on real user sessions.
@@ -399,7 +402,9 @@ When testing the app with specific users (e.g. beta testers), we create annotati
 ### Challenge 1: OpenAI Whisper Token Tracking
 
 **Issue**: `opik-openai` doesn't capture Whisper response format for token counting (or we misconfigured it).
+
 **Solution**: Manual span creation with token metadata extraction
+
 **Result**: Full visibility into transcription costs
 
 **Code**: [`apps/nextjs/src/lib/agents/voice-transcriptor/agent.ts:45-60`](../apps/nextjs/src/lib/agents/voice-transcriptor/agent.ts)
@@ -409,7 +414,9 @@ When testing the app with specific users (e.g. beta testers), we create annotati
 ### Challenge 2: Google ADK-js Tracing
 
 **Issue**: No native OpenTelemetry support in ADK-js (only Python support). We could have rebuilt an opik integration via Google ADK callback system, but it was too tedious → we decided to continue with custom traces, only tracing the tools we implemented.
+
 **Solution**: Custom `createAgentTrace()` wrapper for sequential agent calls
+
 **Result**: 1 trace per multi-agent flow with proper span hierarchy
 
 **Code**: [`apps/nextjs/src/lib/tracing/opik-agent.ts`](../apps/nextjs/src/lib/tracing/opik-agent.ts)
@@ -419,7 +426,9 @@ When testing the app with specific users (e.g. beta testers), we create annotati
 ### Challenge 3: Vercel AI SDK ThreadId Support
 
 **Issue**: TypeScript types incomplete for `threadId` parameter
+
 **Action**: Opened GitHub feature request [comet-ml/opik#4798](https://github.com/comet-ml/opik/issues/4798)
+
 **Workaround**: Custom trace management until upstream fix, but in the end, we chose Google ADK.
 
 ---
@@ -427,8 +436,11 @@ When testing the app with specific users (e.g. beta testers), we create annotati
 ### Challenge 4: Span Search API Stale Data
 
 **Issue**: After updating span tags, search API served stale results for a moment (at least locally).
+
 **Debugging**: An hour lost before discovering index lag
+
 **Solution**: Fetch by span ID for authoritative state after tag updates
+
 **Code**: [`getSpanById()` function in `opik-spans.ts`](../apps/nextjs/src/lib/services/opik-spans.ts)
 
 ---
@@ -450,9 +462,13 @@ E.g. The recipe-manager is graded on its capabilities to correctly: Create, upda
 This Opik integration provides:
 
 ✅ **Full observability** across automatic, manual, and feedback-driven tracing
+
 ✅ **Versioned prompts** with environment separation (local/production)
+
 ✅ **Custom evaluation metrics** with F1 scoring for precision/recall analysis
+
 ✅ **Continuous improvement** via admin promotion workflow
+
 ✅ **Annotation queues** for targeted prompt improvement from user test sessions
 
 The system is production-ready with comprehensive measurement layers for iterative agent improvement.
