@@ -8,6 +8,7 @@ import { toast } from "sonner";
 interface OpikInfo {
   workspace: string;
   projectName: string;
+  isAdmin: boolean;
 }
 
 interface SpanItem {
@@ -45,6 +46,7 @@ export default function UnrecognizedItemsPage() {
   const [error, setError] = useState<string | null>(null);
   const [queueEmpty, setQueueEmpty] = useState(false);
   const [hasLoaded, setHasLoaded] = useState(false);
+  const [isDemo, setIsDemo] = useState(false);
 
   useEffect(() => {
     fetch("/api/admin/opik-info")
@@ -71,6 +73,7 @@ export default function UnrecognizedItemsPage() {
       }
 
       const loadedSpans: SpanEntry[] = data.spans ?? [];
+      setIsDemo(!!data.isDemo);
 
       if (loadedSpans.length === 0) {
         setQueueEmpty(true);
@@ -156,6 +159,12 @@ export default function UnrecognizedItemsPage() {
       return;
     }
 
+    if (isDemo) {
+      toast.info("Demo mode — real admins can promote ingredients to the DB");
+      removeSpan(span.spanId);
+      return;
+    }
+
     setProcessingSpans((prev) => new Set(prev).add(span.spanId));
     setError(null);
 
@@ -197,6 +206,12 @@ export default function UnrecognizedItemsPage() {
   };
 
   const handleMarkReviewed = async (spanId: string) => {
+    if (isDemo) {
+      toast.info("Demo mode — real admins can mark spans as reviewed in Opik");
+      removeSpan(spanId);
+      return;
+    }
+
     setProcessingSpans((prev) => new Set(prev).add(spanId));
     setError(null);
 
@@ -277,6 +292,14 @@ export default function UnrecognizedItemsPage() {
             </p>
           )}
         </div>
+
+        {/* Demo banner */}
+        {opikInfo && !opikInfo.isAdmin && (
+          <div className="border-4 border-amber-500 bg-amber-100 p-4 font-bold text-amber-900 text-center">
+            You are viewing demo data. To inspect real spans from Opik, you need
+            to be an administrator.
+          </div>
+        )}
 
         {/* Error */}
         {error && (

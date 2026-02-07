@@ -5,9 +5,7 @@ import {
   getNextUnprocessedSpans,
   markSpanAsReviewed,
 } from "@/lib/services/opik-spans";
-// DEMO: open to all authenticated users for project review
-// import { requireAdmin } from "@/lib/services/admin-auth";
-import { requireUser } from "@/lib/services/admin-auth";
+import { checkIsAdmin, requireUser } from "@/lib/services/admin-auth";
 import { sql } from "drizzle-orm";
 
 export interface SpanItemWithDbStatus {
@@ -24,10 +22,28 @@ export interface SpanEntry {
   totalInSpan: number;
 }
 
+const MOCK_SPANS: SpanEntry[] = [
+  {
+    spanId: "00000000-0000-0000-0000-000000000001",
+    spanName: "classify-ingredients",
+    traceId: "00000000-0000-0000-0000-000000000099",
+    tags: ["unrecognized-items", "demo"],
+    items: [
+      { name: "unicorn meat", existsInDb: false },
+      { name: "salt", existsInDb: true },
+    ],
+    totalInSpan: 2,
+  },
+];
+
 export async function GET() {
-  // const auth = await requireAdmin();
   const auth = await requireUser();
   if (!auth.ok) return auth.response;
+
+  const isAdmin = await checkIsAdmin();
+  if (!isAdmin) {
+    return NextResponse.json({ spans: MOCK_SPANS, isDemo: true });
+  }
 
   try {
     const spans = await getNextUnprocessedSpans({ limit: 5 });
