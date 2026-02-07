@@ -49,7 +49,6 @@ export function OnboardingPageContent() {
   const router = useRouter();
   const [state, setState] = useState<OnboardingState>(initialState);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [lastTranscription, setLastTranscription] = useState<string | undefined>();
 
   // T009: Advance to step 2
@@ -129,7 +128,6 @@ export function OnboardingPageContent() {
   const handleVoiceTextSubmit = useCallback(
     async (input: { type: "voice"; audioBlob: Blob } | { type: "text"; text: string }) => {
       setIsProcessing(true);
-      setErrorMessage(null);
 
       try {
         let response: Response;
@@ -260,14 +258,20 @@ export function OnboardingPageContent() {
           const isParseFail = error.message.startsWith("parse:");
 
           if (isTimeout) {
-            setErrorMessage(error.message.replace("timeout:", ""));
+            toast.error(error.message.replace("timeout:", ""), {
+              description: "Please check your connection"
+            });
           } else if (isParseFail) {
-            setErrorMessage(error.message.replace("parse:", ""));
+            toast.error(error.message.replace("parse:", ""), {
+              description: "Please try again"
+            });
           } else {
-            setErrorMessage("Couldn't understand. Try again.");
+            toast.error("Couldn't understand. Try again.", {
+              description: "Please try rephrasing"
+            });
           }
         } else {
-          setErrorMessage("Something went wrong. Please try again.");
+          toast.error("Something went wrong. Please try again.");
         }
       } finally {
         setIsProcessing(false);
@@ -291,7 +295,6 @@ export function OnboardingPageContent() {
     input: { type: "voice"; audioBlob: Blob } | { type: "text"; text: string }
   ) => {
     setIsProcessing(true);
-    setErrorMessage(null);
 
     try {
       let response: Response;
@@ -359,8 +362,9 @@ export function OnboardingPageContent() {
       }
     } catch (error) {
       console.error("[onboarding] Recipe processing error:", error);
-      setErrorMessage(
-        error instanceof Error ? error.message : "Failed to process recipe input"
+      toast.error(
+        error instanceof Error ? error.message : "Failed to process recipe input",
+        { description: "Please try again" }
       );
     } finally {
       setIsProcessing(false);
@@ -671,17 +675,6 @@ export function OnboardingPageContent() {
               lastTranscription={lastTranscription}
             />
 
-            {/* Error message */}
-            {errorMessage && (
-              <div
-                className="bg-red-100 border-2 border-red-500 p-3 rounded text-sm text-red-700 text-center"
-                role="alert"
-                aria-live="assertive"
-              >
-                {errorMessage}
-              </div>
-            )}
-
             {/* T025: Next Step button (enabled when 1+ ingredients) */}
             <div className="flex justify-end mt-6">
               <Button
@@ -770,17 +763,6 @@ export function OnboardingPageContent() {
               processing={isProcessing}
               textPlaceholder="Describe the recipes you make..."
             />
-
-            {/* Error message */}
-            {errorMessage && (
-              <div
-                className="bg-red-100 border-2 border-red-500 p-3 rounded text-sm text-red-700 text-center"
-                role="alert"
-                aria-live="assertive"
-              >
-                {errorMessage}
-              </div>
-            )}
 
             {/* Navigation buttons */}
             <div className="flex justify-between items-center mt-6 gap-4">

@@ -43,7 +43,6 @@ export function Scene2RecipeVoice({
   onContinue,
 }: Scene2RecipeVoiceProps) {
   const [processing, setProcessing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [extractedRecipe, setExtractedRecipe] = useState<DemoRecipe | null>(
     null,
   );
@@ -72,7 +71,6 @@ export function Scene2RecipeVoice({
       input: { type: "voice"; audioBlob: Blob } | { type: "text"; text: string },
     ) => {
       setProcessing(true);
-      setError(null);
 
       try {
         let body: Record<string, unknown>;
@@ -142,10 +140,11 @@ export function Scene2RecipeVoice({
           });
         }
       } catch (err) {
-        setError(
+        toast.error(
           err instanceof Error
             ? err.message
             : "Something went wrong. Try again.",
+          { description: "Please try again" }
         );
       } finally {
         setProcessing(false);
@@ -237,13 +236,6 @@ export function Scene2RecipeVoice({
             </div>
           )}
         </div>
-
-        {/* Error */}
-        {error && (
-          <p className="text-sm text-red-600 font-semibold text-center">
-            {error}
-          </p>
-        )}
 
         {/* Extracted recipe display — shown against Sam's current kitchen */}
         {extractedRecipe && (

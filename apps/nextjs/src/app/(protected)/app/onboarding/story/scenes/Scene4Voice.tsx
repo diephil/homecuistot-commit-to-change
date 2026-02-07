@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { toast } from "sonner";
 import { VoiceTextInput } from "@/components/shared/VoiceTextInput";
 import { InventoryItemBadge } from "@/components/shared/InventoryItemBadge";
@@ -32,12 +32,9 @@ export function Scene4Voice({
   onContinue,
 }: Scene4VoiceProps) {
   const [processing, setProcessing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [hasInputOnce, setHasInputOnce] = useState(false);
   const [lastTranscription, setLastTranscription] = useState<string>();
-  const [showHint, setShowHint] = useState(false);
   const [attemptCount, setAttemptCount] = useState(0);
-  const hintTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   // Check if user has already added ingredients (from localStorage)
   useEffect(() => {
@@ -49,14 +46,6 @@ export function Scene4Voice({
     }
   }, [inventory]);
 
-  // Show hint after 5s of inactivity
-  useEffect(() => {
-    if (!hasInputOnce && !processing) {
-      hintTimerRef.current = setTimeout(() => setShowHint(true), 5000);
-      return () => clearTimeout(hintTimerRef.current);
-    }
-  }, [hasInputOnce, processing]);
-
   const canContinue = hasRequiredItems(inventory);
 
   const trackedItems = inventory.filter((item) => !item.isPantryStaple);
@@ -66,8 +55,6 @@ export function Scene4Voice({
       input: { type: "voice"; audioBlob: Blob } | { type: "text"; text: string },
     ) => {
       setProcessing(true);
-      setError(null);
-      setShowHint(false);
 
       try {
         const currentIngredients = inventory
@@ -156,10 +143,11 @@ export function Scene4Voice({
 
         onUpdateInventory(updatedInventory);
       } catch (err) {
-        setError(
+        toast.error(
           err instanceof Error
             ? err.message
             : "Something went wrong. Try again.",
+          { description: "Please try again" }
         );
       } finally {
         setProcessing(false);
@@ -256,13 +244,6 @@ export function Scene4Voice({
             Try saying &quot;I bought parmesan, eggs, and some bananas&quot;
           </p>
         )} */}
-
-        {/* Error */}
-        {error && (
-          <p className="text-sm text-red-600 font-semibold text-center">
-            {error}
-          </p>
-        )}
 
         {/* Updated inventory display */}
         {hasInputOnce && (
