@@ -1,6 +1,6 @@
 # Opik Integration Guide
 
-This document demonstrates our production-ready usage of Opik across tracing, evaluation, prompt management, and continuous improvement workflows.
+This document demonstrates our production-ready usage of Opik across tracing, evaluation, prompt management, and continuous improvement workflows. I'm working with Typescript exclusively and have tried to cover most of what the Opik TS SDK provides (based on https://www.comet.com/docs/opik/reference/typescript-sdk/opik-ts).
 
 **Opik runs locally via Docker -> it's not an emulation of the Cloud Opik platform! This ensure we're safely building things before shipping to production Opik-related changes**
 
