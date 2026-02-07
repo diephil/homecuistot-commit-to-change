@@ -6,7 +6,6 @@ import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { Home, Book, Package, Menu, X, Sparkles, Shield } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
-import { InstallPWAButton } from '@/components/shared'
 
 type NavItem = {
   href: string
@@ -52,7 +51,7 @@ export function AppNavigation({ isAdmin }: { isAdmin: boolean }) {
 
   return (
     <nav className="max-w-7xl mx-auto mt-3" aria-label="App navigation">
-      {/* Mobile: Cook Now button + Install button + Menu button */}
+      {/* Mobile: Cook Now button + Menu button */}
       <div className="md:hidden flex gap-2">
         {/* Cook Now button - always visible */}
         <Link
@@ -70,9 +69,6 @@ export function AppNavigation({ isAdmin }: { isAdmin: boolean }) {
           <Home className="h-4 w-4" />
           <span>{cookNowItem.label}</span>
         </Link>
-
-        {/* Install PWA button */}
-        <InstallPWAButton />
 
         {/* Menu button */}
         <button
@@ -144,9 +140,6 @@ export function AppNavigation({ isAdmin }: { isAdmin: boolean }) {
             </Link>
           )
         })}
-
-        {/* Install PWA button */}
-        <InstallPWAButton />
       </div>
     </nav>
   )
