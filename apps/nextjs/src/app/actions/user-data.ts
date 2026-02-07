@@ -33,8 +33,6 @@ export async function resetUserData(): Promise<{ success: boolean; error?: strin
     const db = createUserDb(token)
     const userId = user.id
 
-    console.log('[user-data] Starting reset for userId:', userId)
-
     await db(async (tx) => {
       // Get user recipe IDs for recipe_ingredients deletion
       const recipes = await tx
@@ -43,28 +41,21 @@ export async function resetUserData(): Promise<{ success: boolean; error?: strin
         .where(eq(userRecipes.userId, userId))
 
       const recipeIds = recipes.map((r) => r.id)
-      console.log('[user-data] Found recipes to delete:', recipeIds.length)
 
       // Delete in FK order
       await tx.delete(cookingLog).where(eq(cookingLog.userId, userId))
-      console.log('[user-data] Deleted cooking logs')
 
       if (recipeIds.length > 0) {
         await tx.delete(recipeIngredients).where(inArray(recipeIngredients.recipeId, recipeIds))
-        console.log('[user-data] Deleted recipe ingredients')
       }
 
       await tx.delete(userRecipes).where(eq(userRecipes.userId, userId))
-      console.log('[user-data] Deleted user recipes')
 
       await tx.delete(userInventory).where(eq(userInventory.userId, userId))
-      console.log('[user-data] Deleted user inventory')
 
       await tx.delete(unrecognizedItems).where(eq(unrecognizedItems.userId, userId))
-      console.log('[user-data] Deleted unrecognized items')
     })
 
-    console.log('[user-data] Reset complete')
 
     // Clear cached data
     revalidatePath('/app')
@@ -96,7 +87,6 @@ export async function startDemoData(): Promise<{ success: boolean; error?: strin
     const db = createUserDb(token)
     const userId = user.id
 
-    console.log('[user-data] Starting demo data for userId:', userId)
 
     await db(async (tx) => {
       // Step 1: Delete existing data (same as resetUserData)
@@ -115,7 +105,6 @@ export async function startDemoData(): Promise<{ success: boolean; error?: strin
       await tx.delete(userInventory).where(eq(userInventory.userId, userId))
       await tx.delete(unrecognizedItems).where(eq(unrecognizedItems.userId, userId))
 
-      console.log('[user-data] Deleted existing data')
 
       // Step 2: Lookup ingredient IDs
       const allIngredientNames = [
@@ -137,7 +126,6 @@ export async function startDemoData(): Promise<{ success: boolean; error?: strin
         throw new Error(`Missing ingredients: ${missingIngredients.join(', ')}`)
       }
 
-      console.log('[user-data] Found all required ingredients')
 
       // Step 3: Insert demo inventory
       const inventoryData = DEMO_INVENTORY.map((item) => ({
@@ -148,7 +136,6 @@ export async function startDemoData(): Promise<{ success: boolean; error?: strin
       }))
 
       await tx.insert(userInventory).values(inventoryData)
-      console.log('[user-data] Inserted demo inventory:', inventoryData.length, 'items')
 
       // Step 4: Insert demo recipes
       const recipeData = DEMO_RECIPES.map((recipe) => ({
@@ -160,7 +147,6 @@ export async function startDemoData(): Promise<{ success: boolean; error?: strin
       const insertedRecipes = await tx.insert(userRecipes).values(recipeData).returning({ id: userRecipes.id, name: userRecipes.name })
       const recipeNameToId = new Map(insertedRecipes.map((r) => [r.name, r.id]))
 
-      console.log('[user-data] Inserted demo recipes:', insertedRecipes.length)
 
       // Step 5: Insert recipe ingredients
       const recipeIngredientsData = DEMO_RECIPES.flatMap((recipe) =>
@@ -172,7 +158,6 @@ export async function startDemoData(): Promise<{ success: boolean; error?: strin
       )
 
       await tx.insert(recipeIngredients).values(recipeIngredientsData)
-      console.log('[user-data] Inserted recipe ingredients:', recipeIngredientsData.length)
 
       // Step 6: Ensure all recipe ingredients exist in inventory (add missing at quantityLevel=0)
       const allRecipeIngredientIds = recipeIngredientsData
@@ -184,10 +169,8 @@ export async function startDemoData(): Promise<{ success: boolean; error?: strin
         userId,
         ingredientIds: allRecipeIngredientIds,
       })
-      console.log('[user-data] Ensured all recipe ingredients in inventory')
     })
 
-    console.log('[user-data] Demo data complete')
 
     // Clear cached data
     revalidatePath('/app')

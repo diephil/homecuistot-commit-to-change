@@ -22,7 +22,7 @@ const badgeVariants = cva("font-semibold rounded capitalize", {
   },
 });
 
-interface ButtonProps
+interface BadgeProps
   extends HTMLAttributes<HTMLSpanElement>,
     VariantProps<typeof badgeVariants> {}
 
@@ -32,7 +32,7 @@ export function Badge({
   variant = "default",
   className = "",
   ...props
-}: ButtonProps) {
+}: BadgeProps) {
   return (
     <span
       className={cn(badgeVariants({ variant, size }), className)}

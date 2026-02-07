@@ -12,7 +12,6 @@ const getURL = () => {
     const url = window.location.origin.endsWith('/')
       ? window.location.origin
       : `${window.location.origin}/`
-    console.log({ url })
     return url
   }
 
@@ -22,7 +21,6 @@ const getURL = () => {
     'http://localhost:3000/'
   url = url.startsWith('http') ? url : `https://${url}`
   url = url.endsWith('/') ? url : `${url}/`
-  console.log({ url })
   return url
 }
 

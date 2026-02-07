@@ -70,7 +70,6 @@ export async function processVoiceRecipeUpdate(params: {
   if (result.title !== currentRecipe.title) changes.push("title");
   if (result.description !== currentRecipe.description) changes.push("description");
   if (result.ingredients.length !== currentRecipe.ingredients.length) changes.push("ingredients count");
-  console.log("[Voice Update] Fields changed:", changes.length > 0 ? changes.join(", ") : "none");
 
   return result;
 }
@@ -115,7 +114,6 @@ export async function processTextRecipeUpdate(params: {
   if (result.title !== currentRecipe.title) changes.push("title");
   if (result.description !== currentRecipe.description) changes.push("description");
   if (result.ingredients.length !== currentRecipe.ingredients.length) changes.push("ingredients count");
-  console.log("[Text Update] Fields changed:", changes.length > 0 ? changes.join(", ") : "none");
 
   return result;
 }
