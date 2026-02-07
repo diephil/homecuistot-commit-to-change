@@ -1,5 +1,5 @@
 # HomeCuistot Development Timeline
-## From Foundation to Production (Jan 17 - Feb 6, 2026)
+## From Foundation to Production (Jan 17 - Feb 8, 2026)
 
 **Live Demo**: https://homecuistot-commit-to-change.vercel.app/
 
@@ -207,7 +207,7 @@ const result = await generateObject({
 
 | Metric | Value |
 |--------|-------|
-| **Development Period** | 20 days (Jan 17 - Feb 6, 2026) |
+| **Development Period** | 20 days (Jan 17 - Feb 8, 2026) |
 | **Total Milestones** | 29 feature specifications |
 | **Git Commits** | 400+ commits |
 | **Database Ingredients** | 5,931 across 30 categories |
@@ -215,58 +215,3 @@ const result = await generateObject({
 | **Evaluation Dataset** | 200+ test cases for ingredient extraction |
 | **Tech Stack** | Next.js 16, React 19, Supabase, Opik, Drizzle ORM |
 | **Architecture** | Server Components, Server Actions, Row Level Security |
-
----
-
-## Verification & Demo
-
-**Live Production**: https://homecuistot-commit-to-change.vercel.app/ | OAuth: Google, Discord | Admin: `/admin` (accessible to all)
-
-**Documentation**: 29 milestones in `/specs/` directory (spec.md, plan.md, tasks.md, data-model.md per milestone) | Commands in `/CLAUDE.md`
-
-**Observability**: Opik Cloud production monitoring with metadata tags (user ID, scene, agent name) | Dataset evaluations | Admin ingredient enrichment dashboard
-
----
-
-## Lessons Learned
-
-### What Worked Well
-1. **Infrastructure First** → Solid foundation enabled rapid feature iteration
-2. **RLS at Database Layer** → Eliminated entire class of authorization bugs
-3. **Voice-First UX** → Differentiated product, validated by user testing
-4. **Opik Local + Cloud** → Cost-effective iteration (local) + production monitoring (cloud)
-5. **Story Onboarding** → Higher completion rate vs feature checklist approach
-6. **Dataset-Driven Evaluation** → Continuous quality improvement with measurable metrics
-
-### Challenges Overcome
-1. **Gemini JSON Schema Limitations** → No `z.enum()` support; used `z.string()` + prompt validation
-2. **Google ADK-js Tracing** → No native OpenTelemetry support; built custom Opik wrappers
-3. **Quantity Level Ambiguity** → 4-level scale (0-3) required user education via onboarding
-4. **Unrecognized Ingredients** → Admin promotion workflow turned limitation into continuous improvement
-
-### Future Optimizations
-1. **Batch Recipe Analysis** → Process multiple recipes in single AI call (reduce latency)
-2. **Voice Command Shortcuts** → "Refill everything", "Delete all low items"
-3. **Expiration Date Tracking** → Prioritize recipes using ingredients expiring soon
-4. **Collaborative Shopping Lists** → Share ingredient needs with household members
-5. **Mobile App** → Native iOS/Android experience (current PWA is web-based)
-
----
-
-## Opik and lessons learnt
-
-**Opik Integration Learnings**:
-- Opened GitHub issue for Vercel AI SDK + TypeScript support for `threadId` that was incomplete: [#4798](https://github.com/comet-ml/opik/issues/4798)
-- Opik span "search" API is not immediately refreshed after updating tags of a span (index still serves stale data). I had to confirm the updates via fetching the span by its ID instead.
-- Whisper-1 wasn't properly tracing the token counts using Opik OpenAI integration. I had to fallback to custom traces.
-- If I had time to do it again, I would instead create multiple datasets for testing the `Recipe manager` agent, 1 dataset per recipe operation (Create, update, deletion, mixed, etc...)
-
-**Gemini Integration Patterns**:
-- Documented JSON schema workarounds for production use
-- Shared multilingual voice + auto-translation patterns
-- Built reusable agent architectures with Opik tracing
-
----
-
-**End of Timeline**
-
