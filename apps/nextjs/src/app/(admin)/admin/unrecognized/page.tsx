@@ -169,6 +169,11 @@ export default function UnrecognizedItemsPage() {
       const data = await response.json();
 
       if (!response.ok) {
+        if (response.status === 403 && data.demo) {
+          toast.info(data.error);
+          removeSpan(span.spanId);
+          return;
+        }
         setError(data.error || "Failed to promote ingredients");
         return;
       }

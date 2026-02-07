@@ -1,9 +1,11 @@
 import type { ReactNode } from 'react'
 import { AppHeaderContent } from '@/components/app/AppHeaderContent'
-import { checkIsAdmin } from '@/lib/services/admin-auth'
+// import { checkIsAdmin } from '@/lib/services/admin-auth'
 
 export default async function AppLayout({ children }: { children: ReactNode }) {
-  const isAdmin = await checkIsAdmin()
+  // DEMO: always show admin nav link for project review
+  // const isAdmin = await checkIsAdmin()
+  const isAdmin = true
 
   return (
     <div className="min-h-screen flex flex-col overflow-x-hidden">

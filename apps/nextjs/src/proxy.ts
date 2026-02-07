@@ -49,14 +49,13 @@ export default async function proxy(request: NextRequest): Promise<NextResponse>
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  // Admin route protection: check user role
-  if (path.startsWith("/admin")) {
-    const adminIds = process.env.ADMIN_USER_IDS?.split(',').map(id => id.trim()) || [];
-
-    if (!user || !adminIds.includes(user.id)) {
-      return NextResponse.rewrite(new URL('/404', request.url));
-    }
-  }
+  // DEMO: admin routes open to all authenticated users for project review
+  // if (path.startsWith("/admin")) {
+  //   const adminIds = process.env.ADMIN_USER_IDS?.split(',').map(id => id.trim()) || [];
+  //   if (!user || !adminIds.includes(user.id)) {
+  //     return NextResponse.rewrite(new URL('/404', request.url));
+  //   }
+  // }
 
   // Redirect to /app if user is authenticated on public routes
   if (isPublicRoute && user && path === "/login") {

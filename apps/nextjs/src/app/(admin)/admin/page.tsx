@@ -20,6 +20,14 @@ export default function AdminDashboardPage() {
           </p>
         </div>
 
+        {/* Demo access banner */}
+        <div className="border-4 border-black bg-amber-100 border-l-8 border-l-amber-500 p-4 md:p-5 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <p className="font-bold text-amber-900 text-sm md:text-base">
+            This page is temporarily accessible to all users for project review.
+            Normally, it is restricted to admins only.
+          </p>
+        </div>
+
         {/* Features grid */}
         <div className="grid gap-6 md:gap-8">
           <AdminFeatureCard
