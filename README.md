@@ -3,7 +3,8 @@
 <img src="images/main-logo.png" alt="logo" width="200"/>
 
 **Built with ❤️ for the Encode AI x Comet Opik Commit To Change Hackathon**
-> **Voice-first meal planning that starts with YOUR dishes**
+
+> **HomeCuistot lets you manage your kitchen by voice. Say what you have, say what you cook — see what's ready to cook instantly.**
 
 ## Youtube Pitching video
 
