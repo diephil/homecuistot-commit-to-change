@@ -2,7 +2,7 @@
 
 <img src="images/main-logo.png" alt="logo" width="200"/>
 
-**Built with ❤️ for the Encode AI x Comet Opik Commit To Change Hackathon**
+**Built by me (and Claude Code😶‍🌫️) with ❤️ for the Encode AI x Comet Opik Commit To Change Hackathon**
 
 > **HomeCuistot lets you manage your kitchen by voice. Say what you have, say what you cook — see what's ready to cook instantly.**
 
@@ -25,9 +25,12 @@ Home Cuistot doesn't suggest recipes. It starts with your dishes—the 10 to 15 
 ## 💡 Why This Matters
 
 **Solves the real problem**: Decision fatigue at 6 PM after work, not a lack of recipes
-**Voice-first reduces friction**: Speak your ingredients when you're tired
-**Starts with YOUR dishes**: Not generic recipe suggestions—meals you already know how to make
-**Automatic inventory tracking**: "Mark as Cooked" keeps your pantry current
+
+**Voice-first reduces friction**: Describe your ingredients when you're tired, no pictures to take, no receipts to keep
+
+**Starts with YOUR dishes**: Not a generic recipe suggestions—meals that makes you scroll and adds indecision: you already know how to make your favorite dishes
+
+**Automatic inventory tracking**: "Mark as Cooked" keeps your inventory up to date, no need to look for the exact quantities to log into the app
 
 
 ## Specific OPIK documentation
@@ -41,12 +44,12 @@ Home Cuistot doesn't suggest recipes. It starts with your dishes—the 10 to 15 
 <img src="images/timeline.png" alt="logo" width="70%"/>
 
 We built a maintainable AI system in 3 weeks by focusing on:
-1. **Iterative development**: Start simple, add complexity when measurements prove it's needed
+1. **Iterative development**: Start simple, no over-engineered AI Agents from the start
 2. **Data-driven decisions**: Opik provides the measurement layer for every improvement
 3. **Production-ready foundations**: Full observability, evaluation pipelines, feedback loops from day one
 4. **Honest limitations**: We know where we're still iterating and have clear paths forward
 
-This isn't a perfect system. It's a foundation that can be improved incrementally with Opik as the measurement layer. That's what production AI looks like.
+We built a foundation that can be improved incrementally with Opik as the measurement layer. It's not just another vibe-coded app.
 
 
 
@@ -58,7 +61,7 @@ This isn't a perfect system. It's a foundation that can be improved incrementall
 
 **OAuth**: Sign in with Google or Discord
 
-**Run Locally**:
+**Run Locally (Opik/Supabase/Oauth) - Docker required**:
 ```bash
 # Clone repository
 git clone https://github.com/your-repo/homecuistot-commit-to-change.git
@@ -99,9 +102,7 @@ pnpm db:migrate
 
 ## 🎯 Development Philosophy
 
-**We didn't try to build the perfect and most complex AI agent in 3 weeks.**
-
-Instead, we focused on:
+We focused on:
 - **Start simple, add complexity when data proves it's needed**
 - **Keep the improvement surface area manageable**
 - **Let measurements guide architecture**
@@ -118,8 +119,6 @@ Instead, we focused on:
 - Audio processing pipeline validation (planning Opik audio datasets)
 - Custom metric performance (tuning F1 thresholds)
 
-**We can build maintainable AI agents in 3 weeks. That matters more than architectural complexity.**
-
 **[→ Read full development approach](docs/DEVELOPMENT_APPROACH.md)**
 
 ---
@@ -128,11 +127,6 @@ Instead, we focused on:
 
 ### 1. Voice-First Onboarding
 Interactive 7-scene story ("Sam's Fridge") that demonstrates product value through narrative:
-- Scenes 1-3: Problem introduction (decision paralysis)
-- Scene 4: Voice input demo (eggs + parmesan)
-- Scene 5: Recipe "READY" state
-- Scene 6: "Mark as Cooked" workflow
-- Scene 7: Manifesto + call-to-action
 
 ### 2. Inventory Management
 - **4-level quantity scale**: 0=out, 1=low, 2=some, 3=plenty (reduces friction vs exact counts)

@@ -35,8 +35,6 @@ It's better to have a simple, maintainable agent you can improve than a complex 
 - **Recipe Manager**: CRUD operations with ingredient validation
 - **Inventory Manager**: Quantity updates and pantry management
 
-**Why this matters**: When F1 scores drop, we know exactly which agent needs prompt refinement.
-
 ---
 
 ### 3. Let Measurements Guide Architecture
@@ -45,7 +43,6 @@ Opik traces inform every decision: which agents need tools, where agents fall sh
 
 **Data-Driven Examples**:
 - Opik traces showed "greek yogurt" unrecognized → promoted to ingredient DB
-- Evaluation datasets revealed 12% recall loss on batch "refill all" operations → added `updateAllTrackedIngredients()` tool
 - Span metadata showed users mixing languages → added auto-translation to ingredient extractor
 
 ---
@@ -115,18 +112,6 @@ We're not presenting a perfect system. Here's what we're actively improving:
 ### The Challenges (And How We Overcame Them) 🛠️
 
 See [Opik Integration Guide → Challenges & Solutions](OPIK_INTEGRATION.md#integration-challenges--solutions) for full technical details.
-
----
-
-## Why This Matters
-
-This approach keeps our agents:
-
-- **Debuggable**: Simple architecture means clear error traces
-- **Measurable**: Opik provides the data layer for improvement
-- **Improvable**: Known limitations with clear paths to address them
-
-**We can build maintainable AI agents in 3 weeks. That matters more than architectural complexity.**
 
 ---
 

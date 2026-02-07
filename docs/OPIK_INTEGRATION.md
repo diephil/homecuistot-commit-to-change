@@ -2,22 +2,24 @@
 
 This document demonstrates our production-ready usage of Opik across tracing, evaluation, prompt management, and continuous improvement workflows.
 
+**Opik runs locally via Docker -> it's not an emulation of the Cloud Opik platform! This ensure we're safely building things before shipping to production Opik-related changes**
+
 **[← Back to README](../README.md)**
 
 ---
 
 ## Table of Contents
 
-1. [Three-Layer Observability Architecture](#three-layer-observability-architecture)
-2. [Prompt Management Pipeline](#prompt-management-pipeline)
-3. [Evaluation Framework](#evaluation-framework)
-4. [Continuous Improvement Loop](#continuous-improvement-loop-the-crown-jewel)
-5. [Annotation Queues for Prompt Improvement](#annotation-queues-for-prompt-improvement)
-6. [Integration Challenges & Solutions](#integration-challenges--solutions)
+1. [🔭 Three-Layer Observability Architecture](#-three-layer-observability-architecture)
+2. [🎯 Prompt Management Pipeline](#-prompt-management-pipeline)
+3. [🧪 Evaluation Framework](#-evaluation-framework)
+4. [🔄 Continuous Improvement Loop](#-continuous-improvement-loop)
+5. [🏷️ Annotation Queues for Prompt Improvement](#️-annotation-queues-for-prompt-improvement)
+6. [🔧 Integration Challenges & Solutions](#-integration-challenges--solutions)
 
 ---
 
-## Three-Layer Observability Architecture
+## 🔭 Three-Layer Observability Architecture
 
 We built a comprehensive observability stack that captures every AI interaction at three levels:
 
@@ -52,8 +54,8 @@ graph TB
 ```
 
 **Layer 1 (Automatic)**: Zero-config tracing via `instrumentation.ts` with OpikExporter
-**Layer 2 (Manual)**: Custom wrappers for ADK agents with span hierarchy
-**Layer 3 (Feedback)**: Direct API integration for span querying and tag management
+**Layer 2 (Manual)**: Custom wrappers for ADK agents with span hierarchy -> Parent trace + child spans
+**Layer 3 (Feedback)**: Direct API integration for span querying and tag management -> leveraging Opik search index (eventually consistent)
 
 **Implementation**: [`apps/nextjs/src/instrumentation.ts`](../apps/nextjs/src/instrumentation.ts) | [`apps/nextjs/src/lib/tracing/opik-agent.ts`](../apps/nextjs/src/lib/tracing/opik-agent.ts) | [`apps/nextjs/src/lib/services/opik-spans.ts`](../apps/nextjs/src/lib/services/opik-spans.ts)
 
@@ -63,7 +65,7 @@ graph TB
 <img src="./opik-img/voice-and-inventory-manager-agents.png" alt="voice-and-inventory-manager-agents" width="50%"/>
 
 
-## Dashboard
+## 📊 Dashboard
 
 <img src="./opik-img/dashboard.png" alt="dashboard" width="50%"/>
 
@@ -71,7 +73,7 @@ Link: https://www.comet.com/opik/philippe-diep/dashboards/019c1eaa-3cb1-76c0-b9f
 
 ---
 
-## Prompt Management Pipeline
+## 🎯 Prompt Management Pipeline
 
 We manage 4 versioned prompts across our agent architecture with automated registration:
 
@@ -93,9 +95,8 @@ graph LR
     style E fill:#bbf,stroke:#333,stroke-width:2px
 ```
 
-**Prompt Discovery**: Script recursively finds `prompt.ts` files
+**Prompt Discovery**: Script recursively finds `prompt.ts` files -> we can add more agent to our system by following the file naming convention
 **Metadata Extraction**: Each prompt includes name, description, tags, environment
-**Idempotent Registration**: Safe to re-run, updates existing prompts
 **Environment Separation**: Local vs production prompt namespaces
 
 ### 4 Managed Prompts
@@ -118,7 +119,7 @@ pnpm prompt:all:prod  # Register to production Opik
 
 ---
 
-## Evaluation Framework
+## 🧪 Evaluation Framework
 
 We built a comprehensive evaluation system with custom metrics and dataset-driven testing:
 
@@ -180,7 +181,7 @@ graph TB
 - **Title Precision**: % of recipe titles matched using Levenshtein distance (70% threshold)
 - **Title Recall**: % of expected recipe titles successfully matched
 - **Title F1**: Harmonic mean of title precision and recall
-- **Title Similarity**: Average `Levenshtein` similarity ratio for matched titles
+- **Title Similarity**: Average `Levenshtein` similarity ratio for matched titles (JS implementation of Levenshtein)
 - **Overall F1**: Average of operation F1 and title F1
 - **No Changes Match**: Binary score (1.0 if noChangesDetected flags match)
 - **Structure Match**: Binary validation of proposal structure (recipes array + fields)
@@ -238,7 +239,7 @@ pnpm eval:all          # Run all evaluations
 
 ---
 
-## Continuous Improvement Loop (The Crown Jewel)
+## 🔄 Continuous Improvement Loop!
 
 This is where Opik becomes the measurement layer for continuous system improvement. Here's how we turn real user interactions into database enrichment:
 
@@ -271,6 +272,8 @@ graph TB
 ### Technical Deep-Dive
 
 #### Step 1: Tag Traces During Agent Execution
+
+<img src="./opik-img/unrecognized-metadata.png" alt="unrecognized" width="50%"/>
 
 When the Recipe Manager agent encounters unrecognized ingredients, we tag the Opik trace:
 
@@ -312,9 +315,11 @@ export async function getNextUnprocessedSpans(limit = 5) {
 }
 ```
 
-**Why `getSpanById()`?** Span search API serves stale data after tag updates (~10+ seconds lag). Fetching by ID guarantees authoritative state.
+**Why `getSpanById()`?** [Span search API](https://www.comet.com/docs/opik/reference/rest-api/spans/search-spans) serves stale data after tag updates (eventually consistent). Fetching by ID guarantees authoritative state.
 
 #### Step 3: Batch Review Interface
+
+<img src="./opik-img/admin-span.png" alt="admin span" width="50%"/>
 
 Admin reviews 5 spans at a time, assigns categories, promotes or dismisses:
 
@@ -364,7 +369,7 @@ Once promoted, ingredients are recognized automatically in future agent calls. T
 
 ---
 
-## Annotation Queues for Prompt Improvement
+## 🏷️ Annotation Queues for Prompt Improvement
 
 Beyond the automated feedback loop, we leverage **Opik Annotation Queues** to manually review and annotate traces from specific users for targeted prompt improvements.
 
@@ -383,19 +388,17 @@ When testing the app with specific users (e.g. beta testers), we create annotati
 ### Benefits
 
 ✅ **Targeted analysis**: Focus on specific user journeys
-✅ **Collaborative review**: Multiple team members can annotate
-✅ **Historical tracking**: See prompt improvements over time
 ✅ **Pattern identification**: Spot recurring issues across users
 
 **This complements the automated continuous improvement loop** - while the admin promotion workflow handles ingredient database enrichment automatically, annotation queues enable manual prompt refinement based on real user sessions.
 
 ---
 
-## Integration Challenges & Solutions
+## 🔧 Integration Challenges & Solutions
 
 ### Challenge 1: OpenAI Whisper Token Tracking
 
-**Issue**: `opik-openai` doesn't capture Whisper response format for token counting
+**Issue**: `opik-openai` doesn't capture Whisper response format for token counting (or we misconfigured it).
 **Solution**: Manual span creation with token metadata extraction
 **Result**: Full visibility into transcription costs
 
@@ -430,7 +433,19 @@ When testing the app with specific users (e.g. beta testers), we create annotati
 
 ---
 
-## Summary
+## 🚀 Next steps
+
+### Audio datasets
+
+We prepared audio files in our [evaluation](apps/nextjs/evaluation) folder, but we didn't had enough time to rebuild dataset due to the Hackathon deadlines.
+
+### More granular Dataset approach
+
+We should have created dataset with more specialized examples, to better scope our scorer to one aspect of the agent performance.
+
+E.g. The recipe-manager is graded on its capabilities to correctly: Create, update, delete. We should have created dataset for each ones, to better scope our scorer and better analyze the improvements of our prompt because it was hard to decypher which aspect of the agent was poorly performing. Learning for next time...
+
+## ✅ Summary
 
 This Opik integration provides:
 
