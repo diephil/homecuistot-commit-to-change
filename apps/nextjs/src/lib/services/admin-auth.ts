@@ -23,6 +23,40 @@ type AdminAuthSuccess = {
   user: { id: string; email?: string };
 };
 
+type UserAuthSuccess = {
+  user: { id: string; email?: string };
+};
+
+type UserAuthResult =
+  | { ok: true; data: UserAuthSuccess }
+  | { ok: false; response: NextResponse };
+
+/**
+ * Verify the current request is from any authenticated user.
+ * Lighter than requireAdmin — no admin ID check.
+ */
+export async function requireUser(): Promise<UserAuthResult> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return {
+      ok: false,
+      response: NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 },
+      ),
+    };
+  }
+
+  return {
+    ok: true,
+    data: { user: { id: user.id, email: user.email } },
+  };
+}
+
 type AdminAuthResult =
   | { ok: true; data: AdminAuthSuccess }
   | { ok: false; response: NextResponse };

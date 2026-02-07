@@ -20,7 +20,16 @@ const PromoteRequestSchema = z.object({
 
 export async function POST(request: NextRequest) {
   const auth = await requireAdmin();
-  if (!auth.ok) return auth.response;
+  if (!auth.ok) {
+    return NextResponse.json(
+      {
+        error:
+          "This is for demo purposes only. Real admins can promote new ingredients, but you got the idea :)",
+        demo: true,
+      },
+      { status: 403 },
+    );
+  }
 
   try {
     const body = await request.json();
