@@ -9,17 +9,11 @@ This document traces the iterative development of HomeCuistot, a voice-first mea
 
 ## Development Philosophy
 
-**Build → Measure → Learn**
-- 29 feature specifications with explicit acceptance criteria
-- Milestone includes spec.md, plan.md, tasks.md, data-model.md
-- Git history shows 400+ commits across 20 days
-- Continuous deployment to Vercel for rapid feedback
+The goal wasn't to architect the perfect and most complex AI agent in 3 weeks, but to iterate steadily with data-driven improvements. Start simple, measure with Opik, identify gaps, refine. Complex patterns—multi-agent delegation, elaborate guardrails, callback orchestration—are added only when measurements prove they're needed, not upfront. This approach keeps the system maintainable by limiting the improvement surface area at any stage.
 
-**Evidence-Based Quality**
-- Opik tracing for all AI calls (OpenTelemetry → Opik exporter)
-- Dataset-driven evaluation framework
-- Row Level Security for multi-tenant data isolation
-- Type-safe TypeScript
+**Build → Measure → Learn**: 29 feature specs with explicit acceptance criteria, 400+ commits across 20 days, continuous Vercel deployment for rapid feedback
+
+**Evidence-Based Quality**: Opik tracing for all AI calls (OpenTelemetry → Opik exporter), dataset-driven evaluation, Row Level Security for multi-tenant isolation, type-safe TypeScript
 
 ---
 
@@ -28,7 +22,7 @@ This document traces the iterative development of HomeCuistot, a voice-first mea
 **Tracing Pipeline**:
 1. **Vercel AI SDK calls** → OpenTelemetry → Opik exporter (automatic)
 2. **Google ADK-js agents** → Manual Opik tracing (custom wrapper functions) -> no native integration with Opik for Google TYPESCRIPT ADK.
-3. **All traces** → Opik Cloud for production monitoring
+3. **All traces** → Opik Cloud for production monitoring, setting custom tags and metadata to post-processing and feedback loop implementation
 
 **Prompt Management**:
 - Prompts versioned in Opik Cloud
@@ -64,368 +58,88 @@ pnpm eval:all      # Run all evaluations (local Opik)
 
 ---
 
-## Phase 1: Foundation (Jan 17-20, 2026)
+## Development Timeline: 3 Weeks, 29 Milestones
 
-### Milestone 001 - App Baseline (Jan 17-18)
-**Goal**: Establish infrastructure and authentication
+### Week 1 (Jan 17-24): Foundation & Infrastructure
 
-**Achievements**:
-- Next.js 16 + React 19 with TypeScript strict mode
-- Google OAuth via Supabase Auth (@supabase/ssr)
-- Opik LLM tracing infrastructure (Docker Compose + git submodule)
-- Gemini AI SDK integration (Vercel AI SDK + @ai-sdk/google)
-- Local development environment (Next.js + Supabase CLI + Opik)
+**Infrastructure (001-003)**:
+- Next.js 16 + React 19 (TypeScript strict mode)
+- Supabase Auth (Google OAuth)
+- Opik LLM tracing (Docker Compose)
+- Gemini AI SDK integration
+- RetroUI + shadcn/ui landing page (neobrutalism design)
+- Drizzle ORM + RLS policies (user-scoped `createUserDb()` pattern)
 
-**Key Decision**: Local-first development with Docker Compose for Opik, Supabase CLI for database → iterate without cloud service dependencies during development
-
-**Tech**: Next.js 16 App Router, Supabase Auth, Opik Docker, Gemini Flash Lite
-
----
-
-### Milestone 002 - Database Operations (Jan 19)
-**Goal**: Multi-tenant data isolation with Row Level Security
-
-**Achievements**:
-- Drizzle ORM 0.45.1 + Supabase PostgreSQL
-- Row Level Security (RLS) policies for user data isolation
-- User-scoped database client (`createUserDb()`) vs admin client (`adminDb`)
-- Migration system with schema-first workflow
-
-**Key Decision**: RLS at database layer → eliminates entire class of authorization bugs; user-scoped client creation pattern enforced via code review
-
-**Tech**: Drizzle ORM, PostgreSQL, RLS policies
-
----
-
-### Milestone 003 - Base Pages UI (Jan 19-20)
-**Goal**: Design system and navigation structure
-
-**Achievements**:
-- Landing page with RetroUI + shadcn/ui components
-- Login flow with OAuth redirect handling
-- App dashboard, onboarding, and suggestions page structure
-- Neobrutalism design system foundations (thick borders, bold shadows, vibrant gradients)
-
-**Tech**: shadcn/ui, RetroUI, Tailwind CSS v4, lucide-react
-
----
-
-## Phase 2: Core Features (Jan 20-27)
-
-### Milestone 004 - Onboarding Flow (Jan 20-21)
-**Goal**: Voice-first ingredient capture
-
-**Achievements**:
-- Voice input using OpenAI Whisper transcription
+**Voice & AI (004-007)**:
+- Voice-first onboarding (Whisper-1 transcription)
 - Dual-input system (voice + text fallback)
-- Neobrutalism UI components (VoiceButton, InfoCard)
-- Loading states and error handling
+- Opik prompt versioning + OpenTelemetry tracing
+- Dataset registration workflow
+- Admin dashboard (`requireAdmin()` protection)
 
-**Key Decision**: Whisper-1 for transcription (higher accuracy than Gemini Audio API in testing), Gemini for ingredient extraction → separation of concerns
+**Database (008-009)**:
+- Drizzle migration system (manual generator, status tracking)
+- 5,931 ingredients from OpenFoodFacts (30 categories)
+- Pre-populated DB for faster matching
 
-**Tech**: OpenAI Whisper-1, Gemini Flash Lite, Web Audio API
-
----
-
-### Milestone 005 - LLM Observability (Jan 22)
-**Goal**: Production-ready AI monitoring
-
-**Achievements**:
-- Opik prompt versioning and registration scripts
-- OpenTelemetry integration for Vercel AI SDK calls
-- Dataset registration workflow (`pnpm dataset:register`)
-- Evaluation framework foundations
-
-**Key Decision**: Opik local for development (unlimited spans), Opik Cloud for production monitoring → cost-effective iteration
-
-**Tech**: Opik, OpenTelemetry, Vercel AI SDK
+**Key Decision**: Local-first dev (Docker Compose + Supabase CLI) → rapid iteration without cloud dependencies. RLS at DB layer → eliminated authorization bugs.
 
 ---
 
-### Milestone 006 - Admin Dashboard (Jan 22)
-**Goal**: Secure admin-only routes
+### Week 2 (Jan 24-31): Core Features & Recipe Management
 
-**Achievements**:
-- Unauthorized access page with custom middleware
-- Admin-only route protection (`requireAdmin()` helper)
-- User management interface placeholder
+**Inventory (010-011)**:
+- 4-level quantity scale (0=critical, 1=low, 2=some/enough, 3=plenty)
+- Pantry staple tracking (never decrement)
+- Voice input → ingredient extraction → DB writes (RLS-enforced)
+- Unrecognized item tracking
 
-**Tech**: Next.js 16 middleware (`proxy.ts`), Supabase Auth
-
----
-
-### Milestone 007 - Dual Input Enhancement (Jan 22-23)
-**Goal**: Accessibility and fallback options
-
-**Achievements**:
-- Text input fallback when microphone permission denied
-- Hint system for voice input guidance
-- Improved transcription error handling with retry logic
-
-**Key Decision**: Text fallback required for accessibility compliance → never block users from core functionality due to hardware/permission issues
-
----
-
-### Milestone 008 - Drizzle Migrations (Jan 23-24)
-**Goal**: Robust schema evolution workflow
-
-**Achievements**:
-- Manual migration generator for complex schema changes
-- Migration status tracking (`pnpm db:status`)
-- Migration verification commands
-- Verbose logging in `drizzle.config.ts`
-
-**Tech**: Drizzle Kit, PostgreSQL migrations
-
----
-
-### Milestone 009 - Ingredient Migration (Jan 24-25)
-**Goal**: Comprehensive ingredient database
-
-**Achievements**:
-- Loaded 5,931 ingredients across 30 categories
-- Sourced from OpenFoodFacts food taxonomy
-- SQL migration for bulk ingredient insertion
-- Category-based organization (meat, dairy, vegetables, fruit, etc.)
-
-**Key Decision**: Pre-populate ingredient database instead of dynamic creation → faster matching, consistent categorization
-
-**Tech**: OpenFoodFacts taxonomy, PostgreSQL, Drizzle migrations
-
----
-
-### Milestone 010 - User Pantry Staples (Jan 25-26)
-**Goal**: Inventory management with quantity levels
-
-**Achievements**:
-- User inventory table with quantity levels (0=critical, 1=low, 2=some/enough, 3=plenty)
-- Pantry staple tracking (salt, pepper, olive oil → never decrement)
-- Ingredient alias removal for cleaner data model
-
-**Key Decision**: 4-level quantity scale (0-3) instead of exact counts → reduces user friction while maintaining sufficient granularity for recipe matching
-
----
-
-### Milestone 011 - Onboarding Data Persistence (Jan 26-27)
-**Goal**: Connect voice input to database
-
-**Achievements**:
-- Voice input → ingredient extraction → database writes
-- Ingredient matching logic (case-insensitive, lowercase storage)
-- Unrecognized item tracking for admin review
-- RLS-enforced user data isolation
-
-**Tech**: Gemini Flash Lite, Drizzle ORM, RLS
-
----
-
-## Phase 3: Feature Expansion (Jan 27 - Feb 1)
-
-### Milestone 012 - Schema Refactor (Jan 27-28)
-**Goal**: Consolidate data model
-
-**Achievements**:
-- Merged pantry staples into single `user_inventory` table
-- Renamed `recipes` → `user_recipes` for clarity
-- Streamlined ingredient-recipe relationships via `recipe_ingredients` join table
-- Migration with zero downtime
-
----
-
-### Milestone 013 - Recipe Management (Jan 28-29)
-**Goal**: Save, update, delete recipes
-
-**Achievements**:
-- Recipe CRUD operations with RLS enforcement
-- Recipe-ingredient linking system
-- Optional vs required ingredient tracking (for recipe availability calculation)
+**Schema & CRUD (012-013)**:
+- Consolidated schema (`user_inventory`, `user_recipes`, `recipe_ingredients`)
+- Recipe CRUD with RLS enforcement
+- Optional vs required ingredient tracking
 - Ingredient extraction from recipe descriptions
 
-**Tech**: Gemini Flash Lite for ingredient extraction, Drizzle ORM
+**UI & Discovery (014-016)**:
+- Inventory page redesign (category filtering, search, badges)
+- "What can I cook?" recipe discovery (ready/almost-ready/missing states)
+- "Mark as Cooked" workflow (auto inventory decrement)
+- Voice recipe editor
+- Demo data reset (017)
+
+**Key Decision**: Auto inventory decrement on "mark as cooked" → reduces manual tracking friction.
 
 ---
 
-### Milestone 014 - Inventory Page Rework (Jan 29-30)
-**Goal**: Improved inventory management UI
+### Week 3 (Feb 1-6): Advanced Features & Production Polish
 
-**Achievements**:
-- Redesigned inventory page with category filtering
-- Ingredient CRUD (add, update quantity, delete)
-- Quantity level visualization (badges with color coding)
-- Search and filter by category
+**Unrecognized Items (018-019, 021-022)**:
+- `unrecognized_item_id` schema support
+- Badge indicators + admin review UI
+- Onboarding revamp (help modal, progressive disclosure)
+- Landing/login page redesign
 
-**Tech**: React 19, Tailwind CSS v4
-
----
-
-### Milestone 015 - App Page Revamp (Jan 30-31)
-**Goal**: "What can I cook?" feature
-
-**Achievements**:
-- Recipe discovery based on available ingredients
-- Cooking log to track ingredient consumption
-- "Mark as Cooked" workflow with automatic inventory decrementing
-- Recipe availability calculation (ready/almost-ready/missing states)
-
-**Key Decision**: Automatic inventory decrement on "mark as cooked" → reduces manual tracking friction, keeps inventory accurate
-
----
-
-### Milestone 016 - Voice Recipe Editor (Jan 31)
-**Goal**: Voice-driven recipe updates
-
-**Achievements**:
-- Voice input for recipe updates (add/remove ingredients)
-- Whisper transcription integration
-- Dual-input recipe modification (voice + text fallback)
-
----
-
-### Milestone 017 - Demo Data Reset (Feb 1)
-**Goal**: Jury testing preparation
-
-**Achievements**:
-- Demo account reset functionality for consistent testing
-- Seed data generation (Sarah's inventory + carbonara recipe)
-- Admin "Reset User Data" feature
-
-**Key Decision**: Demo data reset for jury → ensures consistent starting point for all evaluators
-
----
-
-### Milestone 018 - Unrecognized Items Schema (Feb 1)
-**Goal**: Support for items not in ingredient database
-
-**Achievements**:
-- Added `unrecognized_item_id` to `recipe_ingredients` and `user_inventory`
-- Schema support for user-created ingredients
-- Prepared for admin-driven ingredient promotion workflow
-
----
-
-### Milestone 019 - Onboarding Revamp (Feb 1)
-**Goal**: Improved UX and help system
-
-**Achievements**:
-- Rebuilt onboarding flow with better visual hierarchy
-- Help modal with voice input guidance
-- Unrecognized item persistence during onboarding
-- Progressive disclosure of features
-
----
-
-### Milestone 021 - Unrecognized Items Display (Feb 1)
-**Goal**: User-facing unrecognized item indicators
-
-**Achievements**:
-- UI for viewing unrecognized ingredients
-- Admin review interface placeholder
-- Badge indicators for unrecognized items in inventory/recipes
-
----
-
-### Milestone 022 - Homepage Revamp (Feb 1)
-**Goal**: Clearer value proposition
-
-**Achievements**:
-- Redesigned landing page with simplified copy
-- Improved login page design
-- Consistent navigation patterns across public pages
-
----
-
-## Phase 4: Advanced Features (Feb 1-6)
-
-### Milestone 023 - Admin Ingredient Promotion (Feb 2)
-**Goal**: Turn unrecognized items into recognized ingredients
-
-**Achievements**:
-- Opik Cloud API integration for trace analysis
-- Admin dashboard to review unrecognized items from Opik traces
-- Ingredient promotion workflow (unrecognized → recognized with category assignment)
+**Admin Promotion (023)**:
+- Opik Cloud API integration (trace analysis)
+- Admin dashboard (review unrecognized items from traces)
+- Ingredient promotion workflow (unrecognized → recognized)
 - Bulk review interface (50 traces at a time)
 - Tag-based span tracking (`unrecognized_items` → `promotion_reviewed`)
+- Continuous enrichment loop: traces → review → DB growth
 
-**Key Decision**: Use Opik traces as data source for admin review → captures real user input patterns, enables continuous ingredient database enrichment
+**Story Onboarding (024-025, 027-028)**:
+- 7-scene interactive narrative ("Sam's Fridge Story")
+- localStorage demo state + DB persistence
+- Orchestrator agent + quantity scale legend
+- Scene transitions with fade animations
+- Pre-filled demo data for new users
 
-**Tech**: Opik Cloud API, Gemini Flash Lite, Drizzle ORM
+**Production (026, 029)**:
+- PWA support (manifest, install prompts, service worker)
+- Final landing page polish + admin navigation
+- Demo data seeding for jury
 
----
-
-### Milestone 024 - Story Onboarding (Feb 2-3)
-**Goal**: Narrative-driven user education
-
-**Achievements**:
-- Redesigned onboarding as 7-scene interactive story ("Sam's Fridge Story")
-- Scene 1-3: Static narrative (Sam doesn't know what's in her fridge)
-- Scene 4: Voice input to add groceries (eggs + parmesan required to proceed)
-- Scene 5: Recipe card shows "READY" state with checkmarks
-- Scene 6: "Mark as Cooked" modal showing ingredient decrement
-- Scene 7: Manifesto + "Get started" CTA
-- localStorage-based demo state (persists across refresh)
-
-**Key Decision**: Story-based onboarding instead of feature checklist → shows product value through narrative, increases completion rate (target >80%)
-
-**Tech**: React 19 state management, localStorage, Web Audio API
-
----
-
-### Milestone 025 - Onboarding Integration (Feb 3)
-**Goal**: Replace old onboarding with story flow
-
-**Achievements**:
-- Integrated story onboarding as default for brand-new users
-- Database persistence on "Get started" (demo data → user account)
-- Orchestrator agent to coordinate onboarding steps
-- Quantity scale legend for user education
-
-**Key Decision**: Pre-fill demo data for new users → provides immediate value, prevents "empty state" friction
-
----
-
-### Milestone 026 - PWA Support (Feb 4)
-**Goal**: Mobile-first experience
-
-**Achievements**:
-- Progressive Web App manifest configuration
-- Install prompts for mobile users (iOS + Android)
-- Offline-ready service worker configuration
-- App icon and splash screen assets
-
-**Tech**: Next.js PWA plugin, Service Workers
-
----
-
-### Milestone 027 - Improved Onboarding Story (Feb 4-5)
-**Goal**: Polish narrative flow
-
-**Achievements**:
-- Enhanced scene transitions with fade animations
-- Quantity scale explanations (plenty/some/enough/low/critical)
-- Improved ingredient categorization display
-- Refined voice input instructions with progressive hints
-
----
-
-### Milestone 028 - Onboarding Finale Revamp (Feb 5)
-**Goal**: Optimized scene flow
-
-**Achievements**:
-- Reordered scenes for better narrative progression
-- Optimized Scene 6 (ingredient review) for clarity
-- Skip onboarding option for returning users
-- Loading screen with reassuring copy during demo data persistence
-
----
-
-### Milestone 029 - Landing Page Revamp (Feb 5-6)
-**Goal**: Final production polish
-
-**Achievements**:
-- Simplified landing page copy (faster comprehension)
-- Admin navigation for jury access
-- Demo data seeding for non-admin jury members
-- Final design polish before submission
+**Key Decision**: Story-based onboarding (vs checklist) → shows value through narrative (>80% completion target). Opik traces as data source → continuous ingredient enrichment from real user patterns.
 
 ---
 
@@ -488,49 +202,6 @@ const result = await generateObject({
   - Database persistence coordination
 - **Tech**: Gemini 2.5 Flash Lite with Opik tracing
 
----
-
-## Tech Stack Progression
-
-### Week 1 (Jan 17-24): Foundation
-**Stack**: Next.js 16 → Supabase Auth → Opik Docker → Drizzle ORM
-
-**Focus**: Infrastructure and authentication
-
-**Key Milestones**:
-- Google OAuth with Supabase
-- Row Level Security for multi-tenant isolation
-- Ingredient database with 5,931 items
-- Voice transcription with Whisper-1
-
----
-
-### Week 2 (Jan 24-31): Core Features
-**Stack**: Whisper-1 → Gemini Flash Lite → Recipe Management
-
-**Focus**: Voice-first interactions and recipe matching
-
-**Key Milestones**:
-- Voice input onboarding
-- Inventory management with quantity levels
-- Recipe CRUD operations
-- "What can I cook?" recipe discovery
-
----
-
-### Week 3 (Feb 1-6): Production Polish
-**Stack**: Google ADK-js → Opik Cloud → Story Onboarding → PWA
-
-**Focus**: AI agents, observability, and user experience
-
-**Key Milestones**:
-- Multi-tool AI agents (Inventory Manager, Recipe Manager)
-- Admin ingredient promotion workflow
-- Story-based onboarding (7-scene narrative)
-- Dataset-driven evaluation framework
-- PWA support for mobile installation
-
----
 
 ## Key Metrics
 
@@ -549,34 +220,11 @@ const result = await generateObject({
 
 ## Verification & Demo
 
-**Live Production**:
-- URL: https://homecuistot-commit-to-change.vercel.app/
-- OAuth providers: Google, Discord (for jury access)
-- Admin dashboard: `/admin` (accessible to all for demo)
-- Demo data reset: Available for consistent jury testing
+**Live Production**: https://homecuistot-commit-to-change.vercel.app/ | OAuth: Google, Discord | Admin: `/admin` (accessible to all)
 
-**Documentation**:
-- All 29 milestones documented in `/specs/` directory
-- Each milestone: `spec.md`, `plan.md`, `tasks.md`, `data-model.md`
-- Git history shows iterative development (use `git log --oneline` to browse)
+**Documentation**: 29 milestones in `/specs/` directory (spec.md, plan.md, tasks.md, data-model.md per milestone) | Commands in `/CLAUDE.md`
 
-**Observability**:
-- Opik Cloud production monitoring
-- All AI calls traced with metadata tags (user ID, scene, agent name)
-- Dataset evaluations for quality assurance
-- Admin dashboard for continuous ingredient enrichment
-
-**Local Development**:
-```bash
-make dev-all    # Next.js + Opik + Supabase (full stack)
-make dev        # Next.js only
-make down       # Stop services
-
-# From apps/nextjs/
-pnpm build      # Production build
-pnpm lint       # ESLint + TypeScript checks
-pnpm test       # Run test suite
-```
+**Observability**: Opik Cloud production monitoring with metadata tags (user ID, scene, agent name) | Dataset evaluations | Admin ingredient enrichment dashboard
 
 ---
 
@@ -611,6 +259,7 @@ pnpm test       # Run test suite
 - Opened GitHub issue for Vercel AI SDK + TypeScript support for `threadId` that was incomplete: [#4798](https://github.com/comet-ml/opik/issues/4798)
 - Opik span "search" API is not immediately refreshed after updating tags of a span (index still serves stale data). I had to confirm the updates via fetching the span by its ID instead.
 - Whisper-1 wasn't properly tracing the token counts using Opik OpenAI integration. I had to fallback to custom traces.
+- If I had time to do it again, I would instead create multiple datasets for testing the `Recipe manager` agent, 1 dataset per recipe operation (Create, update, deletion, mixed, etc...)
 
 **Gemini Integration Patterns**:
 - Documented JSON schema workarounds for production use
@@ -621,4 +270,3 @@ pnpm test       # Run test suite
 
 **End of Timeline**
 
-*This project demonstrates the power of iterative development, evidence-based quality assurance, and thoughtful AI integration. From infrastructure foundations to production-ready features in 20 days.*
