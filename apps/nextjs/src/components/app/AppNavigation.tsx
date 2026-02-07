@@ -21,7 +21,7 @@ const baseNavItems: NavItem[] = [
   { href: '/app/onboarding/story', label: "Sarah's Story", icon: Sparkles, clearStoryState: true },
 ]
 
-const adminNavItem: NavItem = { href: '/admin', label: 'Admin Dashboard', icon: Shield }
+const adminNavItem: NavItem = { href: '/admin', label: 'Admin Dashboard (demo)', icon: Shield }
 
 function isActive(params: { pathname: string; href: string }): boolean {
   if (params.href === '/app') {
