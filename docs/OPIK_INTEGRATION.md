@@ -2,7 +2,7 @@
 
 This document demonstrates our production-ready usage of Opik across tracing, evaluation, prompt management, and continuous improvement workflows. I'm working with Typescript exclusively and have tried to cover most of what the Opik TS SDK provides (based on https://www.comet.com/docs/opik/reference/typescript-sdk/opik-ts).
 
-**Opik runs locally via Docker -> it's not an emulation of the Cloud Opik platform! This ensure we're safely building things before shipping to production Opik-related changes**
+**Opik runs locally via Docker -> it's not an emulation of the Cloud Opik platform! This ensure we're safely building things before shipping to production Opik-related changes + completely removes the Rate limits for Opik Free Tier**
 
 **[← Back to README](../README.md)**
 
@@ -294,30 +294,40 @@ traceCtx.trace.update({
 
 #### Step 2: Query Spans via Direct Opik API
 
-Admin dashboard fetches unprocessed spans using tag-based search:
+Admin dashboard fetches unprocessed spans using tag-based search with stale-index resilience:
 
 ```typescript
 // apps/nextjs/src/lib/services/opik-spans.ts
-export async function getNextUnprocessedSpans(limit = 5) {
-  // Search for spans tagged "unrecognized_items"
-  const searchResults = await fetch(`${OPIK_URL}/spans/search`, {
+export async function getNextUnprocessedSpans({ limit = 5 }) {
+  // Over-fetch (50) to account for stale index entries
+  const response = await fetch(`${OPIK_URL}/v1/private/spans/search`, {
     method: 'POST',
     body: JSON.stringify({
       filters: [{ field: 'tags', operator: 'contains', value: 'unrecognized_items' }],
-      limit
+      limit: 50,
+      sort_by: [{ field: 'created_at', direction: 'desc' }]
     })
   });
 
-  // IMPORTANT: Fetch by ID to bypass stale search index
-  const spans = await Promise.all(
-    searchResults.map(span => getSpanById(span.id))
-  );
+  // Parse NDJSON or JSON (Opik returns different formats)
+  const candidates = parseSearchResponse(await response.text());
 
-  return spans;
+  // Verify each via GET-by-ID — search index is eventually consistent
+  const verified = [];
+  for (const candidate of candidates) {
+    if (verified.length >= limit) break;
+    const fresh = await getSpanById(candidate.id);
+    if (fresh.tags?.includes('unrecognized_items')) {
+      verified.push(fresh);
+    }
+  }
+  return verified;
 }
 ```
 
-**Why `getSpanById()`?** [Span search API](https://www.comet.com/docs/opik/reference/rest-api/spans/search-spans) serves stale data after tag updates (eventually consistent). Fetching by ID guarantees authoritative state.
+**Why over-fetch + verify?** The [Span search API](https://www.comet.com/docs/opik/reference/rest-api/spans/search-spans) index is eventually consistent — after swapping a span's tag from `unrecognized_items` to `promotion_reviewed`, the search index continues to return that span for a while. Fetching by ID gives the authoritative state. We fetch 50 candidates to ensure enough valid spans survive verification even when many stale entries sit at the top of results.
+
+**Response format**: The private search endpoint returns **NDJSON** (newline-delimited JSON), not a wrapped `{ data: [...] }` object. The `parseSearchResponse()` helper handles both NDJSON and standard JSON (`content`, `spans`, or `data` wrapper keys) for forward-compatibility.
 
 #### Step 3: Batch Review Interface
 
@@ -433,15 +443,15 @@ When testing the app with specific users (e.g. beta testers), we create annotati
 
 ---
 
-### Challenge 4: Span Search API Stale Data
+### Challenge 4: Span Search API — Eventually Consistent Index
 
-**Issue**: After updating span tags, search API served stale results for a moment (at least locally).
+**Issue**: Private search endpoint (`POST /v1/private/spans/search`) index is eventually consistent. After tag swap (`unrecognized_items` → `promotion_reviewed`), stale entries persist in search results for minutes, breaking pagination.
 
-**Debugging**: An hour lost before discovering index lag
+**Additional finding**: The private search endpoint returns **NDJSON** (newline-delimited JSON), not wrapped JSON like `{ data: [...] }`.
 
-**Solution**: Fetch by span ID for authoritative state after tag updates
+**Solution**: Over-fetch 50 candidates (vs 5 displayed), verify each via GET-by-ID for authoritative state, and parse both NDJSON + standard JSON formats.
 
-**Code**: [`getSpanById()` function in `opik-spans.ts`](../apps/nextjs/src/lib/services/opik-spans.ts)
+**Code**: [`opik-spans.ts`](../apps/nextjs/src/lib/services/opik-spans.ts)
 
 ---
 

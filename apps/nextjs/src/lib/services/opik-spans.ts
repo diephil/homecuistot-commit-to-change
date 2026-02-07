@@ -44,6 +44,36 @@ function getOpikHeaders(): Record<string, string> {
 }
 
 /**
+ * Parse Opik search response into an array of spans.
+ * Handles: { content: [...] }, { spans: [...] }, { data: [...] },
+ * single object with id, or NDJSON (newline-delimited JSON).
+ */
+function parseSearchResponse(text: string): OpikSpan[] {
+  try {
+    const json = JSON.parse(text);
+    const items =
+      json?.content ?? json?.spans ?? json?.data ?? (json?.id ? [json] : null);
+
+    if (Array.isArray(items)) return items as OpikSpan[];
+    if (json?.id) return [json as OpikSpan];
+    return [];
+  } catch {
+    // NDJSON: parse each line as a separate JSON object
+    return text
+      .split("\n")
+      .filter((line) => line.trim())
+      .map((line) => {
+        try {
+          return JSON.parse(line) as OpikSpan;
+        } catch {
+          return null;
+        }
+      })
+      .filter((span): span is OpikSpan => span !== null && !!span.id);
+  }
+}
+
+/**
  * Search for spans with `unrecognized_items` tag.
  * Reviewed spans have this tag swapped to `promotion_reviewed`,
  * so only unprocessed spans match.
@@ -65,7 +95,7 @@ export async function getNextUnprocessedSpan(): Promise<OpikSpan | null> {
           value: "unrecognized_items",
         },
       ],
-      limit: 25,
+      limit: 50,
       sort_by: [{ field: "created_at", direction: "desc" }],
     }),
   });
@@ -78,30 +108,8 @@ export async function getNextUnprocessedSpan(): Promise<OpikSpan | null> {
   }
 
   const text = await response.text();
+  const candidates = parseSearchResponse(text);
 
-  // Opik search returns different formats:
-  // - Wrapped JSON: { data: [span, ...], total: N }
-  // - Single JSON object with `id` field
-  // - NDJSON (newline-delimited): one JSON object per line (limit > 1)
-  let candidates: OpikSpan[] = [];
-  try {
-    const json = JSON.parse(text);
-    if (Array.isArray(json?.data)) {
-      candidates = json.data as OpikSpan[];
-    } else if (json?.id) {
-      candidates = [json as OpikSpan];
-    }
-  } catch {
-    // NDJSON: parse each line as a separate JSON object
-    candidates = text
-      .split("\n")
-      .filter((line) => line.trim())
-      .map((line) => JSON.parse(line) as OpikSpan)
-      .filter((span) => span.id);
-  }
-
-  // Verify each candidate against authoritative state (GET by ID)
-  // to handle stale search index after tag swap
   for (const candidate of candidates) {
     const fresh = await getSpanById({ spanId: candidate.id });
     if (fresh.tags?.includes("unrecognized_items")) {
@@ -114,7 +122,8 @@ export async function getNextUnprocessedSpan(): Promise<OpikSpan | null> {
 
 /**
  * Return up to `limit` verified unprocessed spans.
- * Searches Opik then verifies each via GET-by-ID.
+ * Over-fetches (limit 50) from Opik search to account for stale index
+ * entries, then verifies each via GET-by-ID.
  */
 export async function getNextUnprocessedSpans(params: {
   limit?: number;
@@ -133,7 +142,7 @@ export async function getNextUnprocessedSpans(params: {
           value: "unrecognized_items",
         },
       ],
-      limit: Math.max(limit * 2, 10), // over-fetch to account for stale index
+      limit: 50,
       sort_by: [{ field: "created_at", direction: "desc" }],
     }),
   });
@@ -146,26 +155,12 @@ export async function getNextUnprocessedSpans(params: {
   }
 
   const text = await response.text();
-
-  let candidates: OpikSpan[] = [];
-  try {
-    const json = JSON.parse(text);
-    if (Array.isArray(json?.data)) {
-      candidates = json.data as OpikSpan[];
-    } else if (json?.id) {
-      candidates = [json as OpikSpan];
-    }
-  } catch {
-    candidates = text
-      .split("\n")
-      .filter((line) => line.trim())
-      .map((line) => JSON.parse(line) as OpikSpan)
-      .filter((span) => span.id);
-  }
+  const candidates = parseSearchResponse(text);
 
   const verified: OpikSpan[] = [];
   for (const candidate of candidates) {
     if (verified.length >= limit) break;
+
     const fresh = await getSpanById({ spanId: candidate.id });
     if (fresh.tags?.includes("unrecognized_items")) {
       verified.push(fresh);
