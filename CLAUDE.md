@@ -121,6 +121,7 @@ import { createBrowserClient } from '@/utils/supabase/client'
 - Drizzle-managed, tracked in `drizzle.__drizzle_migrations` table
 - Schema-first: modify `src/db/schema/` → `pnpm db:generate` → `pnpm db:migrate`
 - Verbose logging enabled in `drizzle.config.ts`
+- **Manual migrations** (RLS policies, custom SQL): create `.sql` file AND add entry to `src/db/migrations/meta/_journal.json` with next `idx`, matching `tag` (filename without `.sql`), and `"breakpoints": true`. No snapshot file needed for manual migrations.
 
 **Client Creation**:
 ```typescript
