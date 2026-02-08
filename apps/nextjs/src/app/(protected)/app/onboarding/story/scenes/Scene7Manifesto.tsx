@@ -61,7 +61,7 @@ export function Scene7Manifesto({
                 key={`o-${i}`}
                 className={`animate-[fadeIn_0.5s_ease-in_both] ${
                   isOtherApps
-                    ? "text-base text-black/40 line-through decoration-black/30"
+                    ? "text-base text-black/65 line-through decoration-black/50"
                     : "text-lg font-black text-black"
                 }`}
                 style={{ animationDelay: `${oppositionStart + i * 0.6}s` }}

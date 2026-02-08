@@ -216,13 +216,18 @@ export function Scene2RecipeVoice({
           {gatePass && !assisted && (
             <div className="mt-4 bg-green-100 border-4 border-green-600 p-4 rounded-none animate-[fadeIn_0.5s_ease-in_both] shadow-[4px_4px_0px_0px_rgba(22,163,74,1)]">
               <p className="text-lg font-black text-green-600 text-center">
-                ✅ Perfect! Recipe extracted successfully!
-              </p>
-              <p className="text-sm font-semibold text-green-700 text-center mt-2">
-                All required ingredients detected
+                ✅ Good job!
               </p>
             </div>
           )}
+          {
+            !gatePass && failedAttempts>0 &&
+            <div className="bg-pink-100 border-4 border-pink-600 p-4 rounded-none animate-[fadeIn_0.5s_ease-in_both] shadow-[4px_4px_0px_0px_rgba(219,39,119,1)]">
+            <p className="text-lg font-black text-pink-600 text-center">
+              🍝 Hurry up, Sam is hungry! Tap and say the above sentence!
+            </p>
+          </div>
+          }
 
           {/* Assisted banner — we provided the recipe after 2 failed attempts */}
           {assisted && (
@@ -284,8 +289,8 @@ export function Scene2RecipeVoice({
             disabled={!gatePass}
           >
             {gatePass
-              ? "Continue →"
-              : "Describe recipe with required ingredients"}
+              ? "Thanks for helping Sam! Continue →"
+              : "Help Sam describing his Pasta Carbonara recipe to pass this step!"}
           </Button>
         </div>
       </div>
