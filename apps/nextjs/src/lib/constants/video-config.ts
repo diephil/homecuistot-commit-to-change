@@ -5,8 +5,8 @@
  * These videos demonstrate how to use the microphone feature for voice input.
  */
 export const VIDEO_IDS = {
-  /** Inventory page tutorial: https://youtu.be/MDo79VMVYmg */
-  INVENTORY: 'MDo79VMVYmg',
-  /** Recipes page tutorial: https://youtu.be/YgmZlurI5fA */
-  RECIPES: 'YgmZlurI5fA',
+  /** Inventory page tutorial: https://youtu.be/1Mm2jqJyuzE */
+  INVENTORY: '1Mm2jqJyuzE',
+  /** Recipes page tutorial: https://youtu.be/6QhDisLr9Y8 */
+  RECIPES: '6QhDisLr9Y8',
 } as const;
