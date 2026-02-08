@@ -10,8 +10,6 @@ Our philosophy for building maintainable AI agents in 3 weeks.
 
 **We didn't try to build the perfect and most complex AI agent in 3 weeks.** Instead, we focused on steady, small iterations toward building agents that can be improved over time through data-driven measurements using Opik.
 
-The goal wasn't to architect the perfect system upfront, but to iterate steadily with data-driven improvements. Start simple, measure with Opik, identify gaps, refine. Complex patterns—multi-agent delegation, elaborate guardrails, callback orchestration—are added only when measurements prove they're needed, not upfront. This approach keeps the system maintainable by limiting the improvement surface area at any stage.
-
 **Build → Measure → Learn**
 
 ---
@@ -49,26 +47,17 @@ Opik traces inform every decision: which agents need tools, where agents fall sh
 
 ## What We Did Right
 
-### ✅ Iterative Development
-Simple Gemini calls → ADK agents with tools → evaluation pipelines
-
-### ✅ Data-Driven Decisions
-Opik traces inform agent improvements and database enrichment
-
-### ✅ Manageable Scope
-Each agent has clear responsibility and evaluation criteria (ingredient recognition scores, recipe operations scores, etc.)
-
-### ✅ Production-Ready Observability
-Full tracing, custom evaluation task metrics, prompt versioning from day one
-
-### ✅ Feedback Loop
-Metadata and tags attached to Opik spans allow inspecting spans using Opik REST APIs and building a feedback loop mechanism that improves our system based on Opik production traces
+- Iterative Development
+- Opik traces inform agent improvements and database enrichment
+- Each agent has clear responsibility and evaluation criteria (ingredient recognition scores, recipe operations scores, etc.)
+- Full tracing, custom evaluation task metrics, prompt versioning from day one
+- Feedback Loop: metadata and tags attached to Opik spans allow inspecting spans using Opik REST APIs and building a feedback loop mechanism that improves our system based on Opik production traces
 
 ---
 
 ## Where We're Still Iterating (Honest Limitations)
 
-We're not presenting a perfect system. Here's what we're actively improving:
+Here's what we're actively improving:
 
 ### 1. Dataset Refinement Needed
 
@@ -101,15 +90,6 @@ We're not presenting a perfect system. Here's what we're actively improving:
 ---
 
 ## What We Learned About Opik Integration
-
-### The Good ✅
-
-- **Custom tracing worked smoothly** for ADK agents (no native OTel support)
-- **opik-gemini automatic tracing** saved significant development time
-- **Prompt versioning + dataset framework** enabled rapid iteration
-- **Direct API integration** for span querying and tag management gave us full control
-
-### The Challenges (And How We Overcame Them) 🛠️
 
 See [Opik Integration Guide → Challenges & Solutions](OPIK_INTEGRATION.md#integration-challenges--solutions) for full technical details.
 
