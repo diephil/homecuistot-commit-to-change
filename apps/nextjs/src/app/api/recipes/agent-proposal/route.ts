@@ -9,6 +9,7 @@
 
 import { NextResponse } from "next/server";
 import { withAuth } from "@/lib/services/route-auth";
+import { checkUsageLimit, logUsage } from "@/lib/services/usage-limit";
 import { createRecipeManagerAgentProposal } from "@/lib/orchestration/recipe-update.orchestration";
 import { userRecipes } from "@/db/schema";
 import { eq, desc } from "drizzle-orm";
@@ -41,6 +42,8 @@ export const POST = withAuth(async ({ userId, db, request }) => {
         { status: 400 },
       );
     }
+
+    await checkUsageLimit({ userId, db })
 
     // Get user's current recipes
     const recipes = await db((tx) =>
@@ -91,6 +94,7 @@ export const POST = withAuth(async ({ userId, db, request }) => {
       model: "gemini-2.5-flash-lite",
     });
 
+    await logUsage({ userId, db, endpoint: '/api/recipes/agent-proposal' })
     return NextResponse.json({
       proposal: result.proposal,
       transcribedText: result.transcribedText,

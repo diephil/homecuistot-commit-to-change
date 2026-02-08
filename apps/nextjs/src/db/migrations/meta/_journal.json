@@ -71,6 +71,20 @@
       "when": 1769886975590,
       "tag": "0009_rich_blade",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1770510120672,
+      "tag": "0010_sour_mongu",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1770510120673,
+      "tag": "0011_rls_llm_usage_log",
+      "breakpoints": true
     }
   ]
 }

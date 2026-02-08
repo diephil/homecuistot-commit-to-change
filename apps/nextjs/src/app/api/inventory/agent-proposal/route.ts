@@ -9,6 +9,7 @@
 
 import { NextResponse } from "next/server";
 import { withAuth } from "@/lib/services/route-auth";
+import { checkUsageLimit, logUsage } from "@/lib/services/usage-limit";
 import { createInventoryManagerAgentProposal } from "@/lib/orchestration/inventory-update.orchestration";
 import { getUserInventory } from "@/lib/services/user-inventory";
 import type { InventorySessionItem } from "@/lib/agents/inventory-manager/tools/update-matching-ingredients";
@@ -35,6 +36,8 @@ export const POST = withAuth(async ({ userId, db, request }) => {
       );
     }
 
+    await checkUsageLimit({ userId, db })
+
     // Get user's current inventory
     const inventoryRows = await getUserInventory({ db });
 
@@ -60,6 +63,7 @@ export const POST = withAuth(async ({ userId, db, request }) => {
       model: "gemini-2.5-flash-lite",
     });
 
+    await logUsage({ userId, db, endpoint: '/api/inventory/agent-proposal' })
     return NextResponse.json({
       proposal: result.proposal,
       transcribedText: result.transcribedText,

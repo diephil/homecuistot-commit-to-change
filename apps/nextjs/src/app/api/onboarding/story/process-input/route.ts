@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { withUser } from "@/lib/services/route-auth";
+import { withAuth } from "@/lib/services/route-auth";
+import { checkUsageLimit, logUsage } from "@/lib/services/usage-limit";
 import { createInventoryManagerAgentProposal } from "@/lib/orchestration/inventory-update.orchestration";
 import type { InventorySessionItem } from "@/lib/agents/inventory-manager/tools/update-matching-ingredients";
 import { classifyLlmError } from "@/lib/services/api-error-handler";
@@ -12,7 +13,7 @@ import { classifyLlmError } from "@/lib/services/api-error-handler";
 
 export const maxDuration = 15;
 
-export const POST = withUser(async ({ user, request }) => {
+export const POST = withAuth(async ({ user, userId, db, request }) => {
   try {
     const body = await request.json();
     const { audioBase64, mimeType, text, currentIngredients = [] } = body;
@@ -35,6 +36,8 @@ export const POST = withUser(async ({ user, request }) => {
         isPantryStaple: false,
       }),
     );
+
+    await checkUsageLimit({ userId, db })
 
     // Call inventory manager orchestration (handles tracing internally)
     const { proposal, transcribedText } =
@@ -66,6 +69,7 @@ export const POST = withUser(async ({ user, request }) => {
         proposal.unrecognized.length > 0 ? proposal.unrecognized : undefined,
     };
 
+    await logUsage({ userId, db, endpoint: '/api/onboarding/story/process-input' })
     return NextResponse.json(response);
   } catch (error) {
     console.error("[story/process-input] Error:", error);
