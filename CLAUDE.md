@@ -273,10 +273,3 @@ DATABASE_URL_DIRECT=postgresql://postgres:postgres@localhost:54322/postgres
 # Admin access (comma-separated Supabase user UUIDs)
 ADMIN_USER_IDS=
 ```
-
-## Active Technologies
-- TypeScript 5.x (strict mode), Next.js 16 + Drizzle ORM 0.45.1, Supabase Auth (@supabase/ssr), Vercel AI SDK (031-llm-rate-limit)
-- Supabase PostgreSQL via Drizzle ORM with RLS (031-llm-rate-limit)
-
-## Recent Changes
-- 031-llm-rate-limit: Added TypeScript 5.x (strict mode), Next.js 16 + Drizzle ORM 0.45.1, Supabase Auth (@supabase/ssr), Vercel AI SDK
