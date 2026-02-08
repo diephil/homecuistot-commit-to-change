@@ -100,8 +100,8 @@ No additional tasks needed — usage logging is already implemented in T007 (`lo
 
 **Purpose**: Build verification and final validation
 
-- [ ] T016 Run `pnpm build` from `apps/nextjs/` to verify TypeScript compilation succeeds with all changes
-- [ ] T017 Run `pnpm lint` from `apps/nextjs/` to verify no new lint errors introduced
+- [x] T016 Run `pnpm build` from `apps/nextjs/` to verify TypeScript compilation succeeds with all changes
+- [x] T017 Run `pnpm lint` from `apps/nextjs/` to verify no new lint errors introduced
 
 ---
 
