@@ -63,13 +63,13 @@ graph TB
 
 **Screenshots: Manually traced sequential agents calls - Transcriptor + Agentic Loop Agents**
 
-<img src="./opik-img/voice-and-recipe-manager-agents.png" alt="voice-and-recipe-manager-agents" width="50%"/>
-<img src="./opik-img/voice-and-inventory-manager-agents.png" alt="voice-and-inventory-manager-agents" width="50%"/>
+<img src="./opik-img/voice-and-recipe-manager-agents.png" alt="voice-and-recipe-manager-agents" width="70%"/>
+<img src="./opik-img/voice-and-inventory-manager-agents.png" alt="voice-and-inventory-manager-agents" width="70%"/>
 
 
 ## 📊 Dashboard
 
-<img src="./opik-img/dashboard.png" alt="dashboard" width="50%"/>
+<img src="./opik-img/dashboard.png" alt="dashboard" width="70%"/>
 
 Link: https://www.comet.com/opik/philippe-diep/dashboards/019c1eaa-3cb1-76c0-b9fd-ee27ee6a5d6f
 
@@ -103,7 +103,7 @@ graph LR
 
 ### 4 Managed Prompts
 
-<img src="./opik-img/prompts.png" alt="prompts" width="50%"/>
+<img src="./opik-img/prompts.png" alt="prompts" width="70%"/>
 
 - **Voice Transcriptor** - English extraction from multilingual audio
 - **Ingredient Extractor** - Add/remove operations with auto-translation
@@ -159,7 +159,7 @@ graph TB
 
 ### Custom Evaluation Metrics
 
-<img src="./opik-img/experiments.png" alt="experiements" width="50%"/>
+<img src="./opik-img/experiments.png" alt="experiements" width="70%"/>
 
 #### IngredientSetMatch (7 scores per evaluation)
 
@@ -212,7 +212,7 @@ graph TB
 
 ### Evaluation Datasets
 
-<img src="./opik-img/datasets.png" alt="dataset" width="50%"/>
+<img src="./opik-img/datasets.png" alt="dataset" width="70%"/>
 
 **Ingredient Extractor (50+ test cases)**:
 - Multilingual input (English, French, Spanish, German)
@@ -269,15 +269,15 @@ graph TB
 
 **Screenshot**
 
-<img src="./opik-img/feedback-loop.png" alt="feedback loop" width="50%"/>
+<img src="./opik-img/feedback-loop.png" alt="feedback loop" width="70%"/>
 
 ### Technical Deep-Dive
 
 #### Step 1: Tag Traces During Agent Execution
 
-<img src="./opik-img/unrecognized-metadata.png" alt="unrecognized" width="50%"/>
+<img src="./opik-img/unrecognized-metadata.png" alt="unrecognized" width="70%"/>
 
-When the Recipe Manager agent encounters unrecognized ingredients, we tag the Opik trace:
+When any LLMs we built encounter unrecognized ingredients, we tag the Opik trace:
 
 ```typescript
 // During agent orchestration
@@ -373,6 +373,8 @@ export async function markSpanAsReviewed(spanId: string) {
 }
 ```
 
+<img src="./opik-img/promotion-reviewed.png" alt="promotion-reviewed" width="70%"/>
+
 #### Step 5: Database Grows, Future Recipes Benefit
 
 Once promoted, ingredients are recognized automatically in future agent calls. The database grows from 5,931 → continuously enriched based on real user patterns.
@@ -395,7 +397,7 @@ When testing the app with specific users (e.g. beta testers), we create annotati
 
 ### Screenshot
 
-<img src="./opik-img/user-test.png" alt="user test" width="50%"/>
+<img src="./opik-img/user-test.png" alt="user test" width="70%"/>
 
 ### Benefits
 
@@ -436,6 +438,8 @@ When testing the app with specific users (e.g. beta testers), we create annotati
 ---
 
 ### Challenge 3: Vercel AI SDK ThreadId Support
+
+<img src="./opik-img/fr-opik-repo.png" alt="opik repo fr" width="70%"/>
 
 **Issue**: TypeScript types incomplete for `threadId` parameter
 
