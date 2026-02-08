@@ -89,6 +89,34 @@ pnpm db:migrate
 - **Development Philosophy**: [docs/DEVELOPMENT_APPROACH.md](./docs/DEVELOPMENT_APPROACH.md)
 - **Opik Integration**: [docs/OPIK_INTEGRATION.md](./docs/OPIK_INTEGRATION.md)
 
+## 🏗️ Architecture Overview
+
+```mermaid
+graph LR
+    User[👤 User]
+    Next[Next.js App<br/>React 19]
+    DB[(Supabase<br/>PostgreSQL)]
+    Redis[Upstash<br/>Rate Limiter]
+    LLM[LLM Providers<br/>Gemini + Whisper]
+    Opik[Opik<br/>Tracing]
+
+    User --> Next
+    Next --> DB
+    Next --> Redis
+    Next --> LLM
+    LLM -.-> Opik
+    Next -.-> Opik
+
+    style User fill:#e1f5ff
+    style Next fill:#e8f5e9
+    style DB fill:#e8f5e9
+    style Redis fill:#fce4ec
+    style LLM fill:#f3e5f5
+    style Opik fill:#fff4e1
+```
+
+**Stack**: Next.js 16 → Supabase (RLS) + Upstash (rate limit) + Gemini/Whisper → Opik (observability)
+
 ## 🤖 AI Agent Architecture
 
 ### Agent Details
