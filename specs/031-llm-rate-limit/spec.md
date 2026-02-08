@@ -3,7 +3,7 @@
 **Feature Branch**: `031-llm-rate-limit`
 **Created**: 2026-02-08
 **Status**: Draft
-**Input**: User description: "Rate Limiting — LLM Usage Per Day: Limit free users to 50 LLM calls/day to control costs"
+**Input**: User description: "Rate Limiting — LLM Usage Per Day: Limit free users to 100 LLM calls/day to control costs"
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -13,13 +13,13 @@ A user who has exhausted their daily LLM quota attempts to use any AI-powered fe
 
 **Why this priority**: Core value proposition — without enforcement, there is no cost control. Users must understand why their request was blocked and when they can try again.
 
-**Independent Test**: Can be fully tested by making 50+ LLM requests in a single day and verifying the 51st request returns a clear rate-limit error. Delivers cost protection and user transparency.
+**Independent Test**: Can be fully tested by making 100+ LLM requests in a single day and verifying the 101st request returns a clear rate-limit error. Delivers cost protection and user transparency.
 
 **Acceptance Scenarios**:
 
-1. **Given** a user has made 50 LLM calls today, **When** they attempt a 51st LLM call, **Then** the system blocks the request and returns a rate-limit error indicating the daily limit has been reached.
+1. **Given** a user has made 100 LLM calls today, **When** they attempt a 101st LLM call, **Then** the system blocks the request and returns a rate-limit error indicating the daily limit has been reached.
 2. **Given** a user was rate-limited yesterday, **When** a new UTC day begins, **Then** their counter resets and they can make LLM calls again.
-3. **Given** a user has made 30 LLM calls today, **When** they attempt another LLM call, **Then** the request proceeds normally with no rate-limit interference.
+3. **Given** a user has made 50 LLM calls today, **When** they attempt another LLM call, **Then** the request proceeds normally with no rate-limit interference.
 
 ---
 
@@ -55,7 +55,7 @@ Each successful LLM call is logged with the user, endpoint, and timestamp, enabl
 
 ### Edge Cases
 
-- What happens when two requests arrive simultaneously and both are at exactly the limit (request 50 and 51 in parallel)? One or both may succeed due to race conditions on INSERT vs COUNT; this is acceptable — off-by-one tolerance is fine for cost control.
+- What happens when two requests arrive simultaneously and both are at exactly the limit (request 100 and 101 in parallel)? One or both may succeed due to race conditions on INSERT vs COUNT; this is acceptable — off-by-one tolerance is fine for cost control.
 - What happens if the daily limit configuration is changed mid-day? The new limit applies immediately to all subsequent checks.
 - What happens if the usage log storage is unavailable (database outage)? The LLM call should fail rather than bypassing the limit (fail closed).
 
@@ -67,7 +67,7 @@ Each successful LLM call is logged with the user, endpoint, and timestamp, enabl
 - **FR-002**: System MUST block LLM requests when a user's daily call count meets or exceeds the configured limit, returning a rate-limit error.
 - **FR-003**: System MUST reset the daily count at UTC midnight without requiring scheduled jobs (query-based reset using timestamps).
 - **FR-004**: System MUST exempt administrator users from rate-limit enforcement.
-- **FR-005**: System MUST allow the daily limit to be configured via an environment variable, defaulting to 50 if not set.
+- **FR-005**: System MUST allow the daily limit to be configured via an environment variable, defaulting to 100 if not set.
 - **FR-006**: System MUST only count successful LLM calls (calls that fail before producing a response do not increment the counter).
 - **FR-007**: System MUST enforce rate limits across all LLM-powered endpoints consistently (8 endpoints identified).
 - **FR-008**: System MUST fail closed — if the usage check itself fails, the LLM request is denied rather than allowed.
@@ -89,7 +89,7 @@ Each successful LLM call is logged with the user, endpoint, and timestamp, enabl
 
 ## Assumptions
 
-- The daily limit of 50 is a reasonable starting default and can be adjusted via environment variable without redeployment (only restart required).
+- The daily limit of 100 is a reasonable starting default and can be adjusted via environment variable without redeployment (only restart required).
 - UTC midnight reset is acceptable for all users regardless of timezone — no per-user timezone customization needed.
 - Minor race conditions (off-by-one at the boundary) are acceptable; exact enforcement is not required.
 - No user-facing "remaining calls" counter or warning system is needed at this time.
