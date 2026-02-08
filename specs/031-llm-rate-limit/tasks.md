@@ -36,7 +36,7 @@
 
 **CRITICAL**: No route integration can begin until this phase is complete
 
-- [ ] T007 Create usage limit service in `apps/nextjs/src/lib/services/usage-limit.ts` — implement `checkUsageLimit({ userId, db })` (admin bypass via `ADMIN_USER_IDS` env var, COUNT query for today's UTC usage, throw 429 NextResponse if >= `DAILY_LLM_LIMIT` default 100, fail closed on DB error) and `logUsage({ userId, db, endpoint })` (INSERT into `llm_usage_log`). Use named parameters per constitution. Import admin ID parsing pattern from `admin-auth.ts`.
+- [x] T007 Create usage limit service in `apps/nextjs/src/lib/services/usage-limit.ts` — implement `checkUsageLimit({ userId, db })` (admin bypass via `ADMIN_USER_IDS` env var, COUNT query for today's UTC usage, throw 429 NextResponse if >= `DAILY_LLM_LIMIT` default 100, fail closed on DB error) and `logUsage({ userId, db, endpoint })` (INSERT into `llm_usage_log`). Use named parameters per constitution. Import admin ID parsing pattern from `admin-auth.ts`.
 
 **Checkpoint**: Service layer ready. Route integration can begin.
 
