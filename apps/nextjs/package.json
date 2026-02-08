@@ -48,6 +48,8 @@
     "@radix-ui/react-toggle-group": "^1.1.11",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.90.1",
+    "@upstash/ratelimit": "^2.0.8",
+    "@upstash/redis": "^1.36.2",
     "@vercel/otel": "^2.1.0",
     "ai": "^6.0.39",
     "class-variance-authority": "^0.7.1",
