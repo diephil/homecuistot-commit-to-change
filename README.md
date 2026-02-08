@@ -35,9 +35,9 @@ Home Cuistot doesn't suggest recipes. It starts with your dishes—the 10 to 15 
 
 ## Specific OPIK documentation
 
-<img src="./docs/opik-img/dashboard.png" alt="dashboard" width="60%"/>
+<img src="./docs/opik-img/dashboard.png" alt="dashboard" width="70%"/>
 
-- [docs/OPIK_INTEGRATION.md](./docs/OPIK_INTEGRATION.md) - Full Opik integration documentation into HomeCuistot
+- [docs/OPIK_INTEGRATION.md](./docs/OPIK_INTEGRATION.md) - Dedicated documentation about Opik integration to HomeCuistot
 
 ## 💻 How we built it?
 
