@@ -220,20 +220,20 @@ export function Scene4Voice({
           {canContinue && (
             <div className="mt-4 bg-green-100 border-4 border-green-600 p-4 rounded-none animate-[fadeIn_0.5s_ease-in_both] shadow-[4px_4px_0px_0px_rgba(22,163,74,1)]">
               <p className="text-lg font-black text-green-600 text-center">
-                ✅ Perfect! We detected the ingredients Sam needed!
+                ✅ Good Job!
               </p>
-              <p className="text-sm font-semibold text-green-700 text-center mt-2">
+              {/* <p className="text-sm font-semibold text-green-700 text-center mt-2">
                 Click Continue to help Sam cook his carbonara
-              </p>
+              </p> */}
             </div>
           )}
         </div>
 
         {/* Urgency banner after 3 attempts (hide when complete) */}
-        {attemptCount >= 3 && !canContinue && (
+        {attemptCount >= 2 && !canContinue && (
           <div className="bg-pink-100 border-4 border-pink-600 p-4 rounded-none animate-[fadeIn_0.5s_ease-in_both] shadow-[4px_4px_0px_0px_rgba(219,39,119,1)]">
             <p className="text-lg font-black text-pink-600 text-center">
-              🍝 Hurry up, Sam is hungry!
+              🍝 Hurry up, Sam is hungry! Tap and say the above sentence!
             </p>
           </div>
         )}

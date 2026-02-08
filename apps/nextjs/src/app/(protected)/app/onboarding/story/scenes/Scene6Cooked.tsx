@@ -46,7 +46,7 @@ export function Scene6Cooked({
           className="text-base font-semibold text-black/70 animate-[fadeIn_0.5s_ease-in_both]"
           style={{ animationDelay: "0.4s" }}
         >
-          Here&apos;s what changed in Sam&apos;s inventory after cooking the recipe:
+          The inventory gets updated automatically after cooking:
         </p>
 
         {/* Quantity scale legend */}

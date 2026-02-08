@@ -35,10 +35,11 @@ async function main() {
         "Created".padEnd(22),
         "Last Sign-In".padEnd(22),
         "Email".padEnd(35),
-        "Name",
+        "Name".padEnd(25),
+        "UUID",
       ].join(" | "),
     );
-    console.log("-".repeat(100));
+    console.log("-".repeat(150));
 
     for (const u of users) {
       const created = u.created_at
@@ -55,7 +56,8 @@ async function main() {
           created.padEnd(22),
           lastSignIn.padEnd(22),
           (u.email ?? "—").padEnd(35),
-          u.name ?? "—",
+          (u.name ?? "—").padEnd(25),
+          u.id ?? "—",
         ].join(" | "),
       );
     }

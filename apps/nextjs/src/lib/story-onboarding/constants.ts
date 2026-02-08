@@ -102,13 +102,13 @@ export const SCENE_TEXT = {
   ],
   scene2RecipeIntro: ["Sam wants to tell HomeCuistot his recipe."],
   scene2RecipeInstructions: [
-    "Help Sam tell the app about his carbonara recipe:",
+    " ",
     "Tap and say:",
     '🎙️ "I do a Pasta Carbonara with bacon, eggs and parmesan"',
   ],
   scene3Intro: [
     "He stops at the store on his way home. 🛒",
-    "Here's what HomeCuistot shows Sam:",
+    " ",
   ],
   scene3Outro: [
     "He grabs what's missing for his carbonara (eggs and parmesan) plus a few other things.",
@@ -122,12 +122,12 @@ export const SCENE_TEXT = {
     "He needs to tell HomeCuistot what he bought.",
   ],
   scene4Instructions: [
-    "Help Sam tell the app what he just bought from the store:",
+    " ",
     "Tap and say:",
     '"I just came back from the store, now I have eggs, parmesan and some bananas"',
   ],
   scene5: [
-    '"We have everything for carbonara—let me cook it!" 🎉',
+    '"HomeCuistot tells me I have everything to cook it" 🎉',
     "Help Sam log in HomeCuistot that he made it.",
   ],
   scene7YourRecipes: [
@@ -148,15 +148,15 @@ export const SCENE_TEXT = {
   ],
   scene8Manifesto: [
     "He already knew his go-to recipes.",
-    "He just needed to know he had everything to make one tonight — and take action. ✨",
+    "He just needed to know he had everything in his kitchen to make one tonight ✨",
   ],
   scene8Opposition: [
+    "Recipe apps make you browse recipes you'll never make.",
+    " ",
     "Other apps ask you to scan receipts or photograph your fridge.",
-    "HomeCuistot listens. Just say what you bought.",
-    "Recipe apps make you browse.",
-    "HomeCuistot makes you cook.",
-    "Other apps show you dishes you'll never make.",
-    "HomeCuistot tells you which of yours is ready right now.",
+    " ",
+    " ",
+    " ",
   ],
-  scene8Closing: ["Let's commit to cook more with us. 🍳"],
+  scene8Closing: ["HomeCuistot makes you cook now. Let's commit to cook more with us. 🍳"],
 } as const;

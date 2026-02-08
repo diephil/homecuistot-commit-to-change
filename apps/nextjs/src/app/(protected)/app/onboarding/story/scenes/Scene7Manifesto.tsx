@@ -17,15 +17,15 @@ export function Scene7Manifesto({
   onContinue,
   onRestart,
 }: Scene7ManifestoProps) {
-  // Compute stagger delays
+  // Compute stagger delays (adjusted for shortened content)
   const scene8Len = SCENE_TEXT.scene8.length;
-  const manifestoStart = scene8Len * 0.4;
+  const manifestoStart = scene8Len * 0.3;
   const manifestoLen = SCENE_TEXT.scene8Manifesto.length;
-  const oppositionStart = manifestoStart + manifestoLen * 0.4 + 0.4;
+  const oppositionStart = manifestoStart + manifestoLen * 0.3 + 0.2;
   const oppositionLen = SCENE_TEXT.scene8Opposition.length;
-  const closingStart = oppositionStart + oppositionLen * 0.6 + 0.4;
+  const closingStart = oppositionStart + oppositionLen * 0.4 + 0.2;
   const closingLen = SCENE_TEXT.scene8Closing.length;
-  const ctaDelay = closingStart + closingLen * 0.4;
+  const ctaDelay = closingStart + closingLen * 0.3;
 
   return (
     <div className="flex flex-col items-center min-h-[80vh] px-6 py-8">
@@ -35,7 +35,7 @@ export function Scene7Manifesto({
           <p
             key={`r-${i}`}
             className="text-lg font-bold leading-relaxed animate-[fadeIn_0.5s_ease-in_both]"
-            style={{ animationDelay: `${i * 0.4}s` }}
+            style={{ animationDelay: `${i * 0.3}s` }}
           >
             {segment}
           </p>
@@ -46,7 +46,7 @@ export function Scene7Manifesto({
           <p
             key={`m-${i}`}
             className="text-xl font-black leading-snug animate-[fadeIn_0.5s_ease-in_both]"
-            style={{ animationDelay: `${manifestoStart + i * 0.4}s` }}
+            style={{ animationDelay: `${manifestoStart + i * 0.3}s` }}
           >
             {segment}
           </p>
@@ -61,10 +61,10 @@ export function Scene7Manifesto({
                 key={`o-${i}`}
                 className={`animate-[fadeIn_0.5s_ease-in_both] ${
                   isOtherApps
-                    ? "text-base text-black/40 line-through decoration-black/30"
+                    ? "text-base text-black/65 line-through decoration-black/50"
                     : "text-lg font-black text-black"
                 }`}
-                style={{ animationDelay: `${oppositionStart + i * 0.6}s` }}
+                style={{ animationDelay: `${oppositionStart + i * 0.4}s` }}
               >
                 {segment}
               </p>
@@ -77,7 +77,7 @@ export function Scene7Manifesto({
           <p
             key={`c-${i}`}
             className="text-lg font-bold leading-relaxed animate-[fadeIn_0.5s_ease-in_both]"
-            style={{ animationDelay: `${closingStart + i * 0.4}s` }}
+            style={{ animationDelay: `${closingStart + i * 0.3}s` }}
           >
             {segment}
           </p>
