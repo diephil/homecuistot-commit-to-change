@@ -24,7 +24,7 @@
 - [x] T003 Run `pnpm db:generate` from `apps/nextjs/` to generate migration SQL
 - [x] T004 **USER ACTION**: Review generated migration in `apps/nextjs/src/db/migrations/`, run `pnpm db:migrate`, verify with `pnpm db:status`
 - [x] T005 Create RLS migration file `apps/nextjs/src/db/migrations/XXXX_rls_llm_usage_log.sql` — enable RLS, add SELECT policy (`auth.uid() = user_id`), add INSERT policy (`auth.uid() = user_id`). Follow `0001_enable_rls_policies.sql` pattern.
-- [ ] T006 **USER ACTION**: Apply RLS migration via `pnpm db:migrate`, verify with `pnpm db:status`
+- [x] T006 **USER ACTION**: Apply RLS migration via `pnpm db:migrate`, verify with `pnpm db:status`
 
 **Checkpoint**: `llm_usage_log` table exists with RLS policies. Ready for service layer.
 
