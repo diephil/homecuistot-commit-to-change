@@ -33,17 +33,19 @@ Home Cuistot doesn't suggest recipes. It starts with your dishes—the 10 to 15 
 **Automatic inventory tracking**: "Mark as Cooked" keeps your inventory up to date, no need to look for the exact quantities to log into the app
 
 
-## Specific OPIK documentation
+## 👨‍🔬 OPIK documentation
 
 <img src="./docs/opik-img/dashboard.png" alt="dashboard" width="70%"/>
 
-- [docs/OPIK_INTEGRATION.md](./docs/OPIK_INTEGRATION.md) - Dedicated documentation about Opik integration to HomeCuistot
+- ➡️ [docs/OPIK_INTEGRATION.md](./docs/OPIK_INTEGRATION.md) - Dedicated documentation about integrating Opik to HomeCuistot
 
-## 💻 How we built it?
+## 💻 Building process documentation
 
 <img src="images/timeline.png" alt="logo" width="70%"/>
 
-We built a maintainable AI system in 3 weeks by focusing on:
+- ➡️ [docs/DEVELOPMENT_APPROACH.md](./docs/DEVELOPMENT_APPROACH.md) - Dedicated documentation about the process of building HomeCuistot
+
+TLDR: We built a maintainable AI system in 3 weeks by focusing on:
 1. **Iterative development**: Start simple, no over-engineered AI Agents from the start
 2. **Data-driven decisions**: Opik provides the measurement layer for every improvement
 3. **Production-ready foundations**: Full observability, evaluation pipelines, feedback loops from day one
