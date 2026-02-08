@@ -28,7 +28,7 @@ Home Cuistot doesn't suggest recipes. It starts with your dishes—the 10 to 15 
 
 **Voice-first reduces friction**: Describe your ingredients when you're tired, no pictures to take, no receipts to keep
 
-**Starts with YOUR dishes**: Not a generic recipe suggestions—meals that makes you scroll and adds indecision: you already know how to make your favorite dishes
+**Starts with YOUR dishes**: Instead of generic recipe suggestions that add decision fatigue, HomeCuistot focuses on the meals you already know how to make.
 
 **Automatic inventory tracking**: "Mark as Cooked" keeps your inventory up to date, no need to look for the exact quantities to log into the app
 
@@ -70,7 +70,10 @@ cd homecuistot-commit-to-change/apps/nextjs
 # Install dependencies
 pnpm install
 
-# Setup environment (you will need to setup Oauth credentials for full config, otherwise you can comment the OAuth related code)
+# Setup environment variables
+# Note: OAuth credentials required for authentication (Google and Discord providers)
+# Setup guides: Google (https://supabase.com/docs/guides/auth/social-login/auth-google?queryGroups=framework&framework=nextjs)
+#               Discord (https://supabase.com/docs/guides/auth/social-login/auth-discord?queryGroups=framework&framework=nextjs)
 cp .env.local.example .env.local
 
 # Start development server and Opik/Supabase
@@ -97,7 +100,7 @@ pnpm db:migrate
 | **Recipe Manager** | Google ADK LlmAgent | create / update / delete / deleteAll | Custom dataset (mixed operations) | `createAgentTrace()` manual |
 | **Inventory Manager** | Google ADK LlmAgent | updateMatching / updateAll | Voice operations dataset | `createAgentTrace()` manual |
 
-**Note on ADK Usage**: We chose Google ADK for agents requiring function tools (Recipe Manager, Inventory Manager) because it's designed for multi-turn conversations. The original plan was to build an orchestration agent that would coordinate these subagents from the homepage, but time constraints prevented implementation. Currently, we enforce single-turn execution (agents terminate immediately after tool calls). Multi-turn orchestration will be added in the next iteration.
+**Note on ADK Usage**: Google ADK is used for agents requiring function tools (Recipe Manager, Inventory Manager) due to its multi-turn conversation design and compositional architecture. This decision enables future development of an orchestrator agent that can coordinate these subagents more easily. The current implementation enforces single-turn execution where agents terminate immediately after tool calls. Future versions will support multi-turn orchestration and subagent invocation (Inventory and Recipe Managers) through a chatbot interface on the homepage.
 
 ---
 
@@ -117,7 +120,7 @@ We focused on:
 
 ### Where We're Still Iterating (Honest Limitations)
 - Dataset refinement needed (split mixed operations into separate datasets)
-- Audio processing pipeline validation (planning Opik audio datasets)
+- Audio processing pipeline validation requires dedicated Opik audio datasets
 - Custom metric performance (tuning F1 thresholds)
 
 **[→ Read full development approach](docs/DEVELOPMENT_APPROACH.md)**

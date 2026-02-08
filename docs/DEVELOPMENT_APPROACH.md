@@ -84,7 +84,7 @@ We're not presenting a perfect system. Here's what we're actively improving:
 
 **Current**: Manual testing only for voice input flows
 
-**Planning**: Opik audio datasets to test "voice-transcriptor → inventory-manager" and "voice-transcriptor → recipe-manager" sequential architectures
+**Future Work**: Implement Opik audio datasets to test end-to-end voice flows (voice transcription to inventory/recipe management).
 
 **Why**: Need automated evaluation of end-to-end voice flows, not just text-based agent testing
 

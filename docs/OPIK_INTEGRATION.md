@@ -1,8 +1,8 @@
 # Opik Integration Guide
 
-This document demonstrates our production-ready usage of Opik across tracing, evaluation, prompt management, and continuous improvement workflows. I'm working with Typescript exclusively and have tried to cover most of what the Opik TS SDK provides (based on https://www.comet.com/docs/opik/reference/typescript-sdk/opik-ts).
+This document demonstrates production-ready usage of Opik across tracing, evaluation, prompt management, and continuous improvement workflows. All implementations use TypeScript and leverage the Opik TypeScript SDK (reference: https://www.comet.com/docs/opik/reference/typescript-sdk/opik-ts).
 
-**Opik runs locally via Docker -> it's not an emulation of the Cloud Opik platform! This ensure we're safely building things before shipping to production Opik-related changes + completely removes the Rate limits for Opik Free Tier**
+**Opik runs locally via Docker and provides the full Opik platform capabilities (not an emulation).** This allows safe development and testing before deploying to production while avoiding rate limits on the Opik Free Tier.
 
 **[← Back to README](../README.md)**
 
@@ -55,9 +55,9 @@ graph TB
 
 **Layer 1 (Automatic)**: Zero-config tracing via `instrumentation.ts` with OpikExporter
 
-**Layer 2 (Manual)**: Custom wrappers for ADK agents with span hierarchy -> Parent trace + child spans
+**Layer 2 (Manual)**: Custom wrappers for ADK agents with span hierarchy (parent trace with child spans)
 
-**Layer 3 (Feedback)**: Direct API integration for span querying and tag management -> leveraging Opik search index (eventually consistent)
+**Layer 3 (Feedback)**: Direct API integration for span querying and tag management using the Opik search index (eventually consistent)
 
 **Implementation**: [`apps/nextjs/src/instrumentation.ts`](../apps/nextjs/src/instrumentation.ts) | [`apps/nextjs/src/lib/tracing/opik-agent.ts`](../apps/nextjs/src/lib/tracing/opik-agent.ts) | [`apps/nextjs/src/lib/services/opik-spans.ts`](../apps/nextjs/src/lib/services/opik-spans.ts)
 
@@ -97,7 +97,7 @@ graph LR
     style E fill:#bbf,stroke:#333,stroke-width:2px
 ```
 
-**Prompt Discovery**: Script recursively finds `prompt.ts` files -> we can add more agent to our system by following the file naming convention
+**Prompt Discovery**: The registration script recursively finds `prompt.ts` files, enabling new agents to be added by following the file naming convention.
 **Metadata Extraction**: Each prompt includes name, description, tags, environment
 **Environment Separation**: Local vs production prompt namespaces
 
@@ -423,9 +423,9 @@ When testing the app with specific users (e.g. beta testers), we create annotati
 
 ### Challenge 2: Google ADK-js Tracing
 
-**Why We Chose Google ADK**: We selected Google ADK for agents requiring function tools (Recipe Manager, Inventory Manager) because it's designed for multi-turn conversations. The original plan was to build an orchestration agent that would coordinate these subagents from the homepage, but time constraints prevented implementation. Currently, we enforce single-turn execution (agents terminate immediately after tool calls). Multi-turn orchestration will be added in the next iteration.
+**Why We Chose Google ADK**: Google ADK is used for agents requiring function tools (Recipe Manager, Inventory Manager) due to its multi-turn conversation design and compositional architecture. This decision enables future development of an orchestrator agent that can coordinate these subagents more easily. The current implementation enforces single-turn execution where agents terminate immediately after tool calls. Future versions will support multi-turn orchestration and subagent invocation (Inventory and Recipe Managers) through a chatbot interface on the homepage.
 
-**Issue**: No native OpenTelemetry support in ADK-js (only Python support). We could have rebuilt an opik integration via Google ADK callback system, but it was too tedious → we decided to continue with custom traces, only tracing the tools we implemented.
+**Issue**: ADK-js lacks native OpenTelemetry support (available only in Python). Custom integration via the Google ADK callback system would require significant development effort, so the implementation uses custom trace wrappers focused on tool execution.
 
 **Solution**: Custom `createAgentTrace()` wrapper for sequential agent calls
 
@@ -457,17 +457,15 @@ When testing the app with specific users (e.g. beta testers), we create annotati
 
 ---
 
-## 🚀 Next steps
+## 🚀 Future Improvements
 
-### Audio datasets
+### Audio Dataset Integration
 
-We prepared audio files in our [evaluation](apps/nextjs/evaluation) folder, but we didn't had enough time to rebuild dataset due to the Hackathon deadlines.
+Audio evaluation files have been prepared in the `evaluation/` folder. Full audio dataset implementation is planned for future releases.
 
-### More granular Dataset approach
+### More Granular Dataset Approach
 
-We should have created dataset with more specialized examples, to better scope our scorer to one aspect of the agent performance.
-
-E.g. The recipe-manager is graded on its capabilities to correctly: Create, update, delete. We should have created dataset for each ones, to better scope our scorer and better analyze the improvements of our prompt because it was hard to decypher which aspect of the agent was poorly performing. Learning for next time...
+Current datasets combine multiple operation types (create, update, delete) in single evaluation runs. Future iterations will split these into dedicated datasets (creation-only, update-only, deletion-only) to enable more precise performance analysis and targeted prompt improvements.
 
 ## ✅ Summary
 
