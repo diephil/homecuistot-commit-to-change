@@ -29,7 +29,11 @@
     "users": "tsx --env-file=.env.local scripts/list-users.ts",
     "users:prod": "tsx --env-file=.env.prod scripts/list-users.ts",
     "usage": "tsx --env-file=.env.local scripts/llm-usage-today.ts",
-    "usage:prod": "tsx --env-file=.env.prod scripts/llm-usage-today.ts"
+    "usage:prod": "tsx --env-file=.env.prod scripts/llm-usage-today.ts",
+    "orphaned": "tsx --env-file=.env.local scripts/find-orphaned-recipes.ts",
+    "orphaned:prod": "tsx --env-file=.env.prod scripts/find-orphaned-recipes.ts",
+    "delete-user": "tsx --env-file=.env.local scripts/delete-user.ts",
+    "delete-user:prod": "tsx --env-file=.env.prod scripts/delete-user.ts"
   },
   "dependencies": {
     "@ai-sdk/google": "^3.0.10",
