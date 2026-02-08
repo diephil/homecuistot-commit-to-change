@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { sql } from 'drizzle-orm'
+import { sql, and, eq, gte } from 'drizzle-orm'
 import { llmUsageLog } from '@/db/schema'
 import type { createUserDb } from '@/db/client'
 
@@ -28,7 +28,10 @@ export async function checkUsageLimit({ userId, db }: { userId: string; db: User
       .select({ count: sql<number>`count(*)::int` })
       .from(llmUsageLog)
       .where(
-        sql`${llmUsageLog.userId} = ${userId} AND ${llmUsageLog.createdAt} >= ${todayUtc}`,
+        and(
+          eq(llmUsageLog.userId, userId),
+          gte(llmUsageLog.createdAt, todayUtc)
+        )
       ),
   )
 
