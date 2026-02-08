@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { randomUUID } from "crypto";
-import { withUser } from "@/lib/services/route-auth";
+import { withAuth } from "@/lib/services/route-auth";
+import { checkUsageLimit, logUsage } from "@/lib/services/usage-limit";
 import { createRecipeManagerAgentProposal } from "@/lib/orchestration/recipe-update.orchestration";
 import {
   isCreateRecipeResult,
@@ -111,7 +112,7 @@ function applyProposalInMemory(
   return recipes;
 }
 
-export const POST = withUser(async ({ user, request }) => {
+export const POST = withAuth(async ({ user, userId, db, request }) => {
   try {
     // 1. Validate request body
     const rawBody = await request.json();
@@ -155,6 +156,8 @@ export const POST = withUser(async ({ user, request }) => {
       `[onboarding/recipe] Tracked recipes: ${sessionRecipes.length}`,
     );
 
+    await checkUsageLimit({ userId, db })
+
     // 3. Call orchestration
     const result = await createRecipeManagerAgentProposal({
       userId: user.id,
@@ -189,6 +192,8 @@ export const POST = withUser(async ({ user, request }) => {
     console.log(
       `[onboarding/recipe] Updated recipes: ${updatedRecipes.length} (${result.proposal.recipes.length} operations)`,
     );
+
+    await logUsage({ userId, db, endpoint: '/api/onboarding/process-recipe' })
 
     // 6. Return response
     return NextResponse.json({

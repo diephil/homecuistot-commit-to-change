@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
-import { withUser } from "@/lib/services/route-auth";
+import { withAuth } from "@/lib/services/route-auth";
+import { checkUsageLimit, logUsage } from "@/lib/services/usage-limit";
 import { processVoiceRecipe } from "@/lib/prompts/recipe-editor/process";
 import { recipeExtractionSchema } from "@/types/recipes";
 
 export const maxDuration = 15; // 15 second timeout
 
-export const POST = withUser(async ({ request }) => {
+export const POST = withAuth(async ({ userId, db, request }) => {
   try {
     const body = await request.json();
 
@@ -16,6 +17,8 @@ export const POST = withUser(async ({ request }) => {
       );
     }
 
+    await checkUsageLimit({ userId, db })
+
     // Process via Gemini with Opik tracing
     const result = await processVoiceRecipe({
       audioBase64: body.audioBase64,
@@ -24,6 +27,7 @@ export const POST = withUser(async ({ request }) => {
     // Validate response schema
     const validated = recipeExtractionSchema.parse(result);
 
+    await logUsage({ userId, db, endpoint: '/api/recipes/process-voice' })
     return NextResponse.json(validated);
   } catch (error) {
     console.error("[process-voice] Error:", error);

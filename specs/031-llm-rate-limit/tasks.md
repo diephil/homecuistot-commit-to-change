@@ -52,17 +52,17 @@
 
 **Migrate `withUser` → `withAuth` (6 routes, parallelizable)**:
 
-- [ ] T008 [P] [US1] Migrate `apps/nextjs/src/app/api/onboarding/process-text/route.ts` from `withUser` to `withAuth` — update import, destructure `{ userId, db, request }`, add `await checkUsageLimit({ userId, db })` before LLM call, add `await logUsage({ userId, db, endpoint: '/api/onboarding/process-text' })` after successful response before return
-- [ ] T009 [P] [US1] Migrate `apps/nextjs/src/app/api/onboarding/process-voice/route.ts` from `withUser` to `withAuth` — same pattern: import, destructure, checkUsageLimit before LLM, logUsage after success with endpoint `/api/onboarding/process-voice`
-- [ ] T010 [P] [US1] Migrate `apps/nextjs/src/app/api/onboarding/process-recipe/route.ts` from `withUser` to `withAuth` — same pattern with endpoint `/api/onboarding/process-recipe`
-- [ ] T011 [P] [US1] Migrate `apps/nextjs/src/app/api/onboarding/story/process-input/route.ts` from `withUser` to `withAuth` — same pattern with endpoint `/api/onboarding/story/process-input`
-- [ ] T012 [P] [US1] Migrate `apps/nextjs/src/app/api/recipes/process-text/route.ts` from `withUser` to `withAuth` — same pattern with endpoint `/api/recipes/process-text`
-- [ ] T013 [P] [US1] Migrate `apps/nextjs/src/app/api/recipes/process-voice/route.ts` from `withUser` to `withAuth` — same pattern with endpoint `/api/recipes/process-voice`
+- [x] T008 [P] [US1] Migrate `apps/nextjs/src/app/api/onboarding/process-text/route.ts` from `withUser` to `withAuth` — update import, destructure `{ userId, db, request }`, add `await checkUsageLimit({ userId, db })` before LLM call, add `await logUsage({ userId, db, endpoint: '/api/onboarding/process-text' })` after successful response before return
+- [x] T009 [P] [US1] Migrate `apps/nextjs/src/app/api/onboarding/process-voice/route.ts` from `withUser` to `withAuth` — same pattern: import, destructure, checkUsageLimit before LLM, logUsage after success with endpoint `/api/onboarding/process-voice`
+- [x] T010 [P] [US1] Migrate `apps/nextjs/src/app/api/onboarding/process-recipe/route.ts` from `withUser` to `withAuth` — same pattern with endpoint `/api/onboarding/process-recipe`
+- [x] T011 [P] [US1] Migrate `apps/nextjs/src/app/api/onboarding/story/process-input/route.ts` from `withUser` to `withAuth` — same pattern with endpoint `/api/onboarding/story/process-input`
+- [x] T012 [P] [US1] Migrate `apps/nextjs/src/app/api/recipes/process-text/route.ts` from `withUser` to `withAuth` — same pattern with endpoint `/api/recipes/process-text`
+- [x] T013 [P] [US1] Migrate `apps/nextjs/src/app/api/recipes/process-voice/route.ts` from `withUser` to `withAuth` — same pattern with endpoint `/api/recipes/process-voice`
 
 **Add rate limiting to already-`withAuth` routes (2 routes, parallelizable)**:
 
-- [ ] T014 [P] [US1] Add rate limiting to `apps/nextjs/src/app/api/inventory/agent-proposal/route.ts` — add `await checkUsageLimit({ userId, db })` before LLM call, add `await logUsage({ userId, db, endpoint: '/api/inventory/agent-proposal' })` after successful response
-- [ ] T015 [P] [US1] Add rate limiting to `apps/nextjs/src/app/api/recipes/agent-proposal/route.ts` — add `await checkUsageLimit({ userId, db })` before LLM call, add `await logUsage({ userId, db, endpoint: '/api/recipes/agent-proposal' })` after successful response
+- [x] T014 [P] [US1] Add rate limiting to `apps/nextjs/src/app/api/inventory/agent-proposal/route.ts` — add `await checkUsageLimit({ userId, db })` before LLM call, add `await logUsage({ userId, db, endpoint: '/api/inventory/agent-proposal' })` after successful response
+- [x] T015 [P] [US1] Add rate limiting to `apps/nextjs/src/app/api/recipes/agent-proposal/route.ts` — add `await checkUsageLimit({ userId, db })` before LLM call, add `await logUsage({ userId, db, endpoint: '/api/recipes/agent-proposal' })` after successful response
 
 **Checkpoint**: All 8 routes enforce rate limiting. US1 fully testable: make 100+ calls → 101st returns 429.
 

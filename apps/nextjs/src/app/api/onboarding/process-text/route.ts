@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
-import { withUser } from '@/lib/services/route-auth';
+import { withAuth } from '@/lib/services/route-auth';
+import { checkUsageLimit, logUsage } from '@/lib/services/usage-limit';
 import { processTextInput } from '@/lib/prompts/onboarding-text/process';
 import { IngredientExtractionSchema } from '@/types/onboarding';
 import { validateIngredientNames } from '@/lib/services/ingredient-matcher';
@@ -15,7 +16,7 @@ import { classifyLlmError } from '@/lib/services/api-error-handler';
 
 export const maxDuration = 15; // 15 second timeout
 
-export const POST = withUser(async ({ user, request }) => {
+export const POST = withAuth(async ({ user, userId, db, request }) => {
   try {
     const body = await request.json();
 
@@ -41,6 +42,8 @@ export const POST = withUser(async ({ user, request }) => {
       ],
     };
 
+    await checkUsageLimit({ userId, db })
+
     // Process via Gemini with opik tracing
     const result = await processTextInput({
       text: body.text,
@@ -65,6 +68,7 @@ export const POST = withUser(async ({ user, request }) => {
       unrecognized: allUnrecognized.length > 0 ? allUnrecognized : undefined,
     });
 
+    await logUsage({ userId, db, endpoint: '/api/onboarding/process-text' })
     return NextResponse.json(validated);
   } catch (error) {
     console.error('[process-text] Error:', error);
