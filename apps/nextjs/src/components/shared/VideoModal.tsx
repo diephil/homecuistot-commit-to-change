@@ -79,26 +79,28 @@ export function VideoModal({
       />
 
       {/* Modal container */}
-      <div className="relative z-10 w-full max-w-[800px] bg-gradient-to-br from-pink-200 to-cyan-200 border-4 md:border-6 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-4 md:p-6">
-        {/* Close button */}
+      <div className="relative z-10 w-full max-w-[800px] bg-gradient-to-br from-pink-200 to-cyan-200 border-4 md:border-6 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+        {/* Close button - positioned at modal edge */}
         <button
           onClick={onClose}
-          className="absolute top-2 right-2 md:top-4 md:right-4 bg-orange-500 hover:bg-orange-600 border-4 border-black p-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+          className="absolute -top-3 -right-3 md:-top-4 md:-right-4 z-20 bg-orange-500 hover:bg-orange-600 border-4 border-black p-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
           aria-label="Close video"
         >
           <X className="w-5 h-5 md:w-6 md:h-6" />
         </button>
 
-        {/* Video container with 16:9 aspect ratio */}
-        <div className="relative w-full" style={{ aspectRatio: "16 / 9" }}>
-          <iframe
-            src={`https://www.youtube.com/embed/${videoId}`}
-            title={title}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-            loading="lazy"
-            className="absolute inset-0 w-full h-full border-4 border-black"
-          />
+        {/* Video container with 16:9 aspect ratio and padding */}
+        <div className="relative w-full p-4 md:p-6">
+          <div className="relative w-full" style={{ aspectRatio: "16 / 9" }}>
+            <iframe
+              src={`https://www.youtube.com/embed/${videoId}`}
+              title={title}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              loading="lazy"
+              className="absolute inset-0 w-full h-full border-4 border-black"
+            />
+          </div>
         </div>
       </div>
     </div>
