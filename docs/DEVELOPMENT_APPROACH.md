@@ -45,6 +45,14 @@ Opik traces inform every decision: which agents need tools, where agents fall sh
 
 ---
 
+### 4. Dual Feedback Loops: Users for UX, Traces for Agents
+
+Not being a UI/UX designer, I reserved the final week for UI/UX iteration after completing core backend features in week 2. Asked friends to test the app and provide feedback on onboarding flow and overall experience. Meanwhile, Opik production traces became the input data for iterating on agent prompts.
+
+**Parallel Iteration**: UI improvements driven by user pain points, agent improvements driven by trace analysis
+
+---
+
 ## What We Did Right
 
 - Iterative Development
