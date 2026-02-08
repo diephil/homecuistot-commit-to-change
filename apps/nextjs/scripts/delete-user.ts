@@ -105,33 +105,42 @@ async function main() {
     // 4. Delete in transaction
     console.log("\n🗑️  Deleting...");
 
-    await sql.begin(async (tx) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await sql.begin(async (txSql: any) => {
+      // Note: Using 'as any' due to TransactionSql type issue in postgres v3.4.8
+      // The type doesn't expose call signatures but works at runtime
+
       // Delete user_recipes (cascade deletes recipe_ingredients via FK)
-      const deletedRecipes = await tx`
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+      const deletedRecipes = await (txSql)`
         DELETE FROM public.user_recipes WHERE user_id = ${userId}
       `;
       console.log(`   ✓ Deleted ${deletedRecipes.count} recipes`);
 
       // Delete user_inventory
-      const deletedInventory = await tx`
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+      const deletedInventory = await (txSql)`
         DELETE FROM public.user_inventory WHERE user_id = ${userId}
       `;
       console.log(`   ✓ Deleted ${deletedInventory.count} inventory items`);
 
       // Delete unrecognized_items
-      const deletedUnrecognized = await tx`
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+      const deletedUnrecognized = await (txSql)`
         DELETE FROM public.unrecognized_items WHERE user_id = ${userId}
       `;
       console.log(`   ✓ Deleted ${deletedUnrecognized.count} unrecognized items`);
 
       // Delete cooking_log
-      const deletedCookingLog = await tx`
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+      const deletedCookingLog = await (txSql)`
         DELETE FROM public.cooking_log WHERE user_id = ${userId}
       `;
       console.log(`   ✓ Deleted ${deletedCookingLog.count} cooking log entries`);
 
       // Delete user from auth.users
-      const deletedUser = await tx`
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+      await (txSql)`
         DELETE FROM auth.users WHERE id = ${userId}
       `;
       console.log(`   ✓ Deleted user account`);

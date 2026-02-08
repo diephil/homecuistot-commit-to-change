@@ -8,7 +8,8 @@ import { RecipeHelpModal } from "@/components/recipes/HelpModal";
 import { RecipeProposalModal } from "@/components/recipes/RecipeProposalModal";
 import { NeoHelpButton } from "@/components/shared/NeoHelpButton";
 import { DeleteConfirmationModal } from "@/components/shared/DeleteConfirmationModal";
-import { VoiceTextInput, Separator, SectionHeader, PageCallout } from "@/components/shared";
+import { VoiceTextInput, Separator, SectionHeader, VideoTutorialButton, VideoModal } from "@/components/shared";
+import { VIDEO_IDS } from "@/lib/constants/video-config";
 import { getRecipes, deleteRecipe, toggleIngredientType } from "@/app/actions/recipes";
 import { toast } from "sonner";
 import type {
@@ -54,6 +55,9 @@ export default function RecipesPage() {
   // Proposal modal state
   const [proposalModalOpen, setProposalModalOpen] = useState(false);
   const [currentProposal, setCurrentProposal] = useState<RecipeManagerProposal | null>(null);
+
+  // Video tutorial state management
+  const [videoModalOpen, setVideoModalOpen] = useState(false);
 
   useEffect(() => {
     loadRecipes();
@@ -294,12 +298,11 @@ export default function RecipesPage() {
             />
           </div>
 
-          {/* Description */}
-          <PageCallout
-            emoji="🎤"
-            title="Tell us what recipes you already know how to cook!"
-            description="No need to search for new recipes — just describe the dishes you've mastered. Navigate to Cook Now to see what you can make with your current ingredients."
-            bgColor="cyan"
+          {/* Video tutorial button - always visible */}
+          <VideoTutorialButton
+            videoId={VIDEO_IDS.RECIPES}
+            pageContext="recipes"
+            onOpen={() => setVideoModalOpen(true)}
           />
         </div>
 
@@ -363,6 +366,12 @@ export default function RecipesPage() {
           transcription={lastTranscription}
         />
       )}
+      <VideoModal
+        isOpen={videoModalOpen}
+        onClose={() => setVideoModalOpen(false)}
+        videoId={VIDEO_IDS.RECIPES}
+        title="Recipes Voice Input Tutorial"
+      />
     </PageContainer>
   );
 }
