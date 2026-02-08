@@ -97,6 +97,7 @@ pnpm db:migrate
 | **Recipe Manager** | Google ADK LlmAgent | create / update / delete / deleteAll | Custom dataset (mixed operations) | `createAgentTrace()` manual |
 | **Inventory Manager** | Google ADK LlmAgent | updateMatching / updateAll | Voice operations dataset | `createAgentTrace()` manual |
 
+**Note on ADK Usage**: We chose Google ADK for agents requiring function tools (Recipe Manager, Inventory Manager) because it's designed for multi-turn conversations. The original plan was to build an orchestration agent that would coordinate these subagents from the homepage, but time constraints prevented implementation. Currently, we enforce single-turn execution (agents terminate immediately after tool calls). Multi-turn orchestration will be added in the next iteration.
 
 ---
 
@@ -120,6 +121,20 @@ We focused on:
 - Custom metric performance (tuning F1 thresholds)
 
 **[→ Read full development approach](docs/DEVELOPMENT_APPROACH.md)**
+
+### 🚀 Future Iterations
+
+**Multi-Turn Orchestration Agent**: We plan to build a homepage chat interface that coordinates the Recipe Manager and Inventory Manager subagents through natural multi-turn conversations, enabling users to discover recipes, update inventory, and plan meals in a single dialogue flow.
+
+**Enhanced Ingredient Recognition**: An alias system will improve ingredient matching by recognizing variations like "frozen peas" as "peas" or "EVOO" as "extra virgin olive oil", reducing false negatives caused by different naming conventions.
+
+**Unrecognized Items Report**: Users will be able to view a dashboard of items that weren't matched to the ingredient database, allowing them to track gaps and request additions to the catalog (database tables are already implemented).
+
+**End-to-End Audio Evaluation**: We will create audio-based datasets to test the complete voice pipeline from Whisper transcription through agent logic, validating the full voice-to-action workflow rather than just text-based unit tests.
+
+**Edge Device Inference with Gemma 3N**: A fallback to the on-device Gemma 3N model (mentioned in the Gemini workshop) will enable offline capability for basic operations and reduce API costs for high-frequency interactions.
+
+**Additional Improvements**: We plan to split mixed operation datasets by intent, tune F1 thresholds based on production trace analysis, and expand admin tooling for ingredient catalog management.
 
 ---
 

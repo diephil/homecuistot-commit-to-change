@@ -423,6 +423,8 @@ When testing the app with specific users (e.g. beta testers), we create annotati
 
 ### Challenge 2: Google ADK-js Tracing
 
+**Why We Chose Google ADK**: We selected Google ADK for agents requiring function tools (Recipe Manager, Inventory Manager) because it's designed for multi-turn conversations. The original plan was to build an orchestration agent that would coordinate these subagents from the homepage, but time constraints prevented implementation. Currently, we enforce single-turn execution (agents terminate immediately after tool calls). Multi-turn orchestration will be added in the next iteration.
+
 **Issue**: No native OpenTelemetry support in ADK-js (only Python support). We could have rebuilt an opik integration via Google ADK callback system, but it was too tedious → we decided to continue with custom traces, only tracing the tools we implemented.
 
 **Solution**: Custom `createAgentTrace()` wrapper for sequential agent calls
