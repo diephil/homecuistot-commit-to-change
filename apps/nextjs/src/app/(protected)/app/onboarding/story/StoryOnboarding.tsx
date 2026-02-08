@@ -162,7 +162,7 @@ export function StoryOnboarding() {
       <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 flex items-center justify-center">
         <div className="max-w-md w-full space-y-6 text-center px-6">
           <div className="w-12 h-12 border-4 border-black border-t-transparent rounded-full animate-spin mx-auto" />
-          <h2 className="text-2xl font-black">Setting up your kitchen... We also leave you with Sam&apos;s pasta recipe 🍝</h2>
+          <h2 className="text-2xl font-black">Setting up your kitchen... 🍳</h2>
           <p className="text-base font-semibold text-black/70 leading-relaxed">
             We&apos;re adding your ingredients and recipes to your account so
             you can start cooking right away.
