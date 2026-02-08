@@ -159,7 +159,7 @@ graph TB
 
 ### Custom Evaluation Metrics
 
-<img src="./opik-img/experiments.png" alt="experiemnts" width="50%"/>
+<img src="./opik-img/experiments.png" alt="experiements" width="50%"/>
 
 #### IngredientSetMatch (7 scores per evaluation)
 
