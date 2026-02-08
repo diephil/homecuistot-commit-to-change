@@ -11,58 +11,54 @@ It should be the same for the My Recipe tab."
 
 ## User Scenarios & Testing *(mandatory)*
 
-### User Story 1 - First-time user views help video before using microphone (Priority: P1)
+### User Story 1 - User accesses help video anytime (Priority: P1)
 
-A new user arrives at the My Inventory page for the first time and sees a prominent video tutorial CTA in the PageCallout section. They click to watch the video to understand how the microphone feature works. After dismissing the tutorial, the prominent callout is replaced with a simpler, less intrusive version, but a persistent "Watch tutorial video" button remains always accessible for future reference.
+A user arrives at the My Inventory or My Recipes page and sees a persistent "Watch Tutorial" button below the page title. They can click this button at any time to watch the video and understand how the microphone feature works. The video opens in a modal and plays embedded directly on the page.
 
-**Why this priority**: This is the core value proposition - reducing confusion and increasing successful first-time use of the microphone feature through video guidance. Without this, users may be confused about how to use the voice input feature.
+**Why this priority**: This is the core value proposition - reducing confusion and increasing successful use of the microphone feature through always-available video guidance. Without this, users may be confused about how to use the voice input feature.
 
-**Independent Test**: Can be fully tested by navigating to My Inventory or My Recipes page as a first-time user, verifying the prominent video CTA appears, dismissing it, confirming the prominent version disappears but a persistent button remains, and clicking the persistent button to re-watch.
+**Independent Test**: Can be fully tested by navigating to My Inventory or My Recipes page, verifying the "Watch Tutorial" button appears below the title, clicking it to open the video modal, and confirming the video plays embedded.
 
 **Acceptance Scenarios**:
 
-1. **Given** a user visits My Inventory page for the first time (no dismissal recorded), **When** the page loads, **Then** they see a prominent video tutorial CTA in the PageCallout section (e.g., "Watch how to use the microphone")
-2. **Given** a user clicks the video CTA, **When** the video modal/player opens, **Then** the video plays embedded directly on the page without navigating away
-3. **Given** a user is viewing the video tutorial, **When** they click a dismiss/close action, **Then** the prominent PageCallout is hidden/replaced and their dismissal preference is saved to localStorage
-4. **Given** a user has previously dismissed the video tutorial, **When** they revisit the page, **Then** the prominent PageCallout does not appear, but a persistent "Watch tutorial" button remains visible
-5. **Given** a user (dismissed or not dismissed), **When** they look at the page, **Then** they ALWAYS see a button/link to access the video tutorial
-6. **Given** a user clicks the persistent video button after dismissal, **When** the video opens, **Then** it plays normally with full controls
-7. **Given** a user is watching the embedded video, **When** the video is playing, **Then** they can pause, play, adjust volume, and see standard video player controls
+1. **Given** a user visits My Inventory page, **When** the page loads, **Then** they see a persistent "Watch Tutorial" button below the page title
+2. **Given** a user clicks the "Watch Tutorial" button, **When** the video modal opens, **Then** the video plays embedded directly on the page without navigating away
+3. **Given** a user is watching the embedded video, **When** the video is playing, **Then** they can pause, play, adjust volume, and see standard video player controls
+4. **Given** a user closes the video modal, **When** they return to the page, **Then** the "Watch Tutorial" button is still visible and accessible
+5. **Given** a user navigates between pages or reloads, **When** they return, **Then** the "Watch Tutorial" button remains always visible
 
 ---
 
-### User Story 2 - User dismisses video tutorial and re-accesses later (Priority: P1)
+### User Story 2 - Video modal closes properly (Priority: P1)
 
-A user has watched or decided to skip the video tutorial and dismisses the prominent PageCallout. On subsequent visits, the prominent callout no longer appears, but a persistent "Watch tutorial" button remains always visible on the page. When they need to review the instructions later, they simply click the persistent button to re-watch.
+A user opens the video tutorial modal and can close it using multiple methods (X button, Escape key, backdrop click). After closing, they can re-open it at any time using the persistent button.
 
-**Why this priority**: Critical for user autonomy - users should control when they see prominent tutorials, but must always retain easy access for future reference. Prevents tutorial fatigue while maintaining educational value.
+**Why this priority**: Essential for good user experience - users need intuitive ways to close the modal and confidence they can access it again when needed.
 
-**Independent Test**: Can be fully tested by dismissing the prominent tutorial, verifying it stays hidden on reload, confirming the persistent button remains visible, and clicking it to re-watch.
+**Independent Test**: Can be fully tested by opening the video modal and verifying all close methods work (X button, Escape, backdrop), then confirming the button remains accessible to re-open.
 
 **Acceptance Scenarios**:
 
-1. **Given** a user dismisses the prominent video tutorial on My Inventory page, **When** they reload the page or return later, **Then** the prominent PageCallout does not appear but a persistent button/link remains visible
-2. **Given** a user has dismissed the prominent tutorial, **When** they click the persistent "Watch tutorial" button, **Then** the video modal opens and plays normally
-3. **Given** a user has NEVER dismissed the tutorial, **When** they view the page, **Then** they see BOTH the prominent PageCallout CTA AND a persistent button (both access the same video)
-4. **Given** a user dismisses the tutorial on Inventory page, **When** they navigate to Recipes page, **Then** the dismissal only applies to Inventory (each page tracks dismissal independently)
-5. **Given** a user re-opens the video after dismissal, **When** they start playback, **Then** the video starts from the beginning
-6. **Given** a user clears their browser data or uses a different device, **When** they visit the page, **Then** the prominent tutorial reappears along with the persistent button
+1. **Given** a user opens the video modal, **When** they click the X button, **Then** the modal closes and they return to the page
+2. **Given** a user opens the video modal, **When** they press the Escape key, **Then** the modal closes
+3. **Given** a user opens the video modal, **When** they click outside the modal (backdrop), **Then** the modal closes
+4. **Given** a user closes the video modal, **When** they click the "Watch Tutorial" button again, **Then** the modal opens and video plays normally
 
 ---
 
 ### User Story 3 - User accesses video on both Inventory and Recipes pages (Priority: P1)
 
-A user navigates between My Inventory and My Recipes pages and sees consistent video tutorial access on both pages. Each page offers context-appropriate video guidance for using the microphone feature in that specific context.
+A user navigates between My Inventory and My Recipes pages and sees the persistent "Watch Tutorial" button on both pages. Each page offers context-appropriate video guidance for using the microphone feature in that specific context (Inventory video on Inventory page, Recipes video on Recipes page).
 
 **Why this priority**: Ensures feature consistency across both main pages where voice input is available, providing a unified user experience and reducing confusion.
 
-**Independent Test**: Can be fully tested by navigating to both pages and verifying the video CTA appears on each page with appropriate context.
+**Independent Test**: Can be fully tested by navigating to both pages and verifying the "Watch Tutorial" button appears on each page with the correct video.
 
 **Acceptance Scenarios**:
 
-1. **Given** a user is on the My Inventory page, **When** they view the page callout, **Then** they see a video CTA relevant to inventory voice input
-2. **Given** a user is on the My Recipes page, **When** they view the page callout, **Then** they see a video CTA relevant to recipe voice input
-3. **Given** a user clicks the video on either page, **When** the video opens, **Then** the video content demonstrates how to use the microphone for that specific page's context
+1. **Given** a user is on the My Inventory page, **When** they click "Watch Tutorial", **Then** they see the Inventory-specific video tutorial
+2. **Given** a user is on the My Recipes page, **When** they click "Watch Tutorial", **Then** they see the Recipes-specific video tutorial
+3. **Given** a user navigates between pages, **When** they view each page, **Then** the "Watch Tutorial" button is consistently positioned below the page title on both pages
 
 ---
 
@@ -89,14 +85,9 @@ A user navigates between My Inventory and My Recipes pages and sees consistent v
   - Embedded video should load asynchronously to avoid blocking page render
   - Consider lazy-loading the video iframe until user clicks to play
 
-- What happens if a user's browser has localStorage disabled or blocked?
-  - System should handle localStorage access errors gracefully (try/catch)
-  - Default to showing the video tutorial if dismissal state cannot be persisted
-  - Ensure the application doesn't break if localStorage operations fail
-
-- What happens when a user clears browser data or uses incognito mode?
-  - Dismissal state is lost, video tutorial appears again
-  - This is expected behavior and acceptable for privacy-focused users
+- What happens if a user's browser blocks modals or popups?
+  - System should gracefully handle cases where modal rendering fails
+  - Ensure the application doesn't break if modal cannot be displayed
 
 - Should dismissal persist across user accounts on the same device?
   - Yes, localStorage is device/browser-specific, not user-account-specific

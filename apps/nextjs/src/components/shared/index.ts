@@ -31,6 +31,11 @@ export { QuickInputSection } from "./QuickInputSection";
 export { SectionHeader } from "./SectionHeader";
 export { Separator } from "./Separator";
 export { UnrecognizedItemRow } from "./UnrecognizedItemRow";
+export { VideoModal } from "./VideoModal";
+export { VideoTutorialButton } from "./VideoTutorialButton";
 export { VoiceGuidance } from "./VoiceGuidance";
 export { VoiceInput } from "./VoiceInput";
 export { VoiceTextInput } from "./VoiceTextInput";
+
+// Hooks
+export { useVideoDismissal } from "@/lib/hooks/useVideoDismissal";

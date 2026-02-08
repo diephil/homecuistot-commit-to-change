@@ -27,7 +27,7 @@
 
 **Purpose**: Configuration constants for video IDs
 
-- [ ] T001 Create video configuration constant file apps/nextjs/src/lib/constants/video-config.ts with VIDEO_IDS object containing INVENTORY: 'MDo79VMVYmg' and RECIPES: 'YgmZlurI5fA'
+- [x] T001 Create video configuration constant file apps/nextjs/src/lib/constants/video-config.ts with VIDEO_IDS object containing INVENTORY: 'MDo79VMVYmg' and RECIPES: 'YgmZlurI5fA'
 
 ---
 
@@ -37,11 +37,11 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T002 [P] Create useVideoDismissal custom hook in apps/nextjs/src/lib/hooks/useVideoDismissal.ts (SSR-safe localStorage state management with named params: {storageKey})
-- [ ] T003 [P] Create VideoModal component in apps/nextjs/src/components/shared/VideoModal.tsx (portal-based modal with YouTube iframe, escape key handler, body scroll lock, neobrutalist styling)
-- [ ] T004 [P] Create VideoTutorialButton component in apps/nextjs/src/components/shared/VideoTutorialButton.tsx (persistent button with lucide-react PlayCircle icon, neobrutalist styling, left-aligned positioning)
-- [ ] T005 Enhance PageCallout component in apps/nextjs/src/components/shared/PageCallout.tsx (add optional videoId, onOpenVideo, onDismiss props; add crystal-clear dismiss button with X icon in top-right, orange background, 48x48px)
-- [ ] T006 Export new components from apps/nextjs/src/components/shared/index.ts (VideoModal, VideoTutorialButton, useVideoDismissal)
+- [x] T002 [P] Create useVideoDismissal custom hook in apps/nextjs/src/lib/hooks/useVideoDismissal.ts (SSR-safe localStorage state management with named params: {storageKey})
+- [x] T003 [P] Create VideoModal component in apps/nextjs/src/components/shared/VideoModal.tsx (portal-based modal with YouTube iframe, escape key handler, body scroll lock, neobrutalist styling)
+- [x] T004 [P] Create VideoTutorialButton component in apps/nextjs/src/components/shared/VideoTutorialButton.tsx (persistent button with lucide-react PlayCircle icon, neobrutalist styling, left-aligned positioning)
+- [x] T005 Enhance PageCallout component in apps/nextjs/src/components/shared/PageCallout.tsx (add optional videoId, onOpenVideo, onDismiss props; add crystal-clear dismiss button with X icon in top-right, orange background, 48x48px)
+- [x] T006 Export new components from apps/nextjs/src/components/shared/index.ts (VideoModal, VideoTutorialButton, useVideoDismissal)
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -55,14 +55,14 @@
 
 ### Implementation for User Story 1
 
-- [ ] T007 [P] [US1] Integrate video state management in apps/nextjs/src/app/(protected)/app/inventory/page.tsx (import VIDEO_IDS from video-config.ts, add useVideoDismissal hook with storageKey "video:inventory:dismissed", add useState for videoModalOpen)
-- [ ] T008 [P] [US1] Integrate video state management in apps/nextjs/src/app/(protected)/app/recipes/page.tsx (import VIDEO_IDS from video-config.ts, add useVideoDismissal hook with storageKey "video:recipes:dismissed", add useState for videoModalOpen)
-- [ ] T009 [US1] Add VideoTutorialButton to Inventory page in apps/nextjs/src/app/(protected)/app/inventory/page.tsx (below page title, left-aligned, always visible, passes VIDEO_IDS.INVENTORY and onOpen callback)
-- [ ] T010 [US1] Add VideoTutorialButton to Recipes page in apps/nextjs/src/app/(protected)/app/recipes/page.tsx (below page title, left-aligned, always visible, passes VIDEO_IDS.RECIPES and onOpen callback)
-- [ ] T011 [US1] Add conditional PageCallout with video CTA to Inventory page in apps/nextjs/src/app/(protected)/app/inventory/page.tsx (render only when !dismissed, pass VIDEO_IDS.INVENTORY, onOpenVideo, onDismiss callbacks)
-- [ ] T012 [US1] Add conditional PageCallout with video CTA to Recipes page in apps/nextjs/src/app/(protected)/app/recipes/page.tsx (render only when !dismissed, pass VIDEO_IDS.RECIPES, onOpenVideo, onDismiss callbacks)
-- [ ] T013 [US1] Add VideoModal to Inventory page in apps/nextjs/src/app/(protected)/app/inventory/page.tsx (render when videoModalOpen=true, pass VIDEO_IDS.INVENTORY, onClose callback, title "Inventory Voice Input Tutorial")
-- [ ] T014 [US1] Add VideoModal to Recipes page in apps/nextjs/src/app/(protected)/app/recipes/page.tsx (render when videoModalOpen=true, pass VIDEO_IDS.RECIPES, onClose callback, title "Recipes Voice Input Tutorial")
+- [x] T007 [P] [US1] Integrate video state management in apps/nextjs/src/app/(protected)/app/inventory/page.tsx (import VIDEO_IDS from video-config.ts, add useVideoDismissal hook with storageKey "video:inventory:dismissed", add useState for videoModalOpen)
+- [x] T008 [P] [US1] Integrate video state management in apps/nextjs/src/app/(protected)/app/recipes/page.tsx (import VIDEO_IDS from video-config.ts, add useVideoDismissal hook with storageKey "video:recipes:dismissed", add useState for videoModalOpen)
+- [x] T009 [US1] Add VideoTutorialButton to Inventory page in apps/nextjs/src/app/(protected)/app/inventory/page.tsx (below page title, left-aligned, always visible, passes VIDEO_IDS.INVENTORY and onOpen callback)
+- [x] T010 [US1] Add VideoTutorialButton to Recipes page in apps/nextjs/src/app/(protected)/app/recipes/page.tsx (below page title, left-aligned, always visible, passes VIDEO_IDS.RECIPES and onOpen callback)
+- [x] T011 [US1] Add conditional PageCallout with video CTA to Inventory page in apps/nextjs/src/app/(protected)/app/inventory/page.tsx (render only when !dismissed, pass VIDEO_IDS.INVENTORY, onOpenVideo, onDismiss callbacks)
+- [x] T012 [US1] Add conditional PageCallout with video CTA to Recipes page in apps/nextjs/src/app/(protected)/app/recipes/page.tsx (render only when !dismissed, pass VIDEO_IDS.RECIPES, onOpenVideo, onDismiss callbacks)
+- [x] T013 [US1] Add VideoModal to Inventory page in apps/nextjs/src/app/(protected)/app/inventory/page.tsx (render when videoModalOpen=true, pass VIDEO_IDS.INVENTORY, onClose callback, title "Inventory Voice Input Tutorial")
+- [x] T014 [US1] Add VideoModal to Recipes page in apps/nextjs/src/app/(protected)/app/recipes/page.tsx (render when videoModalOpen=true, pass VIDEO_IDS.RECIPES, onClose callback, title "Recipes Voice Input Tutorial")
 
 **Checkpoint**: User Story 1 complete - First-time users see prominent video tutorial, can dismiss it, and access via persistent button
 

@@ -8,7 +8,8 @@ import { NeoHelpButton } from "@/components/shared/NeoHelpButton";
 import { ProposalConfirmationModal } from "@/components/inventory/ProposalConfirmationModal";
 import { DeleteConfirmationModal } from "@/components/shared/DeleteConfirmationModal";
 import { UnrecognizedItemRow } from "@/components/shared/UnrecognizedItemRow";
-import { VoiceTextInput, Separator, PageCallout } from "@/components/shared";
+import { VoiceTextInput, Separator, VideoTutorialButton, VideoModal } from "@/components/shared";
+import { VIDEO_IDS } from "@/lib/constants/video-config";
 import { InventoryDisplayItem, QuantityLevel, InventoryGroups, InventoryUpdateProposal } from "@/types/inventory";
 import { deleteUnrecognizedItem } from "@/app/actions/inventory";
 import { createClient } from "@/utils/supabase/client";
@@ -49,6 +50,9 @@ export default function InventoryPage() {
       return localStorage.getItem("inventory:useWord") !== "false";
     } catch { return true; }
   });
+
+  // Video tutorial state management
+  const [videoModalOpen, setVideoModalOpen] = useState(false);
 
   useEffect(() => {
     try { localStorage.setItem("inventory:groupByCategory", String(groupByCategory)); } catch {}
@@ -407,12 +411,11 @@ export default function InventoryPage() {
               />
             </div>
 
-            {/* Description */}
-            <PageCallout
-              emoji="🎤"
-              title="Tell us what's in your fridge and pantry!"
-              description="Describe what ingredients you have on hand. Navigate to Cook Now to see what you can make with them."
-              bgColor="pink"
+            {/* Video tutorial button - always visible */}
+            <VideoTutorialButton
+              videoId={VIDEO_IDS.INVENTORY}
+              pageContext="inventory"
+              onOpen={() => setVideoModalOpen(true)}
             />
           </div>
 
@@ -469,12 +472,11 @@ export default function InventoryPage() {
             />
           </div>
 
-          {/* Description */}
-          <PageCallout
-            emoji="🎤"
-            title="Tell us what's in your fridge and pantry!"
-            description="Describe what ingredients you have on hand. Navigate to Cook Now to see what you can make with them."
-            bgColor="pink"
+          {/* Video tutorial button - always visible */}
+          <VideoTutorialButton
+            videoId={VIDEO_IDS.INVENTORY}
+            pageContext="inventory"
+            onOpen={() => setVideoModalOpen(true)}
           />
         </div>
 
@@ -606,6 +608,12 @@ export default function InventoryPage() {
         itemType="ingredient"
         onConfirm={handleConfirmDelete}
         onCancel={() => setItemToDelete(null)}
+      />
+      <VideoModal
+        isOpen={videoModalOpen}
+        onClose={() => setVideoModalOpen(false)}
+        videoId={VIDEO_IDS.INVENTORY}
+        title="Inventory Voice Input Tutorial"
       />
     </PageContainer>
   );
