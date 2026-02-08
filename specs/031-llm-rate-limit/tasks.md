@@ -19,9 +19,9 @@
 
 **Purpose**: Create the `llm_usage_log` table and generate Drizzle migration
 
-- [ ] T001 Create Drizzle schema for `llm_usage_log` table in `apps/nextjs/src/db/schema/llm-usage-log.ts` — uuid PK, `user_id` uuid NOT NULL, `endpoint` text NOT NULL, `created_at` timestamptz NOT NULL defaultNow(), composite index on `(user_id, created_at)`. Follow `cooking-log.ts` pattern.
-- [ ] T002 Export new schema from barrel file `apps/nextjs/src/db/schema/index.ts` — add `export * from './llm-usage-log'`
-- [ ] T003 Run `pnpm db:generate` from `apps/nextjs/` to generate migration SQL
+- [x] T001 Create Drizzle schema for `llm_usage_log` table in `apps/nextjs/src/db/schema/llm-usage-log.ts` — uuid PK, `user_id` uuid NOT NULL, `endpoint` text NOT NULL, `created_at` timestamptz NOT NULL defaultNow(), composite index on `(user_id, created_at)`. Follow `cooking-log.ts` pattern.
+- [x] T002 Export new schema from barrel file `apps/nextjs/src/db/schema/index.ts` — add `export * from './llm-usage-log'`
+- [x] T003 Run `pnpm db:generate` from `apps/nextjs/` to generate migration SQL
 - [ ] T004 **USER ACTION**: Review generated migration in `apps/nextjs/src/db/migrations/`, run `pnpm db:migrate`, verify with `pnpm db:status`
 - [ ] T005 Create RLS migration file `apps/nextjs/src/db/migrations/XXXX_rls_llm_usage_log.sql` — enable RLS, add SELECT policy (`auth.uid() = user_id`), add INSERT policy (`auth.uid() = user_id`). Follow `0001_enable_rls_policies.sql` pattern.
 - [ ] T006 **USER ACTION**: Apply RLS migration via `pnpm db:migrate`, verify with `pnpm db:status`
