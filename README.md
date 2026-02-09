@@ -8,7 +8,7 @@
 
 ## Youtube Pitching video
 
-[<img src="./images/thumbnail-video.jpg" alt="logo" width="30%"/>](https://www.youtube.com/watch?v=rltUKHn95mc)
+[<img src="./images/thumbnail-video.jpg" alt="logo" width="70%"/>](https://www.youtube.com/watch?v=rltUKHn95mc)
 
 It's 6 PM. You just got home from work and you're hungry. You open your fridge and stare. You have food and you know how to cook, but figuring out what to make with what you have is the part that kills you after a long day. So you close the fridge, grab your phone, and order takeout again.
 
