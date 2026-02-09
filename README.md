@@ -1,5 +1,3 @@
-# Home Cuistot
-
 <img src="images/main-logo.png" alt="logo" width="200"/>
 
 **Built by me (and Claude Code😶‍🌫️) with ❤️ for the Encode AI x Comet Opik Commit To Change Hackathon**
