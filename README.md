@@ -53,7 +53,7 @@ TLDR: We built a maintainable AI system in 3 weeks by focusing on:
 
 We built a foundation that can be improved incrementally with Opik as the measurement layer. It's not just another vibe-coded app.
 
-
+- ➡️ **Development Timeline**: [TIMELINE.md](./TIMELINE.md)
 
 ## 🚀 Quick Start
 
@@ -63,7 +63,7 @@ We built a foundation that can be improved incrementally with Opik as the measur
 
 **OAuth**: Sign in with Google or Discord
 
-**Run Locally (Opik/Supabase/Oauth) - Docker required**:
+**Run Locally (Opik/Supabase/Oauth/Upstash) - Docker required**:
 ```bash
 # Clone repository
 git clone https://github.com/your-repo/homecuistot-commit-to-change.git
@@ -76,6 +76,7 @@ pnpm install
 # Note: OAuth credentials required for authentication (Google and Discord providers)
 # Setup guides: Google (https://supabase.com/docs/guides/auth/social-login/auth-google?queryGroups=framework&framework=nextjs)
 #               Discord (https://supabase.com/docs/guides/auth/social-login/auth-discord?queryGroups=framework&framework=nextjs)
+# You will also need to setup Upstash Redis, or simply comment the rate limiter code logic inside apps/nextjs/src/proxy.ts
 cp .env.local.example .env.local
 
 # Start development server and Opik/Supabase
@@ -84,12 +85,6 @@ make dev-all
 # Apply db migrations from the apps/nextjs folder
 pnpm db:migrate
 ```
-
-**Documentation**:
-- **Setup & Commands**: [CLAUDE.md](./CLAUDE.md)
-- **Development Timeline**: [TIMELINE.md](./TIMELINE.md)
-- **Development Philosophy**: [docs/DEVELOPMENT_APPROACH.md](./docs/DEVELOPMENT_APPROACH.md)
-- **Opik Integration**: [docs/OPIK_INTEGRATION.md](./docs/OPIK_INTEGRATION.md)
 
 ## 🏗️ Architecture Overview
 
@@ -141,13 +136,6 @@ We focused on:
 - **Keep the improvement surface area manageable**
 - **Let measurements guide architecture**
 
-### What We Did Right
-✅ Iterative development (simple Gemini calls → ADK agents with tools → evaluation pipelines)
-✅ Data-driven decisions (Opik traces inform agent improvements)
-✅ Manageable scope (each agent has clear responsibility)
-✅ Production-ready observability (full tracing from day one)
-✅ Feedback loop (metadata and tags enable continuous improvement)
-
 ### Where We're Still Iterating (Honest Limitations)
 - Dataset refinement needed (split mixed operations into separate datasets)
 - Audio processing pipeline validation requires dedicated Opik audio datasets
@@ -174,63 +162,53 @@ We focused on:
 ## 🌟 Core Features
 
 ### 1. Voice-First Onboarding
-Interactive 7-scene story ("Sam's Fridge") that demonstrates product value through narrative:
+
+<img src="images/onboarding-narration.png" alt="onbarding" width="50%"/>
+
+Interactive 7-scene story ("Sam's Fridge") that demonstrates product value through narrative
+
 
 ### 2. Inventory Management
+
+<img src="images/inventory-manager.png" alt="inventory" width="70%"/>
+
 - **4-level quantity scale**: 0=out, 1=low, 2=some, 3=plenty (reduces friction vs exact counts)
 - **Pantry staples tracking**: Salt, pepper, olive oil never decrement
 - **Voice + text input**: Speak or type ingredient updates
 - **Category filtering**: 30 ingredient categories from OpenFoodFacts taxonomy
 - **5,931 pre-loaded ingredients**: Faster matching, consistent categorization
 
-### 3. Recipe Discovery
+
+### 3. Recipe Management
+
+<img src="images/recipe-manager.png" alt="recipes" width="70%"/>
+
 - **"What can I cook?"**: Calculates recipe availability based on current inventory
 - **3 states**: Ready (cook now), Almost Ready (1-2 missing), Not Ready (3+ missing)
 - **Automatic inventory decrement**: "Mark as Cooked" updates quantities
 - **Cooking log**: Track your meal history
 
 ### 4. Admin Promotion Workflow (Continuous Improvement Loop)
+
+<img src="images/admin-dashboard.png" alt="dashboard" width="70%"/>
+
 - **Review unrecognized items** from Opik traces
 - **Batch processing**: 5 spans at a time
 - **Category assignment**: Promote items to ingredient database
 - **Tag-based tracking**: `unrecognized_items` → `promotion_reviewed`
 - **Real-time enrichment**: Database grows from 5,931 ingredients based on real user patterns
 
----
+### 5. PWA support
 
-## 🔬 Opik Integration Highlights
+<img src="images/pwa-support.png" alt="dashboard" width="20%"/>
 
-We built production-ready observability across three layers:
-
-### Three-Layer Tracing Architecture
-1. **Automatic Tracing**: Vercel AI SDK → OpenTelemetry → OpikExporter
-2. **Manual Tracing**: Google ADK agents → Custom `createAgentTrace()` wrapper
-3. **Feedback Loop**: Admin dashboard → Opik API → Span tag updates
-
-### Prompt Management
-- 4 versioned prompts (Voice Transcriptor, Ingredient Extractor, Recipe Manager, Inventory Manager)
-- Automated registration via `pnpm prompt:all` (local) or `pnpm prompt:all:prod` (production)
-- Environment separation (local/production namespaces)
-
-### Evaluation Framework
-- **Custom metrics**: IngredientSetMatch (7 scores), RecipeOperationMatch (10 scores), InventoryUpdateMatch (11 scores)
-- **F1 scoring**: Precision/recall analysis for each agent
-- **Dataset-driven**: 50+ test cases for ingredient extraction, recipe operations, inventory management
-- **Commands**: `pnpm eval` (single), `pnpm eval:all` (all evaluations)
-
-### Continuous Improvement Loop
-Real user inputs → Opik traces → Admin review → Database enrichment → Future recipes benefit
-
-### Annotation Queues for Prompt Refinement
-Filter traces by `user:id` tag → Review test sessions → Annotate edge cases → Refine prompts based on patterns
-
-**The system grows smarter from real usage patterns.**
-
-**[→ Full Opik integration guide with code examples](docs/OPIK_INTEGRATION.md)**
+- **Mobile first** because describing what we have in our fridge or pantry is better on our phones than on a desktop web-app 😄
 
 ## 📅 Development Timeline
 
-**3 weeks, 29 milestones, 400+ commits**
+<img src="images/timeline.png" alt="logo" width="70%"/>
+
+**3 weeks, 30+ milestones, 400+ commits**
 
 - **Week 1 (Jan 17-24)**: Infrastructure & voice onboarding
 - **Week 2 (Jan 24-31)**: Core features & recipe management
@@ -241,12 +219,6 @@ Filter traces by `user:id` tag → Review test sessions → Annotate edge cases 
 ---
 
 ## 🔗 Additional Resources
-
-**Project Documentation**:
-- [CLAUDE.md](./CLAUDE.md) - Setup guide, commands, architecture reference
-- [TIMELINE.md](./TIMELINE.md) - 29 milestones across 3 weeks
-- [docs/DEVELOPMENT_APPROACH.md](./docs/DEVELOPMENT_APPROACH.md) - Philosophy and lessons learned
-- [docs/OPIK_INTEGRATION.md](./docs/OPIK_INTEGRATION.md) - Full Opik integration guide
 
 **Technical Docs**:
 - [Database Layer](./apps/nextjs/src/db/README.md) - Drizzle ORM patterns, RLS usage, query examples
