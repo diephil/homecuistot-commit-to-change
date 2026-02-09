@@ -1,5 +1,5 @@
 /**
- * LLM Usage Today — per-user call counts for the current UTC day
+ * LLM Usage Past 7 Days — per-user call counts for the past 7 days
  *
  * Usage:
  *   pnpm usage          # local (uses .env.local)
@@ -23,21 +23,21 @@ async function main() {
         l.user_id,
         u.email,
         u.raw_user_meta_data->>'full_name' AS name,
-        count(*)::int AS calls_today
+        count(*)::int AS calls_past_7_days
       FROM llm_usage_log l
       LEFT JOIN auth.users u ON u.id = l.user_id
-      WHERE l.created_at >= date_trunc('day', now() AT TIME ZONE 'UTC')
+      WHERE l.created_at >= (now() AT TIME ZONE 'UTC') - INTERVAL '7 days'
       GROUP BY l.user_id, u.email, u.raw_user_meta_data->>'full_name'
-      ORDER BY calls_today DESC
+      ORDER BY calls_past_7_days DESC
     `;
 
     if (rows.length === 0) {
-      console.log("\n📊 No LLM usage today (UTC)\n");
+      console.log("\n📊 No LLM usage in past 7 days (UTC)\n");
       return;
     }
 
-    const total = rows.reduce((sum, r) => sum + r.calls_today, 0);
-    console.log(`\n📊 LLM usage today (UTC) — ${total} total call(s), ${rows.length} user(s)\n`);
+    const total = rows.reduce((sum, r) => sum + r.calls_past_7_days, 0);
+    console.log(`\n📊 LLM usage past 7 days (UTC) — ${total} total call(s), ${rows.length} user(s)\n`);
 
     console.log(
       [
@@ -52,7 +52,7 @@ async function main() {
     for (const r of rows) {
       console.log(
         [
-          String(r.calls_today).padEnd(8),
+          String(r.calls_past_7_days).padEnd(8),
           (r.email ?? "—").padEnd(35),
           (r.name ?? "—").padEnd(25),
           r.user_id,

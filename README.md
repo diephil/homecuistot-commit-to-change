@@ -171,10 +171,9 @@ Interactive 7-scene story ("Sam's Fridge") that demonstrates product value throu
 <img src="images/inventory-manager.png" alt="inventory" width="70%"/>
 
 - **4-level quantity scale**: 0=out, 1=low, 2=some, 3=plenty (reduces friction vs exact counts)
-- **Pantry staples tracking**: Salt, pepper, olive oil never decrement
+- **Pantry staples tracking**: For instance, salt, pepper, olive oil never decrement
 - **Voice + text input**: Speak or type ingredient updates
-- **Category filtering**: 30 ingredient categories from OpenFoodFacts taxonomy
-- **5,931 pre-loaded ingredients**: Faster matching, consistent categorization
+- **5,931 pre-loaded ingredients**: Faster matching, consistent categorization, from OpenFoodFacts taxonomy
 
 
 ### 3. Recipe Management
